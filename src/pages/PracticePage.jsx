@@ -2,7 +2,7 @@ import { useState, useMemo } from 'react';
 import { useApp } from '../context/AppContext';
 import { ALL_EVENTS, getEventById, CATEGORY_CONFIG } from '../data/events';
 import { LESSONS } from '../data/lessons';
-import { scoreDateAnswer, generateLocationOptions, generateWhatOptions } from '../data/quiz';
+import { scoreDateAnswer, generateLocationOptions, generateWhatOptions, generateDescriptionOptions } from '../data/quiz';
 import { Card, Button, MasteryDots, ProgressBar, Divider, CategoryTag, StarButton, TabSelector } from '../components/shared';
 import Mascot from '../components/Mascot';
 
@@ -69,6 +69,7 @@ export default function PracticePage() {
                 location: mastery?.locationScore,
                 date: mastery?.dateScore,
                 what: mastery?.whatScore,
+                description: mastery?.descriptionScore,
             };
 
             const scoreOrder = { red: 0, null: 1, undefined: 1, yellow: 2, green: 3 };
@@ -273,7 +274,7 @@ export default function PracticePage() {
                                         </h4>
                                         <div className="flex items-center gap-2 mt-1">
                                             {questions.map((q, i) => {
-                                                const label = q.type === 'location' ? 'Where' : q.type === 'date' ? 'When' : 'What';
+                                                const label = q.type === 'location' ? 'Where' : q.type === 'date' ? 'When' : q.type === 'description' ? 'Desc' : 'What';
                                                 return (
                                                     <span key={i} className="text-[10px] font-semibold px-1.5 py-0.5 rounded"
                                                         style={{
@@ -790,6 +791,8 @@ function PracticeQuestion({ question, isStarred, onToggleStar, onAnswer, onNext,
 
     const [locationOptions] = useState(() => generateLocationOptions(event));
     const [whatOptions] = useState(() => generateWhatOptions(event, ALL_EVENTS.map(e => e.id)));
+    const [descriptionOptions] = useState(() => generateDescriptionOptions(event));
+
 
     const scoreColors = {
         green: { bg: 'rgba(5, 150, 105, 0.08)', border: 'var(--color-success)' },
@@ -952,6 +955,46 @@ function PracticeQuestion({ question, isStarred, onToggleStar, onAnswer, onNext,
                                     style={{ borderColor: 'rgba(28, 25, 23, 0.08)', backgroundColor: 'var(--color-card)', ...optStyle }}>
                                     <span className="font-semibold">{opt.title}</span>
                                     {answered && isCorrect && <span className="ml-2 text-xs" style={{ color: 'var(--color-success)' }}>✓</span>}
+                                </button>
+                            );
+                        })}
+                    </div>
+                    {renderFeedback()}
+                </Card>
+                {answered ? (
+                    <div className="flex gap-3 mt-4">
+                        {onBack && <Button variant="secondary" onClick={onBack}>← Back</Button>}
+                        <Button className="flex-1" onClick={onNext}>Continue →</Button>
+                    </div>
+                ) : (
+                    onBack && <div className="mt-4"><Button variant="secondary" className="w-full" onClick={onBack}>← Back</Button></div>
+                )}
+            </div>
+        );
+    }
+
+    if (type === 'description') {
+        return (
+            <div className="animate-slide-in-right">
+                <Card style={answered && score ? { backgroundColor: scoreColors[score].bg, borderLeft: `3px solid ${scoreColors[score].border}` } : {}}>
+                    <p className="text-xs uppercase tracking-wider font-semibold mb-2" style={{ color: 'var(--color-ink-faint)' }}>Which description fits?</p>
+                    <h3 className="text-lg font-bold mb-1" style={{ fontFamily: 'var(--font-serif)' }}>{event.title}</h3>
+                    <p className="text-sm mb-4" style={{ color: 'var(--color-burgundy)' }}>{event.date}</p>
+                    <div className="space-y-2">
+                        {descriptionOptions.map((opt, i) => {
+                            const isCorrect = opt.id === event.id;
+                            const isSelected = selectedAnswer === opt.id;
+                            let optStyle = {};
+                            if (answered) {
+                                if (isCorrect) optStyle = { backgroundColor: 'rgba(5, 150, 105, 0.1)', borderColor: 'var(--color-success)' };
+                                else if (isSelected && !isCorrect) optStyle = { backgroundColor: 'rgba(166, 61, 61, 0.1)', borderColor: 'var(--color-error)' };
+                            }
+                            return (
+                                <button key={i} onClick={() => handleMCQ(opt.id, event.id)} disabled={answered}
+                                    className="w-full text-left px-4 py-3 rounded-xl border-2 text-sm transition-all duration-200"
+                                    style={{ borderColor: isSelected && !answered ? 'var(--color-burgundy)' : 'rgba(28,25,23,0.08)', backgroundColor: 'var(--color-card)', ...optStyle }}>
+                                    <span className="leading-relaxed text-sm block" style={{ color: 'var(--color-ink-secondary)' }}>{opt.description}</span>
+                                    {answered && isCorrect && <span className="ml-2 text-xs font-bold mt-1 block" style={{ color: 'var(--color-success)' }}>✓ Correct</span>}
                                 </button>
                             );
                         })}

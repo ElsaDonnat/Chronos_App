@@ -193,6 +193,56 @@ export function generateWhatOptions(correctEvent, lessonEventIds, allEvents = AL
     return options.sort(() => Math.random() - 0.5);
 }
 
+// Generate "description" MCQ options — given an event title, pick the right description
+export function generateDescriptionOptions(correctEvent, allEvents = ALL_EVENTS) {
+    const correctOption = {
+        id: correctEvent.id,
+        description: correctEvent.description,
+        isCorrect: true,
+    };
+    const options = [correctOption];
+
+    // Get the era/epoch of the correct event for plausible distractors
+    const correctYear = correctEvent.yearEnd
+        ? (correctEvent.year + correctEvent.yearEnd) / 2
+        : correctEvent.year;
+
+    // Score events by chronological distance (closer = more plausible distractor)
+    const candidates = allEvents
+        .filter(e => e.id !== correctEvent.id)
+        .map(e => {
+            const eYear = e.yearEnd ? (e.year + e.yearEnd) / 2 : e.year;
+            return { ...e, dist: Math.abs(eYear - correctYear) };
+        })
+        .sort((a, b) => a.dist - b.dist);
+
+    // Pick up to 3 distractors, preferring nearby events
+    const shuffledPool = candidates.slice(0, 12).sort(() => Math.random() - 0.5);
+    for (const e of shuffledPool) {
+        if (options.length >= 4) break;
+        options.push({
+            id: e.id,
+            description: e.description,
+            isCorrect: false,
+        });
+    }
+
+    // Fill from farther events if needed
+    if (options.length < 4) {
+        const remaining = candidates.slice(12).sort(() => Math.random() - 0.5);
+        for (const e of remaining) {
+            if (options.length >= 4) break;
+            options.push({
+                id: e.id,
+                description: e.description,
+                isCorrect: false,
+            });
+        }
+    }
+
+    return options.sort(() => Math.random() - 0.5);
+}
+
 // Calculate XP for a session
 export function calculateXP(results) {
     let xp = 0;

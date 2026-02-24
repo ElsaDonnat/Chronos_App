@@ -40,7 +40,8 @@ function calculateOverallMastery(mastery) {
     const loc = scoreMap[mastery.locationScore] ?? 0;
     const date = scoreMap[mastery.dateScore] ?? 0;
     const what = scoreMap[mastery.whatScore] ?? 0;
-    return loc + date + what;
+    const desc = scoreMap[mastery.descriptionScore] ?? 0;
+    return loc + date + what + desc;
 }
 
 function getTodayDate() {
@@ -71,6 +72,7 @@ function reducer(state, action) {
                 locationScore: null,
                 dateScore: null,
                 whatScore: null,
+                descriptionScore: null,
                 timesReviewed: 0,
                 lastSeen: null,
                 overallMastery: 0
@@ -80,6 +82,7 @@ function reducer(state, action) {
             if (questionType === 'location') updated.locationScore = score;
             if (questionType === 'date') updated.dateScore = score;
             if (questionType === 'what') updated.whatScore = score;
+            if (questionType === 'description') updated.descriptionScore = score;
             updated.timesReviewed = (existing.timesReviewed || 0) + 1;
             updated.lastSeen = Date.now();
             updated.overallMastery = calculateOverallMastery(updated);

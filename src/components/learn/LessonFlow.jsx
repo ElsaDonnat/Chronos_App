@@ -17,7 +17,7 @@ const PHASE = {
     SUMMARY: 'summary',
 };
 
-const QUESTION_TYPES = ['date', 'location', 'what'];
+const QUESTION_TYPES = ['date', 'location', 'what', 'description'];
 
 // Period overview data
 const PERIOD_INFO = {
@@ -66,20 +66,22 @@ export default function LessonFlow({ lesson, onComplete }) {
     const [selectedDot, setSelectedDot] = useState(null);    // for result dot modal
     const xpDispatched = useRef(false);
 
-    // For each card, randomly assign 2 of 3 question types for the learn phase
-    const learnTypes = useMemo(() => {
+    // For each card, randomly pick 3 of the 4 question types to use for MCQs (discarding 1)
+    // Then assign 2 to the learn phase and 1 to the recap phase
+    const selectedTypes = useMemo(() => {
         return events.map(() => {
             const shuffled = [...QUESTION_TYPES].sort(() => Math.random() - 0.5);
-            return shuffled.slice(0, 2); // 2 types for learn phase
+            return shuffled.slice(0, 3); // pick 3 types to test
         });
     }, [events]);
 
-    // The remaining type per card (goes to recap as MCQ)
+    const learnTypes = useMemo(() => {
+        return selectedTypes.map(types => types.slice(0, 2)); // first 2 go to learn
+    }, [selectedTypes]);
+
     const remainingTypes = useMemo(() => {
-        return events.map((_, i) => {
-            return QUESTION_TYPES.find(t => !learnTypes[i].includes(t));
-        });
-    }, [events, learnTypes]);
+        return selectedTypes.map(types => types[2]); // the 3rd goes to recap
+    }, [selectedTypes]);
 
     // Pre-generate learn quiz questions
     const learnQuizQuestions = useMemo(() => {
@@ -701,7 +703,8 @@ export default function LessonFlow({ lesson, onComplete }) {
                                         <span className="text-[10px] uppercase tracking-widest font-bold px-2 py-0.5 rounded-full"
                                             style={{ backgroundColor: hlBg, color: dotColor }}>
                                             {qType === 'date' || qType === 'date_input' ? '📅 Date Question'
-                                                : qType === 'location' ? '📍 Location Question' : '❓ What Happened'}
+                                                : qType === 'location' ? '📍 Location Question'
+                                                    : qType === 'description' ? '📝 Event Description' : '❓ What Happened'}
                                         </span>
                                         <button onClick={() => setSelectedDot(null)}
                                             className="w-7 h-7 rounded-full flex items-center justify-center text-sm"
@@ -766,6 +769,8 @@ function QuizQuestion({ question, lessonEventIds, onAnswer, onNext, onBack, onSk
     const [locationOptions] = useState(() => generateLocationOptions(event));
     const [whatOptions] = useState(() => generateWhatOptions(event, lessonEventIds));
     const [dateOptions] = useState(() => generateDateMCQOptions(event));
+    const [descriptionOptions] = useState(() => generateDescriptionOptions(event));
+
 
     const handleAnswer = useCallback((answer, correct) => {
         if (answered) return;
@@ -903,6 +908,39 @@ function QuizQuestion({ question, lessonEventIds, onAnswer, onNext, onBack, onSk
                                     style={{ borderColor: isSelected && !answered ? 'var(--color-burgundy)' : 'rgba(28,25,23,0.08)', backgroundColor: 'var(--color-card)', ...optStyle }}>
                                     <span className="font-semibold">{opt.title}</span>
                                     {answered && isCorrect && <span className="ml-2 text-xs" style={{ color: 'var(--color-success)' }}>✓</span>}
+                                </button>
+                            );
+                        })}
+                    </div>
+                </Card>
+                {renderButtons()}
+            </div>
+        );
+    }
+
+    // ─ DESCRIPTION MCQ ─
+    if (type === 'description') {
+        return (
+            <div className="animate-slide-in-right">
+                <Card style={answered && score ? { backgroundColor: scoreColors[score].bg, borderLeft: `3px solid ${scoreColors[score].border}` } : {}}>
+                    <p className="text-xs uppercase tracking-wider font-semibold mb-2" style={{ color: 'var(--color-ink-faint)' }}>Which description fits?</p>
+                    <h3 className="text-lg font-bold mb-1" style={{ fontFamily: 'var(--font-serif)' }}>{event.title}</h3>
+                    <p className="text-sm mb-4" style={{ color: 'var(--color-burgundy)' }}>{event.date}</p>
+                    <div className="space-y-2">
+                        {descriptionOptions.map((opt, i) => {
+                            const isCorrect = opt.id === event.id;
+                            const isSelected = selectedAnswer === opt.id;
+                            let optStyle = {};
+                            if (answered) {
+                                if (isCorrect) optStyle = { backgroundColor: 'rgba(5, 150, 105, 0.1)', borderColor: 'var(--color-success)' };
+                                else if (isSelected && !isCorrect) optStyle = { backgroundColor: 'rgba(166, 61, 61, 0.1)', borderColor: 'var(--color-error)' };
+                            }
+                            return (
+                                <button key={i} onClick={() => handleAnswer(opt.id, event.id)} disabled={answered}
+                                    className="w-full text-left px-4 py-3 rounded-xl border-2 text-sm transition-all duration-200"
+                                    style={{ borderColor: isSelected && !answered ? 'var(--color-burgundy)' : 'rgba(28,25,23,0.08)', backgroundColor: 'var(--color-card)', ...optStyle }}>
+                                    <span className="leading-relaxed text-sm block" style={{ color: 'var(--color-ink-secondary)' }}>{opt.description}</span>
+                                    {answered && isCorrect && <span className="ml-2 text-xs font-bold mt-1 block" style={{ color: 'var(--color-success)' }}>✓ Correct</span>}
                                 </button>
                             );
                         })}
