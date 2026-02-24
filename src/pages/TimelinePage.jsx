@@ -26,6 +26,23 @@ export default function TimelinePage() {
     }, [sortedEvents, selectedEra, selectedCategory]);
 
     const learnedIds = new Set(state.seenEvents);
+    const lesson0Complete = !!state.completedLessons['lesson-0'];
+
+    const eraIcons = {
+        prehistory: '🦴',
+        ancient: '🏛️',
+        medieval: '⚔️',
+        earlymodern: '🧭',
+        modern: '🌍',
+    };
+
+    const eraSubtitles = {
+        prehistory: 'c. 7 million years ago – c. 3200 BCE',
+        ancient: 'c. 3200 BCE – 500 CE',
+        medieval: '500 – 1500 CE',
+        earlymodern: '1500 – 1800 CE',
+        modern: '1800 – Present',
+    };
 
     const getEraColor = (eraId) => {
         const colors = {
@@ -93,9 +110,23 @@ export default function TimelinePage() {
                             <div key={event.id}>
                                 {showEraLabel && era && (
                                     <div className="relative pl-14 py-2 mb-2 mt-2" style={{ backgroundColor: getEraColor(era.id) }}>
-                                        <span className="text-[10px] uppercase tracking-widest font-bold" style={{ color: 'var(--color-ink-faint)' }}>
-                                            {era.label}
-                                        </span>
+                                        {lesson0Complete ? (
+                                            <div className="flex items-center gap-2">
+                                                <span className="text-base">{eraIcons[era.id] || ''}</span>
+                                                <div>
+                                                    <span className="text-[10px] uppercase tracking-widest font-bold" style={{ color: 'var(--color-ink-muted)' }}>
+                                                        {era.label}
+                                                    </span>
+                                                    <p className="text-[9px]" style={{ color: 'var(--color-ink-faint)' }}>
+                                                        {eraSubtitles[era.id] || ''}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        ) : (
+                                            <span className="text-[10px] uppercase tracking-widest font-bold" style={{ color: 'var(--color-ink-faint)' }}>
+                                                {era.label}
+                                            </span>
+                                        )}
                                     </div>
                                 )}
 

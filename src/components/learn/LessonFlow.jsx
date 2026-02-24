@@ -1,7 +1,7 @@
 import { useState, useMemo, useCallback, useRef, useEffect } from 'react';
 import { useApp } from '../../context/AppContext';
-import { getEventsByIds, ALL_EVENTS, formatYear, CATEGORY_CONFIG, ERA_RANGES } from '../../data/events';
-import { scoreDateAnswer, generateLocationOptions, generateWhatOptions, calculateXP } from '../../data/quiz';
+import { getEventsByIds, ALL_EVENTS, CATEGORY_CONFIG } from '../../data/events';
+import { scoreDateAnswer, generateLocationOptions, generateWhatOptions, generateDateMCQOptions, calculateXP } from '../../data/quiz';
 import { Card, Button, ProgressBar, CategoryTag, Divider } from '../shared';
 import Mascot from '../Mascot';
 
@@ -9,50 +9,47 @@ import Mascot from '../Mascot';
 const PHASE = {
     INTRO: 'intro',
     PERIOD_INTRO: 'period_intro',
-    CHUNK_LEARN: 'chunk_learn',
-    CHUNK_QUIZ: 'chunk_quiz',
+    LEARN_CARD: 'learn_card',       // Study an event card
+    LEARN_QUIZ: 'learn_quiz',       // 2 MCQ questions after a card
+    RECAP_TRANSITION: 'recap_transition',
+    RECAP: 'recap',                 // 3 remaining MCQs + 3 date free-inputs
     FINAL_REVIEW: 'final_review',
     SUMMARY: 'summary',
 };
 
-const CHUNK_SIZE = 2; // 2 cards per chunk
+const QUESTION_TYPES = ['date', 'location', 'what'];
 
 // Period overview data
 const PERIOD_INFO = {
     prehistory: {
         title: 'Prehistory',
         subtitle: 'c. 7 million years ago – c. 3200 BCE',
-        description: 'The longest chapter in human history — from the first split with our ape ancestors through mastering fire, developing language, migrating across the globe, and eventually settling into farming communities.',
-        color: '#0D9488',
-        icon: '🦴',
+        description: 'The longest chapter in human history — from our first split with ape ancestors through mastering fire, developing language, and settling into farming communities.',
+        color: '#0D9488', icon: '🦴',
     },
     ancient: {
         title: 'The Ancient World',
         subtitle: 'c. 3200 BCE – 500 CE',
         description: 'Writing is invented, cities rise, empires clash. From Sumer to Rome, humanity builds the foundations of law, philosophy, religion, and governance.',
-        color: '#6B5B73',
-        icon: '🏛️',
+        color: '#6B5B73', icon: '🏛️',
     },
     medieval: {
         title: 'The Medieval World',
         subtitle: '500 – 1500 CE',
-        description: 'Empires fragment and reform. Faiths spread across continents, scholars preserve and advance knowledge, and horseback conquerors redraw the map of Eurasia.',
-        color: '#A0522D',
-        icon: '⚔️',
+        description: 'Empires fragment and reform. Faiths spread across continents, scholars preserve knowledge, and horseback conquerors redraw the map.',
+        color: '#A0522D', icon: '⚔️',
     },
     earlymodern: {
         title: 'The Early Modern Period',
         subtitle: '1500 – 1800 CE',
         description: 'Print breaks the monopoly on knowledge, ships connect every continent, and thinkers challenge the divine right of kings.',
-        color: '#65774A',
-        icon: '🧭',
+        color: '#65774A', icon: '🧭',
     },
     modern: {
         title: 'The Modern World',
         subtitle: '1800 – Present',
-        description: 'Industry, ideology, and information transform human life at accelerating speed. Two world wars reshape the global order, and digital networks connect billions.',
-        color: '#8B4157',
-        icon: '🌍',
+        description: 'Industry, ideology, and information transform human life at accelerating speed. Wars reshape the global order and networks connect billions.',
+        color: '#8B4157', icon: '🌍',
     },
 };
 
@@ -61,65 +58,60 @@ export default function LessonFlow({ lesson, onComplete }) {
     const events = useMemo(() => getEventsByIds(lesson.eventIds), [lesson]);
 
     const [phase, setPhase] = useState(PHASE.INTRO);
-    const [chunkIndex, setChunkIndex] = useState(0);
-    const [cardIndexInChunk, setCardIndexInChunk] = useState(0);
-    const [quizResults, setQuizResults] = useState([]);
-    const [currentQuizIndex, setCurrentQuizIndex] = useState(0);
+    const [cardIndex, setCardIndex] = useState(0);         // 0–2, current card in learn phase
+    const [learnQuizIndex, setLearnQuizIndex] = useState(0); // 0–1, quiz within current card
+    const [recapIndex, setRecapIndex] = useState(0);         // 0–5, recap questions
     const [reviewIndex, setReviewIndex] = useState(0);
+    const [quizResults, setQuizResults] = useState([]);
     const xpDispatched = useRef(false);
 
-    // Split events into chunks of CHUNK_SIZE
-    const chunks = useMemo(() => {
-        const c = [];
-        for (let i = 0; i < events.length; i += CHUNK_SIZE) {
-            c.push(events.slice(i, i + CHUNK_SIZE));
-        }
-        return c;
+    // For each card, randomly assign 2 of 3 question types for the learn phase
+    const learnTypes = useMemo(() => {
+        return events.map(() => {
+            const shuffled = [...QUESTION_TYPES].sort(() => Math.random() - 0.5);
+            return shuffled.slice(0, 2); // 2 types for learn phase
+        });
     }, [events]);
 
-    const currentChunk = chunks[chunkIndex] || [];
+    // The remaining type per card (goes to recap as MCQ)
+    const remainingTypes = useMemo(() => {
+        return events.map((_, i) => {
+            return QUESTION_TYPES.find(t => !learnTypes[i].includes(t));
+        });
+    }, [events, learnTypes]);
 
-    // Generate quiz questions for a set of events
-    const generateQuizForEvents = useCallback((evts) => {
-        const questions = [];
-        for (const event of evts) {
-            questions.push({ event, type: 'location', key: `${event.id}-location-${chunkIndex}` });
-            questions.push({ event, type: 'date', key: `${event.id}-date-${chunkIndex}` });
-            questions.push({ event, type: 'what', key: `${event.id}-what-${chunkIndex}` });
-        }
-        return questions.sort(() => Math.random() - 0.5);
-    }, [chunkIndex]);
+    // Pre-generate learn quiz questions
+    const learnQuizQuestions = useMemo(() => {
+        const qs = [];
+        events.forEach((event, i) => {
+            learnTypes[i].forEach(type => {
+                qs.push({ event, type, cardIdx: i, phase: 'learn' });
+            });
+        });
+        return qs;
+    }, [events, learnTypes]);
 
-    const [chunkQuizQuestions, setChunkQuizQuestions] = useState([]);
+    // Pre-generate recap questions (shuffled)
+    const recapQuestions = useMemo(() => {
+        const qs = [];
+        // 3 remaining MCQ questions (one per card)
+        events.forEach((event, i) => {
+            qs.push({ event, type: remainingTypes[i], cardIdx: i, phase: 'recap', isDateInput: false });
+        });
+        // 3 date free-input questions (one per card)
+        events.forEach((event, i) => {
+            qs.push({ event, type: 'date_input', cardIdx: i, phase: 'recap', isDateInput: true });
+        });
+        // Shuffle all 6
+        return qs.sort(() => Math.random() - 0.5);
+    }, [events, remainingTypes]);
 
-    // Items needing final review
-    const hardResults = useMemo(() => {
-        return quizResults.filter(r => r.firstScore === 'red' || r.firstScore === 'yellow');
-    }, [quizResults]);
+    // Get current learn quiz questions for current card
+    const currentCardLearnQs = useMemo(() => {
+        return learnQuizQuestions.filter(q => q.cardIdx === cardIndex);
+    }, [learnQuizQuestions, cardIndex]);
 
-    const redResults = useMemo(() => {
-        return quizResults.filter(r => r.firstScore === 'red' && !r.retryScore);
-    }, [quizResults]);
-
-    const totalQuestions = events.length * 3;
-    const answeredQuestions = quizResults.length;
-
-    // ─── Dispatch XP when reaching summary (via useEffect, not during render) ───
-    useEffect(() => {
-        if (phase === PHASE.SUMMARY && !xpDispatched.current) {
-            xpDispatched.current = true;
-            const xp = calculateXP(quizResults);
-            const redCount = quizResults.filter(r => r.firstScore === 'red').length;
-            const allPassed = redCount === 0 || quizResults.every(r => r.firstScore !== 'red' || (r.retryScore && r.retryScore !== 'red'));
-
-            if (allPassed) {
-                dispatch({ type: 'COMPLETE_LESSON', lessonId: lesson.id });
-            }
-            dispatch({ type: 'ADD_XP', amount: xp });
-        }
-    }, [phase, quizResults, lesson.id, dispatch]);
-
-    // Get the chronologically previous and next events within this lesson
+    // Nearby events (prev/next chronologically within lesson)
     const getNearbyEvents = useCallback((event) => {
         const sorted = [...events].sort((a, b) => a.year - b.year);
         const idx = sorted.findIndex(e => e.id === event.id);
@@ -129,7 +121,54 @@ export default function LessonFlow({ lesson, onComplete }) {
         return nearby;
     }, [events]);
 
-    // ─── INTRO ─────────────────────────────────────────
+    // Hard results for final review
+    const hardResults = useMemo(() => {
+        return quizResults.filter(r => r.firstScore === 'red' || r.firstScore === 'yellow');
+    }, [quizResults]);
+
+    const redResults = useMemo(() => {
+        return quizResults.filter(r => r.firstScore === 'red' && !r.retryScore);
+    }, [quizResults]);
+
+    // Total counts
+    const totalQuestions = 12; // always 12
+    const answeredCount = quizResults.length;
+
+    // ─── Dispatch XP on summary ───
+    useEffect(() => {
+        if (phase === PHASE.SUMMARY && !xpDispatched.current) {
+            xpDispatched.current = true;
+            const xp = calculateXP(quizResults);
+            const redCount = quizResults.filter(r => r.firstScore === 'red').length;
+            const allPassed = redCount === 0 || quizResults.every(r =>
+                r.firstScore !== 'red' || (r.retryScore && r.retryScore !== 'red')
+            );
+            if (allPassed) {
+                dispatch({ type: 'COMPLETE_LESSON', lessonId: lesson.id });
+            }
+            dispatch({ type: 'ADD_XP', amount: xp });
+        }
+    }, [phase, quizResults, lesson.id, dispatch]);
+
+    // Helper: record answer
+    const recordAnswer = useCallback((eventId, questionType, score) => {
+        setQuizResults(prev => [...prev, {
+            eventId,
+            questionType,
+            firstScore: score,
+            retryScore: null,
+        }]);
+        dispatch({
+            type: 'UPDATE_EVENT_MASTERY',
+            eventId,
+            questionType: questionType === 'date_input' ? 'date' : questionType,
+            score,
+        });
+    }, [dispatch]);
+
+    // ════════════════════════════════════════════════════
+    // INTRO
+    // ════════════════════════════════════════════════════
     if (phase === PHASE.INTRO) {
         return (
             <div className="py-8 animate-fade-in">
@@ -138,7 +177,6 @@ export default function LessonFlow({ lesson, onComplete }) {
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="15 18 9 12 15 6" /></svg>
                     Back
                 </button>
-
                 <div className="text-center">
                     <span className="text-xs font-semibold uppercase tracking-widest block mb-2" style={{ color: 'var(--color-ink-faint)' }}>
                         Lesson {lesson.number}
@@ -155,10 +193,7 @@ export default function LessonFlow({ lesson, onComplete }) {
                     </p>
                     <Divider />
                     <p className="text-sm mt-4 mb-2" style={{ color: 'var(--color-ink-muted)' }}>
-                        {events.length} events to discover
-                    </p>
-                    <p className="text-xs mb-6" style={{ color: 'var(--color-ink-faint)' }}>
-                        Learn 2 events at a time, then test your knowledge
+                        {events.length} events · 12 questions
                     </p>
                     <Mascot mood="happy" size={64} />
                     <div className="mt-6">
@@ -166,10 +201,9 @@ export default function LessonFlow({ lesson, onComplete }) {
                             if (lesson.periodId && PERIOD_INFO[lesson.periodId]) {
                                 setPhase(PHASE.PERIOD_INTRO);
                             } else {
-                                setPhase(PHASE.CHUNK_LEARN);
+                                setPhase(PHASE.LEARN_CARD);
                             }
-                            setChunkIndex(0);
-                            setCardIndexInChunk(0);
+                            setCardIndex(0);
                             dispatch({ type: 'MARK_EVENTS_SEEN', eventIds: lesson.eventIds });
                         }}>
                             Begin Learning
@@ -180,14 +214,12 @@ export default function LessonFlow({ lesson, onComplete }) {
         );
     }
 
-    // ─── PERIOD INTRO CARD ────────────────────────────
+    // ════════════════════════════════════════════════════
+    // PERIOD INTRO
+    // ════════════════════════════════════════════════════
     if (phase === PHASE.PERIOD_INTRO) {
         const period = PERIOD_INFO[lesson.periodId];
-        if (!period) {
-            setPhase(PHASE.CHUNK_LEARN);
-            return null;
-        }
-
+        if (!period) { setPhase(PHASE.LEARN_CARD); return null; }
         return (
             <div className="py-4 animate-fade-in">
                 <div className="flex items-center justify-between mb-4">
@@ -200,48 +232,34 @@ export default function LessonFlow({ lesson, onComplete }) {
                         Period Overview
                     </span>
                 </div>
-
                 <div className="animate-slide-in-right">
-                    <Card style={{ borderLeft: `4px solid ${period.color}`, overflow: 'hidden' }}>
-                        <div className="text-center mb-4">
-                            <span className="text-4xl">{period.icon}</span>
-                        </div>
-                        <h2 className="text-2xl font-bold text-center mb-1" style={{ fontFamily: 'var(--font-serif)', color: 'var(--color-ink)' }}>
-                            {period.title}
-                        </h2>
-                        <p className="text-sm font-semibold text-center mb-4" style={{ color: period.color }}>
-                            {period.subtitle}
-                        </p>
+                    <Card style={{ borderLeft: `4px solid ${period.color}` }}>
+                        <div className="text-center mb-4"><span className="text-4xl">{period.icon}</span></div>
+                        <h2 className="text-2xl font-bold text-center mb-1" style={{ fontFamily: 'var(--font-serif)' }}>{period.title}</h2>
+                        <p className="text-sm font-semibold text-center mb-4" style={{ color: period.color }}>{period.subtitle}</p>
                         <Divider />
-                        <p className="text-sm leading-relaxed mt-4" style={{ color: 'var(--color-ink-secondary)' }}>
-                            {period.description}
-                        </p>
+                        <p className="text-sm leading-relaxed mt-4" style={{ color: 'var(--color-ink-secondary)' }}>{period.description}</p>
                     </Card>
                 </div>
-
                 <div className="mt-6">
-                    <Button className="w-full" onClick={() => setPhase(PHASE.CHUNK_LEARN)}>
-                        Begin Events →
-                    </Button>
+                    <Button className="w-full" onClick={() => setPhase(PHASE.LEARN_CARD)}>Begin Events →</Button>
                 </div>
             </div>
         );
     }
 
-    // ─── CHUNK LEARN (Show 2 cards at a time) ────────────
-    if (phase === PHASE.CHUNK_LEARN) {
-        const event = currentChunk[cardIndexInChunk];
+    // ════════════════════════════════════════════════════
+    // LEARN CARD — show study card
+    // ════════════════════════════════════════════════════
+    if (phase === PHASE.LEARN_CARD) {
+        const event = events[cardIndex];
         if (!event) {
-            // Finished current chunk cards → start quiz
-            const qs = generateQuizForEvents(currentChunk);
-            setChunkQuizQuestions(qs);
-            setCurrentQuizIndex(0);
-            setPhase(PHASE.CHUNK_QUIZ);
+            // All cards done → transition to recap
+            setPhase(PHASE.RECAP_TRANSITION);
             return null;
         }
 
         const nearbyEvents = getNearbyEvents(event);
-        const globalCardNum = chunkIndex * CHUNK_SIZE + cardIndexInChunk + 1;
 
         return (
             <div className="py-4 animate-fade-in">
@@ -251,16 +269,16 @@ export default function LessonFlow({ lesson, onComplete }) {
                         Exit
                     </button>
                     <span className="text-sm font-medium" style={{ color: 'var(--color-ink-muted)' }}>
-                        Card {globalCardNum} of {events.length}
+                        Card {cardIndex + 1} of {events.length}
                     </span>
                 </div>
 
-                <ProgressBar value={globalCardNum} max={events.length} />
+                <ProgressBar value={cardIndex + 1} max={events.length} />
 
                 <div className="text-center mt-2 mb-1">
                     <span className="text-[10px] uppercase tracking-widest font-bold px-2 py-0.5 rounded-full"
                         style={{ backgroundColor: 'var(--color-burgundy-soft)', color: 'var(--color-burgundy)' }}>
-                        Study — Set {chunkIndex + 1} of {chunks.length}
+                        📖 Study
                     </span>
                 </div>
 
@@ -305,98 +323,160 @@ export default function LessonFlow({ lesson, onComplete }) {
                 </div>
 
                 <div className="flex gap-3 mt-6">
-                    {(cardIndexInChunk > 0 || chunkIndex > 0) && (
+                    {cardIndex > 0 && (
                         <Button variant="secondary" onClick={() => {
-                            if (cardIndexInChunk > 0) {
-                                setCardIndexInChunk(i => i - 1);
-                            } else if (chunkIndex > 0) {
-                                // Go back to previous chunk's last card
-                                setChunkIndex(i => i - 1);
-                                setCardIndexInChunk(chunks[chunkIndex - 1].length - 1);
-                            }
-                        }}>
-                            ← Back
-                        </Button>
+                            setCardIndex(i => i - 1);
+                            setLearnQuizIndex(0);
+                        }}>← Back</Button>
                     )}
-                    <Button
-                        className="flex-1"
-                        onClick={() => setCardIndexInChunk(i => i + 1)}
-                    >
-                        {cardIndexInChunk < currentChunk.length - 1 ? 'Next →' : 'Start Quiz →'}
+                    <Button className="flex-1" onClick={() => {
+                        setLearnQuizIndex(0);
+                        setPhase(PHASE.LEARN_QUIZ);
+                    }}>
+                        Quiz Me →
                     </Button>
                 </div>
             </div>
         );
     }
 
-    // ─── CHUNK QUIZ ─────────────────────────────────────
-    if (phase === PHASE.CHUNK_QUIZ) {
-        const q = chunkQuizQuestions[currentQuizIndex];
+    // ════════════════════════════════════════════════════
+    // LEARN QUIZ — 2 MCQ questions per card
+    // ════════════════════════════════════════════════════
+    if (phase === PHASE.LEARN_QUIZ) {
+        const q = currentCardLearnQs[learnQuizIndex];
         if (!q) {
-            // Finished this chunk's quiz
-            const nextChunk = chunkIndex + 1;
-            if (nextChunk < chunks.length) {
-                setChunkIndex(nextChunk);
-                setCardIndexInChunk(0);
-                setPhase(PHASE.CHUNK_LEARN);
+            // Done with this card's quiz → next card
+            const next = cardIndex + 1;
+            if (next < events.length) {
+                setCardIndex(next);
+                setLearnQuizIndex(0);
+                setPhase(PHASE.LEARN_CARD);
             } else {
-                // All chunks done
-                if (hardResults.length > 0) {
-                    setReviewIndex(0);
-                    setCurrentQuizIndex(0);
-                    setPhase(PHASE.FINAL_REVIEW);
-                } else {
-                    setPhase(PHASE.SUMMARY);
-                }
+                setPhase(PHASE.RECAP_TRANSITION);
             }
             return null;
         }
 
         return (
-            <div className="py-4 animate-fade-in" key={`quiz-${chunkIndex}-${currentQuizIndex}`}>
+            <div className="py-4 animate-fade-in" key={`learn-q-${cardIndex}-${learnQuizIndex}`}>
                 <div className="flex items-center justify-between mb-4">
                     <span className="text-sm" style={{ color: 'var(--color-ink-muted)' }}>
-                        Quiz — Set {chunkIndex + 1}
+                        Card {cardIndex + 1} · Question {learnQuizIndex + 1}/2
                     </span>
-                    <span className="text-sm font-medium" style={{ color: 'var(--color-ink-muted)' }}>
-                        {currentQuizIndex + 1} / {chunkQuizQuestions.length}
+                    <span className="text-[10px] uppercase tracking-widest font-bold px-2 py-0.5 rounded-full"
+                        style={{ backgroundColor: 'var(--color-burgundy-soft)', color: 'var(--color-burgundy)' }}>
+                        📝 Learn Quiz
                     </span>
                 </div>
-                <ProgressBar value={answeredQuestions + currentQuizIndex + 1} max={totalQuestions} />
+                <ProgressBar value={answeredCount + 1} max={totalQuestions} />
 
                 <div className="mt-6">
                     <QuizQuestion
                         question={q}
                         lessonEventIds={lesson.eventIds}
-                        onAnswer={(score) => {
-                            setQuizResults(prev => [...prev, {
-                                eventId: q.event.id,
-                                questionType: q.type,
-                                firstScore: score,
-                                retryScore: null,
-                            }]);
-                            dispatch({
-                                type: 'UPDATE_EVENT_MASTERY',
-                                eventId: q.event.id,
-                                questionType: q.type,
-                                score,
-                            });
-                        }}
-                        onNext={() => setCurrentQuizIndex(i => i + 1)}
-                        onBack={currentQuizIndex > 0 ? () => setCurrentQuizIndex(i => i - 1) : null}
+                        onAnswer={(score) => recordAnswer(q.event.id, q.type, score)}
+                        onNext={() => setLearnQuizIndex(i => i + 1)}
+                        onBack={learnQuizIndex > 0 ? () => setLearnQuizIndex(i => i - 1) : null}
                     />
                 </div>
             </div>
         );
     }
 
-    // ─── FINAL REVIEW ──────────────────────────────────
+    // ════════════════════════════════════════════════════
+    // RECAP TRANSITION — animation between learn and recap
+    // ════════════════════════════════════════════════════
+    if (phase === PHASE.RECAP_TRANSITION) {
+        return (
+            <div className="py-12 text-center animate-fade-in">
+                <div className="animate-recap-pulse">
+                    <Mascot mood="thinking" size={72} />
+                </div>
+                <h2 className="text-2xl font-bold mt-6 mb-2" style={{ fontFamily: 'var(--font-serif)', color: 'var(--color-ink)' }}>
+                    Time to Recap
+                </h2>
+                <p className="text-sm mb-1" style={{ color: 'var(--color-ink-muted)' }}>
+                    Now let's see how well you remember everything
+                </p>
+                <p className="text-xs mb-6" style={{ color: 'var(--color-ink-faint)' }}>
+                    6 questions — including typing exact dates
+                </p>
+                <div className="flex justify-center gap-2 mb-6">
+                    {events.map((e, i) => (
+                        <div key={i} className="px-3 py-1.5 rounded-lg text-xs font-medium"
+                            style={{ backgroundColor: 'var(--color-burgundy-soft)', color: 'var(--color-burgundy)' }}>
+                            {e.title.length > 20 ? e.title.substring(0, 18) + '…' : e.title}
+                        </div>
+                    ))}
+                </div>
+                <Button onClick={() => {
+                    setRecapIndex(0);
+                    setPhase(PHASE.RECAP);
+                }}>
+                    Start Recap →
+                </Button>
+            </div>
+        );
+    }
+
+    // ════════════════════════════════════════════════════
+    // RECAP — 3 remaining MCQs + 3 date free-inputs (shuffled)
+    // ════════════════════════════════════════════════════
+    if (phase === PHASE.RECAP) {
+        const q = recapQuestions[recapIndex];
+        if (!q) {
+            // Done with recap
+            if (hardResults.length > 0) {
+                setReviewIndex(0);
+                setPhase(PHASE.FINAL_REVIEW);
+            } else {
+                setPhase(PHASE.SUMMARY);
+            }
+            return null;
+        }
+
+        return (
+            <div className="py-4 animate-fade-in" key={`recap-${recapIndex}`}>
+                <div className="flex items-center justify-between mb-4">
+                    <span className="text-sm" style={{ color: 'var(--color-ink-muted)' }}>
+                        Recap {recapIndex + 1} / {recapQuestions.length}
+                    </span>
+                    <span className="text-[10px] uppercase tracking-widest font-bold px-2 py-0.5 rounded-full"
+                        style={{ backgroundColor: 'rgba(139, 65, 87, 0.15)', color: 'var(--color-burgundy)' }}>
+                        🔁 Recap
+                    </span>
+                </div>
+                <ProgressBar value={answeredCount + 1} max={totalQuestions} />
+
+                <div className="mt-6">
+                    {q.isDateInput ? (
+                        <DateInputQuestion
+                            event={q.event}
+                            onAnswer={(score) => recordAnswer(q.event.id, 'date_input', score)}
+                            onNext={() => setRecapIndex(i => i + 1)}
+                        />
+                    ) : (
+                        <QuizQuestion
+                            question={q}
+                            lessonEventIds={lesson.eventIds}
+                            onAnswer={(score) => recordAnswer(q.event.id, q.type, score)}
+                            onNext={() => setRecapIndex(i => i + 1)}
+                        />
+                    )}
+                </div>
+            </div>
+        );
+    }
+
+    // ════════════════════════════════════════════════════
+    // FINAL REVIEW
+    // ════════════════════════════════════════════════════
     if (phase === PHASE.FINAL_REVIEW) {
         const hardEvents = [...new Set(hardResults.map(r => r.eventId))]
             .map(id => events.find(e => e.id === id))
             .filter(Boolean);
 
-        // Phase 1: Review hard event cards
         if (reviewIndex < hardEvents.length) {
             const event = hardEvents[reviewIndex];
             const eventResults = hardResults.filter(r => r.eventId === event.id);
@@ -408,15 +488,13 @@ export default function LessonFlow({ lesson, onComplete }) {
                     <div className="text-center mb-4">
                         <Mascot mood={worstScore === 'red' ? 'surprised' : 'thinking'} size={50} />
                         <p className="text-sm font-semibold mt-2" style={{ color: borderColor }}>
-                            {worstScore === 'red' ? "Let's review this one" : "Almost had it — one more look"}
+                            {worstScore === 'red' ? "Let's review this one" : "Almost had it"}
                         </p>
                         <span className="text-xs" style={{ color: 'var(--color-ink-muted)' }}>
                             Review {reviewIndex + 1} of {hardEvents.length}
                         </span>
                     </div>
-
-                    <Card className="animate-slide-in-right" key={event.id}
-                        style={{ borderLeft: `3px solid ${borderColor}` }}>
+                    <Card className="animate-slide-in-right" style={{ borderLeft: `3px solid ${borderColor}` }}>
                         <CategoryTag category={event.category} />
                         <h2 className="text-xl font-bold mt-3 mb-2" style={{ fontFamily: 'var(--font-serif)' }}>{event.title}</h2>
                         <p className="text-lg font-semibold mb-3" style={{ color: 'var(--color-burgundy)' }}>{event.date}</p>
@@ -428,60 +506,11 @@ export default function LessonFlow({ lesson, onComplete }) {
                             {event.location.place}
                         </div>
                     </Card>
-
                     <div className="mt-6">
                         <Button className="w-full" onClick={() => setReviewIndex(i => i + 1)}>
-                            {reviewIndex < hardEvents.length - 1 ? 'Next Review →' : (redResults.length > 0 ? 'Retry Missed Questions →' : 'See Results →')}
+                            {reviewIndex < hardEvents.length - 1 ? 'Next Review →' : 'See Results →'}
                         </Button>
                     </div>
-                </div>
-            );
-        }
-
-        // Phase 2: Retry red questions
-        if (redResults.length > 0) {
-            const retryQuestions = redResults.map(r => ({
-                event: events.find(e => e.id === r.eventId),
-                type: r.questionType,
-                key: `retry-${r.eventId}-${r.questionType}`,
-            })).filter(q => q.event);
-
-            const rq = retryQuestions[currentQuizIndex];
-            if (!rq) {
-                setPhase(PHASE.SUMMARY);
-                return null;
-            }
-
-            return (
-                <div className="py-4 animate-fade-in" key={`retry-${currentQuizIndex}`}>
-                    <div className="text-center mb-4">
-                        <Mascot mood="thinking" size={50} />
-                        <p className="text-sm font-semibold mt-2" style={{ color: 'var(--color-error)' }}>
-                            Try again
-                        </p>
-                        <span className="text-xs" style={{ color: 'var(--color-ink-muted)' }}>
-                            {currentQuizIndex + 1} of {retryQuestions.length}
-                        </span>
-                    </div>
-
-                    <QuizQuestion
-                        question={rq}
-                        lessonEventIds={lesson.eventIds}
-                        onAnswer={(score) => {
-                            setQuizResults(prev => prev.map(r =>
-                                r.eventId === rq.event.id && r.questionType === rq.type && r.firstScore === 'red' && !r.retryScore
-                                    ? { ...r, retryScore: score }
-                                    : r
-                            ));
-                            dispatch({
-                                type: 'UPDATE_EVENT_MASTERY',
-                                eventId: rq.event.id,
-                                questionType: rq.type,
-                                score,
-                            });
-                        }}
-                        onNext={() => setCurrentQuizIndex(i => i + 1)}
-                    />
                 </div>
             );
         }
@@ -490,31 +519,32 @@ export default function LessonFlow({ lesson, onComplete }) {
         return null;
     }
 
-    // ─── SUMMARY ──────────────────────────────────────
+    // ════════════════════════════════════════════════════
+    // SUMMARY — XP + Streak
+    // ════════════════════════════════════════════════════
     if (phase === PHASE.SUMMARY) {
         const xp = calculateXP(quizResults);
         const greenCount = quizResults.filter(r => r.firstScore === 'green').length;
         const yellowCount = quizResults.filter(r => r.firstScore === 'yellow').length;
         const redCount = quizResults.filter(r => r.firstScore === 'red').length;
-        const allPassed = redCount === 0 || quizResults.every(r => r.firstScore !== 'red' || (r.retryScore && r.retryScore !== 'red'));
+        const allPassed = redCount === 0 || quizResults.every(r =>
+            r.firstScore !== 'red' || (r.retryScore && r.retryScore !== 'red')
+        );
         const streak = state.currentStreak;
 
         return (
             <div className="py-8 text-center animate-fade-in">
                 <Mascot mood={allPassed ? 'celebrating' : 'thinking'} size={80} />
-
                 <h2 className="text-2xl font-bold mt-4 mb-1" style={{ fontFamily: 'var(--font-serif)' }}>
                     {allPassed ? 'Lesson Complete!' : 'Keep Practicing'}
                 </h2>
-                <p className="text-sm mb-6" style={{ color: 'var(--color-ink-muted)' }}>
-                    {lesson.title}
-                </p>
+                <p className="text-sm mb-6" style={{ color: 'var(--color-ink-muted)' }}>{lesson.title}</p>
 
                 <Card className={allPassed ? 'animate-celebration' : ''} style={{
                     borderTop: allPassed ? '3px solid var(--color-success)' : '3px solid var(--color-warning)',
                 }}>
                     <div className="text-sm font-semibold mb-3" style={{ color: 'var(--color-ink-secondary)' }}>
-                        {events.length} events studied
+                        {events.length} events · {quizResults.length} questions
                     </div>
 
                     <div className="flex items-center gap-1 mb-4 justify-center flex-wrap">
@@ -544,7 +574,6 @@ export default function LessonFlow({ lesson, onComplete }) {
 
                     <Divider />
 
-                    {/* Rewards section — XP + Streak */}
                     <div className="flex items-center justify-center gap-6 mt-3">
                         <div className="flex items-center gap-2">
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--color-bronze)" strokeWidth="2">
@@ -555,9 +584,7 @@ export default function LessonFlow({ lesson, onComplete }) {
                                 <div className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: 'var(--color-ink-faint)' }}>XP earned</div>
                             </div>
                         </div>
-
                         <div className="w-px h-10" style={{ backgroundColor: 'rgba(28, 25, 23, 0.08)' }} />
-
                         <div className="flex items-center gap-2">
                             <span className="text-2xl">🔥</span>
                             <div className="text-left">
@@ -569,9 +596,7 @@ export default function LessonFlow({ lesson, onComplete }) {
                 </Card>
 
                 <div className="mt-6">
-                    <Button className="w-full" onClick={onComplete}>
-                        Continue
-                    </Button>
+                    <Button className="w-full" onClick={onComplete}>Continue</Button>
                 </div>
             </div>
         );
@@ -580,22 +605,21 @@ export default function LessonFlow({ lesson, onComplete }) {
     return null;
 }
 
-// ─── QUIZ QUESTION COMPONENT ─────────────────────────
+// ═══════════════════════════════════════════════════════
+// MCQ QUIZ QUESTION (for location, date MCQ, what)
+// ═══════════════════════════════════════════════════════
 function QuizQuestion({ question, lessonEventIds, onAnswer, onNext, onBack }) {
     const { event, type } = question;
     const [answered, setAnswered] = useState(false);
     const [selectedAnswer, setSelectedAnswer] = useState(null);
     const [score, setScore] = useState(null);
 
-    // Date input state
-    const [dateInput, setDateInput] = useState('');
-    const [era, setEra] = useState(event.year < 0 ? 'BCE' : 'CE');
-
-    // MCQ options
+    // MCQ options (memoized once)
     const [locationOptions] = useState(() => generateLocationOptions(event));
     const [whatOptions] = useState(() => generateWhatOptions(event, lessonEventIds));
+    const [dateOptions] = useState(() => generateDateMCQOptions(event));
 
-    const handleMCQAnswer = useCallback((answer, correct) => {
+    const handleAnswer = useCallback((answer, correct) => {
         if (answered) return;
         setSelectedAnswer(answer);
         const s = answer === correct ? 'green' : 'red';
@@ -604,7 +628,145 @@ function QuizQuestion({ question, lessonEventIds, onAnswer, onNext, onBack }) {
         onAnswer(s);
     }, [answered, onAnswer]);
 
-    const handleDateSubmit = useCallback(() => {
+    const scoreColors = {
+        green: { bg: 'rgba(5, 150, 105, 0.08)', border: 'var(--color-success)' },
+        yellow: { bg: 'rgba(198, 134, 42, 0.08)', border: 'var(--color-warning)' },
+        red: { bg: 'rgba(166, 61, 61, 0.08)', border: 'var(--color-error)' },
+    };
+
+    const renderButtons = () => (
+        answered && (
+            <div className="flex gap-3 mt-4">
+                {onBack && <Button variant="secondary" onClick={onBack}>← Back</Button>}
+                <Button className="flex-1" onClick={onNext}>Continue →</Button>
+            </div>
+        )
+    );
+
+    // ─ LOCATION MCQ ─
+    if (type === 'location') {
+        return (
+            <div className="animate-slide-in-right">
+                <Card style={answered && score ? { backgroundColor: scoreColors[score].bg, borderLeft: `3px solid ${scoreColors[score].border}` } : {}}>
+                    <p className="text-xs uppercase tracking-wider font-semibold mb-2" style={{ color: 'var(--color-ink-faint)' }}>Where did this happen?</p>
+                    <h3 className="text-lg font-bold mb-1" style={{ fontFamily: 'var(--font-serif)' }}>{event.title}</h3>
+                    <p className="text-sm mb-4" style={{ color: 'var(--color-burgundy)' }}>{event.date}</p>
+                    <div className="space-y-2">
+                        {locationOptions.map((opt, i) => {
+                            const isCorrect = opt === event.location.place;
+                            const isSelected = selectedAnswer === opt;
+                            const optEvent = ALL_EVENTS.find(e => e.location.place === opt);
+                            const optRegion = optEvent ? optEvent.location.region : '';
+                            let optStyle = {};
+                            if (answered) {
+                                if (isCorrect) optStyle = { backgroundColor: 'rgba(5, 150, 105, 0.1)', borderColor: 'var(--color-success)' };
+                                else if (isSelected && !isCorrect) optStyle = { backgroundColor: 'rgba(166, 61, 61, 0.1)', borderColor: 'var(--color-error)' };
+                            }
+                            return (
+                                <button key={i} onClick={() => handleAnswer(opt, event.location.place)} disabled={answered}
+                                    className="w-full text-left px-4 py-3 rounded-xl border-2 text-sm font-medium transition-all duration-200"
+                                    style={{ borderColor: isSelected && !answered ? 'var(--color-burgundy)' : 'rgba(28,25,23,0.08)', backgroundColor: 'var(--color-card)', ...optStyle }}>
+                                    <span>{opt}</span>
+                                    {optRegion && !opt.includes(optRegion) && (
+                                        <span className="ml-1 text-xs" style={{ color: 'var(--color-ink-faint)' }}>· {optRegion}</span>
+                                    )}
+                                    {answered && isCorrect && <span className="ml-2 text-xs" style={{ color: 'var(--color-success)' }}>✓</span>}
+                                </button>
+                            );
+                        })}
+                    </div>
+                </Card>
+                {renderButtons()}
+            </div>
+        );
+    }
+
+    // ─ DATE MCQ ─
+    if (type === 'date') {
+        return (
+            <div className="animate-slide-in-right">
+                <Card style={answered && score ? { backgroundColor: scoreColors[score].bg, borderLeft: `3px solid ${scoreColors[score].border}` } : {}}>
+                    <p className="text-xs uppercase tracking-wider font-semibold mb-2" style={{ color: 'var(--color-ink-faint)' }}>When did this happen?</p>
+                    <h3 className="text-lg font-bold mb-1" style={{ fontFamily: 'var(--font-serif)' }}>{event.title}</h3>
+                    <p className="text-sm mb-2 leading-relaxed" style={{ color: 'var(--color-ink-secondary)' }}>
+                        {event.description.substring(0, 80)}…
+                    </p>
+                    <div className="space-y-2 mt-3">
+                        {dateOptions.map((opt, i) => {
+                            const isCorrect = opt.isCorrect;
+                            const isSelected = selectedAnswer === opt.label;
+                            let optStyle = {};
+                            if (answered) {
+                                if (isCorrect) optStyle = { backgroundColor: 'rgba(5, 150, 105, 0.1)', borderColor: 'var(--color-success)' };
+                                else if (isSelected && !isCorrect) optStyle = { backgroundColor: 'rgba(166, 61, 61, 0.1)', borderColor: 'var(--color-error)' };
+                            }
+                            return (
+                                <button key={i}
+                                    onClick={() => handleAnswer(opt.label, dateOptions.find(o => o.isCorrect).label)}
+                                    disabled={answered}
+                                    className="w-full text-left px-4 py-3 rounded-xl border-2 text-sm font-semibold transition-all duration-200"
+                                    style={{ borderColor: isSelected && !answered ? 'var(--color-burgundy)' : 'rgba(28,25,23,0.08)', backgroundColor: 'var(--color-card)', ...optStyle }}>
+                                    {opt.label}
+                                    {answered && isCorrect && <span className="ml-2 text-xs" style={{ color: 'var(--color-success)' }}>✓</span>}
+                                </button>
+                            );
+                        })}
+                    </div>
+                </Card>
+                {renderButtons()}
+            </div>
+        );
+    }
+
+    // ─ WHAT HAPPENED MCQ ─
+    if (type === 'what') {
+        return (
+            <div className="animate-slide-in-right">
+                <Card style={answered && score ? { backgroundColor: scoreColors[score].bg, borderLeft: `3px solid ${scoreColors[score].border}` } : {}}>
+                    <p className="text-xs uppercase tracking-wider font-semibold mb-2" style={{ color: 'var(--color-ink-faint)' }}>What happened?</p>
+                    <p className="text-lg font-semibold mb-1" style={{ color: 'var(--color-burgundy)' }}>{event.date}</p>
+                    <p className="text-sm mb-4" style={{ color: 'var(--color-ink-muted)' }}>
+                        {event.location.place}
+                        {event.location.region && !event.location.place.includes(event.location.region) && ` · ${event.location.region}`}
+                    </p>
+                    <div className="space-y-2">
+                        {whatOptions.map((opt, i) => {
+                            const isCorrect = opt.id === event.id;
+                            const isSelected = selectedAnswer === opt.id;
+                            let optStyle = {};
+                            if (answered) {
+                                if (isCorrect) optStyle = { backgroundColor: 'rgba(5, 150, 105, 0.1)', borderColor: 'var(--color-success)' };
+                                else if (isSelected && !isCorrect) optStyle = { backgroundColor: 'rgba(166, 61, 61, 0.1)', borderColor: 'var(--color-error)' };
+                            }
+                            return (
+                                <button key={i} onClick={() => handleAnswer(opt.id, event.id)} disabled={answered}
+                                    className="w-full text-left px-4 py-3 rounded-xl border-2 text-sm transition-all duration-200"
+                                    style={{ borderColor: isSelected && !answered ? 'var(--color-burgundy)' : 'rgba(28,25,23,0.08)', backgroundColor: 'var(--color-card)', ...optStyle }}>
+                                    <span className="font-semibold">{opt.title}</span>
+                                    {answered && isCorrect && <span className="ml-2 text-xs" style={{ color: 'var(--color-success)' }}>✓</span>}
+                                </button>
+                            );
+                        })}
+                    </div>
+                </Card>
+                {renderButtons()}
+            </div>
+        );
+    }
+
+    return null;
+}
+
+// ═══════════════════════════════════════════════════════
+// DATE FREE-INPUT QUESTION (recap only)
+// ═══════════════════════════════════════════════════════
+function DateInputQuestion({ event, onAnswer, onNext }) {
+    const [answered, setAnswered] = useState(false);
+    const [dateInput, setDateInput] = useState('');
+    const [era, setEra] = useState(event.year < 0 ? 'BCE' : 'CE');
+    const [score, setScore] = useState(null);
+
+    const handleSubmit = useCallback(() => {
         if (answered) return;
         const userYear = parseInt(dateInput);
         if (isNaN(userYear)) return;
@@ -621,224 +783,77 @@ function QuizQuestion({ question, lessonEventIds, onAnswer, onNext, onBack }) {
         red: { bg: 'rgba(166, 61, 61, 0.08)', border: 'var(--color-error)' },
     };
 
-    // Helper: show place with region context
-    const formatLocation = (place, region) => {
-        if (!region || place.includes(region)) return place;
-        return `${place} (${region})`;
-    };
+    const isRange = event.yearEnd != null;
+    const hint = isRange
+        ? 'Enter any year within the range'
+        : (Math.abs(event.year) > 100000 ? 'Approximate is fine' : '');
 
-    // ─ LOCATION MCQ ─
-    if (type === 'location') {
-        return (
-            <div className="animate-slide-in-right">
-                <Card style={answered && score ? { backgroundColor: scoreColors[score].bg, borderLeft: `3px solid ${scoreColors[score].border}` } : {}}>
-                    <p className="text-xs uppercase tracking-wider font-semibold mb-2" style={{ color: 'var(--color-ink-faint)' }}>
-                        Where did this happen?
-                    </p>
-                    <h3 className="text-lg font-bold mb-1" style={{ fontFamily: 'var(--font-serif)' }}>{event.title}</h3>
-                    <p className="text-sm mb-4" style={{ color: 'var(--color-burgundy)' }}>{event.date}</p>
-
-                    <div className="space-y-2">
-                        {locationOptions.map((opt, i) => {
-                            const isCorrect = opt === event.location.place;
-                            const isSelected = selectedAnswer === opt;
-                            // Find the region for this option
-                            const optEvent = ALL_EVENTS.find(e => e.location.place === opt);
-                            const optRegion = optEvent ? optEvent.location.region : '';
-                            let optStyle = {};
-                            if (answered) {
-                                if (isCorrect) optStyle = { backgroundColor: 'rgba(5, 150, 105, 0.1)', borderColor: 'var(--color-success)' };
-                                else if (isSelected && !isCorrect) optStyle = { backgroundColor: 'rgba(166, 61, 61, 0.1)', borderColor: 'var(--color-error)' };
-                            }
-                            return (
-                                <button
-                                    key={i}
-                                    onClick={() => handleMCQAnswer(opt, event.location.place)}
-                                    disabled={answered}
-                                    className="w-full text-left px-4 py-3 rounded-xl border-2 text-sm font-medium transition-all duration-200"
-                                    style={{
-                                        borderColor: isSelected && !answered ? 'var(--color-burgundy)' : 'rgba(28, 25, 23, 0.08)',
-                                        backgroundColor: 'var(--color-card)',
-                                        ...optStyle,
-                                    }}
-                                >
-                                    <span>{opt}</span>
-                                    {optRegion && !opt.includes(optRegion) && (
-                                        <span className="ml-1 text-xs" style={{ color: 'var(--color-ink-faint)' }}>· {optRegion}</span>
-                                    )}
-                                    {answered && isCorrect && (
-                                        <span className="ml-2 text-xs" style={{ color: 'var(--color-success)' }}>✓</span>
-                                    )}
-                                </button>
-                            );
-                        })}
-                    </div>
-                </Card>
-
-                {answered && (
-                    <div className="flex gap-3 mt-4">
-                        {onBack && (
-                            <Button variant="secondary" onClick={onBack}>← Back</Button>
-                        )}
-                        <Button className="flex-1" onClick={onNext}>Continue →</Button>
-                    </div>
+    return (
+        <div className="animate-slide-in-right">
+            <Card style={answered && score ? { backgroundColor: scoreColors[score].bg, borderLeft: `3px solid ${scoreColors[score].border}` } : {}}>
+                <div className="flex items-center gap-2 mb-2">
+                    <span className="text-[10px] uppercase tracking-widest font-bold px-2 py-0.5 rounded-full"
+                        style={{ backgroundColor: 'rgba(139, 65, 87, 0.1)', color: 'var(--color-burgundy)' }}>
+                        ✏️ Type the date
+                    </span>
+                </div>
+                <h3 className="text-lg font-bold mb-1" style={{ fontFamily: 'var(--font-serif)' }}>{event.title}</h3>
+                <p className="text-sm mb-2 leading-relaxed" style={{ color: 'var(--color-ink-secondary)' }}>
+                    {event.description.substring(0, 100)}…
+                </p>
+                {hint && (
+                    <p className="text-xs italic mb-3" style={{ color: 'var(--color-ink-faint)' }}>{hint}</p>
                 )}
-            </div>
-        );
-    }
 
-    // ─ DATE INPUT ─
-    if (type === 'date') {
-        const isRange = event.yearEnd != null;
-        const hint = isRange
-            ? `This event spans a period — enter any year within the range`
-            : (Math.abs(event.year) > 100000 ? 'Approximate is fine' : '');
-
-        return (
-            <div className="animate-slide-in-right">
-                <Card style={answered && score ? { backgroundColor: scoreColors[score].bg, borderLeft: `3px solid ${scoreColors[score].border}` } : {}}>
-                    <p className="text-xs uppercase tracking-wider font-semibold mb-2" style={{ color: 'var(--color-ink-faint)' }}>
-                        When did this happen?
-                    </p>
-                    <h3 className="text-lg font-bold mb-1" style={{ fontFamily: 'var(--font-serif)' }}>{event.title}</h3>
-                    <p className="text-sm mb-2 leading-relaxed" style={{ color: 'var(--color-ink-secondary)' }}>
-                        {event.description.substring(0, 100)}…
-                    </p>
-                    {hint && (
-                        <p className="text-xs italic mb-3" style={{ color: 'var(--color-ink-faint)' }}>
-                            {hint}
-                        </p>
-                    )}
-
-                    {!answered ? (
-                        <>
-                            <div>
-                                <label className="text-xs font-semibold mb-1 block" style={{ color: 'var(--color-ink-muted)' }}>
-                                    Year
-                                </label>
-                                <div className="flex gap-2">
-                                    <input
-                                        type="number"
-                                        value={dateInput}
-                                        onChange={e => setDateInput(e.target.value)}
-                                        placeholder="e.g. 1453"
-                                        className="flex-1 px-4 py-3 rounded-xl border-2 text-sm font-medium outline-none transition-colors"
-                                        style={{
-                                            borderColor: 'rgba(28, 25, 23, 0.1)',
-                                            backgroundColor: 'var(--color-card)',
-                                            color: 'var(--color-ink)',
-                                        }}
-                                        onFocus={e => e.target.style.borderColor = 'var(--color-burgundy)'}
-                                        onBlur={e => e.target.style.borderColor = 'rgba(28, 25, 23, 0.1)'}
-                                    />
-                                    <div className="flex rounded-xl border-2 overflow-hidden" style={{ borderColor: 'rgba(28, 25, 23, 0.1)' }}>
-                                        {['BCE', 'CE'].map(e => (
-                                            <button
-                                                key={e}
-                                                onClick={() => setEra(e)}
-                                                className="px-3 py-2 text-xs font-bold transition-colors"
-                                                style={{
-                                                    backgroundColor: era === e ? 'var(--color-burgundy)' : 'transparent',
-                                                    color: era === e ? 'white' : 'var(--color-ink-muted)',
-                                                }}
-                                            >
-                                                {e}
-                                            </button>
-                                        ))}
-                                    </div>
+                {!answered ? (
+                    <>
+                        <div>
+                            <label className="text-xs font-semibold mb-1 block" style={{ color: 'var(--color-ink-muted)' }}>Year</label>
+                            <div className="flex gap-2">
+                                <input
+                                    type="number"
+                                    value={dateInput}
+                                    onChange={e => setDateInput(e.target.value)}
+                                    placeholder="e.g. 1453"
+                                    className="flex-1 px-4 py-3 rounded-xl border-2 text-sm font-medium outline-none transition-colors"
+                                    style={{ borderColor: 'rgba(28,25,23,0.1)', backgroundColor: 'var(--color-card)', color: 'var(--color-ink)' }}
+                                    onFocus={e => e.target.style.borderColor = 'var(--color-burgundy)'}
+                                    onBlur={e => e.target.style.borderColor = 'rgba(28,25,23,0.1)'}
+                                />
+                                <div className="flex rounded-xl border-2 overflow-hidden" style={{ borderColor: 'rgba(28,25,23,0.1)' }}>
+                                    {['BCE', 'CE'].map(e => (
+                                        <button key={e} onClick={() => setEra(e)}
+                                            className="px-3 py-2 text-xs font-bold transition-colors"
+                                            style={{ backgroundColor: era === e ? 'var(--color-burgundy)' : 'transparent', color: era === e ? 'white' : 'var(--color-ink-muted)' }}>
+                                            {e}
+                                        </button>
+                                    ))}
                                 </div>
                             </div>
-
-                            <div className="mt-4">
-                                <Button className="w-full" onClick={handleDateSubmit} disabled={!dateInput}>
-                                    Check Answer
-                                </Button>
-                            </div>
-                        </>
-                    ) : (
-                        <div className="mt-2">
-                            <p className="text-sm font-semibold mb-1" style={{
-                                color: score === 'green' ? 'var(--color-success)' : score === 'yellow' ? 'var(--color-warning)' : 'var(--color-error)'
-                            }}>
-                                {score === 'green' ? 'Excellent!' : score === 'yellow' ? 'Close!' : 'Not quite'}
-                            </p>
-                            <p className="text-sm" style={{ color: 'var(--color-ink-secondary)' }}>
-                                <strong>{event.title}</strong> — <strong style={{ color: 'var(--color-burgundy)' }}>{event.date}</strong>
-                            </p>
                         </div>
-                    )}
-                </Card>
-
-                {answered && (
-                    <div className="flex gap-3 mt-4">
-                        {onBack && (
-                            <Button variant="secondary" onClick={onBack}>← Back</Button>
-                        )}
-                        <Button className="flex-1" onClick={onNext}>Continue →</Button>
+                        <div className="mt-4">
+                            <Button className="w-full" onClick={handleSubmit} disabled={!dateInput}>Check Answer</Button>
+                        </div>
+                    </>
+                ) : (
+                    <div className="mt-2">
+                        <p className="text-sm font-semibold mb-1" style={{
+                            color: score === 'green' ? 'var(--color-success)' : score === 'yellow' ? 'var(--color-warning)' : 'var(--color-error)'
+                        }}>
+                            {score === 'green' ? 'Excellent!' : score === 'yellow' ? 'Close!' : 'Not quite'}
+                        </p>
+                        <p className="text-sm" style={{ color: 'var(--color-ink-secondary)' }}>
+                            <strong>{event.title}</strong> — <strong style={{ color: 'var(--color-burgundy)' }}>{event.date}</strong>
+                        </p>
                     </div>
                 )}
-            </div>
-        );
-    }
+            </Card>
 
-    // ─ WHAT HAPPENED MCQ ─
-    if (type === 'what') {
-        return (
-            <div className="animate-slide-in-right">
-                <Card style={answered && score ? { backgroundColor: scoreColors[score].bg, borderLeft: `3px solid ${scoreColors[score].border}` } : {}}>
-                    <p className="text-xs uppercase tracking-wider font-semibold mb-2" style={{ color: 'var(--color-ink-faint)' }}>
-                        What happened?
-                    </p>
-                    <p className="text-lg font-semibold mb-1" style={{ color: 'var(--color-burgundy)' }}>{event.date}</p>
-                    <p className="text-sm mb-4" style={{ color: 'var(--color-ink-muted)' }}>
-                        {event.location.place}
-                        {event.location.region && !event.location.place.includes(event.location.region) && (
-                            <span> · {event.location.region}</span>
-                        )}
-                    </p>
-
-                    <div className="space-y-2">
-                        {whatOptions.map((opt, i) => {
-                            const isCorrect = opt.id === event.id;
-                            const isSelected = selectedAnswer === opt.id;
-                            let optStyle = {};
-                            if (answered) {
-                                if (isCorrect) optStyle = { backgroundColor: 'rgba(5, 150, 105, 0.1)', borderColor: 'var(--color-success)' };
-                                else if (isSelected && !isCorrect) optStyle = { backgroundColor: 'rgba(166, 61, 61, 0.1)', borderColor: 'var(--color-error)' };
-                            }
-                            return (
-                                <button
-                                    key={i}
-                                    onClick={() => handleMCQAnswer(opt.id, event.id)}
-                                    disabled={answered}
-                                    className="w-full text-left px-4 py-3 rounded-xl border-2 text-sm transition-all duration-200"
-                                    style={{
-                                        borderColor: isSelected && !answered ? 'var(--color-burgundy)' : 'rgba(28, 25, 23, 0.08)',
-                                        backgroundColor: 'var(--color-card)',
-                                        ...optStyle,
-                                    }}
-                                >
-                                    <span className="font-semibold">{opt.title}</span>
-                                    {answered && isCorrect && (
-                                        <span className="ml-2 text-xs" style={{ color: 'var(--color-success)' }}>✓</span>
-                                    )}
-                                </button>
-                            );
-                        })}
-                    </div>
-                </Card>
-
-                {answered && (
-                    <div className="flex gap-3 mt-4">
-                        {onBack && (
-                            <Button variant="secondary" onClick={onBack}>← Back</Button>
-                        )}
-                        <Button className="flex-1" onClick={onNext}>Continue →</Button>
-                    </div>
-                )}
-            </div>
-        );
-    }
-
-    return null;
+            {answered && (
+                <div className="mt-4">
+                    <Button className="w-full" onClick={onNext}>Continue →</Button>
+                </div>
+            )}
+        </div>
+    );
 }

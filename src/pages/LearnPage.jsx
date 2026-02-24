@@ -4,6 +4,7 @@ import { LESSONS } from '../data/lessons';
 import { getEventsByIds } from '../data/events';
 import { Card, MasteryDots } from '../components/shared';
 import LessonFlow from '../components/learn/LessonFlow';
+import Lesson0Flow from '../components/learn/Lesson0Flow';
 import Mascot from '../components/Mascot';
 
 export default function LearnPage() {
@@ -12,6 +13,9 @@ export default function LearnPage() {
 
     if (activeLessonId) {
         const lesson = LESSONS.find(l => l.id === activeLessonId);
+        if (lesson?.isLesson0) {
+            return <Lesson0Flow lesson={lesson} onComplete={() => setActiveLessonId(null)} />;
+        }
         return <LessonFlow lesson={lesson} onComplete={() => setActiveLessonId(null)} />;
     }
 
@@ -25,7 +29,7 @@ export default function LearnPage() {
                     The Story of Humanity
                 </h1>
                 <p className="text-sm mt-1" style={{ color: 'var(--color-ink-muted)' }}>
-                    60 events across 10 lessons
+                    60 events across 16 lessons
                 </p>
             </div>
 
@@ -33,9 +37,10 @@ export default function LearnPage() {
                 {LESSONS.map((lesson, index) => {
                     const isUnlocked = index === 0 || state.completedLessons[LESSONS[index - 1].id];
                     const isCompleted = state.completedLessons[lesson.id];
-                    const events = getEventsByIds(lesson.eventIds);
-                    const seenCount = lesson.eventIds.filter(id => state.seenEvents.includes(id)).length;
-                    const masteryData = lesson.eventIds.map(id => state.eventMastery[id]).filter(Boolean);
+                    const isLesson0 = !!lesson.isLesson0;
+                    const events = isLesson0 ? [] : getEventsByIds(lesson.eventIds);
+                    const seenCount = isLesson0 ? 0 : lesson.eventIds.filter(id => state.seenEvents.includes(id)).length;
+                    const masteryData = isLesson0 ? [] : lesson.eventIds.map(id => state.eventMastery[id]).filter(Boolean);
                     const avgMastery = masteryData.length > 0
                         ? Math.round(masteryData.reduce((s, m) => s + m.overallMastery, 0) / masteryData.length)
                         : 0;
@@ -63,10 +68,19 @@ export default function LearnPage() {
                                         </div>
                                     ) : isCompleted ? (
                                         <div className="w-10 h-10 rounded-full flex items-center justify-center"
-                                            style={{ backgroundColor: 'var(--color-success)', boxShadow: '0 2px 8px rgba(5, 150, 105, 0.3)' }}>
-                                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5">
-                                                <polyline points="20 6 9 17 4 12" />
-                                            </svg>
+                                            style={{ backgroundColor: isLesson0 ? 'var(--color-burgundy)' : 'var(--color-success)', boxShadow: isLesson0 ? '0 2px 8px rgba(139, 65, 87, 0.3)' : '0 2px 8px rgba(5, 150, 105, 0.3)' }}>
+                                            {isLesson0 ? (
+                                                <span className="text-base">🌍</span>
+                                            ) : (
+                                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5">
+                                                    <polyline points="20 6 9 17 4 12" />
+                                                </svg>
+                                            )}
+                                        </div>
+                                    ) : isLesson0 ? (
+                                        <div className="w-10 h-10 rounded-full flex items-center justify-center"
+                                            style={{ border: '2px solid var(--color-burgundy)', background: 'var(--color-burgundy-soft)' }}>
+                                            <span className="text-base">🌍</span>
                                         </div>
                                     ) : seenCount > 0 ? (
                                         <div className="w-10 h-10 rounded-full flex items-center justify-center relative"
@@ -94,7 +108,7 @@ export default function LearnPage() {
                                 <div className="flex-1 min-w-0">
                                     <div className="flex items-center gap-2 mb-0.5">
                                         <span className="text-[11px] font-medium uppercase tracking-wider" style={{ color: 'var(--color-ink-faint)' }}>
-                                            Lesson {lesson.number}
+                                            {isLesson0 ? 'Prologue' : `Lesson ${lesson.number}`}
                                         </span>
                                         {masteryData.length > 0 && (
                                             <div className="flex gap-0.5">
@@ -120,7 +134,7 @@ export default function LearnPage() {
                                         {lesson.subtitle}
                                     </p>
                                     <p className="text-xs mt-1" style={{ color: 'var(--color-ink-faint)' }}>
-                                        {events.length} events
+                                        {isLesson0 ? '5 eras' : `${events.length} events`}
                                     </p>
                                 </div>
 
