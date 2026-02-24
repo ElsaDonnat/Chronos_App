@@ -63,6 +63,7 @@ src/
 └── index.css            # Tailwind + custom theme + animations
 ```
 
-## License
+## Copyright
 
-MIT
+© 2026 Elsa Donnat. All rights reserved.
+
