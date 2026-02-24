@@ -39,7 +39,6 @@ export default function PracticePage() {
         const prioritized = [...weakEvents].slice(0, 15);
 
         for (const { event, mastery } of prioritized) {
-            // Pick the weakest question type for this event
             const scores = {
                 location: mastery?.locationScore,
                 date: mastery?.dateScore,
@@ -50,7 +49,6 @@ export default function PracticePage() {
             const types = Object.entries(scores)
                 .sort((a, b) => (scoreOrder[a[1]] ?? 1) - (scoreOrder[b[1]] ?? 1));
 
-            // Add weakest 1-2 question types
             const numQs = Math.min(2, types.filter(t => scoreOrder[t[1]] < 3).length || 1);
             for (let i = 0; i < numQs && i < types.length; i++) {
                 qList.push({
@@ -62,7 +60,6 @@ export default function PracticePage() {
             if (qList.length >= 12) break;
         }
 
-        // Shuffle
         return qList.sort(() => Math.random() - 0.5);
     };
 
@@ -163,7 +160,6 @@ export default function PracticePage() {
     if (sessionActive) {
         const q = questions[currentIndex];
         if (!q) {
-            // Calculate XP and show results
             const xp = results.reduce((s, r) => s + (r.score === 'green' ? 5 : r.score === 'yellow' ? 2 : 0), 0);
             if (xp > 0) dispatch({ type: 'ADD_XP', amount: xp });
             setShowResults(true);
@@ -268,25 +264,22 @@ export default function PracticePage() {
     );
 }
 
-// Re-use quiz question patterns
+// ─── Practice Question — single date input ───────────
 function PracticeQuestion({ question, onAnswer, onNext }) {
     const { event, type } = question;
     const [answered, setAnswered] = useState(false);
     const [selectedAnswer, setSelectedAnswer] = useState(null);
     const [score, setScore] = useState(null);
     const [dateInput, setDateInput] = useState('');
-    const [dateEndInput, setDateEndInput] = useState('');
     const [era, setEra] = useState(event.year < 0 ? 'BCE' : 'CE');
-    const [eraEnd, setEraEnd] = useState(event.yearEnd ? (event.yearEnd < 0 ? 'BCE' : 'CE') : 'CE');
-    const isRange = event.yearEnd != null;
 
     const [locationOptions] = useState(() => generateLocationOptions(event));
     const [whatOptions] = useState(() => generateWhatOptions(event, ALL_EVENTS.map(e => e.id)));
 
     const scoreColors = {
         green: { bg: 'rgba(5, 150, 105, 0.08)', border: 'var(--color-success)' },
-        yellow: { bg: 'rgba(217, 119, 6, 0.08)', border: 'var(--color-warning)' },
-        red: { bg: 'rgba(185, 28, 28, 0.08)', border: 'var(--color-error)' },
+        yellow: { bg: 'rgba(198, 134, 42, 0.08)', border: 'var(--color-warning)' },
+        red: { bg: 'rgba(166, 61, 61, 0.08)', border: 'var(--color-error)' },
     };
 
     const handleMCQ = (answer, correct) => {
@@ -302,17 +295,7 @@ function PracticeQuestion({ question, onAnswer, onNext }) {
         if (answered) return;
         const userYear = parseInt(dateInput);
         if (isNaN(userYear)) return;
-        let s;
-        if (isRange && dateEndInput) {
-            const userEndYear = parseInt(dateEndInput);
-            if (isNaN(userEndYear)) return;
-            const startScore = scoreDateAnswer(userYear, era, event);
-            const endScore = scoreDateAnswer(userEndYear, eraEnd, { ...event, year: event.yearEnd });
-            const order = { green: 0, yellow: 1, red: 2 };
-            s = order[startScore] >= order[endScore] ? startScore : endScore;
-        } else {
-            s = scoreDateAnswer(userYear, era, event);
-        }
+        const s = scoreDateAnswer(userYear, era, event);
         setScore(s);
         setAnswered(true);
         onAnswer(s);
@@ -324,7 +307,7 @@ function PracticeQuestion({ question, onAnswer, onNext }) {
                 <Card style={answered && score ? { backgroundColor: scoreColors[score].bg, borderLeft: `3px solid ${scoreColors[score].border}` } : {}}>
                     <p className="text-xs uppercase tracking-wider font-semibold mb-2" style={{ color: 'var(--color-ink-faint)' }}>Where did this happen?</p>
                     <h3 className="text-lg font-bold mb-1" style={{ fontFamily: 'var(--font-serif)' }}>{event.title}</h3>
-                    <p className="text-sm mb-4" style={{ color: 'var(--color-terracotta)' }}>{event.date}</p>
+                    <p className="text-sm mb-4" style={{ color: 'var(--color-burgundy)' }}>{event.date}</p>
                     <div className="space-y-2">
                         {locationOptions.map((opt, i) => {
                             const isCorrect = opt === event.location.place;
@@ -332,7 +315,7 @@ function PracticeQuestion({ question, onAnswer, onNext }) {
                             let optStyle = {};
                             if (answered) {
                                 if (isCorrect) optStyle = { backgroundColor: 'rgba(5, 150, 105, 0.1)', borderColor: 'var(--color-success)' };
-                                else if (isSelected) optStyle = { backgroundColor: 'rgba(185, 28, 28, 0.1)', borderColor: 'var(--color-error)' };
+                                else if (isSelected) optStyle = { backgroundColor: 'rgba(166, 61, 61, 0.1)', borderColor: 'var(--color-error)' };
                             }
                             return (
                                 <button key={i} onClick={() => handleMCQ(opt, event.location.place)} disabled={answered}
@@ -350,57 +333,38 @@ function PracticeQuestion({ question, onAnswer, onNext }) {
     }
 
     if (type === 'date') {
+        const isRange = event.yearEnd != null;
+        const hint = isRange ? 'Enter any year within the period' : (Math.abs(event.year) > 100000 ? 'Approximate is fine' : '');
+
         return (
             <div className="animate-slide-in-right">
                 <Card style={answered && score ? { backgroundColor: scoreColors[score].bg, borderLeft: `3px solid ${scoreColors[score].border}` } : {}}>
                     <p className="text-xs uppercase tracking-wider font-semibold mb-2" style={{ color: 'var(--color-ink-faint)' }}>When did this happen?</p>
                     <h3 className="text-lg font-bold mb-1" style={{ fontFamily: 'var(--font-serif)' }}>{event.title}</h3>
-                    <p className="text-sm mb-4 leading-relaxed" style={{ color: 'var(--color-ink-secondary)' }}>{event.description.substring(0, 100)}…</p>
+                    <p className="text-sm mb-2 leading-relaxed" style={{ color: 'var(--color-ink-secondary)' }}>{event.description.substring(0, 100)}…</p>
+                    {hint && <p className="text-xs italic mb-3" style={{ color: 'var(--color-ink-faint)' }}>{hint}</p>}
 
                     {!answered ? (
                         <>
-                            <div className="space-y-3">
-                                <div>
-                                    <label className="text-xs font-semibold mb-1 block" style={{ color: 'var(--color-ink-muted)' }}>
-                                        {isRange ? 'Start Year' : 'Year'}
-                                    </label>
-                                    <div className="flex gap-2">
-                                        <input type="number" value={dateInput} onChange={e => setDateInput(e.target.value)}
-                                            placeholder="e.g. 1453"
-                                            className="flex-1 px-4 py-3 rounded-xl border-2 text-sm font-medium outline-none"
-                                            style={{ borderColor: 'rgba(28, 25, 23, 0.1)', backgroundColor: 'var(--color-card)', color: 'var(--color-ink)' }} />
-                                        <div className="flex rounded-xl border-2 overflow-hidden" style={{ borderColor: 'rgba(28, 25, 23, 0.1)' }}>
-                                            {['BCE', 'CE'].map(e => (
-                                                <button key={e} onClick={() => setEra(e)} className="px-3 py-2 text-xs font-bold"
-                                                    style={{ backgroundColor: era === e ? 'var(--color-terracotta)' : 'transparent', color: era === e ? 'white' : 'var(--color-ink-muted)' }}>
-                                                    {e}
-                                                </button>
-                                            ))}
-                                        </div>
+                            <div>
+                                <label className="text-xs font-semibold mb-1 block" style={{ color: 'var(--color-ink-muted)' }}>Year</label>
+                                <div className="flex gap-2">
+                                    <input type="number" value={dateInput} onChange={e => setDateInput(e.target.value)}
+                                        placeholder="e.g. 1453"
+                                        className="flex-1 px-4 py-3 rounded-xl border-2 text-sm font-medium outline-none"
+                                        style={{ borderColor: 'rgba(28, 25, 23, 0.1)', backgroundColor: 'var(--color-card)', color: 'var(--color-ink)' }} />
+                                    <div className="flex rounded-xl border-2 overflow-hidden" style={{ borderColor: 'rgba(28, 25, 23, 0.1)' }}>
+                                        {['BCE', 'CE'].map(e => (
+                                            <button key={e} onClick={() => setEra(e)} className="px-3 py-2 text-xs font-bold"
+                                                style={{ backgroundColor: era === e ? 'var(--color-burgundy)' : 'transparent', color: era === e ? 'white' : 'var(--color-ink-muted)' }}>
+                                                {e}
+                                            </button>
+                                        ))}
                                     </div>
                                 </div>
-                                {isRange && (
-                                    <div>
-                                        <label className="text-xs font-semibold mb-1 block" style={{ color: 'var(--color-ink-muted)' }}>End Year</label>
-                                        <div className="flex gap-2">
-                                            <input type="number" value={dateEndInput} onChange={e => setDateEndInput(e.target.value)}
-                                                placeholder="e.g. 1600"
-                                                className="flex-1 px-4 py-3 rounded-xl border-2 text-sm font-medium outline-none"
-                                                style={{ borderColor: 'rgba(28, 25, 23, 0.1)', backgroundColor: 'var(--color-card)', color: 'var(--color-ink)' }} />
-                                            <div className="flex rounded-xl border-2 overflow-hidden" style={{ borderColor: 'rgba(28, 25, 23, 0.1)' }}>
-                                                {['BCE', 'CE'].map(e => (
-                                                    <button key={e} onClick={() => setEraEnd(e)} className="px-3 py-2 text-xs font-bold"
-                                                        style={{ backgroundColor: eraEnd === e ? 'var(--color-terracotta)' : 'transparent', color: eraEnd === e ? 'white' : 'var(--color-ink-muted)' }}>
-                                                        {e}
-                                                    </button>
-                                                ))}
-                                            </div>
-                                        </div>
-                                    </div>
-                                )}
                             </div>
                             <div className="mt-4">
-                                <Button className="w-full" onClick={handleDateSubmit} disabled={!dateInput || (isRange && !dateEndInput)}>
+                                <Button className="w-full" onClick={handleDateSubmit} disabled={!dateInput}>
                                     Check Answer
                                 </Button>
                             </div>
@@ -413,7 +377,7 @@ function PracticeQuestion({ question, onAnswer, onNext }) {
                                 {score === 'green' ? 'Excellent!' : score === 'yellow' ? 'Close!' : 'Not quite'}
                             </p>
                             <p className="text-sm" style={{ color: 'var(--color-ink-secondary)' }}>
-                                <strong>{event.title}</strong> happened in <strong style={{ color: 'var(--color-terracotta)' }}>{event.date}</strong>
+                                <strong>{event.title}</strong> — <strong style={{ color: 'var(--color-burgundy)' }}>{event.date}</strong>
                             </p>
                         </div>
                     )}
@@ -428,7 +392,7 @@ function PracticeQuestion({ question, onAnswer, onNext }) {
             <div className="animate-slide-in-right">
                 <Card style={answered && score ? { backgroundColor: scoreColors[score].bg, borderLeft: `3px solid ${scoreColors[score].border}` } : {}}>
                     <p className="text-xs uppercase tracking-wider font-semibold mb-2" style={{ color: 'var(--color-ink-faint)' }}>What happened?</p>
-                    <p className="text-lg font-semibold mb-1" style={{ color: 'var(--color-terracotta)' }}>{event.date}</p>
+                    <p className="text-lg font-semibold mb-1" style={{ color: 'var(--color-burgundy)' }}>{event.date}</p>
                     <p className="text-sm mb-4" style={{ color: 'var(--color-ink-muted)' }}>{event.location.region}</p>
                     <div className="space-y-2">
                         {whatOptions.map((opt, i) => {
@@ -437,7 +401,7 @@ function PracticeQuestion({ question, onAnswer, onNext }) {
                             let optStyle = {};
                             if (answered) {
                                 if (isCorrect) optStyle = { backgroundColor: 'rgba(5, 150, 105, 0.1)', borderColor: 'var(--color-success)' };
-                                else if (isSelected) optStyle = { backgroundColor: 'rgba(185, 28, 28, 0.1)', borderColor: 'var(--color-error)' };
+                                else if (isSelected) optStyle = { backgroundColor: 'rgba(166, 61, 61, 0.1)', borderColor: 'var(--color-error)' };
                             }
                             return (
                                 <button key={i} onClick={() => handleMCQ(opt.id, event.id)} disabled={answered}

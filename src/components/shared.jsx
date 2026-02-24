@@ -56,7 +56,7 @@ export function Divider() {
     );
 }
 
-export function ProgressBar({ value, max, colorClass = 'bg-terracotta' }) {
+export function ProgressBar({ value, max, colorClass = 'bg-burgundy' }) {
     const pct = Math.min((value / max) * 100, 100);
     return (
         <div className="w-full h-1.5 rounded-full overflow-hidden" style={{ backgroundColor: 'rgba(28, 25, 23, 0.06)' }}>
@@ -64,7 +64,7 @@ export function ProgressBar({ value, max, colorClass = 'bg-terracotta' }) {
                 className="h-full rounded-full transition-all duration-500 ease-out"
                 style={{
                     width: `${pct}%`,
-                    backgroundColor: 'var(--color-terracotta)',
+                    backgroundColor: 'var(--color-burgundy)',
                 }}
             />
         </div>
@@ -76,13 +76,13 @@ export function Button({ children, onClick, variant = 'primary', disabled = fals
 
     const variants = {
         primary: {
-            backgroundColor: disabled ? 'var(--color-ink-faint)' : 'var(--color-terracotta)',
+            backgroundColor: disabled ? 'var(--color-ink-faint)' : 'var(--color-burgundy)',
             color: '#fff',
-            boxShadow: disabled ? 'none' : '0 2px 8px rgba(180, 83, 9, 0.25)'
+            boxShadow: disabled ? 'none' : '0 2px 8px rgba(139, 65, 87, 0.25)'
         },
         secondary: {
-            backgroundColor: 'rgba(180, 83, 9, 0.08)',
-            color: 'var(--color-terracotta)',
+            backgroundColor: 'rgba(139, 65, 87, 0.08)',
+            color: 'var(--color-burgundy)',
         },
         ghost: {
             backgroundColor: 'transparent',

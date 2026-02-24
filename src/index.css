@@ -1,15 +1,16 @@
 @import "tailwindcss";
 
 @theme {
-  /* Warm Antiquity Palette */
+  /* Warm Antiquity Palette — Soft Powdery Burgundy accent */
   --color-parchment: #FAF6F0;
   --color-parchment-dark: #F3ECE2;
   --color-card: #FFFDF9;
   --color-card-hover: #FBF7F1;
 
-  --color-terracotta: #B45309;
-  --color-terracotta-dark: #92400E;
-  --color-terracotta-light: #D97706;
+  --color-burgundy: #8B4157;
+  --color-burgundy-dark: #6E3344;
+  --color-burgundy-light: #A8596E;
+  --color-burgundy-soft: rgba(139, 65, 87, 0.08);
   --color-bronze: #A0845C;
   --color-bronze-light: #C9B896;
 
@@ -24,9 +25,9 @@
 
   --color-success: #059669;
   --color-success-light: #D1FAE5;
-  --color-warning: #D97706;
+  --color-warning: #C6862A;
   --color-warning-light: #FEF3C7;
-  --color-error: #B91C1C;
+  --color-error: #A63D3D;
   --color-error-light: #FEE2E2;
 
   /* Category Colors */
@@ -34,13 +35,13 @@
   --color-cat-war: #A0522D;
   --color-cat-politics: #6B5B73;
   --color-cat-culture: #65774A;
-  --color-cat-revolution: #B45309;
+  --color-cat-revolution: #8B4157;
 
   --color-cat-science-bg: #F0FDFA;
   --color-cat-war-bg: #FDF2F0;
   --color-cat-politics-bg: #F5F3F7;
   --color-cat-culture-bg: #F4F7F0;
-  --color-cat-revolution-bg: #FFF8F0;
+  --color-cat-revolution-bg: #FDF0F3;
 
   /* Fonts */
   --font-serif: 'Libre Baskerville', Georgia, serif;
@@ -84,9 +85,11 @@ body {
 ::-webkit-scrollbar {
   width: 6px;
 }
+
 ::-webkit-scrollbar-track {
   background: transparent;
 }
+
 ::-webkit-scrollbar-thumb {
   background: var(--color-bronze-light);
   border-radius: 3px;
@@ -98,6 +101,7 @@ body {
     opacity: 0;
     transform: translateY(12px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -105,8 +109,13 @@ body {
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
 }
 
 @keyframes slideInRight {
@@ -114,6 +123,7 @@ body {
     opacity: 0;
     transform: translateX(20px);
   }
+
   to {
     opacity: 1;
     transform: translateX(0);
@@ -125,6 +135,7 @@ body {
     opacity: 0;
     transform: translateX(-20px);
   }
+
   to {
     opacity: 1;
     transform: translateX(0);
@@ -132,29 +143,230 @@ body {
 }
 
 @keyframes pulseGlow {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(180, 83, 9, 0.2); }
-  50% { box-shadow: 0 0 0 8px rgba(180, 83, 9, 0); }
+
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(139, 65, 87, 0.2);
+  }
+
+  50% {
+    box-shadow: 0 0 0 8px rgba(139, 65, 87, 0);
+  }
 }
 
 @keyframes countUp {
-  from { transform: translateY(8px); opacity: 0; }
-  to { transform: translateY(0); opacity: 1; }
+  from {
+    transform: translateY(8px);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
 }
 
 @keyframes shimmer {
-  0% { background-position: -200% 0; }
-  100% { background-position: 200% 0; }
+  0% {
+    background-position: -200% 0;
+  }
+
+  100% {
+    background-position: 200% 0;
+  }
 }
 
 @keyframes gentleGlow {
-  0%, 100% { opacity: 0.6; }
-  50% { opacity: 1; }
+
+  0%,
+  100% {
+    opacity: 0.6;
+  }
+
+  50% {
+    opacity: 1;
+  }
 }
 
 @keyframes celebrationPulse {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.02); }
-  100% { transform: scale(1); }
+  0% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.02);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* Mascot Animations */
+@keyframes mascotFloat {
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
+@keyframes mascotBlink {
+
+  0%,
+  42%,
+  44%,
+  100% {
+    r: 2.8;
+  }
+
+  43% {
+    r: 0.5;
+  }
+}
+
+@keyframes mascotBlinkLeft {
+
+  0%,
+  42%,
+  44%,
+  100% {
+    ry: 2.8;
+    rx: 2.8;
+  }
+
+  43% {
+    ry: 0.5;
+    rx: 2.8;
+  }
+}
+
+@keyframes mascotWiggle {
+
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+
+  25% {
+    transform: rotate(-3deg);
+  }
+
+  75% {
+    transform: rotate(3deg);
+  }
+}
+
+@keyframes mascotBounce {
+
+  0%,
+  100% {
+    transform: translateY(0) scale(1);
+  }
+
+  30% {
+    transform: translateY(-8px) scale(1.03);
+  }
+
+  50% {
+    transform: translateY(-4px) scale(1.01);
+  }
+}
+
+@keyframes mascotSadDroop {
+
+  0%,
+  100% {
+    transform: translateY(0) rotate(0deg);
+  }
+
+  50% {
+    transform: translateY(2px) rotate(-2deg);
+  }
+}
+
+@keyframes mascotHeartBeat {
+
+  0%,
+  100% {
+    transform: scale(0);
+    opacity: 0;
+  }
+
+  10% {
+    transform: scale(1);
+    opacity: 1;
+  }
+
+  30% {
+    transform: scale(1.2);
+    opacity: 1;
+  }
+
+  50% {
+    transform: scale(0.9);
+    opacity: 1;
+  }
+
+  70% {
+    transform: scale(1.1);
+    opacity: 0.7;
+  }
+
+  90% {
+    transform: scale(1);
+    opacity: 0.3;
+  }
+}
+
+@keyframes sparkleRotate {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes gillWave {
+
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+
+  50% {
+    transform: rotate(5deg);
+  }
+}
+
+@keyframes gillWaveRight {
+
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+
+  50% {
+    transform: rotate(-5deg);
+  }
+}
+
+@keyframes tailSwish {
+
+  0%,
+  100% {
+    d: path("M 0 16 Q 5 19 3 22");
+  }
+
+  50% {
+    d: path("M 0 16 Q 7 18 5 21");
+  }
 }
 
 .animate-fade-in-up {
@@ -178,11 +390,28 @@ body {
 }
 
 .animate-shimmer {
-  background: linear-gradient(90deg, transparent, rgba(180, 83, 9, 0.08), transparent);
+  background: linear-gradient(90deg, transparent, rgba(139, 65, 87, 0.08), transparent);
   background-size: 200% 100%;
   animation: shimmer 2s ease-in-out infinite;
 }
 
 .animate-celebration {
   animation: celebrationPulse 0.6s ease-in-out;
+}
+
+/* Mascot animation classes */
+.mascot-float {
+  animation: mascotFloat 3s ease-in-out infinite;
+}
+
+.mascot-wiggle {
+  animation: mascotWiggle 2s ease-in-out infinite;
+}
+
+.mascot-bounce {
+  animation: mascotBounce 0.8s ease-in-out;
+}
+
+.mascot-sad {
+  animation: mascotSadDroop 2.5s ease-in-out infinite;
 }

@@ -70,13 +70,13 @@ export default function LearnPage() {
                                         </div>
                                     ) : seenCount > 0 ? (
                                         <div className="w-10 h-10 rounded-full flex items-center justify-center relative"
-                                            style={{ border: '2px solid var(--color-terracotta)' }}>
+                                            style={{ border: '2px solid var(--color-burgundy)' }}>
                                             <svg width="40" height="40" viewBox="0 0 40 40" className="absolute inset-0">
-                                                <circle cx="20" cy="20" r="17" fill="none" stroke="var(--color-terracotta)" strokeWidth="2"
+                                                <circle cx="20" cy="20" r="17" fill="none" stroke="var(--color-burgundy)" strokeWidth="2"
                                                     strokeDasharray={`${(seenCount / events.length) * 107} 107`}
                                                     strokeLinecap="round" transform="rotate(-90 20 20)" opacity="0.3" />
                                             </svg>
-                                            <span className="text-xs font-bold" style={{ color: 'var(--color-terracotta)' }}>
+                                            <span className="text-xs font-bold" style={{ color: 'var(--color-burgundy)' }}>
                                                 {seenCount}/{events.length}
                                             </span>
                                         </div>

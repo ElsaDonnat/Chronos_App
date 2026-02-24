@@ -1,22 +1,41 @@
 import { ALL_EVENTS } from './events';
 
-// Score a date answer
+// Score a date answer — single number input
+// For range events: green if within range, otherwise score by distance to nearest edge
 export function scoreDateAnswer(userYear, userEra, event) {
     const userSigned = userEra === "BCE" ? -Math.abs(userYear) : Math.abs(userYear);
-    const correctYear = event.year;
-    const diff = Math.abs(userSigned - correctYear);
+    const start = event.year;
+    const end = event.yearEnd; // may be null/undefined for single-date events
 
-    if (correctYear < -100000) {
+    // For range events, check if within range first
+    if (end != null) {
+        const lo = Math.min(start, end);
+        const hi = Math.max(start, end);
+        if (userSigned >= lo && userSigned <= hi) return "green";
+
+        // Distance to nearest edge of range
+        const diff = Math.min(Math.abs(userSigned - lo), Math.abs(userSigned - hi));
+        return scoreByDiff(diff, lo);
+    }
+
+    // Single-date event — score by distance
+    const diff = Math.abs(userSigned - start);
+    return scoreByDiff(diff, start);
+}
+
+// Shared scoring thresholds by era
+function scoreByDiff(diff, referenceYear) {
+    if (referenceYear < -100000) {
         if (diff <= 500000) return "green";
         if (diff <= 2000000) return "yellow";
         return "red";
     }
-    if (correctYear < 0) {
+    if (referenceYear < 0) {
         if (diff <= 200) return "green";
         if (diff <= 500) return "yellow";
         return "red";
     }
-    if (correctYear <= 1500) {
+    if (referenceYear <= 1500) {
         if (diff <= 50) return "green";
         if (diff <= 150) return "yellow";
         return "red";
@@ -24,16 +43,6 @@ export function scoreDateAnswer(userYear, userEra, event) {
     if (diff <= 10) return "green";
     if (diff <= 30) return "yellow";
     return "red";
-}
-
-// Score a date range answer
-export function scoreDateRangeAnswer(userStart, userStartEra, userEnd, userEndEra, event) {
-    const startScore = scoreDateAnswer(userStart, userStartEra, { ...event, year: event.year });
-    const endScore = scoreDateAnswer(userEnd, userEndEra, { ...event, year: event.yearEnd });
-
-    // Overall is the worse of the two
-    const order = { green: 0, yellow: 1, red: 2 };
-    return order[startScore] >= order[endScore] ? startScore : endScore;
 }
 
 // Generate location MCQ options

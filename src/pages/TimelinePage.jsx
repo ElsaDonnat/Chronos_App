@@ -154,7 +154,7 @@ export default function TimelinePage() {
                                                         <h3 className="text-base font-bold mt-2 mb-1" style={{ fontFamily: 'var(--font-serif)' }}>
                                                             {event.title}
                                                         </h3>
-                                                        <p className="text-sm font-semibold mb-2" style={{ color: 'var(--color-terracotta)' }}>
+                                                        <p className="text-sm font-semibold mb-2" style={{ color: 'var(--color-burgundy)' }}>
                                                             {event.date}
                                                         </p>
                                                         <p className="text-sm leading-relaxed mb-2" style={{ color: 'var(--color-ink-secondary)' }}>
@@ -208,7 +208,7 @@ function FilterChip({ label, active, onClick, dotColor }) {
             onClick={onClick}
             className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all duration-200"
             style={{
-                backgroundColor: active ? 'var(--color-terracotta)' : 'rgba(28, 25, 23, 0.04)',
+                backgroundColor: active ? 'var(--color-burgundy)' : 'rgba(28, 25, 23, 0.04)',
                 color: active ? 'white' : 'var(--color-ink-muted)',
             }}
         >

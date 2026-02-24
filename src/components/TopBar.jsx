@@ -49,12 +49,12 @@ export default function TopBar() {
                     {/* Streak */}
                     <div className="flex items-center gap-1.5">
                         <span className="text-lg" role="img" aria-label="streak">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--color-terracotta)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--color-burgundy)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                 <path d="M12 2c0 4-4 6-4 10a4 4 0 0 0 8 0c0-4-4-6-4-10z" />
-                                <path d="M12 22c-1.5 0-3-1-3-3 0-2 3-3 3-5 0 2 3 3 3 5 0 2-1.5 3-3 3z" fill="var(--color-terracotta-light)" stroke="none" opacity="0.5" />
+                                <path d="M12 22c-1.5 0-3-1-3-3 0-2 3-3 3-5 0 2 3 3 3 5 0 2-1.5 3-3 3z" fill="var(--color-burgundy-light)" stroke="none" opacity="0.5" />
                             </svg>
                         </span>
-                        <span className="text-sm font-semibold" style={{ color: 'var(--color-terracotta)' }}>
+                        <span className="text-sm font-semibold" style={{ color: 'var(--color-burgundy)' }}>
                             {state.currentStreak}
                         </span>
                     </div>
