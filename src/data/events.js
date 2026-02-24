@@ -674,6 +674,28 @@ export const ERA_RANGES = [
     { id: "modern", label: "Modern", start: 1800, end: 2000 }
 ];
 
+export const ERA_BOUNDARY_EVENTS = {
+    prehistory: { startEventId: 'f1', endEventId: 'f9' },
+    ancient: { startEventId: 'f9', endEventId: 'f21' },
+    medieval: { startEventId: 'f21', endEventId: 'f33' },
+    earlymodern: { startEventId: 'f33', endEventId: 'f43' },
+    modern: { startEventId: 'f43', endEventId: null },
+};
+
+export function getEraBoundaryInfo(eventId) {
+    const results = [];
+    for (const [eraId, { startEventId, endEventId }] of Object.entries(ERA_BOUNDARY_EVENTS)) {
+        const era = ERA_RANGES.find(e => e.id === eraId);
+        if (startEventId === eventId) {
+            results.push({ type: 'start', eraId, eraLabel: era.label });
+        }
+        if (endEventId === eventId) {
+            results.push({ type: 'end', eraId, eraLabel: era.label });
+        }
+    }
+    return results.length > 0 ? results : null;
+}
+
 export function getEraForYear(year) {
     for (const era of ERA_RANGES) {
         if (year >= era.start && year < era.end) return era;

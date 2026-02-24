@@ -1,8 +1,8 @@
 import { useState, useMemo, useCallback, useRef, useEffect } from 'react';
 import { useApp } from '../../context/AppContext';
-import { getEventsByIds, ALL_EVENTS, CATEGORY_CONFIG } from '../../data/events';
+import { getEventsByIds, getEventById, ALL_EVENTS, CATEGORY_CONFIG, ERA_BOUNDARY_EVENTS, ERA_RANGES, getEraBoundaryInfo } from '../../data/events';
 import { scoreDateAnswer, generateLocationOptions, generateWhatOptions, generateDateMCQOptions, calculateXP } from '../../data/quiz';
-import { Card, Button, ProgressBar, CategoryTag, Divider } from '../shared';
+import { Card, Button, ProgressBar, CategoryTag, Divider, StarButton } from '../shared';
 import Mascot from '../Mascot';
 
 // ─── PHASES ────────────────────────────────────────────
@@ -63,6 +63,7 @@ export default function LessonFlow({ lesson, onComplete }) {
     const [recapIndex, setRecapIndex] = useState(0);         // 0–5, recap questions
     const [reviewIndex, setReviewIndex] = useState(0);
     const [quizResults, setQuizResults] = useState([]);
+    const [selectedDot, setSelectedDot] = useState(null);    // for result dot modal
     const xpDispatched = useRef(false);
 
     // For each card, randomly assign 2 of 3 question types for the learn phase
@@ -196,19 +197,31 @@ export default function LessonFlow({ lesson, onComplete }) {
                         {events.length} events · 12 questions
                     </p>
                     <Mascot mood="happy" size={64} />
-                    <div className="mt-6">
-                        <Button onClick={() => {
-                            if (lesson.periodId && PERIOD_INFO[lesson.periodId]) {
-                                setPhase(PHASE.PERIOD_INTRO);
-                            } else {
-                                setPhase(PHASE.LEARN_CARD);
-                            }
-                            setCardIndex(0);
-                            dispatch({ type: 'MARK_EVENTS_SEEN', eventIds: lesson.eventIds });
-                        }}>
-                            Begin Learning
-                        </Button>
-                    </div>
+                    {(() => {
+                        const timesCompleted = state.completedLessons[lesson.id] || 0;
+                        return (
+                            <>
+                                {timesCompleted > 0 && (
+                                    <p className="text-xs font-medium mt-3 mb-1" style={{ color: 'var(--color-success)' }}>
+                                        ✓ Completed {timesCompleted} {timesCompleted === 1 ? 'time' : 'times'}
+                                    </p>
+                                )}
+                                <div className={timesCompleted > 0 ? "mt-3" : "mt-6"}>
+                                    <Button onClick={() => {
+                                        if (lesson.periodId && PERIOD_INFO[lesson.periodId]) {
+                                            setPhase(PHASE.PERIOD_INTRO);
+                                        } else {
+                                            setPhase(PHASE.LEARN_CARD);
+                                        }
+                                        setCardIndex(0);
+                                        dispatch({ type: 'MARK_EVENTS_SEEN', eventIds: lesson.eventIds });
+                                    }}>
+                                        {timesCompleted > 0 ? 'Learn Again' : 'Begin Learning'}
+                                    </Button>
+                                </div>
+                            </>
+                        );
+                    })()}
                 </div>
             </div>
         );
@@ -239,6 +252,45 @@ export default function LessonFlow({ lesson, onComplete }) {
                         <p className="text-sm font-semibold text-center mb-4" style={{ color: period.color }}>{period.subtitle}</p>
                         <Divider />
                         <p className="text-sm leading-relaxed mt-4" style={{ color: 'var(--color-ink-secondary)' }}>{period.description}</p>
+                        {(() => {
+                            const boundary = ERA_BOUNDARY_EVENTS[lesson.periodId];
+                            if (!boundary) return null;
+                            const startEvt = boundary.startEventId ? getEventById(boundary.startEventId) : null;
+                            const endEvt = boundary.endEventId ? getEventById(boundary.endEventId) : null;
+                            return (
+                                <div className="mt-4 pt-3" style={{ borderTop: '1px solid rgba(28, 25, 23, 0.06)' }}>
+                                    <p className="text-[11px] uppercase tracking-wider font-semibold mb-2" style={{ color: 'var(--color-ink-faint)' }}>
+                                        Key Transitions
+                                    </p>
+                                    {startEvt && (
+                                        <div className="flex items-start gap-2 text-xs py-1">
+                                            <span className="flex-shrink-0 mt-0.5" style={{ color: 'var(--color-success)' }}>▶</span>
+                                            <div>
+                                                <span className="font-semibold" style={{ color: 'var(--color-ink)' }}>Begins with: </span>
+                                                <span style={{ color: 'var(--color-ink-secondary)' }}>{startEvt.title}</span>
+                                                <span className="ml-1 font-medium" style={{ color: 'var(--color-burgundy)' }}>({startEvt.date})</span>
+                                            </div>
+                                        </div>
+                                    )}
+                                    {endEvt && (
+                                        <div className="flex items-start gap-2 text-xs py-1">
+                                            <span className="flex-shrink-0 mt-0.5" style={{ color: 'var(--color-error)' }}>■</span>
+                                            <div>
+                                                <span className="font-semibold" style={{ color: 'var(--color-ink)' }}>Ends with: </span>
+                                                <span style={{ color: 'var(--color-ink-secondary)' }}>{endEvt.title}</span>
+                                                <span className="ml-1 font-medium" style={{ color: 'var(--color-burgundy)' }}>({endEvt.date})</span>
+                                            </div>
+                                        </div>
+                                    )}
+                                    {!endEvt && (
+                                        <div className="flex items-start gap-2 text-xs py-1">
+                                            <span className="flex-shrink-0 mt-0.5" style={{ color: 'var(--color-ink-faint)' }}>■</span>
+                                            <span className="italic" style={{ color: 'var(--color-ink-faint)' }}>Ongoing — the era we live in</span>
+                                        </div>
+                                    )}
+                                </div>
+                            );
+                        })()}
                     </Card>
                 </div>
                 <div className="mt-6">
@@ -284,13 +336,34 @@ export default function LessonFlow({ lesson, onComplete }) {
 
                 <div className="mt-4 animate-slide-in-right" key={event.id}>
                     <Card>
-                        <CategoryTag category={event.category} />
+                        <div className="flex items-center justify-between">
+                            <CategoryTag category={event.category} />
+                            <StarButton
+                                isStarred={(state.starredEvents || []).includes(event.id)}
+                                onClick={() => dispatch({ type: 'TOGGLE_STAR', eventId: event.id })}
+                            />
+                        </div>
                         <h2 className="text-xl font-bold mt-3 mb-2 leading-snug" style={{ fontFamily: 'var(--font-serif)', color: 'var(--color-ink)' }}>
                             {event.title}
                         </h2>
                         <p className="text-lg font-semibold mb-3" style={{ color: 'var(--color-burgundy)' }}>
                             {event.date}
                         </p>
+                        {(() => {
+                            const boundaryInfo = getEraBoundaryInfo(event.id);
+                            if (!boundaryInfo) return null;
+                            const eraIcons = { prehistory: '🦴', ancient: '🏛️', medieval: '⚔️', earlymodern: '🧭', modern: '🌍' };
+                            return boundaryInfo.map((b, i) => (
+                                <div key={i} className="flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1.5 rounded-lg mb-3"
+                                    style={{
+                                        backgroundColor: b.type === 'start' ? 'rgba(5, 150, 105, 0.08)' : 'rgba(166, 61, 61, 0.08)',
+                                        color: b.type === 'start' ? 'var(--color-success)' : 'var(--color-error)',
+                                    }}>
+                                    <span>{eraIcons[b.eraId] || '📌'}</span>
+                                    <span>Marks the {b.type === 'start' ? 'start' : 'end'} of the {b.eraLabel} era</span>
+                                </div>
+                            ));
+                        })()}
                         <p className="text-sm leading-relaxed mb-4" style={{ color: 'var(--color-ink-secondary)' }}>
                             {event.description}
                         </p>
@@ -549,7 +622,10 @@ export default function LessonFlow({ lesson, onComplete }) {
 
                     <div className="flex items-center gap-1 mb-4 justify-center flex-wrap">
                         {quizResults.map((r, i) => (
-                            <div key={i} className="w-2.5 h-2.5 rounded-full"
+                            <button key={i}
+                                className="w-3 h-3 rounded-full result-dot-btn"
+                                title={`${events.find(e => e.id === r.eventId)?.title || 'Event'} — ${r.questionType}`}
+                                onClick={() => setSelectedDot(r)}
                                 style={{
                                     backgroundColor: r.firstScore === 'green' ? 'var(--color-success)' :
                                         r.firstScore === 'yellow' ? 'var(--color-warning)' : 'var(--color-error)'
@@ -598,6 +674,69 @@ export default function LessonFlow({ lesson, onComplete }) {
                 <div className="mt-6">
                     <Button className="w-full" onClick={onComplete}>Continue</Button>
                 </div>
+
+                {/* Result Dot Modal */}
+                {selectedDot && (() => {
+                    const evt = events.find(e => e.id === selectedDot.eventId);
+                    if (!evt) return null;
+                    const qType = selectedDot.questionType;
+                    const dotColor = selectedDot.firstScore === 'green' ? 'var(--color-success)'
+                        : selectedDot.firstScore === 'yellow' ? 'var(--color-warning)' : 'var(--color-error)';
+                    const hlBg = selectedDot.firstScore === 'green' ? 'rgba(5, 150, 105, 0.12)'
+                        : selectedDot.firstScore === 'yellow' ? 'rgba(198, 134, 42, 0.12)' : 'rgba(166, 61, 61, 0.12)';
+                    return (
+                        <div className="dot-modal-backdrop" onClick={() => setSelectedDot(null)}>
+                            <div className="dot-modal-content" onClick={e => e.stopPropagation()}>
+                                <Card style={{ borderLeft: `3px solid ${dotColor}` }}>
+                                    <div className="flex items-center justify-between mb-3">
+                                        <span className="text-[10px] uppercase tracking-widest font-bold px-2 py-0.5 rounded-full"
+                                            style={{ backgroundColor: hlBg, color: dotColor }}>
+                                            {qType === 'date' || qType === 'date_input' ? '📅 Date Question'
+                                                : qType === 'location' ? '📍 Location Question' : '❓ What Happened'}
+                                        </span>
+                                        <button onClick={() => setSelectedDot(null)}
+                                            className="w-7 h-7 rounded-full flex items-center justify-center text-sm"
+                                            style={{ color: 'var(--color-ink-muted)', backgroundColor: 'rgba(28,25,23,0.05)' }}>✕</button>
+                                    </div>
+                                    <div className="flex items-center justify-between">
+                                        <CategoryTag category={evt.category} />
+                                        <StarButton
+                                            isStarred={(state.starredEvents || []).includes(evt.id)}
+                                            onClick={() => dispatch({ type: 'TOGGLE_STAR', eventId: evt.id })}
+                                        />
+                                    </div>
+                                    <div className={qType === 'what' ? 'dot-highlight' : ''}
+                                        style={qType === 'what' ? { backgroundColor: hlBg, color: dotColor } : {}}>
+                                        <h2 className="text-xl font-bold mt-3 mb-2 leading-snug" style={{ fontFamily: 'var(--font-serif)', color: 'var(--color-ink)' }}>
+                                            {evt.title}
+                                        </h2>
+                                    </div>
+                                    <div className={qType === 'date' || qType === 'date_input' ? 'dot-highlight' : ''}
+                                        style={qType === 'date' || qType === 'date_input' ? { backgroundColor: hlBg, color: dotColor } : {}}>
+                                        <p className="text-lg font-semibold mb-3" style={{ color: 'var(--color-burgundy)' }}>
+                                            {evt.date}
+                                        </p>
+                                    </div>
+                                    <p className="text-sm leading-relaxed mb-3" style={{ color: 'var(--color-ink-secondary)' }}>
+                                        {evt.description}
+                                    </p>
+                                    <div className={qType === 'location' ? 'dot-highlight' : ''}
+                                        style={qType === 'location' ? { backgroundColor: hlBg, color: dotColor } : {}}>
+                                        <div className="flex items-center gap-2 text-xs" style={{ color: 'var(--color-ink-muted)' }}>
+                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" /><circle cx="12" cy="10" r="3" />
+                                            </svg>
+                                            {evt.location.place}
+                                            {evt.location.region && !evt.location.place.includes(evt.location.region) && (
+                                                <span style={{ color: 'var(--color-ink-faint)' }}>· {evt.location.region}</span>
+                                            )}
+                                        </div>
+                                    </div>
+                                </Card>
+                            </div>
+                        </div>
+                    );
+                })()}
             </div>
         );
     }

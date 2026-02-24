@@ -1,5 +1,6 @@
 import { useState, useMemo, useRef, useEffect } from 'react';
 import { useApp } from '../../context/AppContext';
+import { getEventById, ERA_BOUNDARY_EVENTS } from '../../data/events';
 import { Card, Button, ProgressBar, Divider } from '../shared';
 import Mascot from '../Mascot';
 
@@ -13,47 +14,20 @@ const PHASE = {
 
 // ─── Period data (the 5 "cards" for Lesson 0) ──────────
 const PERIODS = [
-    {
-        id: 'prehistory',
-        title: 'Prehistory',
-        subtitle: 'c. 7 million years ago – c. 3200 BCE',
-        description: 'The longest chapter in human history — from the first split with our ape ancestors through mastering fire, developing language, migrating across the globe, and eventually settling into farming communities.',
-        color: '#0D9488',
-        icon: '🦴',
-    },
-    {
-        id: 'ancient',
-        title: 'The Ancient World',
-        subtitle: 'c. 3200 BCE – 500 CE',
-        description: 'Writing is invented, cities rise, empires clash. From Sumer to Rome, humanity builds the foundations of law, philosophy, religion, and governance.',
-        color: '#6B5B73',
-        icon: '🏛️',
-    },
-    {
-        id: 'medieval',
-        title: 'The Medieval World',
-        subtitle: '500 – 1500 CE',
-        description: 'Empires fragment and reform. Faiths spread across continents, scholars preserve and advance knowledge, and horseback conquerors redraw the map of Eurasia.',
-        color: '#A0522D',
-        icon: '⚔️',
-    },
-    {
-        id: 'earlymodern',
-        title: 'The Early Modern Period',
-        subtitle: '1500 – 1800 CE',
-        description: 'Print breaks the monopoly on knowledge, ships connect every continent, and thinkers challenge the divine right of kings.',
-        color: '#65774A',
-        icon: '🧭',
-    },
-    {
-        id: 'modern',
-        title: 'The Modern World',
-        subtitle: '1800 – Present',
-        description: 'Industry, ideology, and information transform human life at accelerating speed. Two world wars reshape the global order, and digital networks connect billions.',
-        color: '#8B4157',
-        icon: '🌍',
-    },
-];
+    'prehistory', 'ancient', 'medieval', 'earlymodern', 'modern'
+].map(id => {
+    const info = {
+        prehistory: { title: 'Prehistory', subtitle: 'c. 7 million years ago – c. 3200 BCE', description: 'The longest chapter in human history — from the first split with our ape ancestors through mastering fire, developing language, migrating across the globe, and eventually settling into farming communities.', color: '#0D9488', icon: '🦴' },
+        ancient: { title: 'The Ancient World', subtitle: 'c. 3200 BCE – 500 CE', description: 'Writing is invented, cities rise, empires clash. From Sumer to Rome, humanity builds the foundations of law, philosophy, religion, and governance.', color: '#6B5B73', icon: '🏛️' },
+        medieval: { title: 'The Medieval World', subtitle: '500 – 1500 CE', description: 'Empires fragment and reform. Faiths spread across continents, scholars preserve and advance knowledge, and horseback conquerors redraw the map of Eurasia.', color: '#A0522D', icon: '⚔️' },
+        earlymodern: { title: 'The Early Modern Period', subtitle: '1500 – 1800 CE', description: 'Print breaks the monopoly on knowledge, ships connect every continent, and thinkers challenge the divine right of kings.', color: '#65774A', icon: '🧭' },
+        modern: { title: 'The Modern World', subtitle: '1800 – Present', description: 'Industry, ideology, and information transform human life at accelerating speed. Two world wars reshape the global order, and digital networks connect billions.', color: '#8B4157', icon: '🌍' },
+    }[id];
+    const boundary = ERA_BOUNDARY_EVENTS[id];
+    const startEvent = boundary?.startEventId ? getEventById(boundary.startEventId) : null;
+    const endEvent = boundary?.endEventId ? getEventById(boundary.endEventId) : null;
+    return { id, ...info, startEvent, endEvent };
+});
 
 // ─── Generate MCQ quiz questions ───────────────────────
 function generateQuizQuestions() {
@@ -93,18 +67,19 @@ function generateQuizQuestions() {
 
 // ─── COMPONENT ─────────────────────────────────────────
 export default function Lesson0Flow({ lesson, onComplete }) {
-    const { dispatch } = useApp();
+    const { state, dispatch } = useApp();
 
     const [phase, setPhase] = useState(PHASE.INTRO);
     const [cardIndex, setCardIndex] = useState(0);
     const [quizQuestions, setQuizQuestions] = useState([]);
     const [quizIndex, setQuizIndex] = useState(0);
-    const [results, setResults] = useState([]);
+    const [results, setResults] = useState([]);     // { score, periodId, type }[]
     const [selectedAnswer, setSelectedAnswer] = useState(null);
     const [answered, setAnswered] = useState(false);
+    const [selectedDot, setSelectedDot] = useState(null);  // for result dot modal
     const xpDispatched = useRef(false);
 
-    const greenCount = useMemo(() => results.filter(r => r === 'green').length, [results]);
+    const greenCount = useMemo(() => results.filter(r => r.score === 'green').length, [results]);
 
     // Dispatch XP when summary is reached
     useEffect(() => {
@@ -152,14 +127,26 @@ export default function Lesson0Flow({ lesson, onComplete }) {
                         Learn the shape of history, then test your knowledge
                     </p>
                     <Mascot mood="happy" size={64} />
-                    <div className="mt-6">
-                        <Button onClick={() => {
-                            setPhase(PHASE.LEARN);
-                            setCardIndex(0);
-                        }}>
-                            Begin Learning
-                        </Button>
-                    </div>
+                    {(() => {
+                        const timesCompleted = state.completedLessons['lesson-0'] || 0;
+                        return (
+                            <>
+                                {timesCompleted > 0 && (
+                                    <p className="text-xs font-medium mt-3 mb-1" style={{ color: 'var(--color-success)' }}>
+                                        ✓ Completed {timesCompleted} {timesCompleted === 1 ? 'time' : 'times'}
+                                    </p>
+                                )}
+                                <div className={timesCompleted > 0 ? "mt-3" : "mt-6"}>
+                                    <Button onClick={() => {
+                                        setPhase(PHASE.LEARN);
+                                        setCardIndex(0);
+                                    }}>
+                                        {timesCompleted > 0 ? 'Learn Again' : 'Begin Learning'}
+                                    </Button>
+                                </div>
+                            </>
+                        );
+                    })()}
                 </div>
             </div>
         );
@@ -205,6 +192,39 @@ export default function Lesson0Flow({ lesson, onComplete }) {
                         <p className="text-sm leading-relaxed mt-4" style={{ color: 'var(--color-ink-secondary)' }}>
                             {period.description}
                         </p>
+
+                        {/* Boundary events */}
+                        <div className="mt-4 pt-3" style={{ borderTop: '1px solid rgba(28, 25, 23, 0.06)' }}>
+                            <p className="text-[11px] uppercase tracking-wider font-semibold mb-2" style={{ color: 'var(--color-ink-faint)' }}>
+                                Key Transitions
+                            </p>
+                            {period.startEvent && (
+                                <div className="flex items-start gap-2 text-xs py-1">
+                                    <span className="flex-shrink-0 mt-0.5" style={{ color: 'var(--color-success)' }}>▶</span>
+                                    <div>
+                                        <span className="font-semibold" style={{ color: 'var(--color-ink)' }}>Begins with: </span>
+                                        <span style={{ color: 'var(--color-ink-secondary)' }}>{period.startEvent.title}</span>
+                                        <span className="ml-1 font-medium" style={{ color: 'var(--color-burgundy)' }}>({period.startEvent.date})</span>
+                                    </div>
+                                </div>
+                            )}
+                            {period.endEvent && (
+                                <div className="flex items-start gap-2 text-xs py-1">
+                                    <span className="flex-shrink-0 mt-0.5" style={{ color: 'var(--color-error)' }}>■</span>
+                                    <div>
+                                        <span className="font-semibold" style={{ color: 'var(--color-ink)' }}>Ends with: </span>
+                                        <span style={{ color: 'var(--color-ink-secondary)' }}>{period.endEvent.title}</span>
+                                        <span className="ml-1 font-medium" style={{ color: 'var(--color-burgundy)' }}>({period.endEvent.date})</span>
+                                    </div>
+                                </div>
+                            )}
+                            {!period.endEvent && (
+                                <div className="flex items-start gap-2 text-xs py-1">
+                                    <span className="flex-shrink-0 mt-0.5" style={{ color: 'var(--color-ink-faint)' }}>■</span>
+                                    <span className="italic" style={{ color: 'var(--color-ink-faint)' }}>Ongoing — the era we live in</span>
+                                </div>
+                            )}
+                        </div>
                     </Card>
                 </div>
 
@@ -242,8 +262,11 @@ export default function Lesson0Flow({ lesson, onComplete }) {
         const q = quizQuestions[quizIndex];
 
         if (!q) {
-            // All quiz questions done
-            setPhase(PHASE.SUMMARY);
+            // All quiz questions done — transition handled by handleNext below
+            // This branch shouldn't normally be reached, but just in case:
+            if (phase !== PHASE.SUMMARY) {
+                setTimeout(() => setPhase(PHASE.SUMMARY), 0);
+            }
             return null;
         }
 
@@ -254,14 +277,18 @@ export default function Lesson0Flow({ lesson, onComplete }) {
                 ? answer === q.correctDisplay
                 : answer === q.correctAnswer;
             const score = isCorrect ? 'green' : 'red';
-            setResults(prev => [...prev, score]);
+            setResults(prev => [...prev, { score, periodId: q.periodId, type: q.type }]);
             setAnswered(true);
         };
 
         const handleNext = () => {
-            setQuizIndex(i => i + 1);
-            setSelectedAnswer(null);
-            setAnswered(false);
+            if (quizIndex + 1 >= quizQuestions.length) {
+                setPhase(PHASE.SUMMARY);
+            } else {
+                setQuizIndex(i => i + 1);
+                setSelectedAnswer(null);
+                setAnswered(false);
+            }
         };
 
         const currentScore = answered ? results[results.length - 1] : null;
@@ -351,7 +378,7 @@ export default function Lesson0Flow({ lesson, onComplete }) {
     // ─── SUMMARY ───────────────────────────────────────
     if (phase === PHASE.SUMMARY) {
         const total = results.length;
-        const redCount = results.filter(r => r === 'red').length;
+        const redCount = results.filter(r => r.score === 'red').length;
         const xp = greenCount * 5;
 
         return (
@@ -373,12 +400,18 @@ export default function Lesson0Flow({ lesson, onComplete }) {
                     </div>
 
                     <div className="flex items-center gap-1 mb-4 justify-center flex-wrap">
-                        {results.map((r, i) => (
-                            <div key={i} className="w-2.5 h-2.5 rounded-full"
-                                style={{
-                                    backgroundColor: r === 'green' ? 'var(--color-success)' : 'var(--color-error)'
-                                }} />
-                        ))}
+                        {results.map((r, i) => {
+                            const period = PERIODS.find(p => p.id === r.periodId);
+                            return (
+                                <button key={i}
+                                    className="w-3 h-3 rounded-full result-dot-btn"
+                                    title={`${period?.title || 'Period'} — ${r.type === 'date' ? 'Date' : 'Period Name'}`}
+                                    onClick={() => setSelectedDot(r)}
+                                    style={{
+                                        backgroundColor: r.score === 'green' ? 'var(--color-success)' : 'var(--color-error)'
+                                    }} />
+                            );
+                        })}
                     </div>
 
                     <div className="grid grid-cols-2 gap-3 text-center mb-4">
@@ -426,6 +459,51 @@ export default function Lesson0Flow({ lesson, onComplete }) {
                         Continue
                     </Button>
                 </div>
+
+                {/* Result Dot Modal */}
+                {selectedDot && (() => {
+                    const period = PERIODS.find(p => p.id === selectedDot.periodId);
+                    if (!period) return null;
+                    const dotColor = selectedDot.score === 'green' ? 'var(--color-success)' : 'var(--color-error)';
+                    const hlBg = selectedDot.score === 'green' ? 'rgba(5, 150, 105, 0.12)' : 'rgba(166, 61, 61, 0.12)';
+                    const isDateQ = selectedDot.type === 'date';
+                    return (
+                        <div className="dot-modal-backdrop" onClick={() => setSelectedDot(null)}>
+                            <div className="dot-modal-content" onClick={e => e.stopPropagation()}>
+                                <Card style={{ borderLeft: `4px solid ${period.color}` }}>
+                                    <div className="flex items-center justify-between mb-3">
+                                        <span className="text-[10px] uppercase tracking-widest font-bold px-2 py-0.5 rounded-full"
+                                            style={{ backgroundColor: hlBg, color: dotColor }}>
+                                            {isDateQ ? '📅 Date Question' : '❓ Period Name Question'}
+                                        </span>
+                                        <button onClick={() => setSelectedDot(null)}
+                                            className="w-7 h-7 rounded-full flex items-center justify-center text-sm"
+                                            style={{ color: 'var(--color-ink-muted)', backgroundColor: 'rgba(28,25,23,0.05)' }}>✕</button>
+                                    </div>
+                                    <div className="text-center mb-4">
+                                        <span className="text-5xl">{period.icon}</span>
+                                    </div>
+                                    <div className={!isDateQ ? 'dot-highlight' : ''}
+                                        style={!isDateQ ? { backgroundColor: hlBg, color: dotColor } : {}}>
+                                        <h2 className="text-2xl font-bold text-center mb-1" style={{ fontFamily: 'var(--font-serif)', color: 'var(--color-ink)' }}>
+                                            {period.title}
+                                        </h2>
+                                    </div>
+                                    <div className={isDateQ ? 'dot-highlight' : ''}
+                                        style={isDateQ ? { backgroundColor: hlBg, color: dotColor } : {}}>
+                                        <p className="text-sm font-semibold text-center mb-4" style={{ color: period.color }}>
+                                            {period.subtitle}
+                                        </p>
+                                    </div>
+                                    <Divider />
+                                    <p className="text-sm leading-relaxed mt-4" style={{ color: 'var(--color-ink-secondary)' }}>
+                                        {period.description}
+                                    </p>
+                                </Card>
+                            </div>
+                        </div>
+                    );
+                })()}
             </div>
         );
     }

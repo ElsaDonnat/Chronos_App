@@ -24,6 +24,8 @@ const defaultState = {
     eventMastery: {},
     // Set of event IDs the user has seen the learn card for
     seenEvents: [],
+    // Starred/favorited event IDs
+    starredEvents: [],
     // XP
     totalXP: 0,
     // Streak
@@ -48,11 +50,12 @@ function getTodayDate() {
 function reducer(state, action) {
     switch (action.type) {
         case 'COMPLETE_LESSON': {
+            const prev = state.completedLessons[action.lessonId] || 0;
             return {
                 ...state,
                 completedLessons: {
                     ...state.completedLessons,
-                    [action.lessonId]: true
+                    [action.lessonId]: prev + 1
                 }
             };
         }
@@ -132,6 +135,18 @@ function reducer(state, action) {
                 return { ...state, currentStreak: 0 };
             }
             return state;
+        }
+
+        case 'TOGGLE_STAR': {
+            const { eventId } = action;
+            const starred = state.starredEvents || [];
+            const isStarred = starred.includes(eventId);
+            return {
+                ...state,
+                starredEvents: isStarred
+                    ? starred.filter(id => id !== eventId)
+                    : [...starred, eventId]
+            };
         }
 
         case 'TOGGLE_SETTINGS': {

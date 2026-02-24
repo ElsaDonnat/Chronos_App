@@ -121,3 +121,39 @@ export function Card({ children, className = '', onClick, style = {} }) {
         </div>
     );
 }
+
+export function StarButton({ isStarred, onClick, size = 18 }) {
+    return (
+        <button
+            onClick={(e) => { e.stopPropagation(); onClick(); }}
+            className="flex items-center justify-center transition-all duration-200 active:scale-90"
+            style={{ color: isStarred ? '#E6A817' : 'var(--color-ink-faint)' }}
+            title={isStarred ? 'Remove from favorites' : 'Add to favorites'}
+        >
+            <svg width={size} height={size} viewBox="0 0 24 24" fill={isStarred ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+            </svg>
+        </button>
+    );
+}
+
+export function TabSelector({ tabs, activeTab, onChange }) {
+    return (
+        <div className="flex rounded-xl p-1" style={{ backgroundColor: 'rgba(28, 25, 23, 0.05)' }}>
+            {tabs.map(tab => (
+                <button
+                    key={tab.id}
+                    onClick={() => onChange(tab.id)}
+                    className="flex-1 px-4 py-2 rounded-lg text-xs font-semibold transition-all duration-200"
+                    style={{
+                        backgroundColor: activeTab === tab.id ? 'var(--color-card)' : 'transparent',
+                        color: activeTab === tab.id ? 'var(--color-ink)' : 'var(--color-ink-muted)',
+                        boxShadow: activeTab === tab.id ? 'var(--shadow-card)' : 'none',
+                    }}
+                >
+                    {tab.label}
+                </button>
+            ))}
+        </div>
+    );
+}
