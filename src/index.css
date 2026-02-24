@@ -1,0 +1,188 @@
+@import "tailwindcss";
+
+@theme {
+  /* Warm Antiquity Palette */
+  --color-parchment: #FAF6F0;
+  --color-parchment-dark: #F3ECE2;
+  --color-card: #FFFDF9;
+  --color-card-hover: #FBF7F1;
+
+  --color-terracotta: #B45309;
+  --color-terracotta-dark: #92400E;
+  --color-terracotta-light: #D97706;
+  --color-bronze: #A0845C;
+  --color-bronze-light: #C9B896;
+
+  --color-ink: #1C1917;
+  --color-ink-secondary: #44403C;
+  --color-ink-muted: #78716C;
+  --color-ink-faint: #A8A29E;
+
+  --color-olive: #65774A;
+  --color-olive-light: #8B9F6E;
+  --color-sage: #6B7F3A;
+
+  --color-success: #059669;
+  --color-success-light: #D1FAE5;
+  --color-warning: #D97706;
+  --color-warning-light: #FEF3C7;
+  --color-error: #B91C1C;
+  --color-error-light: #FEE2E2;
+
+  /* Category Colors */
+  --color-cat-science: #0D9488;
+  --color-cat-war: #A0522D;
+  --color-cat-politics: #6B5B73;
+  --color-cat-culture: #65774A;
+  --color-cat-revolution: #B45309;
+
+  --color-cat-science-bg: #F0FDFA;
+  --color-cat-war-bg: #FDF2F0;
+  --color-cat-politics-bg: #F5F3F7;
+  --color-cat-culture-bg: #F4F7F0;
+  --color-cat-revolution-bg: #FFF8F0;
+
+  /* Fonts */
+  --font-serif: 'Libre Baskerville', Georgia, serif;
+  --font-sans: 'DM Sans', system-ui, sans-serif;
+
+  /* Radius */
+  --radius-card: 14px;
+  --radius-button: 10px;
+  --radius-tag: 6px;
+
+  /* Shadows */
+  --shadow-card: 0 1px 3px rgba(28, 25, 23, 0.06), 0 1px 2px rgba(28, 25, 23, 0.04);
+  --shadow-card-hover: 0 4px 12px rgba(28, 25, 23, 0.08), 0 2px 4px rgba(28, 25, 23, 0.04);
+  --shadow-elevated: 0 8px 24px rgba(28, 25, 23, 0.1), 0 4px 8px rgba(28, 25, 23, 0.06);
+}
+
+/* Base Styles */
+* {
+  box-sizing: border-box;
+}
+
+html {
+  font-family: var(--font-sans);
+  color: var(--color-ink);
+  background-color: var(--color-parchment);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  min-height: 100dvh;
+}
+
+#root {
+  min-height: 100dvh;
+}
+
+/* Scrollbar theming */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-bronze-light);
+  border-radius: 3px;
+}
+
+/* Animations */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes pulseGlow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(180, 83, 9, 0.2); }
+  50% { box-shadow: 0 0 0 8px rgba(180, 83, 9, 0); }
+}
+
+@keyframes countUp {
+  from { transform: translateY(8px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes gentleGlow {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}
+
+@keyframes celebrationPulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.02); }
+  100% { transform: scale(1); }
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.3s ease-out forwards;
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.25s ease-out forwards;
+}
+
+.animate-slide-in-right {
+  animation: slideInRight 0.3s ease-out forwards;
+}
+
+.animate-slide-in-left {
+  animation: slideInLeft 0.3s ease-out forwards;
+}
+
+.animate-pulse-glow {
+  animation: pulseGlow 2s ease-in-out infinite;
+}
+
+.animate-shimmer {
+  background: linear-gradient(90deg, transparent, rgba(180, 83, 9, 0.08), transparent);
+  background-size: 200% 100%;
+  animation: shimmer 2s ease-in-out infinite;
+}
+
+.animate-celebration {
+  animation: celebrationPulse 0.6s ease-in-out;
+}
