@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, useRef } from 'react';
 import { useApp } from '../../context/AppContext';
 import { getEventsByIds, ALL_EVENTS, formatYear, CATEGORY_CONFIG, ERA_RANGES } from '../../data/events';
 import { scoreDateAnswer, generateLocationOptions, generateWhatOptions, calculateXP } from '../../data/quiz';
@@ -67,6 +67,7 @@ export default function LessonFlow({ lesson, onComplete }) {
     const [quizResults, setQuizResults] = useState([]); // all results across all chunks
     const [currentQuizIndex, setCurrentQuizIndex] = useState(0);
     const [reviewIndex, setReviewIndex] = useState(0);
+    const xpDispatchedRef = useRef(false); // guard for one-time XP dispatch
 
     // Split events into chunks of CHUNK_SIZE
     const chunks = useMemo(() => {
@@ -475,13 +476,17 @@ export default function LessonFlow({ lesson, onComplete }) {
         const redCount = quizResults.filter(r => r.firstScore === 'red').length;
         const allPassed = redCount === 0 || quizResults.every(r => r.firstScore !== 'red' || (r.retryScore && r.retryScore !== 'red'));
 
-        const handleContinue = () => {
+        // Dispatch XP + lesson completion immediately (once)
+        if (!xpDispatchedRef.current) {
+            xpDispatchedRef.current = true;
             if (allPassed) {
                 dispatch({ type: 'COMPLETE_LESSON', lessonId: lesson.id });
             }
             dispatch({ type: 'ADD_XP', amount: xp });
-            onComplete();
-        };
+        }
+
+        // Read updated streak from state (already updated by ADD_XP dispatch)
+        const streak = state.currentStreak;
 
         return (
             <div className="py-8 text-center animate-fade-in">
@@ -528,16 +533,37 @@ export default function LessonFlow({ lesson, onComplete }) {
 
                     <Divider />
 
-                    <div className="flex items-center justify-center gap-2 mt-2">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--color-bronze)" strokeWidth="2">
-                            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" fill="var(--color-bronze-light)" />
-                        </svg>
-                        <span className="text-xl font-bold" style={{ color: 'var(--color-burgundy)' }}>+{xp} XP</span>
+                    {/* Rewards section — XP + Streak */}
+                    <div className="flex items-center justify-center gap-6 mt-3">
+                        {/* XP earned */}
+                        <div className="flex items-center gap-2">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--color-bronze)" strokeWidth="2">
+                                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" fill="var(--color-bronze-light)" />
+                            </svg>
+                            <div className="text-left">
+                                <div className="text-xl font-bold leading-none" style={{ color: 'var(--color-burgundy)' }}>+{xp}</div>
+                                <div className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: 'var(--color-ink-faint)' }}>XP earned</div>
+                            </div>
+                        </div>
+
+                        {/* Divider */}
+                        <div className="w-px h-10" style={{ backgroundColor: 'rgba(28, 25, 23, 0.08)' }} />
+
+                        {/* Day streak */}
+                        <div className="flex items-center gap-2">
+                            <span className="text-2xl">🔥</span>
+                            <div className="text-left">
+                                <div className="text-xl font-bold leading-none" style={{ color: 'var(--color-burgundy)' }}>{streak}</div>
+                                <div className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: 'var(--color-ink-faint)' }}>
+                                    {streak === 1 ? 'Day streak' : 'Day streak'}
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </Card>
 
                 <div className="mt-6">
-                    <Button className="w-full" onClick={handleContinue}>
+                    <Button className="w-full" onClick={onComplete}>
                         Continue
                     </Button>
                 </div>
