@@ -38,9 +38,25 @@ export default function TopBar() {
             <div className="max-w-[440px] mx-auto px-4 h-14 flex items-center justify-between">
                 {/* Logo */}
                 <h1
-                    className="text-xl font-bold tracking-tight"
+                    className="text-xl font-bold tracking-tight flex items-center gap-1.5"
                     style={{ fontFamily: 'var(--font-serif)', color: 'var(--color-ink)' }}
                 >
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--color-burgundy)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                        {/* Top cap */}
+                        <line x1="5" y1="3" x2="19" y2="3" />
+                        {/* Bottom cap */}
+                        <line x1="5" y1="21" x2="19" y2="21" />
+                        {/* Left glass */}
+                        <path d="M7 3 C7 3 7 9 12 12 C7 15 7 21 7 21" />
+                        {/* Right glass */}
+                        <path d="M17 3 C17 3 17 9 12 12 C17 15 17 21 17 21" />
+                        {/* Sand top */}
+                        <path d="M9.5 6.5 L14.5 6.5" strokeWidth="1.2" opacity="0.5" />
+                        {/* Sand stream */}
+                        <line x1="12" y1="12" x2="12" y2="15" strokeWidth="1" opacity="0.4" />
+                        {/* Sand bottom pile */}
+                        <path d="M9 19 Q12 16.5 15 19" strokeWidth="1.2" fill="var(--color-burgundy-light)" fillOpacity="0.25" opacity="0.6" />
+                    </svg>
                     Chronos
                 </h1>
 

@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback, useRef } from 'react';
+import { useState, useMemo, useCallback, useRef, useEffect } from 'react';
 import { useApp } from '../../context/AppContext';
 import { getEventsByIds, ALL_EVENTS, formatYear, CATEGORY_CONFIG, ERA_RANGES } from '../../data/events';
 import { scoreDateAnswer, generateLocationOptions, generateWhatOptions, calculateXP } from '../../data/quiz';
@@ -8,28 +8,28 @@ import Mascot from '../Mascot';
 // ─── PHASES ────────────────────────────────────────────
 const PHASE = {
     INTRO: 'intro',
-    CHUNK_LEARN: 'chunk_learn',    // Study cards
-    CHUNK_QUIZ: 'chunk_quiz',      // Quiz on those cards
-    PERIOD_INTRO: 'period_intro',  // Period overview card
-    FINAL_REVIEW: 'final_review',  // Re-show hard ones + retry red
+    PERIOD_INTRO: 'period_intro',
+    CHUNK_LEARN: 'chunk_learn',
+    CHUNK_QUIZ: 'chunk_quiz',
+    FINAL_REVIEW: 'final_review',
     SUMMARY: 'summary',
 };
 
-const CHUNK_SIZE = 5; // cards per chunk
+const CHUNK_SIZE = 2; // 2 cards per chunk
 
-// Period overview data keyed by lesson periodId
+// Period overview data
 const PERIOD_INFO = {
     prehistory: {
         title: 'Prehistory',
         subtitle: 'c. 7 million years ago – c. 3200 BCE',
-        description: 'The longest chapter in human history — from the first split with our ape ancestors through mastering fire, developing language, migrating across the globe, and eventually settling into farming communities. No written records exist; everything we know comes from fossils, tools, and DNA.',
+        description: 'The longest chapter in human history — from the first split with our ape ancestors through mastering fire, developing language, migrating across the globe, and eventually settling into farming communities.',
         color: '#0D9488',
         icon: '🦴',
     },
     ancient: {
         title: 'The Ancient World',
         subtitle: 'c. 3200 BCE – 500 CE',
-        description: 'Writing is invented, cities rise, empires clash. From Sumer to Rome, humanity builds the foundations of law, philosophy, religion, and governance that still shape our world today.',
+        description: 'Writing is invented, cities rise, empires clash. From Sumer to Rome, humanity builds the foundations of law, philosophy, religion, and governance.',
         color: '#6B5B73',
         icon: '🏛️',
     },
@@ -43,7 +43,7 @@ const PERIOD_INFO = {
     earlymodern: {
         title: 'The Early Modern Period',
         subtitle: '1500 – 1800 CE',
-        description: 'Print breaks the monopoly on knowledge, ships connect every continent, and thinkers challenge the divine right of kings — setting the stage for revolution.',
+        description: 'Print breaks the monopoly on knowledge, ships connect every continent, and thinkers challenge the divine right of kings.',
         color: '#65774A',
         icon: '🧭',
     },
@@ -61,13 +61,12 @@ export default function LessonFlow({ lesson, onComplete }) {
     const events = useMemo(() => getEventsByIds(lesson.eventIds), [lesson]);
 
     const [phase, setPhase] = useState(PHASE.INTRO);
-    const [chunkIndex, setChunkIndex] = useState(0); // which chunk we're on
-    const [showedPeriodCard, setShowedPeriodCard] = useState(false); // track period intro
-    const [cardIndexInChunk, setCardIndexInChunk] = useState(0); // card within current chunk
-    const [quizResults, setQuizResults] = useState([]); // all results across all chunks
+    const [chunkIndex, setChunkIndex] = useState(0);
+    const [cardIndexInChunk, setCardIndexInChunk] = useState(0);
+    const [quizResults, setQuizResults] = useState([]);
     const [currentQuizIndex, setCurrentQuizIndex] = useState(0);
     const [reviewIndex, setReviewIndex] = useState(0);
-    const xpDispatchedRef = useRef(false); // guard for one-time XP dispatch
+    const xpDispatched = useRef(false);
 
     // Split events into chunks of CHUNK_SIZE
     const chunks = useMemo(() => {
@@ -80,7 +79,7 @@ export default function LessonFlow({ lesson, onComplete }) {
 
     const currentChunk = chunks[chunkIndex] || [];
 
-    // Generate quiz questions for a specific set of events (randomized)
+    // Generate quiz questions for a set of events
     const generateQuizForEvents = useCallback((evts) => {
         const questions = [];
         for (const event of evts) {
@@ -88,13 +87,12 @@ export default function LessonFlow({ lesson, onComplete }) {
             questions.push({ event, type: 'date', key: `${event.id}-date-${chunkIndex}` });
             questions.push({ event, type: 'what', key: `${event.id}-what-${chunkIndex}` });
         }
-        // Shuffle
         return questions.sort(() => Math.random() - 0.5);
     }, [chunkIndex]);
 
     const [chunkQuizQuestions, setChunkQuizQuestions] = useState([]);
 
-    // Items needing final review (yellow + red)
+    // Items needing final review
     const hardResults = useMemo(() => {
         return quizResults.filter(r => r.firstScore === 'red' || r.firstScore === 'yellow');
     }, [quizResults]);
@@ -103,9 +101,33 @@ export default function LessonFlow({ lesson, onComplete }) {
         return quizResults.filter(r => r.firstScore === 'red' && !r.retryScore);
     }, [quizResults]);
 
-    // Total progress across all chunks
     const totalQuestions = events.length * 3;
     const answeredQuestions = quizResults.length;
+
+    // ─── Dispatch XP when reaching summary (via useEffect, not during render) ───
+    useEffect(() => {
+        if (phase === PHASE.SUMMARY && !xpDispatched.current) {
+            xpDispatched.current = true;
+            const xp = calculateXP(quizResults);
+            const redCount = quizResults.filter(r => r.firstScore === 'red').length;
+            const allPassed = redCount === 0 || quizResults.every(r => r.firstScore !== 'red' || (r.retryScore && r.retryScore !== 'red'));
+
+            if (allPassed) {
+                dispatch({ type: 'COMPLETE_LESSON', lessonId: lesson.id });
+            }
+            dispatch({ type: 'ADD_XP', amount: xp });
+        }
+    }, [phase, quizResults, lesson.id, dispatch]);
+
+    // Get the chronologically previous and next events within this lesson
+    const getNearbyEvents = useCallback((event) => {
+        const sorted = [...events].sort((a, b) => a.year - b.year);
+        const idx = sorted.findIndex(e => e.id === event.id);
+        const nearby = [];
+        if (idx > 0) nearby.push(sorted[idx - 1]);
+        if (idx < sorted.length - 1) nearby.push(sorted[idx + 1]);
+        return nearby;
+    }, [events]);
 
     // ─── INTRO ─────────────────────────────────────────
     if (phase === PHASE.INTRO) {
@@ -136,12 +158,11 @@ export default function LessonFlow({ lesson, onComplete }) {
                         {events.length} events to discover
                     </p>
                     <p className="text-xs mb-6" style={{ color: 'var(--color-ink-faint)' }}>
-                        Learn a few events at a time, then test your knowledge
+                        Learn 2 events at a time, then test your knowledge
                     </p>
                     <Mascot mood="happy" size={64} />
                     <div className="mt-6">
                         <Button onClick={() => {
-                            // If lesson has a periodId, show period card first
                             if (lesson.periodId && PERIOD_INFO[lesson.periodId]) {
                                 setPhase(PHASE.PERIOD_INTRO);
                             } else {
@@ -199,10 +220,7 @@ export default function LessonFlow({ lesson, onComplete }) {
                 </div>
 
                 <div className="mt-6">
-                    <Button className="w-full" onClick={() => {
-                        setShowedPeriodCard(true);
-                        setPhase(PHASE.CHUNK_LEARN);
-                    }}>
+                    <Button className="w-full" onClick={() => setPhase(PHASE.CHUNK_LEARN)}>
                         Begin Events →
                     </Button>
                 </div>
@@ -210,11 +228,11 @@ export default function LessonFlow({ lesson, onComplete }) {
         );
     }
 
-    // ─── CHUNK LEARN ──────────────────────────────────
+    // ─── CHUNK LEARN (Show 2 cards at a time) ────────────
     if (phase === PHASE.CHUNK_LEARN) {
         const event = currentChunk[cardIndexInChunk];
         if (!event) {
-            // Finished showing cards in this chunk, start quiz
+            // Finished current chunk cards → start quiz
             const qs = generateQuizForEvents(currentChunk);
             setChunkQuizQuestions(qs);
             setCurrentQuizIndex(0);
@@ -222,12 +240,7 @@ export default function LessonFlow({ lesson, onComplete }) {
             return null;
         }
 
-        const nearbyEvents = ALL_EVENTS
-            .filter(e => e.id !== event.id && state.seenEvents.includes(e.id))
-            .map(e => ({ ...e, distance: Math.abs(e.year - event.year) }))
-            .sort((a, b) => a.distance - b.distance)
-            .slice(0, 2);
-
+        const nearbyEvents = getNearbyEvents(event);
         const globalCardNum = chunkIndex * CHUNK_SIZE + cardIndexInChunk + 1;
 
         return (
@@ -268,12 +281,15 @@ export default function LessonFlow({ lesson, onComplete }) {
                                 <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" /><circle cx="12" cy="10" r="3" />
                             </svg>
                             {event.location.place}
+                            {event.location.region && !event.location.place.includes(event.location.region) && (
+                                <span style={{ color: 'var(--color-ink-faint)' }}>· {event.location.region}</span>
+                            )}
                         </div>
 
                         {nearbyEvents.length > 0 && (
                             <div className="mt-4 pt-3" style={{ borderTop: '1px solid rgba(28, 25, 23, 0.06)' }}>
                                 <p className="text-[11px] uppercase tracking-wider font-semibold mb-2" style={{ color: 'var(--color-ink-faint)' }}>
-                                    Nearby on the Timeline
+                                    Before & After
                                 </p>
                                 {nearbyEvents.map(ne => (
                                     <div key={ne.id} className="flex items-center gap-2 text-xs py-1" style={{ color: 'var(--color-ink-muted)' }}>
@@ -289,8 +305,16 @@ export default function LessonFlow({ lesson, onComplete }) {
                 </div>
 
                 <div className="flex gap-3 mt-6">
-                    {cardIndexInChunk > 0 && (
-                        <Button variant="secondary" onClick={() => setCardIndexInChunk(i => i - 1)}>
+                    {(cardIndexInChunk > 0 || chunkIndex > 0) && (
+                        <Button variant="secondary" onClick={() => {
+                            if (cardIndexInChunk > 0) {
+                                setCardIndexInChunk(i => i - 1);
+                            } else if (chunkIndex > 0) {
+                                // Go back to previous chunk's last card
+                                setChunkIndex(i => i - 1);
+                                setCardIndexInChunk(chunks[chunkIndex - 1].length - 1);
+                            }
+                        }}>
                             ← Back
                         </Button>
                     )}
@@ -305,19 +329,18 @@ export default function LessonFlow({ lesson, onComplete }) {
         );
     }
 
-    // ─── CHUNK QUIZ (Quiz on current 2 cards, randomized) ─────
+    // ─── CHUNK QUIZ ─────────────────────────────────────
     if (phase === PHASE.CHUNK_QUIZ) {
         const q = chunkQuizQuestions[currentQuizIndex];
         if (!q) {
             // Finished this chunk's quiz
             const nextChunk = chunkIndex + 1;
             if (nextChunk < chunks.length) {
-                // More chunks to learn
                 setChunkIndex(nextChunk);
                 setCardIndexInChunk(0);
                 setPhase(PHASE.CHUNK_LEARN);
             } else {
-                // All chunks done — go to final review if there are hard ones
+                // All chunks done
                 if (hardResults.length > 0) {
                     setReviewIndex(0);
                     setCurrentQuizIndex(0);
@@ -360,15 +383,15 @@ export default function LessonFlow({ lesson, onComplete }) {
                             });
                         }}
                         onNext={() => setCurrentQuizIndex(i => i + 1)}
+                        onBack={currentQuizIndex > 0 ? () => setCurrentQuizIndex(i => i - 1) : null}
                     />
                 </div>
             </div>
         );
     }
 
-    // ─── FINAL REVIEW (re-show hard events + retry reds) ──────
+    // ─── FINAL REVIEW ──────────────────────────────────
     if (phase === PHASE.FINAL_REVIEW) {
-        // First, re-show yellow/red event cards, then retry red questions
         const hardEvents = [...new Set(hardResults.map(r => r.eventId))]
             .map(id => events.find(e => e.id === id))
             .filter(Boolean);
@@ -463,7 +486,6 @@ export default function LessonFlow({ lesson, onComplete }) {
             );
         }
 
-        // No red questions, go to summary
         setPhase(PHASE.SUMMARY);
         return null;
     }
@@ -475,17 +497,6 @@ export default function LessonFlow({ lesson, onComplete }) {
         const yellowCount = quizResults.filter(r => r.firstScore === 'yellow').length;
         const redCount = quizResults.filter(r => r.firstScore === 'red').length;
         const allPassed = redCount === 0 || quizResults.every(r => r.firstScore !== 'red' || (r.retryScore && r.retryScore !== 'red'));
-
-        // Dispatch XP + lesson completion immediately (once)
-        if (!xpDispatchedRef.current) {
-            xpDispatchedRef.current = true;
-            if (allPassed) {
-                dispatch({ type: 'COMPLETE_LESSON', lessonId: lesson.id });
-            }
-            dispatch({ type: 'ADD_XP', amount: xp });
-        }
-
-        // Read updated streak from state (already updated by ADD_XP dispatch)
         const streak = state.currentStreak;
 
         return (
@@ -535,7 +546,6 @@ export default function LessonFlow({ lesson, onComplete }) {
 
                     {/* Rewards section — XP + Streak */}
                     <div className="flex items-center justify-center gap-6 mt-3">
-                        {/* XP earned */}
                         <div className="flex items-center gap-2">
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--color-bronze)" strokeWidth="2">
                                 <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" fill="var(--color-bronze-light)" />
@@ -546,17 +556,13 @@ export default function LessonFlow({ lesson, onComplete }) {
                             </div>
                         </div>
 
-                        {/* Divider */}
                         <div className="w-px h-10" style={{ backgroundColor: 'rgba(28, 25, 23, 0.08)' }} />
 
-                        {/* Day streak */}
                         <div className="flex items-center gap-2">
                             <span className="text-2xl">🔥</span>
                             <div className="text-left">
                                 <div className="text-xl font-bold leading-none" style={{ color: 'var(--color-burgundy)' }}>{streak}</div>
-                                <div className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: 'var(--color-ink-faint)' }}>
-                                    {streak === 1 ? 'Day streak' : 'Day streak'}
-                                </div>
+                                <div className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: 'var(--color-ink-faint)' }}>Day streak</div>
                             </div>
                         </div>
                     </div>
@@ -575,17 +581,17 @@ export default function LessonFlow({ lesson, onComplete }) {
 }
 
 // ─── QUIZ QUESTION COMPONENT ─────────────────────────
-function QuizQuestion({ question, lessonEventIds, onAnswer, onNext }) {
+function QuizQuestion({ question, lessonEventIds, onAnswer, onNext, onBack }) {
     const { event, type } = question;
     const [answered, setAnswered] = useState(false);
     const [selectedAnswer, setSelectedAnswer] = useState(null);
     const [score, setScore] = useState(null);
 
-    // Date input state — SINGLE number input for all events
+    // Date input state
     const [dateInput, setDateInput] = useState('');
     const [era, setEra] = useState(event.year < 0 ? 'BCE' : 'CE');
 
-    // MCQ options (memoized once)
+    // MCQ options
     const [locationOptions] = useState(() => generateLocationOptions(event));
     const [whatOptions] = useState(() => generateWhatOptions(event, lessonEventIds));
 
@@ -603,10 +609,6 @@ function QuizQuestion({ question, lessonEventIds, onAnswer, onNext }) {
         const userYear = parseInt(dateInput);
         if (isNaN(userYear)) return;
 
-        // Convert user input to internal year (negative for BCE)
-        const actualYear = era === 'BCE' ? -Math.abs(userYear) : Math.abs(userYear);
-
-        // For range events: green if within range, otherwise score by distance
         const s = scoreDateAnswer(Math.abs(userYear), era, event);
         setScore(s);
         setAnswered(true);
@@ -617,6 +619,12 @@ function QuizQuestion({ question, lessonEventIds, onAnswer, onNext }) {
         green: { bg: 'rgba(5, 150, 105, 0.08)', border: 'var(--color-success)' },
         yellow: { bg: 'rgba(198, 134, 42, 0.08)', border: 'var(--color-warning)' },
         red: { bg: 'rgba(166, 61, 61, 0.08)', border: 'var(--color-error)' },
+    };
+
+    // Helper: show place with region context
+    const formatLocation = (place, region) => {
+        if (!region || place.includes(region)) return place;
+        return `${place} (${region})`;
     };
 
     // ─ LOCATION MCQ ─
@@ -634,6 +642,9 @@ function QuizQuestion({ question, lessonEventIds, onAnswer, onNext }) {
                         {locationOptions.map((opt, i) => {
                             const isCorrect = opt === event.location.place;
                             const isSelected = selectedAnswer === opt;
+                            // Find the region for this option
+                            const optEvent = ALL_EVENTS.find(e => e.location.place === opt);
+                            const optRegion = optEvent ? optEvent.location.region : '';
                             let optStyle = {};
                             if (answered) {
                                 if (isCorrect) optStyle = { backgroundColor: 'rgba(5, 150, 105, 0.1)', borderColor: 'var(--color-success)' };
@@ -651,7 +662,10 @@ function QuizQuestion({ question, lessonEventIds, onAnswer, onNext }) {
                                         ...optStyle,
                                     }}
                                 >
-                                    {opt}
+                                    <span>{opt}</span>
+                                    {optRegion && !opt.includes(optRegion) && (
+                                        <span className="ml-1 text-xs" style={{ color: 'var(--color-ink-faint)' }}>· {optRegion}</span>
+                                    )}
                                     {answered && isCorrect && (
                                         <span className="ml-2 text-xs" style={{ color: 'var(--color-success)' }}>✓</span>
                                     )}
@@ -662,15 +676,18 @@ function QuizQuestion({ question, lessonEventIds, onAnswer, onNext }) {
                 </Card>
 
                 {answered && (
-                    <div className="mt-4">
-                        <Button className="w-full" onClick={onNext}>Continue →</Button>
+                    <div className="flex gap-3 mt-4">
+                        {onBack && (
+                            <Button variant="secondary" onClick={onBack}>← Back</Button>
+                        )}
+                        <Button className="flex-1" onClick={onNext}>Continue →</Button>
                     </div>
                 )}
             </div>
         );
     }
 
-    // ─ DATE INPUT — always single number ─
+    // ─ DATE INPUT ─
     if (type === 'date') {
         const isRange = event.yearEnd != null;
         const hint = isRange
@@ -753,8 +770,11 @@ function QuizQuestion({ question, lessonEventIds, onAnswer, onNext }) {
                 </Card>
 
                 {answered && (
-                    <div className="mt-4">
-                        <Button className="w-full" onClick={onNext}>Continue →</Button>
+                    <div className="flex gap-3 mt-4">
+                        {onBack && (
+                            <Button variant="secondary" onClick={onBack}>← Back</Button>
+                        )}
+                        <Button className="flex-1" onClick={onNext}>Continue →</Button>
                     </div>
                 )}
             </div>
@@ -771,7 +791,10 @@ function QuizQuestion({ question, lessonEventIds, onAnswer, onNext }) {
                     </p>
                     <p className="text-lg font-semibold mb-1" style={{ color: 'var(--color-burgundy)' }}>{event.date}</p>
                     <p className="text-sm mb-4" style={{ color: 'var(--color-ink-muted)' }}>
-                        {event.location.region}
+                        {event.location.place}
+                        {event.location.region && !event.location.place.includes(event.location.region) && (
+                            <span> · {event.location.region}</span>
+                        )}
                     </p>
 
                     <div className="space-y-2">
@@ -806,8 +829,11 @@ function QuizQuestion({ question, lessonEventIds, onAnswer, onNext }) {
                 </Card>
 
                 {answered && (
-                    <div className="mt-4">
-                        <Button className="w-full" onClick={onNext}>Continue →</Button>
+                    <div className="flex gap-3 mt-4">
+                        {onBack && (
+                            <Button variant="secondary" onClick={onBack}>← Back</Button>
+                        )}
+                        <Button className="flex-1" onClick={onNext}>Continue →</Button>
                     </div>
                 )}
             </div>
