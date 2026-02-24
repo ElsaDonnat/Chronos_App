@@ -4,10 +4,10 @@ A beautiful, interactive web app for learning the major events of human history.
 
 ## Features
 
-- **10 Progressive Lessons** covering 60 historical events from prehistory to the modern era
+- **21 Progressive Lessons** covering over 60 historical events from prehistory to the modern era
 - **Three Question Types**: Where did it happen?, When did it happen?, What happened?
 - **Smart Color-Coded Scoring**: Green (exact), Yellow (close), Red (missed) with adaptive thresholds
-- **Spaced Practice Mode**: Weakness-prioritized review sessions
+- **Spaced Practice Mode**: Multi-mode practice supporting Smart Review, Favorites, Custom Lesson combinations, and Card Triage views
 - **Interactive Timeline**: Chronological explorer with era bands and mastery indicators
 - **Persistent Progress**: XP, streaks, and mastery saved to localStorage
 - **Cute Axolotl Mascot**: Contextual expressions throughout the experience
@@ -53,11 +53,12 @@ src/
 │   ├── Settings.jsx     # Stats panel + reset
 │   ├── shared.jsx       # Card, Button, MasteryDots, etc.
 │   └── learn/
-│       └── LessonFlow.jsx  # Full lesson session orchestrator
+│       ├── LessonFlow.jsx  # Full lesson session orchestrator
+│       └── Lesson0Flow.jsx # Intro lesson logic
 ├── pages/
 │   ├── LearnPage.jsx    # Lesson list with progress
 │   ├── TimelinePage.jsx # Chronological timeline explorer
-│   └── PracticePage.jsx # Weakness-prioritized practice
+│   └── PracticePage.jsx # Weakness-prioritized practice hub and triage
 ├── App.jsx
 ├── main.jsx
 └── index.css            # Tailwind + custom theme + animations

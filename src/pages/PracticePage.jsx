@@ -152,7 +152,11 @@ export default function PracticePage() {
         return (
             <div className="py-4 animate-fade-in" key={`practice-${currentIndex}`}>
                 <div className="flex items-center justify-between mb-4">
-                    <button onClick={() => setView(VIEW.HUB)} className="text-sm flex items-center gap-1"
+                    <button onClick={() => {
+                        if (window.confirm("Are you sure? Progress in this session will be lost.")) {
+                            setView(VIEW.HUB);
+                        }
+                    }} className="text-sm flex items-center gap-1"
                         style={{ color: 'var(--color-ink-muted)' }}>
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                             <polyline points="15 18 9 12 15 6" />
@@ -184,6 +188,7 @@ export default function PracticePage() {
                             });
                         }}
                         onNext={() => setCurrentIndex(i => i + 1)}
+                        onBack={currentIndex > 0 ? () => setCurrentIndex(i => i - 1) : null}
                     />
                 </div>
             </div>
@@ -775,7 +780,7 @@ function CollectionView({ eventStats, tiers, collectionSort, setCollectionSort, 
 // ═══════════════════════════════════════════════════════
 // PRACTICE QUESTION — individual question card
 // ═══════════════════════════════════════════════════════
-function PracticeQuestion({ question, isStarred, onToggleStar, onAnswer, onNext }) {
+function PracticeQuestion({ question, isStarred, onToggleStar, onAnswer, onNext, onBack }) {
     const { event, type } = question;
     const [answered, setAnswered] = useState(false);
     const [selectedAnswer, setSelectedAnswer] = useState(null);
@@ -861,7 +866,14 @@ function PracticeQuestion({ question, isStarred, onToggleStar, onAnswer, onNext 
                     </div>
                     {renderFeedback()}
                 </Card>
-                {answered && <div className="mt-4"><Button className="w-full" onClick={onNext}>Continue →</Button></div>}
+                {answered ? (
+                    <div className="flex gap-3 mt-4">
+                        {onBack && <Button variant="secondary" onClick={onBack}>← Back</Button>}
+                        <Button className="flex-1" onClick={onNext}>Continue →</Button>
+                    </div>
+                ) : (
+                    onBack && <div className="mt-4"><Button variant="secondary" className="w-full" onClick={onBack}>← Back</Button></div>
+                )}
             </div>
         );
     }
@@ -901,13 +913,19 @@ function PracticeQuestion({ question, isStarred, onToggleStar, onAnswer, onNext 
                                 <Button className="w-full" onClick={handleDateSubmit} disabled={!dateInput}>
                                     Check Answer
                                 </Button>
+                                {onBack && <Button variant="secondary" className="w-full mt-3" onClick={onBack}>← Back</Button>}
                             </div>
                         </>
                     ) : (
                         renderFeedback()
                     )}
                 </Card>
-                {answered && <div className="mt-4"><Button className="w-full" onClick={onNext}>Continue →</Button></div>}
+                {answered && (
+                    <div className="flex gap-3 mt-4">
+                        {onBack && <Button variant="secondary" onClick={onBack}>← Back</Button>}
+                        <Button className="flex-1" onClick={onNext}>Continue →</Button>
+                    </div>
+                )}
             </div>
         );
     }
@@ -940,7 +958,14 @@ function PracticeQuestion({ question, isStarred, onToggleStar, onAnswer, onNext 
                     </div>
                     {renderFeedback()}
                 </Card>
-                {answered && <div className="mt-4"><Button className="w-full" onClick={onNext}>Continue →</Button></div>}
+                {answered ? (
+                    <div className="flex gap-3 mt-4">
+                        {onBack && <Button variant="secondary" onClick={onBack}>← Back</Button>}
+                        <Button className="flex-1" onClick={onNext}>Continue →</Button>
+                    </div>
+                ) : (
+                    onBack && <div className="mt-4"><Button variant="secondary" className="w-full" onClick={onBack}>← Back</Button></div>
+                )}
             </div>
         );
     }

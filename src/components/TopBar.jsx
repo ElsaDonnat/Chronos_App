@@ -30,12 +30,12 @@ export default function TopBar() {
     }, [state.totalXP]);
 
     return (
-        <header className="sticky top-0 z-50" style={{
+        <header className="flex-shrink-0 z-50 w-full relative" style={{
             backgroundColor: 'rgba(250, 246, 240, 0.92)',
             backdropFilter: 'blur(12px)',
             borderBottom: '1px solid rgba(28, 25, 23, 0.06)'
         }}>
-            <div className="max-w-[440px] mx-auto px-4 h-14 flex items-center justify-between">
+            <div className="w-full px-4 h-14 flex items-center justify-between">
                 {/* Logo */}
                 <h1
                     className="text-xl font-bold tracking-tight flex items-center gap-1.5"

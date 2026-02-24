@@ -2,7 +2,23 @@
 
 All notable changes to this project will be documented in this file.
 
-## [1.0.0] - 2025-02-23
+## [1.1.0] - 2026-02-24
+
+### Added
+- Favorites system for events with a star toggle in Learn and Practice modes.
+- Enhanced Practice Hub with new modes: Smart Review, Favorites, By Lesson, Custom Pick.
+- Collection/Triage view ("My Cards") tiering cards into Struggling, Learning, and Mastered.
+- Practice modes allow custom filtering and sorting by success rate or review count.
+- Skip and Back navigation buttons during quiz/recap/practice phases.
+- Exit confirmation dialog to prevent accidental loss of lesson progress.
+- Clickable result dots in summary screens that detail exact questions and highlight context.
+
+### Changed
+- Result dot highlights wrap directly around the contextual text with a tighter yellow box.
+- Lesson progression now unlocks unconditionally upon completion, even with mistakes.
+- Lesson structure expanded to 21 total lessons.
+
+## [1.0.0] - 2026-02-23
 
 ### Added
 - Complete Chronos history learning app

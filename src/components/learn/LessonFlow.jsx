@@ -141,15 +141,16 @@ export default function LessonFlow({ lesson, onComplete }) {
             xpDispatched.current = true;
             const xp = calculateXP(quizResults);
             const redCount = quizResults.filter(r => r.firstScore === 'red').length;
-            const allPassed = redCount === 0 || quizResults.every(r =>
-                r.firstScore !== 'red' || (r.retryScore && r.retryScore !== 'red')
-            );
-            if (allPassed) {
-                dispatch({ type: 'COMPLETE_LESSON', lessonId: lesson.id });
-            }
+            dispatch({ type: 'COMPLETE_LESSON', lessonId: lesson.id });
             dispatch({ type: 'ADD_XP', amount: xp });
         }
     }, [phase, quizResults, lesson.id, dispatch]);
+
+    const handleExit = useCallback(() => {
+        if (window.confirm("Are you sure? Progress in this lesson will be lost.")) {
+            onComplete();
+        }
+    }, [onComplete]);
 
     // Helper: record answer
     const recordAnswer = useCallback((eventId, questionType, score) => {
@@ -316,7 +317,7 @@ export default function LessonFlow({ lesson, onComplete }) {
         return (
             <div className="py-4 animate-fade-in">
                 <div className="flex items-center justify-between mb-4">
-                    <button onClick={onComplete} className="text-sm flex items-center gap-1" style={{ color: 'var(--color-ink-muted)' }}>
+                    <button onClick={handleExit} className="text-sm flex items-center gap-1" style={{ color: 'var(--color-ink-muted)' }}>
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="15 18 9 12 15 6" /></svg>
                         Exit
                     </button>
@@ -528,6 +529,8 @@ export default function LessonFlow({ lesson, onComplete }) {
                             event={q.event}
                             onAnswer={(score) => recordAnswer(q.event.id, 'date_input', score)}
                             onNext={() => setRecapIndex(i => i + 1)}
+                            onBack={recapIndex > 0 ? () => setRecapIndex(i => i - 1) : null}
+                            onSkip={() => setRecapIndex(i => i + 1)}
                         />
                     ) : (
                         <QuizQuestion
@@ -535,6 +538,8 @@ export default function LessonFlow({ lesson, onComplete }) {
                             lessonEventIds={lesson.eventIds}
                             onAnswer={(score) => recordAnswer(q.event.id, q.type, score)}
                             onNext={() => setRecapIndex(i => i + 1)}
+                            onBack={recapIndex > 0 ? () => setRecapIndex(i => i - 1) : null}
+                            onSkip={() => setRecapIndex(i => i + 1)}
                         />
                     )}
                 </div>
@@ -579,8 +584,11 @@ export default function LessonFlow({ lesson, onComplete }) {
                             {event.location.place}
                         </div>
                     </Card>
-                    <div className="mt-6">
-                        <Button className="w-full" onClick={() => setReviewIndex(i => i + 1)}>
+                    <div className="flex gap-3 mt-6">
+                        {reviewIndex > 0 && (
+                            <Button variant="secondary" onClick={() => setReviewIndex(i => i - 1)}>← Back</Button>
+                        )}
+                        <Button className="flex-1" onClick={() => setReviewIndex(i => i + 1)}>
                             {reviewIndex < hardEvents.length - 1 ? 'Next Review →' : 'See Results →'}
                         </Button>
                     </div>
@@ -682,8 +690,9 @@ export default function LessonFlow({ lesson, onComplete }) {
                     const qType = selectedDot.questionType;
                     const dotColor = selectedDot.firstScore === 'green' ? 'var(--color-success)'
                         : selectedDot.firstScore === 'yellow' ? 'var(--color-warning)' : 'var(--color-error)';
-                    const hlBg = selectedDot.firstScore === 'green' ? 'rgba(5, 150, 105, 0.12)'
-                        : selectedDot.firstScore === 'yellow' ? 'rgba(198, 134, 42, 0.12)' : 'rgba(166, 61, 61, 0.12)';
+                    const isTarget = selectedDot.firstScore !== 'green';
+                    const hlBg = isTarget ? 'var(--color-warning-light)' : 'rgba(5, 150, 105, 0.12)';
+                    const hlColor = isTarget ? 'var(--color-warning)' : 'var(--color-success)';
                     return (
                         <div className="dot-modal-backdrop" onClick={() => setSelectedDot(null)}>
                             <div className="dot-modal-content" onClick={e => e.stopPropagation()}>
@@ -705,31 +714,31 @@ export default function LessonFlow({ lesson, onComplete }) {
                                             onClick={() => dispatch({ type: 'TOGGLE_STAR', eventId: evt.id })}
                                         />
                                     </div>
-                                    <div className={qType === 'what' ? 'dot-highlight' : ''}
-                                        style={qType === 'what' ? { backgroundColor: hlBg, color: dotColor } : {}}>
-                                        <h2 className="text-xl font-bold mt-3 mb-2 leading-snug" style={{ fontFamily: 'var(--font-serif)', color: 'var(--color-ink)' }}>
+                                    <div className="mb-2">
+                                        <h2 className={`text-xl font-bold leading-snug ${qType === 'what' ? 'dot-highlight' : ''}`}
+                                            style={{ fontFamily: 'var(--font-serif)', ...(qType === 'what' ? { backgroundColor: hlBg, color: hlColor } : { color: 'var(--color-ink)' }) }}>
                                             {evt.title}
                                         </h2>
                                     </div>
-                                    <div className={qType === 'date' || qType === 'date_input' ? 'dot-highlight' : ''}
-                                        style={qType === 'date' || qType === 'date_input' ? { backgroundColor: hlBg, color: dotColor } : {}}>
-                                        <p className="text-lg font-semibold mb-3" style={{ color: 'var(--color-burgundy)' }}>
+                                    <div className="mb-3">
+                                        <p className={`text-lg font-semibold ${qType === 'date' || qType === 'date_input' ? 'dot-highlight' : ''}`}
+                                            style={{ ...(qType === 'date' || qType === 'date_input' ? { backgroundColor: hlBg, color: hlColor } : { color: 'var(--color-burgundy)' }) }}>
                                             {evt.date}
                                         </p>
                                     </div>
                                     <p className="text-sm leading-relaxed mb-3" style={{ color: 'var(--color-ink-secondary)' }}>
                                         {evt.description}
                                     </p>
-                                    <div className={qType === 'location' ? 'dot-highlight' : ''}
-                                        style={qType === 'location' ? { backgroundColor: hlBg, color: dotColor } : {}}>
-                                        <div className="flex items-center gap-2 text-xs" style={{ color: 'var(--color-ink-muted)' }}>
-                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                    <div className="mt-3">
+                                        <div className={`flex items-center gap-2 text-xs w-max ${qType === 'location' ? 'dot-highlight' : ''}`} style={{ ...(qType === 'location' ? { backgroundColor: hlBg, color: hlColor } : { color: 'var(--color-ink-muted)' }) }}>
+                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="flex-shrink-0">
                                                 <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" /><circle cx="12" cy="10" r="3" />
                                             </svg>
-                                            {evt.location.place}
-                                            {evt.location.region && !evt.location.place.includes(evt.location.region) && (
-                                                <span style={{ color: 'var(--color-ink-faint)' }}>· {evt.location.region}</span>
-                                            )}
+                                            <span className="truncate">{evt.location.place}
+                                                {evt.location.region && !evt.location.place.includes(evt.location.region) && (
+                                                    <span style={qType === 'location' ? { color: hlColor, opacity: 0.8, marginLeft: 4 } : { color: 'var(--color-ink-faint)', marginLeft: 4 }}>· {evt.location.region}</span>
+                                                )}
+                                            </span>
                                         </div>
                                     </div>
                                 </Card>
@@ -747,7 +756,7 @@ export default function LessonFlow({ lesson, onComplete }) {
 // ═══════════════════════════════════════════════════════
 // MCQ QUIZ QUESTION (for location, date MCQ, what)
 // ═══════════════════════════════════════════════════════
-function QuizQuestion({ question, lessonEventIds, onAnswer, onNext, onBack }) {
+function QuizQuestion({ question, lessonEventIds, onAnswer, onNext, onBack, onSkip }) {
     const { event, type } = question;
     const [answered, setAnswered] = useState(false);
     const [selectedAnswer, setSelectedAnswer] = useState(null);
@@ -773,14 +782,25 @@ function QuizQuestion({ question, lessonEventIds, onAnswer, onNext, onBack }) {
         red: { bg: 'rgba(166, 61, 61, 0.08)', border: 'var(--color-error)' },
     };
 
-    const renderButtons = () => (
-        answered && (
-            <div className="flex gap-3 mt-4">
-                {onBack && <Button variant="secondary" onClick={onBack}>← Back</Button>}
-                <Button className="flex-1" onClick={onNext}>Continue →</Button>
-            </div>
-        )
-    );
+    const renderButtons = () => {
+        if (answered) {
+            return (
+                <div className="flex gap-3 mt-4">
+                    {onBack && <Button variant="secondary" onClick={onBack}>← Back</Button>}
+                    <Button className="flex-1" onClick={onNext}>Continue →</Button>
+                </div>
+            );
+        }
+        if (onSkip || onBack) {
+            return (
+                <div className="flex gap-3 mt-4">
+                    {onBack && <Button variant="secondary" onClick={onBack}>← Back</Button>}
+                    {onSkip && <Button className="flex-1" variant="secondary" onClick={onSkip}>Skip</Button>}
+                </div>
+            );
+        }
+        return null;
+    };
 
     // ─ LOCATION MCQ ─
     if (type === 'location') {
@@ -899,7 +919,7 @@ function QuizQuestion({ question, lessonEventIds, onAnswer, onNext, onBack }) {
 // ═══════════════════════════════════════════════════════
 // DATE FREE-INPUT QUESTION (recap only)
 // ═══════════════════════════════════════════════════════
-function DateInputQuestion({ event, onAnswer, onNext }) {
+function DateInputQuestion({ event, onAnswer, onNext, onBack, onSkip }) {
     const [answered, setAnswered] = useState(false);
     const [dateInput, setDateInput] = useState('');
     const [era, setEra] = useState(event.year < 0 ? 'BCE' : 'CE');
@@ -972,6 +992,12 @@ function DateInputQuestion({ event, onAnswer, onNext }) {
                         </div>
                         <div className="mt-4">
                             <Button className="w-full" onClick={handleSubmit} disabled={!dateInput}>Check Answer</Button>
+                            {(onSkip || onBack) && (
+                                <div className="flex gap-3 mt-3">
+                                    {onBack && <Button variant="secondary" className="flex-1" onClick={onBack}>← Back</Button>}
+                                    {onSkip && <Button variant="secondary" className="flex-1" onClick={onSkip}>Skip</Button>}
+                                </div>
+                            )}
                         </div>
                     </>
                 ) : (
@@ -989,8 +1015,9 @@ function DateInputQuestion({ event, onAnswer, onNext }) {
             </Card>
 
             {answered && (
-                <div className="mt-4">
-                    <Button className="w-full" onClick={onNext}>Continue →</Button>
+                <div className="flex gap-3 mt-4">
+                    {onBack && <Button variant="secondary" onClick={onBack}>← Back</Button>}
+                    <Button className="flex-1" onClick={onNext}>Continue →</Button>
                 </div>
             )}
         </div>

@@ -39,12 +39,12 @@ export default function BottomNav({ activeTab, onTabChange }) {
     ];
 
     return (
-        <nav className="fixed bottom-0 left-0 right-0 z-50" style={{
+        <nav className="absolute bottom-0 w-full z-50" style={{
             backgroundColor: 'rgba(250, 246, 240, 0.95)',
             backdropFilter: 'blur(12px)',
             borderTop: '1px solid rgba(28, 25, 23, 0.06)'
         }}>
-            <div className="max-w-[440px] mx-auto flex items-center justify-around h-16 px-2">
+            <div className="w-full flex items-center justify-around h-16 px-2">
                 {tabs.map(tab => {
                     const isActive = activeTab === tab.id;
                     return (

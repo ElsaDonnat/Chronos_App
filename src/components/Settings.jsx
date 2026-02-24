@@ -16,10 +16,10 @@ export default function Settings() {
     const redCount = masteryEntries.filter(m => m.overallMastery < 3 && m.overallMastery > 0).length;
 
     return (
-        <div className="fixed inset-0 z-[60] flex items-end justify-center" onClick={() => dispatch({ type: 'TOGGLE_SETTINGS' })}>
+        <div className="absolute inset-0 z-[60] flex items-end justify-center" onClick={() => dispatch({ type: 'TOGGLE_SETTINGS' })}>
             <div className="absolute inset-0" style={{ backgroundColor: 'rgba(28, 25, 23, 0.3)' }} />
             <div
-                className="relative w-full max-w-[440px] rounded-t-2xl p-6 animate-fade-in-up"
+                className="relative w-full rounded-t-2xl p-6 animate-fade-in-up"
                 style={{ backgroundColor: 'var(--color-parchment)', maxHeight: '80vh', overflowY: 'auto' }}
                 onClick={e => e.stopPropagation()}
             >
