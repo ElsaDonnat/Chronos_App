@@ -5,6 +5,7 @@ export const LESSONS = [
         title: "Before Civilization",
         subtitle: "Prehistory — the first steps of humanity",
         mood: "In the deep past, our ancestors took their first steps upright…",
+        periodId: "prehistory",
         eventIds: ["f1", "f2", "f3", "f4", "f5", "f6"]
     },
     {
@@ -13,6 +14,7 @@ export const LESSONS = [
         title: "The First Cities",
         subtitle: "Early Civilization — writing, law, and bronze",
         mood: "From mud-brick walls rise the first cities, and with them, the written word…",
+        periodId: "ancient",
         eventIds: ["f7", "f8", "f9", "f10", "f11"]
     },
     {
@@ -37,6 +39,7 @@ export const LESSONS = [
         title: "The Early Middle Ages",
         subtitle: "Plague, prophecy, and the world remade",
         mood: "Empires rise and fall across three continents…",
+        periodId: "medieval",
         eventIds: ["f22", "f23", "f24", "f25", "f26"]
     },
     {
@@ -53,6 +56,7 @@ export const LESSONS = [
         title: "Renaissance and Discovery",
         subtitle: "Printing, exploration, and reformation",
         mood: "The world cracks open — in print, on canvas, and across unexplored oceans…",
+        periodId: "earlymodern",
         eventIds: ["f32", "f33", "f34", "f35", "f36"]
     },
     {
@@ -68,7 +72,8 @@ export const LESSONS = [
         number: 9,
         title: "Revolutions",
         subtitle: "Liberty, equality, industry — the world transformed",
-        mood: "The old order shatters — in musket smoke, factory steam, and the cry for freedom…",
+        mood: "The old order shatters — in musket fire, factory steam, and the cry for freedom…",
+        periodId: "modern",
         eventIds: ["f42", "f43", "f44", "f45", "f46", "f47", "f48"]
     },
     {

@@ -27,14 +27,13 @@ export default function TimelinePage() {
 
     const learnedIds = new Set(state.seenEvents);
 
-    // Get era color
     const getEraColor = (eraId) => {
         const colors = {
             prehistory: 'rgba(13, 148, 136, 0.06)',
             ancient: 'rgba(107, 91, 115, 0.06)',
             medieval: 'rgba(160, 82, 45, 0.06)',
             earlymodern: 'rgba(101, 119, 74, 0.06)',
-            modern: 'rgba(180, 83, 9, 0.06)',
+            modern: 'rgba(139, 65, 87, 0.06)',
         };
         return colors[eraId] || 'transparent';
     };
@@ -50,23 +49,23 @@ export default function TimelinePage() {
                 </p>
             </div>
 
-            {/* Era filters */}
-            <div className="flex gap-1.5 overflow-x-auto pb-2 mb-2 -mx-1 px-1 scrollbar-hide">
-                <FilterChip label="All" active={selectedEra === 'all'} onClick={() => setSelectedEra('all')} />
-                {ERA_RANGES.map(era => (
-                    <FilterChip key={era.id} label={era.label} active={selectedEra === era.id}
-                        onClick={() => setSelectedEra(era.id)} />
-                ))}
-            </div>
-
-            {/* Category filters */}
-            <div className="flex gap-1.5 overflow-x-auto pb-3 mb-4 -mx-1 px-1 scrollbar-hide">
-                <FilterChip label="All" active={selectedCategory === 'all'} onClick={() => setSelectedCategory('all')} />
-                {Object.entries(CATEGORY_CONFIG).map(([key, config]) => (
-                    <FilterChip key={key} label={config.label} active={selectedCategory === key}
-                        onClick={() => setSelectedCategory(key)}
-                        dotColor={config.color} />
-                ))}
+            {/* Compact filter section */}
+            <div className="mb-4 space-y-1.5">
+                <div className="flex gap-1 overflow-x-auto pb-0.5 -mx-1 px-1" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none', WebkitOverflowScrolling: 'touch' }}>
+                    <FilterChip label="All" active={selectedEra === 'all'} onClick={() => setSelectedEra('all')} />
+                    {ERA_RANGES.map(era => (
+                        <FilterChip key={era.id} label={era.label} active={selectedEra === era.id}
+                            onClick={() => setSelectedEra(era.id)} />
+                    ))}
+                </div>
+                <div className="flex gap-1 overflow-x-auto pb-0.5 -mx-1 px-1" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none', WebkitOverflowScrolling: 'touch' }}>
+                    <FilterChip label="All" active={selectedCategory === 'all'} onClick={() => setSelectedCategory('all')} />
+                    {Object.entries(CATEGORY_CONFIG).map(([key, config]) => (
+                        <FilterChip key={key} label={config.label} active={selectedCategory === key}
+                            onClick={() => setSelectedCategory(key)}
+                            dotColor={config.color} />
+                    ))}
+                </div>
             </div>
 
             {filteredEvents.length === 0 ? (
@@ -92,7 +91,6 @@ export default function TimelinePage() {
 
                         return (
                             <div key={event.id}>
-                                {/* Era separator */}
                                 {showEraLabel && era && (
                                     <div className="relative pl-14 py-2 mb-2 mt-2" style={{ backgroundColor: getEraColor(era.id) }}>
                                         <span className="text-[10px] uppercase tracking-widest font-bold" style={{ color: 'var(--color-ink-faint)' }}>
@@ -102,7 +100,7 @@ export default function TimelinePage() {
                                 )}
 
                                 <div
-                                    className={`relative pl-14 py-2 animate-fade-in cursor-pointer transition-all duration-200`}
+                                    className="relative pl-14 py-2 animate-fade-in cursor-pointer transition-all duration-200"
                                     style={{ animationDelay: `${Math.min(index * 30, 500)}ms`, animationFillMode: 'backwards' }}
                                     onClick={() => isLearned && setExpandedId(isExpanded ? null : event.id)}
                                 >
@@ -146,7 +144,6 @@ export default function TimelinePage() {
                                                 {mastery && <MasteryDots mastery={mastery} />}
                                             </div>
 
-                                            {/* Expanded view */}
                                             {isExpanded && (
                                                 <div className="mt-3 animate-fade-in">
                                                     <Card style={{ borderLeft: `3px solid ${catConfig?.color || '#999'}` }}>
@@ -206,14 +203,15 @@ function FilterChip({ label, active, onClick, dotColor }) {
     return (
         <button
             onClick={onClick}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all duration-200"
+            className="flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-semibold whitespace-nowrap transition-all duration-200"
             style={{
                 backgroundColor: active ? 'var(--color-burgundy)' : 'rgba(28, 25, 23, 0.04)',
                 color: active ? 'white' : 'var(--color-ink-muted)',
+                border: active ? 'none' : '1px solid rgba(28, 25, 23, 0.08)',
             }}
         >
             {dotColor && !active && (
-                <div className="w-2 h-2 rounded-full" style={{ backgroundColor: dotColor }} />
+                <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: dotColor }} />
             )}
             {label}
         </button>

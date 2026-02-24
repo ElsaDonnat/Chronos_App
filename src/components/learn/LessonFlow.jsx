@@ -1,6 +1,6 @@
 import { useState, useMemo, useCallback } from 'react';
 import { useApp } from '../../context/AppContext';
-import { getEventsByIds, ALL_EVENTS, formatYear, CATEGORY_CONFIG } from '../../data/events';
+import { getEventsByIds, ALL_EVENTS, formatYear, CATEGORY_CONFIG, ERA_RANGES } from '../../data/events';
 import { scoreDateAnswer, generateLocationOptions, generateWhatOptions, calculateXP } from '../../data/quiz';
 import { Card, Button, ProgressBar, CategoryTag, Divider } from '../shared';
 import Mascot from '../Mascot';
@@ -8,20 +8,61 @@ import Mascot from '../Mascot';
 // ─── PHASES ────────────────────────────────────────────
 const PHASE = {
     INTRO: 'intro',
-    CHUNK_LEARN: 'chunk_learn',    // Study 2 cards
-    CHUNK_QUIZ: 'chunk_quiz',      // Quiz on those 2 cards
+    CHUNK_LEARN: 'chunk_learn',    // Study cards
+    CHUNK_QUIZ: 'chunk_quiz',      // Quiz on those cards
+    PERIOD_INTRO: 'period_intro',  // Period overview card
     FINAL_REVIEW: 'final_review',  // Re-show hard ones + retry red
     SUMMARY: 'summary',
 };
 
-const CHUNK_SIZE = 2; // 2 cards per chunk
+const CHUNK_SIZE = 5; // cards per chunk
+
+// Period overview data keyed by lesson periodId
+const PERIOD_INFO = {
+    prehistory: {
+        title: 'Prehistory',
+        subtitle: 'c. 7 million years ago – c. 3200 BCE',
+        description: 'The longest chapter in human history — from the first split with our ape ancestors through mastering fire, developing language, migrating across the globe, and eventually settling into farming communities. No written records exist; everything we know comes from fossils, tools, and DNA.',
+        color: '#0D9488',
+        icon: '🦴',
+    },
+    ancient: {
+        title: 'The Ancient World',
+        subtitle: 'c. 3200 BCE – 500 CE',
+        description: 'Writing is invented, cities rise, empires clash. From Sumer to Rome, humanity builds the foundations of law, philosophy, religion, and governance that still shape our world today.',
+        color: '#6B5B73',
+        icon: '🏛️',
+    },
+    medieval: {
+        title: 'The Medieval World',
+        subtitle: '500 – 1500 CE',
+        description: 'Empires fragment and reform. Faiths spread across continents, scholars preserve and advance knowledge, and horseback conquerors redraw the map of Eurasia.',
+        color: '#A0522D',
+        icon: '⚔️',
+    },
+    earlymodern: {
+        title: 'The Early Modern Period',
+        subtitle: '1500 – 1800 CE',
+        description: 'Print breaks the monopoly on knowledge, ships connect every continent, and thinkers challenge the divine right of kings — setting the stage for revolution.',
+        color: '#65774A',
+        icon: '🧭',
+    },
+    modern: {
+        title: 'The Modern World',
+        subtitle: '1800 – Present',
+        description: 'Industry, ideology, and information transform human life at accelerating speed. Two world wars reshape the global order, and digital networks connect billions.',
+        color: '#8B4157',
+        icon: '🌍',
+    },
+};
 
 export default function LessonFlow({ lesson, onComplete }) {
     const { state, dispatch } = useApp();
     const events = useMemo(() => getEventsByIds(lesson.eventIds), [lesson]);
 
     const [phase, setPhase] = useState(PHASE.INTRO);
-    const [chunkIndex, setChunkIndex] = useState(0); // which chunk of 2 we're on
+    const [chunkIndex, setChunkIndex] = useState(0); // which chunk we're on
+    const [showedPeriodCard, setShowedPeriodCard] = useState(false); // track period intro
     const [cardIndexInChunk, setCardIndexInChunk] = useState(0); // card within current chunk
     const [quizResults, setQuizResults] = useState([]); // all results across all chunks
     const [currentQuizIndex, setCurrentQuizIndex] = useState(0);
@@ -94,12 +135,17 @@ export default function LessonFlow({ lesson, onComplete }) {
                         {events.length} events to discover
                     </p>
                     <p className="text-xs mb-6" style={{ color: 'var(--color-ink-faint)' }}>
-                        Learn {CHUNK_SIZE} events at a time, then test your knowledge
+                        Learn a few events at a time, then test your knowledge
                     </p>
                     <Mascot mood="happy" size={64} />
                     <div className="mt-6">
                         <Button onClick={() => {
-                            setPhase(PHASE.CHUNK_LEARN);
+                            // If lesson has a periodId, show period card first
+                            if (lesson.periodId && PERIOD_INFO[lesson.periodId]) {
+                                setPhase(PHASE.PERIOD_INTRO);
+                            } else {
+                                setPhase(PHASE.CHUNK_LEARN);
+                            }
                             setChunkIndex(0);
                             setCardIndexInChunk(0);
                             dispatch({ type: 'MARK_EVENTS_SEEN', eventIds: lesson.eventIds });
@@ -112,7 +158,58 @@ export default function LessonFlow({ lesson, onComplete }) {
         );
     }
 
-    // ─── CHUNK LEARN (Show 2 cards) ────────────────────
+    // ─── PERIOD INTRO CARD ────────────────────────────
+    if (phase === PHASE.PERIOD_INTRO) {
+        const period = PERIOD_INFO[lesson.periodId];
+        if (!period) {
+            setPhase(PHASE.CHUNK_LEARN);
+            return null;
+        }
+
+        return (
+            <div className="py-4 animate-fade-in">
+                <div className="flex items-center justify-between mb-4">
+                    <button onClick={onComplete} className="text-sm flex items-center gap-1" style={{ color: 'var(--color-ink-muted)' }}>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="15 18 9 12 15 6" /></svg>
+                        Exit
+                    </button>
+                    <span className="text-[10px] uppercase tracking-widest font-bold px-2 py-0.5 rounded-full"
+                        style={{ backgroundColor: `${period.color}15`, color: period.color }}>
+                        Period Overview
+                    </span>
+                </div>
+
+                <div className="animate-slide-in-right">
+                    <Card style={{ borderLeft: `4px solid ${period.color}`, overflow: 'hidden' }}>
+                        <div className="text-center mb-4">
+                            <span className="text-4xl">{period.icon}</span>
+                        </div>
+                        <h2 className="text-2xl font-bold text-center mb-1" style={{ fontFamily: 'var(--font-serif)', color: 'var(--color-ink)' }}>
+                            {period.title}
+                        </h2>
+                        <p className="text-sm font-semibold text-center mb-4" style={{ color: period.color }}>
+                            {period.subtitle}
+                        </p>
+                        <Divider />
+                        <p className="text-sm leading-relaxed mt-4" style={{ color: 'var(--color-ink-secondary)' }}>
+                            {period.description}
+                        </p>
+                    </Card>
+                </div>
+
+                <div className="mt-6">
+                    <Button className="w-full" onClick={() => {
+                        setShowedPeriodCard(true);
+                        setPhase(PHASE.CHUNK_LEARN);
+                    }}>
+                        Begin Events →
+                    </Button>
+                </div>
+            </div>
+        );
+    }
+
+    // ─── CHUNK LEARN ──────────────────────────────────
     if (phase === PHASE.CHUNK_LEARN) {
         const event = currentChunk[cardIndexInChunk];
         if (!event) {
