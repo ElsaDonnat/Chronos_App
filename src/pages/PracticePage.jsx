@@ -1,9 +1,9 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useApp } from '../context/AppContext';
 import { ALL_EVENTS, getEventById, CATEGORY_CONFIG } from '../data/events';
 import { LESSONS } from '../data/lessons';
 import { scoreDateAnswer, generateLocationOptions, generateWhatOptions, generateDescriptionOptions } from '../data/quiz';
-import { Card, Button, MasteryDots, ProgressBar, Divider, CategoryTag, StarButton, TabSelector } from '../components/shared';
+import { Card, Button, MasteryDots, ProgressBar, Divider, CategoryTag, StarButton, TabSelector, ConfirmModal } from '../components/shared';
 import Mascot from '../components/Mascot';
 
 // ─── Views ───────────────────────────────────────────
@@ -15,7 +15,7 @@ const VIEW = {
     RESULTS: 'results',
 };
 
-export default function PracticePage() {
+export default function PracticePage({ onSessionChange }) {
     const { state, dispatch } = useApp();
     const [view, setView] = useState(VIEW.HUB);
     const [practiceTab, setPracticeTab] = useState('hub'); // hub | collection
@@ -26,6 +26,11 @@ export default function PracticePage() {
     const [selectedLessons, setSelectedLessons] = useState([]);
     const [collectionSort, setCollectionSort] = useState('success'); // success | times
     const [expandedEventId, setExpandedEventId] = useState(null);
+    const [showExitConfirm, setShowExitConfirm] = useState(false);
+
+    useEffect(() => {
+        onSessionChange?.(view === VIEW.SESSION || view === VIEW.RESULTS);
+    }, [view, onSessionChange]);
 
     // ─── Derived data ────────────────────────────────
     const learnedEvents = useMemo(() => {
@@ -151,13 +156,21 @@ export default function PracticePage() {
         }
 
         return (
+            <>
+            {showExitConfirm && (
+                <ConfirmModal
+                    title="Leave session?"
+                    message="Progress in this session will be lost."
+                    confirmLabel="Leave"
+                    cancelLabel="Stay"
+                    danger
+                    onConfirm={() => { setShowExitConfirm(false); setView(VIEW.HUB); }}
+                    onCancel={() => setShowExitConfirm(false)}
+                />
+            )}
             <div className="py-4 animate-fade-in" key={`practice-${currentIndex}`}>
                 <div className="flex items-center justify-between mb-4">
-                    <button onClick={() => {
-                        if (window.confirm("Are you sure? Progress in this session will be lost.")) {
-                            setView(VIEW.HUB);
-                        }
-                    }} className="text-sm flex items-center gap-1"
+                    <button onClick={() => setShowExitConfirm(true)} className="text-sm flex items-center gap-1"
                         style={{ color: 'var(--color-ink-muted)' }}>
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                             <polyline points="15 18 9 12 15 6" />
@@ -193,6 +206,7 @@ export default function PracticePage() {
                     />
                 </div>
             </div>
+            </>
         );
     }
 

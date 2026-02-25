@@ -11,6 +11,7 @@ const TAB_KEYS = { '1': 'learn', '2': 'timeline', '3': 'practice' };
 
 export default function App() {
   const [activeTab, setActiveTab] = useState('learn');
+  const [inSession, setInSession] = useState(false);
   const { state, dispatch } = useApp();
   const mainRef = useRef(null);
 
@@ -40,19 +41,19 @@ export default function App() {
   return (
     <div className="app-shell">
       <TopBar activeTab={activeTab} />
-      <MobileTabBar activeTab={activeTab} onTabChange={setActiveTab} />
       <div className="app-body">
         <Sidebar activeTab={activeTab} onTabChange={setActiveTab} />
         <main className="main-content" ref={mainRef}>
           <div className="main-content-inner">
             <div className="animate-fade-in" key={activeTab}>
-              {activeTab === 'learn' && <LearnPage />}
+              {activeTab === 'learn' && <LearnPage onSessionChange={setInSession} />}
               {activeTab === 'timeline' && <TimelinePage />}
-              {activeTab === 'practice' && <PracticePage />}
+              {activeTab === 'practice' && <PracticePage onSessionChange={setInSession} />}
             </div>
           </div>
         </main>
       </div>
+      {!inSession && <MobileTabBar activeTab={activeTab} onTabChange={setActiveTab} />}
       {state.settingsOpen && <Settings />}
     </div>
   );

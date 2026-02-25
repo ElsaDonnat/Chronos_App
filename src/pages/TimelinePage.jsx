@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react';
 import { useApp } from '../context/AppContext';
-import { ALL_EVENTS, CATEGORY_CONFIG, ERA_RANGES, getEraForYear } from '../data/events';
-import { Card, CategoryTag, MasteryDots } from '../components/shared';
+import { ALL_EVENTS, CATEGORY_CONFIG, ERA_RANGES, ERA_BOUNDARY_EVENTS, getEraForYear, getEventById } from '../data/events';
+import { Card, CategoryTag, MasteryDots, Divider } from '../components/shared';
 import Mascot from '../components/Mascot';
 
 export default function TimelinePage() {
@@ -9,6 +9,7 @@ export default function TimelinePage() {
     const [selectedEra, setSelectedEra] = useState('all');
     const [selectedCategory, setSelectedCategory] = useState('all');
     const [expandedId, setExpandedId] = useState(null);
+    const [expandedEraId, setExpandedEraId] = useState(null);
 
     const sortedEvents = useMemo(() => {
         return [...ALL_EVENTS].sort((a, b) => a.year - b.year);
@@ -28,20 +29,12 @@ export default function TimelinePage() {
     const learnedIds = new Set(state.seenEvents);
     const lesson0Complete = !!state.completedLessons['lesson-0'];
 
-    const eraIcons = {
-        prehistory: '🦴',
-        ancient: '🏛️',
-        medieval: '⚔️',
-        earlymodern: '🧭',
-        modern: '🌍',
-    };
-
-    const eraSubtitles = {
-        prehistory: 'c. 7 million years ago – c. 3200 BCE',
-        ancient: 'c. 3200 BCE – 500 CE',
-        medieval: '500 – 1500 CE',
-        earlymodern: '1500 – 1800 CE',
-        modern: '1800 – Present',
+    const eraDetails = {
+        prehistory: { icon: '🦴', title: 'Prehistory', subtitle: 'c. 7 million years ago – c. 3200 BCE', description: 'The longest chapter in human history — from the first split with our ape ancestors through mastering fire, developing language, migrating across the globe, and eventually settling into farming communities.', color: '#0D9488' },
+        ancient: { icon: '🏛️', title: 'The Ancient World', subtitle: 'c. 3200 BCE – 500 CE', description: 'Writing is invented, cities rise, empires clash. From Sumer to Rome, humanity builds the foundations of law, philosophy, religion, and governance.', color: '#6B5B73' },
+        medieval: { icon: '⚔️', title: 'The Medieval World', subtitle: '500 – 1500 CE', description: 'Empires fragment and reform. Faiths spread across continents, scholars preserve and advance knowledge, and horseback conquerors redraw the map of Eurasia.', color: '#A0522D' },
+        earlymodern: { icon: '🧭', title: 'The Early Modern Period', subtitle: '1500 – 1800 CE', description: 'Print breaks the monopoly on knowledge, ships connect every continent, and thinkers challenge the divine right of kings.', color: '#65774A' },
+        modern: { icon: '🌍', title: 'The Modern World', subtitle: '1800 – Present', description: 'Industry, ideology, and information transform human life at accelerating speed. Two world wars reshape the global order, and digital networks connect billions.', color: '#8B4157' },
     };
 
     const getEraColor = (eraId) => {
@@ -108,27 +101,98 @@ export default function TimelinePage() {
 
                         return (
                             <div key={event.id}>
-                                {showEraLabel && era && (
-                                    <div className="relative pl-16 py-3 mb-2 mt-3 rounded-lg" style={{ backgroundColor: getEraColor(era.id) }}>
-                                        {lesson0Complete ? (
-                                            <div className="flex items-center gap-2">
-                                                <span className="text-base">{eraIcons[era.id] || ''}</span>
-                                                <div>
-                                                    <span className="text-xs uppercase tracking-widest font-bold" style={{ color: 'var(--color-ink-muted)' }}>
-                                                        {era.label}
-                                                    </span>
-                                                    <p className="text-[10px]" style={{ color: 'var(--color-ink-faint)' }}>
-                                                        {eraSubtitles[era.id] || ''}
-                                                    </p>
-                                                </div>
-                                            </div>
-                                        ) : (
-                                            <span className="text-[10px] uppercase tracking-widest font-bold" style={{ color: 'var(--color-ink-faint)' }}>
-                                                {era.label}
-                                            </span>
-                                        )}
-                                    </div>
-                                )}
+                                {showEraLabel && era && (() => {
+                                    const detail = eraDetails[era.id];
+                                    const isEraExpanded = expandedEraId === era.id;
+                                    const boundary = ERA_BOUNDARY_EVENTS[era.id];
+                                    const startEvent = boundary?.startEventId ? getEventById(boundary.startEventId) : null;
+                                    const endEvent = boundary?.endEventId ? getEventById(boundary.endEventId) : null;
+
+                                    return (
+                                        <div
+                                            className="relative pl-16 py-3 mb-2 mt-3 rounded-lg cursor-pointer transition-all duration-200"
+                                            style={{ backgroundColor: getEraColor(era.id) }}
+                                            onClick={() => lesson0Complete && setExpandedEraId(isEraExpanded ? null : era.id)}
+                                        >
+                                            {lesson0Complete ? (
+                                                <>
+                                                    <div className="flex items-center gap-2">
+                                                        <span className="text-base">{detail?.icon || ''}</span>
+                                                        <div className="flex-1">
+                                                            <span className="text-xs uppercase tracking-widest font-bold" style={{ color: 'var(--color-ink-muted)' }}>
+                                                                {era.label}
+                                                            </span>
+                                                            <p className="text-[10px]" style={{ color: 'var(--color-ink-faint)' }}>
+                                                                {detail?.subtitle || ''}
+                                                            </p>
+                                                        </div>
+                                                        <svg
+                                                            width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-ink-faint)" strokeWidth="2" strokeLinecap="round"
+                                                            className="mr-3 transition-transform duration-200"
+                                                            style={{ transform: isEraExpanded ? 'rotate(180deg)' : 'rotate(0deg)' }}
+                                                        >
+                                                            <polyline points="6 9 12 15 18 9" />
+                                                        </svg>
+                                                    </div>
+                                                    {isEraExpanded && detail && (
+                                                        <div className="mt-3 animate-fade-in" onClick={e => e.stopPropagation()}>
+                                                            <Card style={{ borderLeft: `3px solid ${detail.color}` }}>
+                                                                <div className="text-center mb-3">
+                                                                    <span className="text-4xl">{detail.icon}</span>
+                                                                </div>
+                                                                <h3 className="text-lg font-bold text-center mb-1" style={{ fontFamily: 'var(--font-serif)', color: 'var(--color-ink)' }}>
+                                                                    {detail.title}
+                                                                </h3>
+                                                                <p className="text-xs font-semibold text-center mb-3" style={{ color: detail.color }}>
+                                                                    {detail.subtitle}
+                                                                </p>
+                                                                <Divider />
+                                                                <p className="text-sm leading-relaxed mt-3" style={{ color: 'var(--color-ink-secondary)' }}>
+                                                                    {detail.description}
+                                                                </p>
+                                                                <div className="mt-3 pt-3" style={{ borderTop: '1px solid rgba(28, 25, 23, 0.06)' }}>
+                                                                    <p className="text-[11px] uppercase tracking-wider font-semibold mb-2" style={{ color: 'var(--color-ink-faint)' }}>
+                                                                        Key Transitions
+                                                                    </p>
+                                                                    {startEvent && (
+                                                                        <div className="flex items-start gap-2 text-xs py-1">
+                                                                            <span className="flex-shrink-0 mt-0.5" style={{ color: 'var(--color-success)' }}>▶</span>
+                                                                            <div>
+                                                                                <span className="font-semibold" style={{ color: 'var(--color-ink)' }}>Begins with: </span>
+                                                                                <span style={{ color: 'var(--color-ink-secondary)' }}>{startEvent.title}</span>
+                                                                                <span className="ml-1 font-medium" style={{ color: 'var(--color-burgundy)' }}>({startEvent.date})</span>
+                                                                            </div>
+                                                                        </div>
+                                                                    )}
+                                                                    {endEvent && (
+                                                                        <div className="flex items-start gap-2 text-xs py-1">
+                                                                            <span className="flex-shrink-0 mt-0.5" style={{ color: 'var(--color-error)' }}>■</span>
+                                                                            <div>
+                                                                                <span className="font-semibold" style={{ color: 'var(--color-ink)' }}>Ends with: </span>
+                                                                                <span style={{ color: 'var(--color-ink-secondary)' }}>{endEvent.title}</span>
+                                                                                <span className="ml-1 font-medium" style={{ color: 'var(--color-burgundy)' }}>({endEvent.date})</span>
+                                                                            </div>
+                                                                        </div>
+                                                                    )}
+                                                                    {!endEvent && (
+                                                                        <div className="flex items-start gap-2 text-xs py-1">
+                                                                            <span className="flex-shrink-0 mt-0.5" style={{ color: 'var(--color-ink-faint)' }}>■</span>
+                                                                            <span className="italic" style={{ color: 'var(--color-ink-faint)' }}>Ongoing — the era we live in</span>
+                                                                        </div>
+                                                                    )}
+                                                                </div>
+                                                            </Card>
+                                                        </div>
+                                                    )}
+                                                </>
+                                            ) : (
+                                                <span className="text-[10px] uppercase tracking-widest font-bold" style={{ color: 'var(--color-ink-faint)' }}>
+                                                    {era.label}
+                                                </span>
+                                            )}
+                                        </div>
+                                    );
+                                })()}
 
                                 <div
                                     className="timeline-event-card relative pl-16 py-3 animate-fade-in cursor-pointer rounded-lg transition-all duration-200"

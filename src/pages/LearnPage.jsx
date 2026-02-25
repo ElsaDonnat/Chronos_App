@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useApp } from '../context/AppContext';
 import { LESSONS } from '../data/lessons';
 import { getEventsByIds } from '../data/events';
@@ -7,9 +7,13 @@ import LessonFlow from '../components/learn/LessonFlow';
 import Lesson0Flow from '../components/learn/Lesson0Flow';
 import Mascot from '../components/Mascot';
 
-export default function LearnPage() {
+export default function LearnPage({ onSessionChange }) {
     const { state } = useApp();
     const [activeLessonId, setActiveLessonId] = useState(null);
+
+    useEffect(() => {
+        onSessionChange?.(!!activeLessonId);
+    }, [activeLessonId, onSessionChange]);
 
     if (activeLessonId) {
         const lesson = LESSONS.find(l => l.id === activeLessonId);

@@ -159,6 +159,7 @@ body {
 @media (min-width: 900px) {
   .topbar-section-name {
     display: block;
+    padding-left: var(--sidebar-width);
   }
 }
 
@@ -305,16 +306,16 @@ body {
   margin-top: 6px;
 }
 
-/* ─── Mobile Tab Bar (horizontal, below topbar) ─── */
+/* ─── Mobile Tab Bar (bottom of screen) ─── */
 .mobile-tab-bar {
   display: none;
   flex-shrink: 0;
   background-color: var(--color-parchment);
-  border-bottom: 1px solid rgba(28, 25, 23, 0.08);
+  border-top: 1px solid rgba(28, 25, 23, 0.08);
   padding: 0 8px;
+  padding-bottom: env(safe-area-inset-bottom, 0px);
 }
 
-/* Show mobile tab bar between 600px-899px */
 @media (max-width: 899px) {
   .mobile-tab-bar {
     display: flex;
@@ -325,7 +326,6 @@ body {
   }
 }
 
-/* Below 600px, keep it but make it more compact */
 @media (max-width: 599px) {
   .mobile-tab-bar {
     justify-content: space-around;

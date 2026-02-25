@@ -137,6 +137,37 @@ export function StarButton({ isStarred, onClick, size = 18 }) {
     );
 }
 
+export function ConfirmModal({ title, message, confirmLabel = 'Yes', cancelLabel = 'Cancel', onConfirm, onCancel, danger = false }) {
+    return (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-6" style={{ backgroundColor: 'rgba(28, 25, 23, 0.4)', backdropFilter: 'blur(4px)' }} onClick={onCancel}>
+            <div className="w-full max-w-sm rounded-2xl p-6 animate-fade-in" style={{ backgroundColor: 'var(--color-card)', boxShadow: '0 20px 60px rgba(0,0,0,0.2)' }} onClick={e => e.stopPropagation()}>
+                <h3 className="text-lg font-bold mb-2" style={{ fontFamily: 'var(--font-serif)', color: 'var(--color-ink)' }}>
+                    {title}
+                </h3>
+                <p className="text-sm mb-6" style={{ color: 'var(--color-ink-muted)' }}>
+                    {message}
+                </p>
+                <div className="flex gap-3">
+                    <Button variant="secondary" className="flex-1" onClick={onCancel}>
+                        {cancelLabel}
+                    </Button>
+                    <button
+                        onClick={onConfirm}
+                        className="flex-1 px-6 py-3 rounded-xl font-semibold text-sm transition-all duration-200 active:scale-[0.98] cursor-pointer"
+                        style={{
+                            backgroundColor: danger ? 'var(--color-error)' : 'var(--color-burgundy)',
+                            color: '#fff',
+                            boxShadow: danger ? '0 2px 8px rgba(166, 61, 61, 0.25)' : '0 2px 8px rgba(139, 65, 87, 0.25)',
+                        }}
+                    >
+                        {confirmLabel}
+                    </button>
+                </div>
+            </div>
+        </div>
+    );
+}
+
 export function TabSelector({ tabs, activeTab, onChange }) {
     return (
         <div className="flex rounded-xl p-1" style={{ backgroundColor: 'rgba(28, 25, 23, 0.05)' }}>

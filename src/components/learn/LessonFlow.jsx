@@ -2,7 +2,7 @@ import { useState, useMemo, useCallback, useRef, useEffect } from 'react';
 import { useApp } from '../../context/AppContext';
 import { getEventsByIds, getEventById, ALL_EVENTS, CATEGORY_CONFIG, ERA_BOUNDARY_EVENTS, ERA_RANGES, getEraBoundaryInfo } from '../../data/events';
 import { scoreDateAnswer, generateLocationOptions, generateWhatOptions, generateDateMCQOptions, calculateXP } from '../../data/quiz';
-import { Card, Button, ProgressBar, CategoryTag, Divider, StarButton } from '../shared';
+import { Card, Button, ProgressBar, CategoryTag, Divider, StarButton, ConfirmModal } from '../shared';
 import Mascot from '../Mascot';
 
 // ─── PHASES ────────────────────────────────────────────
@@ -64,6 +64,7 @@ export default function LessonFlow({ lesson, onComplete }) {
     const [reviewIndex, setReviewIndex] = useState(0);
     const [quizResults, setQuizResults] = useState([]);
     const [selectedDot, setSelectedDot] = useState(null);    // for result dot modal
+    const [showExitConfirm, setShowExitConfirm] = useState(false);
     const xpDispatched = useRef(false);
 
     // For each card, randomly pick 3 of the 4 question types to use for MCQs (discarding 1)
@@ -149,10 +150,8 @@ export default function LessonFlow({ lesson, onComplete }) {
     }, [phase, quizResults, lesson.id, dispatch]);
 
     const handleExit = useCallback(() => {
-        if (window.confirm("Are you sure? Progress in this lesson will be lost.")) {
-            onComplete();
-        }
-    }, [onComplete]);
+        setShowExitConfirm(true);
+    }, []);
 
     // Helper: record answer
     const recordAnswer = useCallback((eventId, questionType, score) => {
@@ -317,6 +316,8 @@ export default function LessonFlow({ lesson, onComplete }) {
         const nearbyEvents = getNearbyEvents(event);
 
         return (
+            <>
+            <ExitConfirmModal show={showExitConfirm} onConfirm={onComplete} onCancel={() => setShowExitConfirm(false)} />
             <div className="py-4 animate-fade-in">
                 <div className="flex items-center justify-between mb-4">
                     <button onClick={handleExit} className="text-sm flex items-center gap-1" style={{ color: 'var(--color-ink-muted)' }}>
@@ -413,6 +414,7 @@ export default function LessonFlow({ lesson, onComplete }) {
                     </Button>
                 </div>
             </div>
+            </>
         );
     }
 
@@ -754,6 +756,21 @@ export default function LessonFlow({ lesson, onComplete }) {
     }
 
     return null;
+}
+
+function ExitConfirmModal({ show, onConfirm, onCancel }) {
+    if (!show) return null;
+    return (
+        <ConfirmModal
+            title="Leave lesson?"
+            message="Progress in this lesson will be lost."
+            confirmLabel="Leave"
+            cancelLabel="Stay"
+            danger
+            onConfirm={onConfirm}
+            onCancel={onCancel}
+        />
+    );
 }
 
 // ═══════════════════════════════════════════════════════

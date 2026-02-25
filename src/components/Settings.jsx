@@ -1,11 +1,13 @@
+import { useState } from 'react';
 import { useApp } from '../context/AppContext';
 import { ALL_EVENTS } from '../data/events';
 import { LESSONS } from '../data/lessons';
-import { Card, Button, Divider } from './shared';
+import { Card, Button, Divider, ConfirmModal } from './shared';
 import Mascot from './Mascot';
 
 export default function Settings() {
     const { state, dispatch } = useApp();
+    const [showResetConfirm, setShowResetConfirm] = useState(false);
 
     const learnedCount = state.seenEvents.length;
     const totalEvents = ALL_EVENTS.length;
@@ -86,12 +88,7 @@ export default function Settings() {
 
                 <Button
                     variant="ghost"
-                    onClick={() => {
-                        if (window.confirm('Reset all progress? This cannot be undone.')) {
-                            dispatch({ type: 'RESET_PROGRESS' });
-                            dispatch({ type: 'TOGGLE_SETTINGS' });
-                        }
-                    }}
+                    onClick={() => setShowResetConfirm(true)}
                     className="w-full text-center"
                     style={{ color: 'var(--color-error)' }}
                 >
@@ -102,6 +99,21 @@ export default function Settings() {
                     Chronos v1.0 — The Story of Humanity
                 </p>
             </div>
+
+            {showResetConfirm && (
+                <ConfirmModal
+                    title="Reset all progress?"
+                    message="This will erase all your lessons, XP, streaks, and mastery data. This cannot be undone."
+                    confirmLabel="Reset Everything"
+                    cancelLabel="Cancel"
+                    danger
+                    onConfirm={() => {
+                        dispatch({ type: 'RESET_PROGRESS' });
+                        dispatch({ type: 'TOGGLE_SETTINGS' });
+                    }}
+                    onCancel={() => setShowResetConfirm(false)}
+                />
+            )}
         </div>
     );
 }
