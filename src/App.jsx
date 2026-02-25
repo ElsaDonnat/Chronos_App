@@ -1,33 +1,59 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useApp } from './context/AppContext';
 import TopBar from './components/TopBar';
-import BottomNav from './components/BottomNav';
+import Sidebar, { MobileTabBar } from './components/layout/Sidebar';
 import LearnPage from './pages/LearnPage';
 import TimelinePage from './pages/TimelinePage';
 import PracticePage from './pages/PracticePage';
 import Settings from './components/Settings';
 
+const TAB_KEYS = { '1': 'learn', '2': 'timeline', '3': 'practice' };
+
 export default function App() {
   const [activeTab, setActiveTab] = useState('learn');
-  const { state } = useApp();
+  const { state, dispatch } = useApp();
+  const mainRef = useRef(null);
+
+  useEffect(() => {
+    mainRef.current?.scrollTo(0, 0);
+  }, [activeTab]);
+
+  const handleKeyDown = useCallback((e) => {
+    // Don't capture when user is typing in an input
+    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+
+    if (e.key === 'Escape' && state.settingsOpen) {
+      dispatch({ type: 'TOGGLE_SETTINGS' });
+      return;
+    }
+
+    if (TAB_KEYS[e.key]) {
+      setActiveTab(TAB_KEYS[e.key]);
+    }
+  }, [state.settingsOpen, dispatch]);
+
+  useEffect(() => {
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [handleKeyDown]);
 
   return (
-    <div className="h-full w-full flex flex-col items-center justify-center p-0 sm:p-4 md:p-8" style={{ backgroundColor: 'var(--color-parchment-dark)' }}>
-      <div className="w-full h-full max-w-[440px] sm:max-h-[850px] relative flex flex-col bg-[var(--color-parchment)] sm:rounded-[2.5rem] sm:shadow-2xl overflow-hidden sm:border-[12px] sm:border-white/40">
-
-        <TopBar />
-
-        <main className="flex-1 overflow-y-auto w-full px-4 pb-20 pt-2 relative z-0">
-          <div className="animate-fade-in" key={activeTab}>
-            {activeTab === 'learn' && <LearnPage />}
-            {activeTab === 'timeline' && <TimelinePage />}
-            {activeTab === 'practice' && <PracticePage />}
+    <div className="app-shell">
+      <TopBar activeTab={activeTab} />
+      <MobileTabBar activeTab={activeTab} onTabChange={setActiveTab} />
+      <div className="app-body">
+        <Sidebar activeTab={activeTab} onTabChange={setActiveTab} />
+        <main className="main-content" ref={mainRef}>
+          <div className="main-content-inner">
+            <div className="animate-fade-in" key={activeTab}>
+              {activeTab === 'learn' && <LearnPage />}
+              {activeTab === 'timeline' && <TimelinePage />}
+              {activeTab === 'practice' && <PracticePage />}
+            </div>
           </div>
         </main>
-
-        <BottomNav activeTab={activeTab} onTabChange={setActiveTab} />
-        {state.settingsOpen && <Settings />}
       </div>
+      {state.settingsOpen && <Settings />}
     </div>
   );
 }

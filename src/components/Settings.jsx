@@ -1,5 +1,6 @@
 import { useApp } from '../context/AppContext';
 import { ALL_EVENTS } from '../data/events';
+import { LESSONS } from '../data/lessons';
 import { Card, Button, Divider } from './shared';
 import Mascot from './Mascot';
 
@@ -16,11 +17,11 @@ export default function Settings() {
     const redCount = masteryEntries.filter(m => m.overallMastery < 3 && m.overallMastery > 0).length;
 
     return (
-        <div className="absolute inset-0 z-[60] flex items-end justify-center" onClick={() => dispatch({ type: 'TOGGLE_SETTINGS' })}>
-            <div className="absolute inset-0" style={{ backgroundColor: 'rgba(28, 25, 23, 0.3)' }} />
+        <div className="fixed inset-0 z-[60] flex items-center justify-center" onClick={() => dispatch({ type: 'TOGGLE_SETTINGS' })}>
+            <div className="absolute inset-0" style={{ backgroundColor: 'rgba(28, 25, 23, 0.3)', backdropFilter: 'blur(4px)' }} />
             <div
-                className="relative w-full rounded-t-2xl p-6 animate-fade-in-up"
-                style={{ backgroundColor: 'var(--color-parchment)', maxHeight: '80vh', overflowY: 'auto' }}
+                className="relative w-full max-w-lg rounded-2xl p-6 mx-4 animate-fade-in-up"
+                style={{ backgroundColor: 'var(--color-parchment)', maxHeight: '80vh', overflowY: 'auto', boxShadow: 'var(--shadow-elevated)' }}
                 onClick={e => e.stopPropagation()}
             >
                 <div className="flex items-center justify-between mb-4">
@@ -56,7 +57,7 @@ export default function Settings() {
                         <div className="text-xs mt-1" style={{ color: 'var(--color-ink-muted)' }}>Events Learned</div>
                     </Card>
                     <Card className="text-center p-4">
-                        <div className="text-2xl font-bold" style={{ color: 'var(--color-burgundy)' }}>{completedLessons}/10</div>
+                        <div className="text-2xl font-bold" style={{ color: 'var(--color-burgundy)' }}>{completedLessons}/{LESSONS.length}</div>
                         <div className="text-xs mt-1" style={{ color: 'var(--color-ink-muted)' }}>Lessons Complete</div>
                     </Card>
                 </div>

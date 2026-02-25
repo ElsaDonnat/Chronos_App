@@ -813,9 +813,9 @@ function QuizQuestion({ question, lessonEventIds, onAnswer, onNext, onBack, onSk
             <div className="animate-slide-in-right">
                 <Card style={answered && score ? { backgroundColor: scoreColors[score].bg, borderLeft: `3px solid ${scoreColors[score].border}` } : {}}>
                     <p className="text-xs uppercase tracking-wider font-semibold mb-2" style={{ color: 'var(--color-ink-faint)' }}>Where did this happen?</p>
-                    <h3 className="text-lg font-bold mb-1" style={{ fontFamily: 'var(--font-serif)' }}>{event.title}</h3>
-                    <p className="text-sm mb-4" style={{ color: 'var(--color-burgundy)' }}>{event.date}</p>
-                    <div className="space-y-2">
+                    <h3 className="text-xl font-bold mb-1" style={{ fontFamily: 'var(--font-serif)' }}>{event.title}</h3>
+                    <p className="text-sm mb-5" style={{ color: 'var(--color-burgundy)' }}>{event.date}</p>
+                    <div className="mcq-options mcq-options--grid">
                         {locationOptions.map((opt, i) => {
                             const isCorrect = opt === event.location.place;
                             const isSelected = selectedAnswer === opt;
@@ -828,8 +828,8 @@ function QuizQuestion({ question, lessonEventIds, onAnswer, onNext, onBack, onSk
                             }
                             return (
                                 <button key={i} onClick={() => handleAnswer(opt, event.location.place)} disabled={answered}
-                                    className="w-full text-left px-4 py-3 rounded-xl border-2 text-sm font-medium transition-all duration-200"
-                                    style={{ borderColor: isSelected && !answered ? 'var(--color-burgundy)' : 'rgba(28,25,23,0.08)', backgroundColor: 'var(--color-card)', ...optStyle }}>
+                                    className="mcq-option"
+                                    style={{ borderColor: isSelected && !answered ? 'var(--color-burgundy)' : undefined, ...optStyle }}>
                                     <span>{opt}</span>
                                     {optRegion && !opt.includes(optRegion) && (
                                         <span className="ml-1 text-xs" style={{ color: 'var(--color-ink-faint)' }}>· {optRegion}</span>
@@ -851,11 +851,11 @@ function QuizQuestion({ question, lessonEventIds, onAnswer, onNext, onBack, onSk
             <div className="animate-slide-in-right">
                 <Card style={answered && score ? { backgroundColor: scoreColors[score].bg, borderLeft: `3px solid ${scoreColors[score].border}` } : {}}>
                     <p className="text-xs uppercase tracking-wider font-semibold mb-2" style={{ color: 'var(--color-ink-faint)' }}>When did this happen?</p>
-                    <h3 className="text-lg font-bold mb-1" style={{ fontFamily: 'var(--font-serif)' }}>{event.title}</h3>
+                    <h3 className="text-xl font-bold mb-1" style={{ fontFamily: 'var(--font-serif)' }}>{event.title}</h3>
                     <p className="text-sm mb-2 leading-relaxed" style={{ color: 'var(--color-ink-secondary)' }}>
                         {event.description.substring(0, 80)}…
                     </p>
-                    <div className="space-y-2 mt-3">
+                    <div className="mcq-options mcq-options--grid mt-4">
                         {dateOptions.map((opt, i) => {
                             const isCorrect = opt.isCorrect;
                             const isSelected = selectedAnswer === opt.label;
@@ -868,8 +868,8 @@ function QuizQuestion({ question, lessonEventIds, onAnswer, onNext, onBack, onSk
                                 <button key={i}
                                     onClick={() => handleAnswer(opt.label, dateOptions.find(o => o.isCorrect).label)}
                                     disabled={answered}
-                                    className="w-full text-left px-4 py-3 rounded-xl border-2 text-sm font-semibold transition-all duration-200"
-                                    style={{ borderColor: isSelected && !answered ? 'var(--color-burgundy)' : 'rgba(28,25,23,0.08)', backgroundColor: 'var(--color-card)', ...optStyle }}>
+                                    className="mcq-option font-semibold"
+                                    style={{ borderColor: isSelected && !answered ? 'var(--color-burgundy)' : undefined, ...optStyle }}>
                                     {opt.label}
                                     {answered && isCorrect && <span className="ml-2 text-xs" style={{ color: 'var(--color-success)' }}>✓</span>}
                                 </button>
@@ -888,12 +888,12 @@ function QuizQuestion({ question, lessonEventIds, onAnswer, onNext, onBack, onSk
             <div className="animate-slide-in-right">
                 <Card style={answered && score ? { backgroundColor: scoreColors[score].bg, borderLeft: `3px solid ${scoreColors[score].border}` } : {}}>
                     <p className="text-xs uppercase tracking-wider font-semibold mb-2" style={{ color: 'var(--color-ink-faint)' }}>What happened?</p>
-                    <p className="text-lg font-semibold mb-1" style={{ color: 'var(--color-burgundy)' }}>{event.date}</p>
-                    <p className="text-sm mb-4" style={{ color: 'var(--color-ink-muted)' }}>
+                    <p className="text-xl font-semibold mb-1" style={{ color: 'var(--color-burgundy)' }}>{event.date}</p>
+                    <p className="text-sm mb-5" style={{ color: 'var(--color-ink-muted)' }}>
                         {event.location.place}
                         {event.location.region && !event.location.place.includes(event.location.region) && ` · ${event.location.region}`}
                     </p>
-                    <div className="space-y-2">
+                    <div className="mcq-options mcq-options--grid">
                         {whatOptions.map((opt, i) => {
                             const isCorrect = opt.id === event.id;
                             const isSelected = selectedAnswer === opt.id;
@@ -904,8 +904,8 @@ function QuizQuestion({ question, lessonEventIds, onAnswer, onNext, onBack, onSk
                             }
                             return (
                                 <button key={i} onClick={() => handleAnswer(opt.id, event.id)} disabled={answered}
-                                    className="w-full text-left px-4 py-3 rounded-xl border-2 text-sm transition-all duration-200"
-                                    style={{ borderColor: isSelected && !answered ? 'var(--color-burgundy)' : 'rgba(28,25,23,0.08)', backgroundColor: 'var(--color-card)', ...optStyle }}>
+                                    className="mcq-option"
+                                    style={{ borderColor: isSelected && !answered ? 'var(--color-burgundy)' : undefined, ...optStyle }}>
                                     <span className="font-semibold">{opt.title}</span>
                                     {answered && isCorrect && <span className="ml-2 text-xs" style={{ color: 'var(--color-success)' }}>✓</span>}
                                 </button>
@@ -924,9 +924,9 @@ function QuizQuestion({ question, lessonEventIds, onAnswer, onNext, onBack, onSk
             <div className="animate-slide-in-right">
                 <Card style={answered && score ? { backgroundColor: scoreColors[score].bg, borderLeft: `3px solid ${scoreColors[score].border}` } : {}}>
                     <p className="text-xs uppercase tracking-wider font-semibold mb-2" style={{ color: 'var(--color-ink-faint)' }}>Which description fits?</p>
-                    <h3 className="text-lg font-bold mb-1" style={{ fontFamily: 'var(--font-serif)' }}>{event.title}</h3>
-                    <p className="text-sm mb-4" style={{ color: 'var(--color-burgundy)' }}>{event.date}</p>
-                    <div className="space-y-2">
+                    <h3 className="text-xl font-bold mb-1" style={{ fontFamily: 'var(--font-serif)' }}>{event.title}</h3>
+                    <p className="text-sm mb-5" style={{ color: 'var(--color-burgundy)' }}>{event.date}</p>
+                    <div className="mcq-options">
                         {descriptionOptions.map((opt, i) => {
                             const isCorrect = opt.id === event.id;
                             const isSelected = selectedAnswer === opt.id;
@@ -937,8 +937,8 @@ function QuizQuestion({ question, lessonEventIds, onAnswer, onNext, onBack, onSk
                             }
                             return (
                                 <button key={i} onClick={() => handleAnswer(opt.id, event.id)} disabled={answered}
-                                    className="w-full text-left px-4 py-3 rounded-xl border-2 text-sm transition-all duration-200"
-                                    style={{ borderColor: isSelected && !answered ? 'var(--color-burgundy)' : 'rgba(28,25,23,0.08)', backgroundColor: 'var(--color-card)', ...optStyle }}>
+                                    className="mcq-option"
+                                    style={{ borderColor: isSelected && !answered ? 'var(--color-burgundy)' : undefined, ...optStyle }}>
                                     <span className="leading-relaxed text-sm block" style={{ color: 'var(--color-ink-secondary)' }}>{opt.description}</span>
                                     {answered && isCorrect && <span className="ml-2 text-xs font-bold mt-1 block" style={{ color: 'var(--color-success)' }}>✓ Correct</span>}
                                 </button>

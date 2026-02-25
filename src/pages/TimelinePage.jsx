@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
 import { useApp } from '../context/AppContext';
-import { ALL_EVENTS, CATEGORY_CONFIG, ERA_RANGES, getEraForYear, formatYear } from '../data/events';
+import { ALL_EVENTS, CATEGORY_CONFIG, ERA_RANGES, getEraForYear } from '../data/events';
 import { Card, CategoryTag, MasteryDots } from '../components/shared';
 import Mascot from '../components/Mascot';
 
@@ -56,27 +56,27 @@ export default function TimelinePage() {
     };
 
     return (
-        <div className="py-4">
-            <div className="text-center mb-4">
-                <h1 className="text-xl font-bold" style={{ fontFamily: 'var(--font-serif)', color: 'var(--color-ink)' }}>
+        <div className="py-6">
+            <div className="text-center mb-6">
+                <h1 className="text-2xl font-bold" style={{ fontFamily: 'var(--font-serif)', color: 'var(--color-ink)' }}>
                     Timeline
                 </h1>
-                <p className="text-xs mt-1" style={{ color: 'var(--color-ink-muted)' }}>
+                <p className="text-sm mt-1" style={{ color: 'var(--color-ink-muted)' }}>
                     {learnedIds.size} of {ALL_EVENTS.length} events discovered
                 </p>
             </div>
 
-            {/* Compact filter section */}
-            <div className="mb-4 space-y-1.5">
-                <div className="flex gap-1 overflow-x-auto pb-0.5 -mx-1 px-1" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none', WebkitOverflowScrolling: 'touch' }}>
-                    <FilterChip label="All" active={selectedEra === 'all'} onClick={() => setSelectedEra('all')} />
+            {/* Filter section — horizontal bar */}
+            <div className="mb-6 space-y-2">
+                <div className="flex gap-2 flex-wrap">
+                    <FilterChip label="All Eras" active={selectedEra === 'all'} onClick={() => setSelectedEra('all')} />
                     {ERA_RANGES.map(era => (
                         <FilterChip key={era.id} label={era.label} active={selectedEra === era.id}
                             onClick={() => setSelectedEra(era.id)} />
                     ))}
                 </div>
-                <div className="flex gap-1 overflow-x-auto pb-0.5 -mx-1 px-1" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none', WebkitOverflowScrolling: 'touch' }}>
-                    <FilterChip label="All" active={selectedCategory === 'all'} onClick={() => setSelectedCategory('all')} />
+                <div className="flex gap-2 flex-wrap">
+                    <FilterChip label="All Categories" active={selectedCategory === 'all'} onClick={() => setSelectedCategory('all')} />
                     {Object.entries(CATEGORY_CONFIG).map(([key, config]) => (
                         <FilterChip key={key} label={config.label} active={selectedCategory === key}
                             onClick={() => setSelectedCategory(key)}
@@ -86,7 +86,7 @@ export default function TimelinePage() {
             </div>
 
             {filteredEvents.length === 0 ? (
-                <div className="text-center py-12 animate-fade-in">
+                <div className="text-center py-16 animate-fade-in">
                     <Mascot mood="thinking" size={60} />
                     <p className="text-sm mt-3" style={{ color: 'var(--color-ink-muted)', fontFamily: 'var(--font-serif)' }}>
                         No events match your filters
@@ -95,7 +95,7 @@ export default function TimelinePage() {
             ) : (
                 <div className="relative">
                     {/* Timeline line */}
-                    <div className="absolute left-6 top-0 bottom-0 w-0.5 rounded-full" style={{ backgroundColor: 'var(--color-bronze-light)', opacity: 0.4 }} />
+                    <div className="absolute left-7 top-0 bottom-0 w-0.5 rounded-full" style={{ backgroundColor: 'var(--color-bronze-light)', opacity: 0.4 }} />
 
                     {filteredEvents.map((event, index) => {
                         const isLearned = learnedIds.has(event.id);
@@ -109,15 +109,15 @@ export default function TimelinePage() {
                         return (
                             <div key={event.id}>
                                 {showEraLabel && era && (
-                                    <div className="relative pl-14 py-2 mb-2 mt-2" style={{ backgroundColor: getEraColor(era.id) }}>
+                                    <div className="relative pl-16 py-3 mb-2 mt-3 rounded-lg" style={{ backgroundColor: getEraColor(era.id) }}>
                                         {lesson0Complete ? (
                                             <div className="flex items-center gap-2">
                                                 <span className="text-base">{eraIcons[era.id] || ''}</span>
                                                 <div>
-                                                    <span className="text-[10px] uppercase tracking-widest font-bold" style={{ color: 'var(--color-ink-muted)' }}>
+                                                    <span className="text-xs uppercase tracking-widest font-bold" style={{ color: 'var(--color-ink-muted)' }}>
                                                         {era.label}
                                                     </span>
-                                                    <p className="text-[9px]" style={{ color: 'var(--color-ink-faint)' }}>
+                                                    <p className="text-[10px]" style={{ color: 'var(--color-ink-faint)' }}>
                                                         {eraSubtitles[era.id] || ''}
                                                     </p>
                                                 </div>
@@ -131,12 +131,12 @@ export default function TimelinePage() {
                                 )}
 
                                 <div
-                                    className="relative pl-14 py-2 animate-fade-in cursor-pointer transition-all duration-200"
+                                    className="timeline-event-card relative pl-16 py-3 animate-fade-in cursor-pointer rounded-lg transition-all duration-200"
                                     style={{ animationDelay: `${Math.min(index * 30, 500)}ms`, animationFillMode: 'backwards' }}
                                     onClick={() => isLearned && setExpandedId(isExpanded ? null : event.id)}
                                 >
                                     {/* Timeline dot */}
-                                    <div className="absolute left-[17px] top-4 z-10">
+                                    <div className="absolute left-[20px] top-5 z-10">
                                         {isLearned ? (
                                             <div className="w-[18px] h-[18px] rounded-full border-2 flex items-center justify-center"
                                                 style={{
@@ -155,7 +155,7 @@ export default function TimelinePage() {
 
                                     {/* Duration bar for range events */}
                                     {isLearned && event.yearEnd && (
-                                        <div className="absolute left-[25px] top-[22px] w-[2px] rounded-full"
+                                        <div className="absolute left-[28px] top-[26px] w-[2px] rounded-full"
                                             style={{
                                                 backgroundColor: catConfig?.color || '#999',
                                                 opacity: 0.3,
@@ -165,31 +165,33 @@ export default function TimelinePage() {
 
                                     {isLearned ? (
                                         <div>
-                                            <p className="text-[11px] font-medium" style={{ color: 'var(--color-ink-faint)' }}>
-                                                {event.date}
-                                            </p>
-                                            <div className="flex items-center gap-2">
-                                                <h3 className="text-sm font-semibold leading-tight" style={{ fontFamily: 'var(--font-serif)', color: 'var(--color-ink)' }}>
+                                            <div className="flex items-baseline gap-3 flex-wrap">
+                                                <h3 className="text-base font-semibold leading-tight" style={{ fontFamily: 'var(--font-serif)', color: 'var(--color-ink)' }}>
                                                     {event.title}
                                                 </h3>
+                                                <p className="text-xs font-medium" style={{ color: 'var(--color-ink-faint)' }}>
+                                                    {event.date}
+                                                </p>
                                                 {mastery && <MasteryDots mastery={mastery} />}
                                             </div>
 
                                             {isExpanded && (
-                                                <div className="mt-3 animate-fade-in">
+                                                <div className="mt-4 animate-fade-in">
                                                     <Card style={{ borderLeft: `3px solid ${catConfig?.color || '#999'}` }}>
-                                                        <CategoryTag category={event.category} />
-                                                        <h3 className="text-base font-bold mt-2 mb-1" style={{ fontFamily: 'var(--font-serif)' }}>
+                                                        <div className="flex items-center justify-between mb-3">
+                                                            <CategoryTag category={event.category} />
+                                                            <span className="text-sm font-semibold" style={{ color: 'var(--color-burgundy)' }}>
+                                                                {event.date}
+                                                            </span>
+                                                        </div>
+                                                        <h3 className="text-lg font-bold mb-2" style={{ fontFamily: 'var(--font-serif)' }}>
                                                             {event.title}
                                                         </h3>
-                                                        <p className="text-sm font-semibold mb-2" style={{ color: 'var(--color-burgundy)' }}>
-                                                            {event.date}
-                                                        </p>
-                                                        <p className="text-sm leading-relaxed mb-2" style={{ color: 'var(--color-ink-secondary)' }}>
+                                                        <p className="text-sm leading-relaxed mb-3" style={{ color: 'var(--color-ink-secondary)' }}>
                                                             {event.description}
                                                         </p>
                                                         <div className="flex items-center gap-2 text-xs" style={{ color: 'var(--color-ink-muted)' }}>
-                                                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                                                 <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" /><circle cx="12" cy="10" r="3" />
                                                             </svg>
                                                             {event.location.place}
@@ -216,7 +218,7 @@ export default function TimelinePage() {
             )}
 
             {learnedIds.size === 0 && (
-                <div className="text-center py-8 animate-fade-in">
+                <div className="text-center py-12 animate-fade-in">
                     <Mascot mood="happy" size={64} />
                     <p className="text-base font-semibold mt-3" style={{ fontFamily: 'var(--font-serif)', color: 'var(--color-ink-secondary)' }}>
                         Your timeline begins with your first lesson
@@ -234,7 +236,7 @@ function FilterChip({ label, active, onClick, dotColor }) {
     return (
         <button
             onClick={onClick}
-            className="flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-semibold whitespace-nowrap transition-all duration-200"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all duration-200 cursor-pointer"
             style={{
                 backgroundColor: active ? 'var(--color-burgundy)' : 'rgba(28, 25, 23, 0.04)',
                 color: active ? 'white' : 'var(--color-ink-muted)',
@@ -242,7 +244,7 @@ function FilterChip({ label, active, onClick, dotColor }) {
             }}
         >
             {dotColor && !active && (
-                <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: dotColor }} />
+                <div className="w-2 h-2 rounded-full" style={{ backgroundColor: dotColor }} />
             )}
             {label}
         </button>

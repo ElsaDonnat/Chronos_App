@@ -324,7 +324,7 @@ export default function Lesson0Flow({ lesson, onComplete }) {
                             {q.prompt}
                         </h3>
 
-                        <div className="space-y-2">
+                        <div className="mcq-options mcq-options--grid">
                             {q.options.map((opt, i) => {
                                 const isCorrect = opt === correctValue;
                                 const isSelected = selectedAnswer === opt;
@@ -338,10 +338,9 @@ export default function Lesson0Flow({ lesson, onComplete }) {
                                         key={i}
                                         onClick={() => handleAnswer(opt)}
                                         disabled={answered}
-                                        className="w-full text-left px-4 py-3 rounded-xl border-2 text-sm font-medium transition-all duration-200"
+                                        className="mcq-option"
                                         style={{
-                                            borderColor: isSelected && !answered ? 'var(--color-burgundy)' : 'rgba(28, 25, 23, 0.08)',
-                                            backgroundColor: 'var(--color-card)',
+                                            borderColor: isSelected && !answered ? 'var(--color-burgundy)' : undefined,
                                             ...optStyle,
                                         }}
                                     >

@@ -72,7 +72,7 @@ export function ProgressBar({ value, max, colorClass = 'bg-burgundy' }) {
 }
 
 export function Button({ children, onClick, variant = 'primary', disabled = false, className = '' }) {
-    const base = 'px-6 py-3 rounded-xl font-semibold text-sm transition-all duration-200 active:scale-[0.98]';
+    const base = 'px-6 py-3 rounded-xl font-semibold text-sm transition-all duration-200 active:scale-[0.98] cursor-pointer';
 
     const variants = {
         primary: {

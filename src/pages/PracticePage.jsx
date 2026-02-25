@@ -41,7 +41,7 @@ export default function PracticePage() {
             const mastery = state.eventMastery[e.id];
             const overall = mastery?.overallMastery ?? 0;
             const timesReviewed = mastery?.timesReviewed ?? 0;
-            const successRate = timesReviewed > 0 ? Math.round((overall / 9) * 100) : 0;
+            const successRate = timesReviewed > 0 ? Math.round((overall / 12) * 100) : 0;
             return { event: e, mastery, overall, timesReviewed, successRate };
         });
     }, [learnedEvents, state.eventMastery]);
@@ -412,10 +412,10 @@ export default function PracticePage() {
     // HUB + COLLECTION (main view with tabs)
     // ═══════════════════════════════════════════════════
     return (
-        <div className="py-4 animate-fade-in">
+        <div className="py-6 animate-fade-in">
             {/* Header */}
-            <div className="text-center mb-4">
-                <h1 className="text-xl font-bold" style={{ fontFamily: 'var(--font-serif)' }}>Practice</h1>
+            <div className="text-center mb-6">
+                <h1 className="text-2xl font-bold" style={{ fontFamily: 'var(--font-serif)' }}>Practice</h1>
                 <p className="text-xs mt-1" style={{ color: 'var(--color-ink-muted)' }}>
                     {learnedEvents.length} events learned · {starredEvents.length} starred
                 </p>
@@ -471,7 +471,7 @@ function HubView({ learnedEvents, starredEvents, weakEvents, tiers, state, dispa
     return (
         <div className="space-y-3">
             {/* Smart Review */}
-            <Card onClick={onStartSmartReview} className="p-4">
+            <Card onClick={onStartSmartReview} className="lesson-card-row p-4">
                 <div className="flex items-start gap-3">
                     <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
                         style={{ backgroundColor: 'rgba(139, 65, 87, 0.1)' }}>
@@ -500,7 +500,7 @@ function HubView({ learnedEvents, starredEvents, weakEvents, tiers, state, dispa
             {/* Favorites */}
             <Card
                 onClick={starredEvents.length > 0 ? onStartFavorites : undefined}
-                className="p-4"
+                className="lesson-card-row p-4"
                 style={{ opacity: starredEvents.length > 0 ? 1 : 0.5 }}
             >
                 <div className="flex items-start gap-3">
@@ -526,7 +526,7 @@ function HubView({ learnedEvents, starredEvents, weakEvents, tiers, state, dispa
             </Card>
 
             {/* By Lesson */}
-            <Card onClick={onOpenLessonPicker} className="p-4">
+            <Card onClick={onOpenLessonPicker} className="lesson-card-row p-4">
                 <div className="flex items-start gap-3">
                     <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
                         style={{ backgroundColor: 'rgba(101, 119, 74, 0.1)' }}>
@@ -847,9 +847,9 @@ function PracticeQuestion({ question, isStarred, onToggleStar, onAnswer, onNext,
             <div className="animate-slide-in-right">
                 <Card style={answered && score ? { backgroundColor: scoreColors[score].bg, borderLeft: `3px solid ${scoreColors[score].border}` } : {}}>
                     <p className="text-xs uppercase tracking-wider font-semibold mb-2" style={{ color: 'var(--color-ink-faint)' }}>Where did this happen?</p>
-                    <h3 className="text-lg font-bold mb-1" style={{ fontFamily: 'var(--font-serif)' }}>{event.title}</h3>
-                    <p className="text-sm mb-4" style={{ color: 'var(--color-burgundy)' }}>{event.date}</p>
-                    <div className="space-y-2">
+                    <h3 className="text-xl font-bold mb-1" style={{ fontFamily: 'var(--font-serif)' }}>{event.title}</h3>
+                    <p className="text-sm mb-5" style={{ color: 'var(--color-burgundy)' }}>{event.date}</p>
+                    <div className="mcq-options mcq-options--grid">
                         {locationOptions.map((opt, i) => {
                             const isCorrect = opt === event.location.place;
                             const isSelected = selectedAnswer === opt;
@@ -860,8 +860,8 @@ function PracticeQuestion({ question, isStarred, onToggleStar, onAnswer, onNext,
                             }
                             return (
                                 <button key={i} onClick={() => handleMCQ(opt, event.location.place)} disabled={answered}
-                                    className="w-full text-left px-4 py-3 rounded-xl border-2 text-sm font-medium transition-all"
-                                    style={{ borderColor: 'rgba(28, 25, 23, 0.08)', backgroundColor: 'var(--color-card)', ...optStyle }}>
+                                    className="mcq-option"
+                                    style={{ ...optStyle }}>
                                     {opt}{answered && isCorrect && <span className="ml-2 text-xs" style={{ color: 'var(--color-success)' }}>✓</span>}
                                 </button>
                             );
@@ -938,9 +938,9 @@ function PracticeQuestion({ question, isStarred, onToggleStar, onAnswer, onNext,
             <div className="animate-slide-in-right">
                 <Card style={answered && score ? { backgroundColor: scoreColors[score].bg, borderLeft: `3px solid ${scoreColors[score].border}` } : {}}>
                     <p className="text-xs uppercase tracking-wider font-semibold mb-2" style={{ color: 'var(--color-ink-faint)' }}>What happened?</p>
-                    <p className="text-lg font-semibold mb-1" style={{ color: 'var(--color-burgundy)' }}>{event.date}</p>
-                    <p className="text-sm mb-4" style={{ color: 'var(--color-ink-muted)' }}>{event.location.region}</p>
-                    <div className="space-y-2">
+                    <p className="text-xl font-semibold mb-1" style={{ color: 'var(--color-burgundy)' }}>{event.date}</p>
+                    <p className="text-sm mb-5" style={{ color: 'var(--color-ink-muted)' }}>{event.location.region}</p>
+                    <div className="mcq-options mcq-options--grid">
                         {whatOptions.map((opt, i) => {
                             const isCorrect = opt.id === event.id;
                             const isSelected = selectedAnswer === opt.id;
@@ -951,8 +951,8 @@ function PracticeQuestion({ question, isStarred, onToggleStar, onAnswer, onNext,
                             }
                             return (
                                 <button key={i} onClick={() => handleMCQ(opt.id, event.id)} disabled={answered}
-                                    className="w-full text-left px-4 py-3 rounded-xl border-2 text-sm transition-all"
-                                    style={{ borderColor: 'rgba(28, 25, 23, 0.08)', backgroundColor: 'var(--color-card)', ...optStyle }}>
+                                    className="mcq-option"
+                                    style={{ ...optStyle }}>
                                     <span className="font-semibold">{opt.title}</span>
                                     {answered && isCorrect && <span className="ml-2 text-xs" style={{ color: 'var(--color-success)' }}>✓</span>}
                                 </button>
@@ -978,9 +978,9 @@ function PracticeQuestion({ question, isStarred, onToggleStar, onAnswer, onNext,
             <div className="animate-slide-in-right">
                 <Card style={answered && score ? { backgroundColor: scoreColors[score].bg, borderLeft: `3px solid ${scoreColors[score].border}` } : {}}>
                     <p className="text-xs uppercase tracking-wider font-semibold mb-2" style={{ color: 'var(--color-ink-faint)' }}>Which description fits?</p>
-                    <h3 className="text-lg font-bold mb-1" style={{ fontFamily: 'var(--font-serif)' }}>{event.title}</h3>
-                    <p className="text-sm mb-4" style={{ color: 'var(--color-burgundy)' }}>{event.date}</p>
-                    <div className="space-y-2">
+                    <h3 className="text-xl font-bold mb-1" style={{ fontFamily: 'var(--font-serif)' }}>{event.title}</h3>
+                    <p className="text-sm mb-5" style={{ color: 'var(--color-burgundy)' }}>{event.date}</p>
+                    <div className="mcq-options">
                         {descriptionOptions.map((opt, i) => {
                             const isCorrect = opt.id === event.id;
                             const isSelected = selectedAnswer === opt.id;
@@ -991,8 +991,8 @@ function PracticeQuestion({ question, isStarred, onToggleStar, onAnswer, onNext,
                             }
                             return (
                                 <button key={i} onClick={() => handleMCQ(opt.id, event.id)} disabled={answered}
-                                    className="w-full text-left px-4 py-3 rounded-xl border-2 text-sm transition-all duration-200"
-                                    style={{ borderColor: isSelected && !answered ? 'var(--color-burgundy)' : 'rgba(28,25,23,0.08)', backgroundColor: 'var(--color-card)', ...optStyle }}>
+                                    className="mcq-option"
+                                    style={{ borderColor: isSelected && !answered ? 'var(--color-burgundy)' : undefined, ...optStyle }}>
                                     <span className="leading-relaxed text-sm block" style={{ color: 'var(--color-ink-secondary)' }}>{opt.description}</span>
                                     {answered && isCorrect && <span className="ml-2 text-xs font-bold mt-1 block" style={{ color: 'var(--color-success)' }}>✓ Correct</span>}
                                 </button>
