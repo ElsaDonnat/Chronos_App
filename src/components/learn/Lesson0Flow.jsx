@@ -2,7 +2,7 @@ import { useState, useMemo, useRef, useEffect } from 'react';
 import { useApp } from '../../context/AppContext';
 import { getEventById, ERA_BOUNDARY_EVENTS } from '../../data/events';
 import { SCORE_COLORS, getScoreLabel } from '../../data/quiz';
-import { Card, Button, ProgressBar, Divider } from '../shared';
+import { Card, Button, ProgressBar, Divider, ExpandableText } from '../shared';
 import Mascot from '../Mascot';
 
 // ─── Matching colors for pairing lines ──────────────────
@@ -30,30 +30,35 @@ const PERIODS = [
         prehistory: {
             title: 'Prehistory',
             subtitle: 'c. 7\u20136 million years ago \u2013 c. 3200 BCE',
+            keywords: 'Evolution, fire, farming.',
             description: 'Literally "before written records," prehistory spans 99% of the human story. It traces the arc from biological to cultural evolution: bipedalism, stone tools, the mastery of fire, the emergence of language and symbolic thought, the migration out of Africa to every continent, and finally the Neolithic transition from nomadic foraging to settled agriculture that made civilization possible.',
             color: '#0D9488', icon: '\uD83E\uDDB4',
         },
         ancient: {
             title: 'The Ancient World',
             subtitle: 'c. 3200 BCE \u2013 476 CE',
+            keywords: 'Writing, cities, empires.',
             description: 'Defined by the invention of writing, the rise of cities, and the emergence of states and empires. Mesopotamia, Egypt, Greece, Rome, China, and India each developed distinct traditions of law, philosophy, science, and organized religion. The era\u2019s arc runs from the first civilizations in Sumer to the collapse of the largest \u2014 the Western Roman Empire \u2014 under the weight of economic decay and Germanic invasions.',
             color: '#6B5B73', icon: '\uD83C\uDFDB\uFE0F',
         },
         medieval: {
             title: 'The Medieval World',
             subtitle: '476 \u2013 c. 1500 CE',
+            keywords: 'Islam, feudalism, Mongols.',
             description: 'Far from the "Dark Ages" of popular myth, this was an era of transformation. Islam rose and spread from Arabia to Iberia, the Byzantine Empire preserved Roman learning for a millennium, feudalism structured Western Europe, the Mongol Empire connected East and West, the Crusades reshaped Mediterranean trade, and Europe\u2019s first universities were founded. The era\u2019s arc runs from Rome\u2019s fall to the reconnection of the world.',
             color: '#A0522D', icon: '\u2694\uFE0F',
         },
         earlymodern: {
             title: 'The Early Modern Period',
             subtitle: 'c. 1500 \u2013 1789',
+            keywords: 'Exploration, Reformation, science.',
             description: 'European exploration and colonization linked every continent for the first time. The Renaissance revived classical learning, the Reformation shattered religious unity, the Scientific Revolution overturned ancient certainties, and the Enlightenment challenged the divine right of kings. The Atlantic slave trade forcibly connected three continents. The arc is from a fragmented world to an interconnected one, ending when Enlightenment ideals erupted into revolution.',
             color: '#65774A', icon: '\uD83E\uDDED',
         },
         modern: {
             title: 'The Modern World',
             subtitle: '1789 \u2013 Present',
+            keywords: 'Industry, world wars, digital.',
             description: 'More change in two centuries than in the previous two millennia. Industrialization transformed how people worked and lived, nationalism redrew the map of Europe, two world wars killed tens of millions and dismantled colonial empires, the Cold War split the globe, decolonization reshaped the Global South, and the digital revolution connected billions. The defining theme is acceleration \u2014 of technology, population, and the pace of change itself.',
             color: '#8B4157', icon: '\uD83C\uDF0D',
         },
@@ -85,58 +90,58 @@ const FAKE_DATES = {
     },
     ancient: {
         close: [
-            'c. 3500 BCE \u2013 476 CE',
-            'c. 3200 BCE \u2013 330 CE',
-            'c. 3200 BCE \u2013 565 CE',
-            'c. 3000 BCE \u2013 476 CE',
+            'c. 3200 BCE \u2013 200 CE',
+            'c. 3200 BCE \u2013 800 CE',
+            'c. 3500 BCE \u2013 600 CE',
+            'c. 3000 BCE \u2013 380 CE',
         ],
         far: [
-            'c. 5000 BCE \u2013 200 CE',
-            'c. 2000 BCE \u2013 750 CE',
-            'c. 4000 BCE \u2013 600 CE',
-            'c. 1500 BCE \u2013 476 CE',
+            'c. 4500 BCE \u2013 300 CE',
+            'c. 2500 BCE \u2013 700 CE',
+            'c. 3200 BCE \u2013 1100 CE',
+            'c. 4000 BCE \u2013 476 CE',
         ],
     },
     medieval: {
         close: [
-            '476 \u2013 1453 CE',
-            '500 \u2013 c. 1500 CE',
-            '476 \u2013 1648 CE',
-            '476 \u2013 c. 1400 CE',
+            '476 \u2013 c. 1350 CE',
+            '476 \u2013 c. 1550 CE',
+            '476 \u2013 c. 1650 CE',
+            '520 \u2013 c. 1500 CE',
         ],
         far: [
-            '410 \u2013 1350 CE',
-            '600 \u2013 1600 CE',
-            '300 \u2013 1453 CE',
-            '700 \u2013 1500 CE',
+            '550 \u2013 1350 CE',
+            '476 \u2013 1700 CE',
+            '600 \u2013 c. 1500 CE',
+            '350 \u2013 c. 1250 CE',
         ],
     },
     earlymodern: {
         close: [
-            '1492 \u2013 1789',
-            'c. 1500 \u2013 1815',
-            'c. 1500 \u2013 1776',
-            '1453 \u2013 1789',
+            'c. 1500 \u2013 1648',
+            'c. 1500 \u2013 1850',
+            'c. 1400 \u2013 1789',
+            'c. 1550 \u2013 1820',
         ],
         far: [
-            '1453 \u2013 1648',
+            '1350 \u2013 1700',
             '1600 \u2013 1900',
             '1450 \u2013 1750',
-            '1350 \u2013 1700',
+            'c. 1550 \u2013 1900',
         ],
     },
     modern: {
         close: [
-            '1776 \u2013 Present',
-            '1815 \u2013 Present',
-            '1800 \u2013 Present',
-            '1750 \u2013 Present',
+            '1820 \u2013 Present',
+            '1830 \u2013 Present',
+            '1720 \u2013 Present',
+            '1770 \u2013 Present',
         ],
         far: [
-            '1648 \u2013 Present',
-            '1848 \u2013 Present',
-            '1914 \u2013 Present',
             '1700 \u2013 Present',
+            '1860 \u2013 Present',
+            '1870 \u2013 Present',
+            '1680 \u2013 Present',
         ],
     },
 };
@@ -298,78 +303,82 @@ export default function Lesson0Flow({ lesson, onComplete }) {
         const period = PERIODS[cardIndex];
 
         return (
-            <div className="py-4 animate-fade-in">
-                <div className="flex items-center justify-between mb-4">
-                    <button onClick={onComplete} className="text-sm flex items-center gap-1" style={{ color: 'var(--color-ink-muted)' }}>
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="15 18 9 12 15 6" /></svg>
-                        Exit
-                    </button>
-                    <span className="text-sm font-medium" style={{ color: 'var(--color-ink-muted)' }}>
-                        Era {cardIndex + 1} of {PERIODS.length}
-                    </span>
+            <div className="lesson-flow-container animate-fade-in">
+                <div className="flex-shrink-0 pt-4">
+                    <div className="flex items-center justify-between mb-4">
+                        <button onClick={onComplete} className="text-sm flex items-center gap-1" style={{ color: 'var(--color-ink-muted)' }}>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="15 18 9 12 15 6" /></svg>
+                            Exit
+                        </button>
+                        <span className="text-sm font-medium" style={{ color: 'var(--color-ink-muted)' }}>
+                            Era {cardIndex + 1} of {PERIODS.length}
+                        </span>
+                    </div>
+
+                    <ProgressBar value={cardIndex + 1} max={PERIODS.length} />
+
+                    <div className="text-center mt-2 mb-1">
+                        <span className="text-[10px] uppercase tracking-widest font-bold px-2 py-0.5 rounded-full"
+                            style={{ backgroundColor: 'var(--color-burgundy-soft)', color: 'var(--color-burgundy)' }}>
+                            Study — Era {cardIndex + 1} of {PERIODS.length}
+                        </span>
+                    </div>
                 </div>
 
-                <ProgressBar value={cardIndex + 1} max={PERIODS.length} />
-
-                <div className="text-center mt-2 mb-1">
-                    <span className="text-[10px] uppercase tracking-widest font-bold px-2 py-0.5 rounded-full"
-                        style={{ backgroundColor: 'var(--color-burgundy-soft)', color: 'var(--color-burgundy)' }}>
-                        Study — Era {cardIndex + 1} of {PERIODS.length}
-                    </span>
-                </div>
-
-                <div className="mt-3 animate-slide-in-right" key={period.id}>
-                    <Card className="era-card-content" style={{ borderLeft: `4px solid ${period.color}`, overflow: 'hidden' }}>
-                        <div className="text-center mb-2 sm:mb-4">
-                            <span className="era-card-icon">{period.icon}</span>
-                        </div>
-                        <h2 className="era-card-title font-bold text-center mb-1" style={{ fontFamily: 'var(--font-serif)', color: 'var(--color-ink)' }}>
-                            {period.title}
-                        </h2>
-                        <p className="text-sm font-semibold text-center mb-2 sm:mb-4" style={{ color: period.color }}>
-                            {period.subtitle}
-                        </p>
-                        <Divider />
-                        <p className="text-sm leading-relaxed mt-4" style={{ color: 'var(--color-ink-secondary)' }}>
-                            {period.description}
-                        </p>
-
-                        {/* Boundary events */}
-                        <div className="mt-4 pt-3" style={{ borderTop: '1px solid rgba(28, 25, 23, 0.06)' }}>
-                            <p className="text-[11px] uppercase tracking-wider font-semibold mb-2" style={{ color: 'var(--color-ink-faint)' }}>
-                                Key Transitions
+                <div className="flex-1 min-h-0 overflow-y-auto mt-3" key={period.id}>
+                    <div className="animate-slide-in-right">
+                        <Card className="era-card-content" style={{ borderLeft: `4px solid ${period.color}`, overflow: 'hidden' }}>
+                            <div className="text-center mb-2 sm:mb-4">
+                                <span className="era-card-icon">{period.icon}</span>
+                            </div>
+                            <h2 className="era-card-title font-bold text-center mb-1" style={{ fontFamily: 'var(--font-serif)', color: 'var(--color-ink)' }}>
+                                {period.title}
+                            </h2>
+                            <p className="text-sm font-semibold text-center mb-2 sm:mb-4" style={{ color: period.color }}>
+                                {period.subtitle}
                             </p>
-                            {period.startEvent && (
-                                <div className="flex items-start gap-2 text-xs py-1">
-                                    <span className="flex-shrink-0 mt-0.5" style={{ color: 'var(--color-success)' }}>▶</span>
-                                    <div>
-                                        <span className="font-semibold" style={{ color: 'var(--color-ink)' }}>Begins with: </span>
-                                        <span style={{ color: 'var(--color-ink-secondary)' }}>{period.startEvent.title}</span>
-                                        <span className="ml-1 font-medium" style={{ color: 'var(--color-burgundy)' }}>({period.startEvent.date})</span>
+                            <Divider />
+                            <ExpandableText lines={3} className="text-sm leading-relaxed mt-4" style={{ color: 'var(--color-ink-secondary)' }}>
+                                <strong style={{ color: 'var(--color-ink)' }}>{period.keywords}</strong>{' '}{period.description}
+                            </ExpandableText>
+
+                            {/* Boundary events */}
+                            <div className="mt-4 pt-3" style={{ borderTop: '1px solid rgba(28, 25, 23, 0.06)' }}>
+                                <p className="text-[11px] uppercase tracking-wider font-semibold mb-2" style={{ color: 'var(--color-ink-faint)' }}>
+                                    Key Transitions
+                                </p>
+                                {period.startEvent && (
+                                    <div className="flex items-start gap-2 text-xs py-1">
+                                        <span className="flex-shrink-0 mt-0.5" style={{ color: 'var(--color-success)' }}>▶</span>
+                                        <div>
+                                            <span className="font-semibold" style={{ color: 'var(--color-ink)' }}>Begins with: </span>
+                                            <span style={{ color: 'var(--color-ink-secondary)' }}>{period.startEvent.title}</span>
+                                            <span className="ml-1 font-medium" style={{ color: 'var(--color-burgundy)' }}>({period.startEvent.date})</span>
+                                        </div>
                                     </div>
-                                </div>
-                            )}
-                            {period.endEvent && (
-                                <div className="flex items-start gap-2 text-xs py-1">
-                                    <span className="flex-shrink-0 mt-0.5" style={{ color: 'var(--color-error)' }}>■</span>
-                                    <div>
-                                        <span className="font-semibold" style={{ color: 'var(--color-ink)' }}>Ends with: </span>
-                                        <span style={{ color: 'var(--color-ink-secondary)' }}>{period.endEvent.title}</span>
-                                        <span className="ml-1 font-medium" style={{ color: 'var(--color-burgundy)' }}>({period.endEvent.date})</span>
+                                )}
+                                {period.endEvent && (
+                                    <div className="flex items-start gap-2 text-xs py-1">
+                                        <span className="flex-shrink-0 mt-0.5" style={{ color: 'var(--color-error)' }}>■</span>
+                                        <div>
+                                            <span className="font-semibold" style={{ color: 'var(--color-ink)' }}>Ends with: </span>
+                                            <span style={{ color: 'var(--color-ink-secondary)' }}>{period.endEvent.title}</span>
+                                            <span className="ml-1 font-medium" style={{ color: 'var(--color-burgundy)' }}>({period.endEvent.date})</span>
+                                        </div>
                                     </div>
-                                </div>
-                            )}
-                            {!period.endEvent && (
-                                <div className="flex items-start gap-2 text-xs py-1">
-                                    <span className="flex-shrink-0 mt-0.5" style={{ color: 'var(--color-ink-faint)' }}>■</span>
-                                    <span className="italic" style={{ color: 'var(--color-ink-faint)' }}>Ongoing — the era we live in</span>
-                                </div>
-                            )}
-                        </div>
-                    </Card>
+                                )}
+                                {!period.endEvent && (
+                                    <div className="flex items-start gap-2 text-xs py-1">
+                                        <span className="flex-shrink-0 mt-0.5" style={{ color: 'var(--color-ink-faint)' }}>■</span>
+                                        <span className="italic" style={{ color: 'var(--color-ink-faint)' }}>Ongoing — the era we live in</span>
+                                    </div>
+                                )}
+                            </div>
+                        </Card>
+                    </div>
                 </div>
 
-                <div className="flex gap-3 mt-4">
+                <div className="flex-shrink-0 flex gap-3 pt-4 pb-2">
                     {cardIndex > 0 && (
                         <Button variant="secondary" onClick={() => setCardIndex(i => i - 1)}>
                             ← Back
