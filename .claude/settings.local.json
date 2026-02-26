@@ -5,7 +5,19 @@
       "Bash(git checkout:*)",
       "Bash(git:*)",
       "Bash(dir:*)",
-      "Bash(cd /c/Users/elsad/chronos && npx vite --port 3000 2>&1)"
+      "Bash(cd /c/Users/elsad/chronos && npx vite --port 3000 2>&1)",
+      "Bash(npx cap init Chronos com.chronos.app --web-dir dist)",
+      "Bash(npm run build)",
+      "Bash(npx cap add android)",
+      "Bash(npm install @capacitor/android)",
+      "Bash(npx cap sync)",
+      "Bash(npx @capacitor/assets generate --android)",
+      "Bash(npm install -D typescript)",
+      "Bash(npm run lint)",
+      "Bash(export JAVA_HOME=\"/c/Program Files/Android/Android Studio/jbr\")",
+      "Bash(./gradlew assembleDebug)",
+      "Bash(node:*)",
+      "Bash(npx:*)"
     ]
   }
 }
