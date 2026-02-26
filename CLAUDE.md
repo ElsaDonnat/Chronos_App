@@ -78,3 +78,10 @@ Reusable UI primitives (Button, Card, MasteryDots, CategoryTag, ProgressRing) ar
 **New event:** Add to `ALL_EVENTS` in `src/data/events.js` with id format `'fXX'`, must include year, location, category, difficulty.
 
 **New lesson:** Add to `LESSONS` in `src/data/lessons.js` with exactly 3 eventIds for regular lessons.
+
+## Gotchas
+
+- **Unicode en-dashes in source files:** Many strings in this codebase use `\u2013` (en-dash `–`), not a regular hyphen-minus (`-`). When editing these strings with the Edit tool, you must use the exact `\u2013` character or the match will fail. If an edit fails on a string containing dashes, check the encoding with `node -e` first.
+- **Capacitor asset generation:** The command is `npx @capacitor/assets generate` with no flags. There is no `--splash`, `--splashOnly`, or `--iconOnly` option — it always regenerates everything (icons + splash).
+- **CRLF line endings:** This is a Windows project. Git may warn about LF→CRLF conversion — these warnings are harmless and can be ignored.
+- **After any visual/asset changes:** Always run `npm run build && npx cap sync` to propagate web build into the Android project.
