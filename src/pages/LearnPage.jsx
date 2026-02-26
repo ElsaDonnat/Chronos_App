@@ -7,13 +7,20 @@ import LessonFlow from '../components/learn/LessonFlow';
 import Lesson0Flow from '../components/learn/Lesson0Flow';
 import Mascot from '../components/Mascot';
 
-export default function LearnPage({ onSessionChange }) {
+export default function LearnPage({ onSessionChange, registerBackHandler }) {
     const { state } = useApp();
     const [activeLessonId, setActiveLessonId] = useState(null);
 
     useEffect(() => {
         onSessionChange?.(!!activeLessonId);
     }, [activeLessonId, onSessionChange]);
+
+    // Register back handler when in a lesson
+    useEffect(() => {
+        if (activeLessonId && registerBackHandler) {
+            return registerBackHandler(() => setActiveLessonId(null));
+        }
+    }, [activeLessonId, registerBackHandler]);
 
     if (activeLessonId) {
         const lesson = LESSONS.find(l => l.id === activeLessonId);

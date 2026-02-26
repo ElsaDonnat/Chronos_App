@@ -33,6 +33,8 @@ const defaultState = {
     lastActiveDate: null, // ISO date string e.g. '2025-02-23'
     // Settings
     settingsOpen: false,
+    // Whether the rating prompt has been shown/dismissed
+    ratingPromptDismissed: false,
 };
 
 function calculateOverallMastery(mastery) {
@@ -154,6 +156,14 @@ function reducer(state, action) {
 
         case 'TOGGLE_SETTINGS': {
             return { ...state, settingsOpen: !state.settingsOpen };
+        }
+
+        case 'IMPORT_STATE': {
+            return { ...defaultState, ...action.payload, settingsOpen: false };
+        }
+
+        case 'DISMISS_RATING_PROMPT': {
+            return { ...state, ratingPromptDismissed: true };
         }
 
         case 'RESET_PROGRESS': {

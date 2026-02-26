@@ -15,7 +15,7 @@ const VIEW = {
     RESULTS: 'results',
 };
 
-export default function PracticePage({ onSessionChange }) {
+export default function PracticePage({ onSessionChange, registerBackHandler }) {
     const { state, dispatch } = useApp();
     const [view, setView] = useState(VIEW.HUB);
     const [practiceTab, setPracticeTab] = useState('hub'); // hub | collection
@@ -31,6 +31,19 @@ export default function PracticePage({ onSessionChange }) {
     useEffect(() => {
         onSessionChange?.(view === VIEW.SESSION || view === VIEW.RESULTS);
     }, [view, onSessionChange]);
+
+    // Register back handler for non-hub views
+    useEffect(() => {
+        if (view !== VIEW.HUB && registerBackHandler) {
+            return registerBackHandler(() => {
+                if (view === VIEW.SESSION) {
+                    setShowExitConfirm(true);
+                } else {
+                    setView(VIEW.HUB);
+                }
+            });
+        }
+    }, [view, registerBackHandler]);
 
     // ─── Derived data ────────────────────────────────
     const learnedEvents = useMemo(() => {
