@@ -15,6 +15,7 @@ const config: CapacitorConfig = {
       autoHideDelay: 1500,
       backgroundColor: '#FAF6F0',
       showSpinner: false,
+      androidScaleType: 'CENTER_CROP',
     },
   },
   android: {

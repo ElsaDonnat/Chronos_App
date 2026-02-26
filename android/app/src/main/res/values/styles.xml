@@ -17,11 +17,10 @@
 
 
     <style name="AppTheme.NoActionBarLaunch" parent="Theme.SplashScreen">
-        <item name="android:background">@drawable/splash</item>
+        <item name="android:background">#FAF6F0</item>
         <item name="android:windowBackground">#FAF6F0</item>
         <item name="android:statusBarColor">#FAF6F0</item>
         <item name="android:navigationBarColor">#FAF6F0</item>
-        <item name="android:windowFullscreen">false</item>
         <item name="android:windowDrawsSystemBarBackgrounds">true</item>
     </style>
 </resources>
