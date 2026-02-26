@@ -13,6 +13,14 @@ npm run preview   # Preview production build
 
 No test framework is configured.
 
+## Android Build
+
+Before any Gradle commands, always run this first:
+
+```bash
+export JAVA_HOME="/c/Program Files/Android/Android Studio/jbr"
+```
+
 ## Tech Stack
 
 - **React 19** with Vite 7, pure JavaScript (no TypeScript)

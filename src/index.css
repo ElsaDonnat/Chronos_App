@@ -826,6 +826,29 @@ body {
   }
 }
 
+/* Lesson flow: fill available viewport so flex-column layouts
+   can pin nav buttons at the bottom without scrolling past them */
+.lesson-flow-container {
+  display: flex;
+  flex-direction: column;
+  min-height: calc(100dvh - 120px);
+}
+@supports not (min-height: 1dvh) {
+  .lesson-flow-container {
+    min-height: calc(100vh - 120px);
+  }
+}
+@media (max-width: 599px) {
+  .lesson-flow-container {
+    min-height: calc(100dvh - 140px);
+  }
+  @supports not (min-height: 1dvh) {
+    .lesson-flow-container {
+      min-height: calc(100vh - 140px);
+    }
+  }
+}
+
 /* ════════════════════════════════════════════════════════
    ACCESSIBILITY: Reduced Motion
    ════════════════════════════════════════════════════════ */

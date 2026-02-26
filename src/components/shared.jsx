@@ -1,4 +1,49 @@
+import { useState, useRef, useEffect } from 'react';
 import { CATEGORY_CONFIG } from '../data/events';
+
+/** Truncates text to `lines` lines with a "Read more / Less" toggle. */
+export function ExpandableText({ children, lines = 3, className = '', style = {} }) {
+    const [expanded, setExpanded] = useState(false);
+    const [needsTruncation, setNeedsTruncation] = useState(false);
+    const textRef = useRef(null);
+
+    useEffect(() => {
+        const el = textRef.current;
+        if (!el) return;
+        // Compare full scrollHeight vs clamped height
+        const lineHeight = parseFloat(getComputedStyle(el).lineHeight) || 20;
+        setNeedsTruncation(el.scrollHeight > lineHeight * lines + 4);
+    }, [children, lines]);
+
+    return (
+        <div>
+            <p
+                ref={textRef}
+                className={className}
+                style={{
+                    ...style,
+                    ...(!expanded && needsTruncation ? {
+                        display: '-webkit-box',
+                        WebkitLineClamp: lines,
+                        WebkitBoxOrient: 'vertical',
+                        overflow: 'hidden',
+                    } : {}),
+                }}
+            >
+                {children}
+            </p>
+            {needsTruncation && (
+                <button
+                    onClick={() => setExpanded(e => !e)}
+                    className="text-xs font-medium mt-1"
+                    style={{ color: 'var(--color-burgundy)', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
+                >
+                    {expanded ? 'Show less' : 'Read more'}
+                </button>
+            )}
+        </div>
+    );
+}
 
 export function CategoryTag({ category }) {
     const config = CATEGORY_CONFIG[category];

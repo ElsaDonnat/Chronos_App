@@ -325,7 +325,7 @@ export default function Lesson0Flow({ lesson, onComplete }) {
                     </div>
                 </div>
 
-                <div className="flex-1 min-h-0 overflow-y-auto mt-3" key={period.id}>
+                <div className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden mt-3" key={period.id}>
                     <div className="animate-slide-in-right">
                         <Card className="era-card-content" style={{ borderLeft: `4px solid ${period.color}`, overflow: 'hidden' }}>
                             <div className="text-center mb-2 sm:mb-4">

@@ -2,7 +2,7 @@ import { useState, useMemo, useCallback, useRef, useEffect } from 'react';
 import { useApp } from '../../context/AppContext';
 import { getEventsByIds, getEventById, ALL_EVENTS, CATEGORY_CONFIG, ERA_BOUNDARY_EVENTS, ERA_RANGES, getEraBoundaryInfo } from '../../data/events';
 import { scoreDateAnswer, generateLocationOptions, generateWhatOptions, generateDateMCQOptions, generateDescriptionOptions, calculateXP, SCORE_COLORS, getScoreColor, getScoreLabel } from '../../data/quiz';
-import { Card, Button, ProgressBar, CategoryTag, Divider, StarButton, ConfirmModal } from '../shared';
+import { Card, Button, ProgressBar, CategoryTag, Divider, StarButton, ConfirmModal, ExpandableText } from '../shared';
 import Mascot from '../Mascot';
 
 // ─── PHASES ────────────────────────────────────────────
@@ -24,30 +24,35 @@ const PERIOD_INFO = {
     prehistory: {
         title: 'Prehistory',
         subtitle: 'c. 7\u20136 million years ago \u2013 c. 3200 BCE',
+        keywords: 'Evolution, fire, farming.',
         description: 'Literally "before written records," prehistory spans 99% of the human story \u2014 from bipedalism and stone tools through the mastery of fire, the emergence of language, migration out of Africa, and the Neolithic transition to settled agriculture.',
         color: '#0D9488', icon: '\uD83E\uDDB4',
     },
     ancient: {
         title: 'The Ancient World',
         subtitle: 'c. 3200 BCE \u2013 476 CE',
+        keywords: 'Writing, cities, empires.',
         description: 'Defined by writing, cities, states, and empires. From Sumer and Egypt to Greece, Rome, China, and India \u2014 humanity built the foundations of law, philosophy, science, and organized religion.',
         color: '#6B5B73', icon: '\uD83C\uDFDB\uFE0F',
     },
     medieval: {
         title: 'The Medieval World',
         subtitle: '476 \u2013 c. 1500 CE',
+        keywords: 'Islam, feudalism, Mongols.',
         description: 'An era of transformation, not darkness. The rise of Islam, Byzantine continuity, feudal Europe, the Mongol Empire, the Crusades, and the first universities \u2014 from Rome\u2019s fall to the reconnection of the world.',
         color: '#A0522D', icon: '\u2694\uFE0F',
     },
     earlymodern: {
         title: 'The Early Modern Period',
         subtitle: 'c. 1500 \u2013 1789',
+        keywords: 'Exploration, Reformation, science.',
         description: 'Exploration, colonization, the Renaissance, Reformation, Scientific Revolution, and Enlightenment \u2014 from a fragmented world to an interconnected one, ending when Enlightenment ideals erupted into revolution.',
         color: '#65774A', icon: '\uD83E\uDDED',
     },
     modern: {
         title: 'The Modern World',
         subtitle: '1789 \u2013 Present',
+        keywords: 'Industry, world wars, digital.',
         description: 'More change in two centuries than in the previous two millennia. Industrialization, world wars, decolonization, the Cold War, and the digital revolution. The defining theme is acceleration.',
         color: '#8B4157', icon: '\uD83C\uDF0D',
     },
@@ -233,66 +238,72 @@ export default function LessonFlow({ lesson, onComplete }) {
         const period = PERIOD_INFO[lesson.periodId];
         if (!period) { setPhase(PHASE.LEARN_CARD); return null; }
         return (
-            <div className="py-4 animate-fade-in">
-                <div className="flex items-center justify-between mb-4">
-                    <button onClick={onComplete} className="text-sm flex items-center gap-1" style={{ color: 'var(--color-ink-muted)' }}>
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="15 18 9 12 15 6" /></svg>
-                        Exit
-                    </button>
-                    <span className="text-[10px] uppercase tracking-widest font-bold px-2 py-0.5 rounded-full"
-                        style={{ backgroundColor: `${period.color}15`, color: period.color }}>
-                        Period Overview
-                    </span>
+            <div className="lesson-flow-container animate-fade-in">
+                <div className="flex-shrink-0 pt-4">
+                    <div className="flex items-center justify-between mb-4">
+                        <button onClick={onComplete} className="text-sm flex items-center gap-1" style={{ color: 'var(--color-ink-muted)' }}>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="15 18 9 12 15 6" /></svg>
+                            Exit
+                        </button>
+                        <span className="text-[10px] uppercase tracking-widest font-bold px-2 py-0.5 rounded-full"
+                            style={{ backgroundColor: `${period.color}15`, color: period.color }}>
+                            Period Overview
+                        </span>
+                    </div>
                 </div>
-                <div className="animate-slide-in-right">
-                    <Card className="era-card-content" style={{ borderLeft: `4px solid ${period.color}` }}>
-                        <div className="text-center mb-2 sm:mb-4"><span className="era-card-icon">{period.icon}</span></div>
-                        <h2 className="era-card-title font-bold text-center mb-1" style={{ fontFamily: 'var(--font-serif)' }}>{period.title}</h2>
-                        <p className="text-sm font-semibold text-center mb-2 sm:mb-4" style={{ color: period.color }}>{period.subtitle}</p>
-                        <Divider />
-                        <p className="text-sm leading-relaxed mt-4" style={{ color: 'var(--color-ink-secondary)' }}>{period.description}</p>
-                        {(() => {
-                            const boundary = ERA_BOUNDARY_EVENTS[lesson.periodId];
-                            if (!boundary) return null;
-                            const startEvt = boundary.startEventId ? getEventById(boundary.startEventId) : null;
-                            const endEvt = boundary.endEventId ? getEventById(boundary.endEventId) : null;
-                            return (
-                                <div className="mt-4 pt-3" style={{ borderTop: '1px solid rgba(28, 25, 23, 0.06)' }}>
-                                    <p className="text-[11px] uppercase tracking-wider font-semibold mb-2" style={{ color: 'var(--color-ink-faint)' }}>
-                                        Key Transitions
-                                    </p>
-                                    {startEvt && (
-                                        <div className="flex items-start gap-2 text-xs py-1">
-                                            <span className="flex-shrink-0 mt-0.5" style={{ color: 'var(--color-success)' }}>▶</span>
-                                            <div>
-                                                <span className="font-semibold" style={{ color: 'var(--color-ink)' }}>Begins with: </span>
-                                                <span style={{ color: 'var(--color-ink-secondary)' }}>{startEvt.title}</span>
-                                                <span className="ml-1 font-medium" style={{ color: 'var(--color-burgundy)' }}>({startEvt.date})</span>
+                <div className="flex-1 min-h-0 overflow-y-auto">
+                    <div className="animate-slide-in-right">
+                        <Card className="era-card-content" style={{ borderLeft: `4px solid ${period.color}` }}>
+                            <div className="text-center mb-2 sm:mb-4"><span className="era-card-icon">{period.icon}</span></div>
+                            <h2 className="era-card-title font-bold text-center mb-1" style={{ fontFamily: 'var(--font-serif)' }}>{period.title}</h2>
+                            <p className="text-sm font-semibold text-center mb-2 sm:mb-4" style={{ color: period.color }}>{period.subtitle}</p>
+                            <Divider />
+                            <ExpandableText lines={3} className="text-sm leading-relaxed mt-4" style={{ color: 'var(--color-ink-secondary)' }}>
+                                <strong style={{ color: 'var(--color-ink)' }}>{period.keywords}</strong>{' '}{period.description}
+                            </ExpandableText>
+                            {(() => {
+                                const boundary = ERA_BOUNDARY_EVENTS[lesson.periodId];
+                                if (!boundary) return null;
+                                const startEvt = boundary.startEventId ? getEventById(boundary.startEventId) : null;
+                                const endEvt = boundary.endEventId ? getEventById(boundary.endEventId) : null;
+                                return (
+                                    <div className="mt-4 pt-3" style={{ borderTop: '1px solid rgba(28, 25, 23, 0.06)' }}>
+                                        <p className="text-[11px] uppercase tracking-wider font-semibold mb-2" style={{ color: 'var(--color-ink-faint)' }}>
+                                            Key Transitions
+                                        </p>
+                                        {startEvt && (
+                                            <div className="flex items-start gap-2 text-xs py-1">
+                                                <span className="flex-shrink-0 mt-0.5" style={{ color: 'var(--color-success)' }}>▶</span>
+                                                <div>
+                                                    <span className="font-semibold" style={{ color: 'var(--color-ink)' }}>Begins with: </span>
+                                                    <span style={{ color: 'var(--color-ink-secondary)' }}>{startEvt.title}</span>
+                                                    <span className="ml-1 font-medium" style={{ color: 'var(--color-burgundy)' }}>({startEvt.date})</span>
+                                                </div>
                                             </div>
-                                        </div>
-                                    )}
-                                    {endEvt && (
-                                        <div className="flex items-start gap-2 text-xs py-1">
-                                            <span className="flex-shrink-0 mt-0.5" style={{ color: 'var(--color-error)' }}>■</span>
-                                            <div>
-                                                <span className="font-semibold" style={{ color: 'var(--color-ink)' }}>Ends with: </span>
-                                                <span style={{ color: 'var(--color-ink-secondary)' }}>{endEvt.title}</span>
-                                                <span className="ml-1 font-medium" style={{ color: 'var(--color-burgundy)' }}>({endEvt.date})</span>
+                                        )}
+                                        {endEvt && (
+                                            <div className="flex items-start gap-2 text-xs py-1">
+                                                <span className="flex-shrink-0 mt-0.5" style={{ color: 'var(--color-error)' }}>■</span>
+                                                <div>
+                                                    <span className="font-semibold" style={{ color: 'var(--color-ink)' }}>Ends with: </span>
+                                                    <span style={{ color: 'var(--color-ink-secondary)' }}>{endEvt.title}</span>
+                                                    <span className="ml-1 font-medium" style={{ color: 'var(--color-burgundy)' }}>({endEvt.date})</span>
+                                                </div>
                                             </div>
-                                        </div>
-                                    )}
-                                    {!endEvt && (
-                                        <div className="flex items-start gap-2 text-xs py-1">
-                                            <span className="flex-shrink-0 mt-0.5" style={{ color: 'var(--color-ink-faint)' }}>■</span>
-                                            <span className="italic" style={{ color: 'var(--color-ink-faint)' }}>Ongoing — the era we live in</span>
-                                        </div>
-                                    )}
-                                </div>
-                            );
-                        })()}
-                    </Card>
+                                        )}
+                                        {!endEvt && (
+                                            <div className="flex items-start gap-2 text-xs py-1">
+                                                <span className="flex-shrink-0 mt-0.5" style={{ color: 'var(--color-ink-faint)' }}>■</span>
+                                                <span className="italic" style={{ color: 'var(--color-ink-faint)' }}>Ongoing — the era we live in</span>
+                                            </div>
+                                        )}
+                                    </div>
+                                );
+                            })()}
+                        </Card>
+                    </div>
                 </div>
-                <div className="mt-6">
+                <div className="flex-shrink-0 pt-4 pb-2">
                     <Button className="w-full" onClick={() => setPhase(PHASE.LEARN_CARD)}>Begin Events →</Button>
                 </div>
             </div>
@@ -314,88 +325,92 @@ export default function LessonFlow({ lesson, onComplete }) {
         return (
             <>
             <ExitConfirmModal show={showExitConfirm} onConfirm={onComplete} onCancel={() => setShowExitConfirm(false)} />
-            <div className="py-4 animate-fade-in">
-                <div className="flex items-center justify-between mb-4">
-                    <button onClick={handleExit} className="text-sm flex items-center gap-1" style={{ color: 'var(--color-ink-muted)' }}>
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="15 18 9 12 15 6" /></svg>
-                        Exit
-                    </button>
-                    <span className="text-sm font-medium" style={{ color: 'var(--color-ink-muted)' }}>
-                        Card {cardIndex + 1} of {events.length}
-                    </span>
+            <div className="lesson-flow-container animate-fade-in">
+                <div className="flex-shrink-0 pt-4">
+                    <div className="flex items-center justify-between mb-4">
+                        <button onClick={handleExit} className="text-sm flex items-center gap-1" style={{ color: 'var(--color-ink-muted)' }}>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="15 18 9 12 15 6" /></svg>
+                            Exit
+                        </button>
+                        <span className="text-sm font-medium" style={{ color: 'var(--color-ink-muted)' }}>
+                            Card {cardIndex + 1} of {events.length}
+                        </span>
+                    </div>
+
+                    <ProgressBar value={cardIndex + 1} max={events.length} />
+
+                    <div className="text-center mt-2 mb-1">
+                        <span className="text-[10px] uppercase tracking-widest font-bold px-2 py-0.5 rounded-full"
+                            style={{ backgroundColor: 'var(--color-burgundy-soft)', color: 'var(--color-burgundy)' }}>
+                            📖 Study
+                        </span>
+                    </div>
                 </div>
 
-                <ProgressBar value={cardIndex + 1} max={events.length} />
-
-                <div className="text-center mt-2 mb-1">
-                    <span className="text-[10px] uppercase tracking-widest font-bold px-2 py-0.5 rounded-full"
-                        style={{ backgroundColor: 'var(--color-burgundy-soft)', color: 'var(--color-burgundy)' }}>
-                        📖 Study
-                    </span>
-                </div>
-
-                <div className="mt-4 animate-slide-in-right" key={event.id}>
-                    <Card>
-                        <div className="flex items-center justify-between">
-                            <CategoryTag category={event.category} />
-                            <StarButton
-                                isStarred={(state.starredEvents || []).includes(event.id)}
-                                onClick={() => dispatch({ type: 'TOGGLE_STAR', eventId: event.id })}
-                            />
-                        </div>
-                        <h2 className="text-xl font-bold mt-3 mb-2 leading-snug" style={{ fontFamily: 'var(--font-serif)', color: 'var(--color-ink)' }}>
-                            {event.title}
-                        </h2>
-                        <p className="text-lg font-semibold mb-3" style={{ color: 'var(--color-burgundy)' }}>
-                            {event.date}
-                        </p>
-                        {(() => {
-                            const boundaryInfo = getEraBoundaryInfo(event.id);
-                            if (!boundaryInfo) return null;
-                            const eraIcons = { prehistory: '🦴', ancient: '🏛️', medieval: '⚔️', earlymodern: '🧭', modern: '🌍' };
-                            return boundaryInfo.map((b, i) => (
-                                <div key={i} className="flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1.5 rounded-lg mb-3"
-                                    style={{
-                                        backgroundColor: b.type === 'start' ? 'rgba(5, 150, 105, 0.08)' : 'rgba(166, 61, 61, 0.08)',
-                                        color: b.type === 'start' ? 'var(--color-success)' : 'var(--color-error)',
-                                    }}>
-                                    <span>{eraIcons[b.eraId] || '📌'}</span>
-                                    <span>Marks the {b.type === 'start' ? 'start' : 'end'} of the {b.eraLabel} era</span>
-                                </div>
-                            ));
-                        })()}
-                        <p className="text-sm leading-relaxed mb-4" style={{ color: 'var(--color-ink-secondary)' }}>
-                            {event.description}
-                        </p>
-                        <div className="flex items-center gap-2 text-xs" style={{ color: 'var(--color-ink-muted)' }}>
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" /><circle cx="12" cy="10" r="3" />
-                            </svg>
-                            {event.location.place}
-                            {event.location.region && !event.location.place.includes(event.location.region) && (
-                                <span style={{ color: 'var(--color-ink-faint)' }}>· {event.location.region}</span>
-                            )}
-                        </div>
-
-                        {nearbyEvents.length > 0 && (
-                            <div className="mt-4 pt-3" style={{ borderTop: '1px solid rgba(28, 25, 23, 0.06)' }}>
-                                <p className="text-[11px] uppercase tracking-wider font-semibold mb-2" style={{ color: 'var(--color-ink-faint)' }}>
-                                    Before & After
-                                </p>
-                                {nearbyEvents.map(ne => (
-                                    <div key={ne.id} className="flex items-center gap-2 text-xs py-1" style={{ color: 'var(--color-ink-muted)' }}>
-                                        <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: CATEGORY_CONFIG[ne.category]?.color || '#999' }} />
-                                        <span>{ne.date}</span>
-                                        <span>—</span>
-                                        <span className="font-medium">{ne.title}</span>
-                                    </div>
-                                ))}
+                <div className="flex-1 min-h-0 overflow-y-auto mt-4" key={event.id}>
+                    <div className="animate-slide-in-right">
+                        <Card>
+                            <div className="flex items-center justify-between">
+                                <CategoryTag category={event.category} />
+                                <StarButton
+                                    isStarred={(state.starredEvents || []).includes(event.id)}
+                                    onClick={() => dispatch({ type: 'TOGGLE_STAR', eventId: event.id })}
+                                />
                             </div>
-                        )}
-                    </Card>
+                            <h2 className="text-xl font-bold mt-3 mb-2 leading-snug" style={{ fontFamily: 'var(--font-serif)', color: 'var(--color-ink)' }}>
+                                {event.title}
+                            </h2>
+                            <p className="text-lg font-semibold mb-3" style={{ color: 'var(--color-burgundy)' }}>
+                                {event.date}
+                            </p>
+                            {(() => {
+                                const boundaryInfo = getEraBoundaryInfo(event.id);
+                                if (!boundaryInfo) return null;
+                                const eraIcons = { prehistory: '🦴', ancient: '🏛️', medieval: '⚔️', earlymodern: '🧭', modern: '🌍' };
+                                return boundaryInfo.map((b, i) => (
+                                    <div key={i} className="flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1.5 rounded-lg mb-3"
+                                        style={{
+                                            backgroundColor: b.type === 'start' ? 'rgba(5, 150, 105, 0.08)' : 'rgba(166, 61, 61, 0.08)',
+                                            color: b.type === 'start' ? 'var(--color-success)' : 'var(--color-error)',
+                                        }}>
+                                        <span>{eraIcons[b.eraId] || '📌'}</span>
+                                        <span>Marks the {b.type === 'start' ? 'start' : 'end'} of the {b.eraLabel} era</span>
+                                    </div>
+                                ));
+                            })()}
+                            <ExpandableText lines={3} className="text-sm leading-relaxed mb-4" style={{ color: 'var(--color-ink-secondary)' }}>
+                                {event.description}
+                            </ExpandableText>
+                            <div className="flex items-center gap-2 text-xs" style={{ color: 'var(--color-ink-muted)' }}>
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" /><circle cx="12" cy="10" r="3" />
+                                </svg>
+                                {event.location.place}
+                                {event.location.region && !event.location.place.includes(event.location.region) && (
+                                    <span style={{ color: 'var(--color-ink-faint)' }}>· {event.location.region}</span>
+                                )}
+                            </div>
+
+                            {nearbyEvents.length > 0 && (
+                                <div className="mt-4 pt-3" style={{ borderTop: '1px solid rgba(28, 25, 23, 0.06)' }}>
+                                    <p className="text-[11px] uppercase tracking-wider font-semibold mb-2" style={{ color: 'var(--color-ink-faint)' }}>
+                                        Before & After
+                                    </p>
+                                    {nearbyEvents.map(ne => (
+                                        <div key={ne.id} className="flex items-center gap-2 text-xs py-1" style={{ color: 'var(--color-ink-muted)' }}>
+                                            <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: CATEGORY_CONFIG[ne.category]?.color || '#999' }} />
+                                            <span>{ne.date}</span>
+                                            <span>—</span>
+                                            <span className="font-medium">{ne.title}</span>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        </Card>
+                    </div>
                 </div>
 
-                <div className="flex gap-3 mt-6">
+                <div className="flex-shrink-0 flex gap-3 pt-4 pb-2">
                     {cardIndex > 0 && (
                         <Button variant="secondary" onClick={() => {
                             setCardIndex(i => i - 1);
@@ -560,8 +575,8 @@ export default function LessonFlow({ lesson, onComplete }) {
             const borderColor = worstScore === 'red' ? 'var(--color-error)' : 'var(--color-warning)';
 
             return (
-                <div className="py-4 animate-fade-in">
-                    <div className="text-center mb-4">
+                <div className="lesson-flow-container animate-fade-in">
+                    <div className="flex-shrink-0 text-center mb-4 pt-4">
                         <Mascot mood={worstScore === 'red' ? 'surprised' : 'thinking'} size={50} />
                         <p className="text-sm font-semibold mt-2" style={{ color: borderColor }}>
                             {worstScore === 'red' ? "Let's review this one" : "Almost had it"}
@@ -570,19 +585,23 @@ export default function LessonFlow({ lesson, onComplete }) {
                             Review {reviewIndex + 1} of {hardEvents.length}
                         </span>
                     </div>
-                    <Card className="animate-slide-in-right" style={{ borderLeft: `3px solid ${borderColor}` }}>
-                        <CategoryTag category={event.category} />
-                        <h2 className="text-xl font-bold mt-3 mb-2" style={{ fontFamily: 'var(--font-serif)' }}>{event.title}</h2>
-                        <p className="text-lg font-semibold mb-3" style={{ color: 'var(--color-burgundy)' }}>{event.date}</p>
-                        <p className="text-sm leading-relaxed mb-3" style={{ color: 'var(--color-ink-secondary)' }}>{event.description}</p>
-                        <div className="flex items-center gap-2 text-xs" style={{ color: 'var(--color-ink-muted)' }}>
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" /><circle cx="12" cy="10" r="3" />
-                            </svg>
-                            {event.location.place}
-                        </div>
-                    </Card>
-                    <div className="flex gap-3 mt-6">
+                    <div className="flex-1 min-h-0 overflow-y-auto">
+                        <Card className="animate-slide-in-right" style={{ borderLeft: `3px solid ${borderColor}` }}>
+                            <CategoryTag category={event.category} />
+                            <h2 className="text-xl font-bold mt-3 mb-2" style={{ fontFamily: 'var(--font-serif)' }}>{event.title}</h2>
+                            <p className="text-lg font-semibold mb-3" style={{ color: 'var(--color-burgundy)' }}>{event.date}</p>
+                            <ExpandableText lines={3} className="text-sm leading-relaxed mb-3" style={{ color: 'var(--color-ink-secondary)' }}>
+                                {event.description}
+                            </ExpandableText>
+                            <div className="flex items-center gap-2 text-xs" style={{ color: 'var(--color-ink-muted)' }}>
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" /><circle cx="12" cy="10" r="3" />
+                                </svg>
+                                {event.location.place}
+                            </div>
+                        </Card>
+                    </div>
+                    <div className="flex-shrink-0 flex gap-3 pt-4 pb-2">
                         {reviewIndex > 0 && (
                             <Button variant="secondary" onClick={() => setReviewIndex(i => i - 1)}>← Back</Button>
                         )}
