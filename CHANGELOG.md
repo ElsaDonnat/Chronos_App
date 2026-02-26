@@ -5,6 +5,24 @@ Format follows [Keep a Changelog](https://keepachangelog.com/) and [Semantic Ver
 
 Use the latest version entry for Play Store "What's New" text.
 
+## [1.1.1] - 2026-02-26
+
+### Fixed
+- Splash screen white border/gap — replaced bitmap drawable with solid parchment color background, Capacitor plugin now handles image display with CENTER_CROP scaling
+- Fake date ranges in Lesson 0 era quiz — removed defensible alternative dates (1453, 1492, 1648, 1776, 1815, 1848, 1914, etc.) that historians actually use as period boundaries; replaced with non-standard dates so wrong answers are clearly wrong
+- Horizontal scrollbar flash when swiping between eras in Lesson 0
+
+### Changed
+- Splash screen logo scaled up 10%, tagline removed for cleaner appearance
+- Splash icon repositioned slightly above center for better visual balance
+- Android system bars (status bar, navigation bar) now match parchment color during splash
+
+### Added
+- Feature backlog file (BACKLOG.md) with prioritized roadmap
+- Android build instructions and gotchas section in CLAUDE.md
+
+---
+
 ## [1.1.0] - 2026-02-26
 
 ### Added
