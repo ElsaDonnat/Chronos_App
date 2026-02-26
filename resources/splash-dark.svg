@@ -2,8 +2,8 @@
   <!-- Dark background -->
   <rect width="2732" height="2732" fill="#1C1917"/>
 
-  <!-- Centered hourglass icon -->
-  <g transform="translate(1366, 1200) scale(30.8)" stroke="#A8596E" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" fill="none">
+  <!-- Centered hourglass icon (slightly above center) -->
+  <g transform="translate(1366, 1150) scale(30.8)" stroke="#A8596E" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" fill="none">
     <line x1="-7" y1="-9" x2="7" y2="-9"/>
     <line x1="-7" y1="9" x2="7" y2="9"/>
     <path d="M-5 -9 C-5 -9 -5 -3 0 0 C-5 3 -5 9 -5 9"/>
@@ -14,8 +14,5 @@
   </g>
 
   <!-- App name -->
-  <text x="1366" y="1640" text-anchor="middle" font-family="Georgia, serif" font-size="154" font-weight="700" fill="#FAF6F0" letter-spacing="-2">Chronos</text>
-
-  <!-- Tagline -->
-  <text x="1366" y="1728" text-anchor="middle" font-family="system-ui, sans-serif" font-size="57" font-weight="400" fill="#78716C">Learn the story of humanity</text>
+  <text x="1366" y="1590" text-anchor="middle" font-family="Georgia, serif" font-size="154" font-weight="700" fill="#FAF6F0" letter-spacing="-2">Chronos</text>
 </svg>
