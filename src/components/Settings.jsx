@@ -214,7 +214,7 @@ export default function Settings() {
                         Give Feedback
                     </button>
                     <button
-                        onClick={() => window.open('https://buymeacoffee.com/', '_blank')}
+                        onClick={() => window.open('https://buymeacoffee.com/elsadonnat0', '_blank')}
                         className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-xs font-medium"
                         style={{ color: 'var(--color-ink-secondary)', backgroundColor: 'rgba(201, 169, 110, 0.12)', border: '1px solid rgba(201, 169, 110, 0.2)' }}
                     >
