@@ -1,6 +1,7 @@
 import { useState, useMemo, useRef, useEffect } from 'react';
 import { useApp } from '../../context/AppContext';
 import { getEventById, ERA_BOUNDARY_EVENTS } from '../../data/events';
+import { SCORE_COLORS } from '../../data/quiz';
 import { Card, Button, ProgressBar, Divider } from '../shared';
 import Mascot from '../Mascot';
 
@@ -89,11 +90,6 @@ export default function Lesson0Flow({ lesson, onComplete }) {
             dispatch({ type: 'ADD_XP', amount: greenCount * 5 });
         }
     }, [phase, greenCount, dispatch]);
-
-    const scoreColors = {
-        green: { bg: 'rgba(5, 150, 105, 0.08)', border: 'var(--color-success)' },
-        red: { bg: 'rgba(166, 61, 61, 0.08)', border: 'var(--color-error)' },
-    };
 
     // ─── INTRO ─────────────────────────────────────────
     if (phase === PHASE.INTRO) {
@@ -291,7 +287,7 @@ export default function Lesson0Flow({ lesson, onComplete }) {
             }
         };
 
-        const currentScore = answered ? results[results.length - 1] : null;
+        const currentScore = answered ? results[results.length - 1]?.score : null;
         const correctValue = q.type === 'event' ? q.correctDisplay : q.correctAnswer;
 
         return (
@@ -310,8 +306,8 @@ export default function Lesson0Flow({ lesson, onComplete }) {
 
                 <div className="mt-6 animate-slide-in-right">
                     <Card style={answered && currentScore ? {
-                        backgroundColor: scoreColors[currentScore].bg,
-                        borderLeft: `3px solid ${scoreColors[currentScore].border}`
+                        backgroundColor: SCORE_COLORS[currentScore].bg,
+                        borderLeft: `3px solid ${SCORE_COLORS[currentScore].border}`
                     } : {}}>
                         <p className="text-xs uppercase tracking-wider font-semibold mb-2" style={{ color: 'var(--color-ink-faint)' }}>
                             {q.type === 'date' ? 'When was this era?' : 'What period is this?'}
@@ -376,7 +372,6 @@ export default function Lesson0Flow({ lesson, onComplete }) {
 
     // ─── SUMMARY ───────────────────────────────────────
     if (phase === PHASE.SUMMARY) {
-        const total = results.length;
         const redCount = results.filter(r => r.score === 'red').length;
         const xp = greenCount * 5;
 

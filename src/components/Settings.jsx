@@ -20,7 +20,7 @@ export default function Settings() {
 
     return (
         <div className="fixed inset-0 z-[60] flex items-center justify-center" onClick={() => dispatch({ type: 'TOGGLE_SETTINGS' })}>
-            <div className="absolute inset-0" style={{ backgroundColor: 'rgba(28, 25, 23, 0.3)', backdropFilter: 'blur(4px)' }} />
+            <div className="absolute inset-0" style={{ backgroundColor: 'rgba(28, 25, 23, 0.4)', backdropFilter: 'blur(4px)' }} />
             <div
                 className="relative w-full max-w-lg rounded-2xl p-6 mx-4 animate-fade-in-up"
                 style={{ backgroundColor: 'var(--color-parchment)', maxHeight: '80vh', overflowY: 'auto', boxShadow: 'var(--shadow-elevated)' }}
@@ -96,7 +96,7 @@ export default function Settings() {
                 </Button>
 
                 <p className="text-center text-xs mt-4" style={{ color: 'var(--color-ink-faint)' }}>
-                    Chronos v1.0 — The Story of Humanity
+                    Chronos v{__APP_VERSION__} — The Story of Humanity
                 </p>
             </div>
 

@@ -60,6 +60,11 @@
   /* Layout */
   --sidebar-width: 232px;
   --topbar-height: 60px;
+
+  /* Transitions */
+  --duration-fast: 0.15s;
+  --duration-normal: 0.2s;
+  --duration-slow: 0.3s;
 }
 
 /* Base Styles */
@@ -73,6 +78,7 @@ html {
   background-color: var(--color-parchment-dark);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  height: 100vh;
   height: 100dvh;
   overflow: hidden;
   overscroll-behavior-y: none;
@@ -81,6 +87,7 @@ html {
 body {
   margin: 0;
   padding: 0;
+  height: 100vh;
   height: 100dvh;
   overflow: hidden;
 }
@@ -89,6 +96,16 @@ body {
   height: 100%;
   display: flex;
   flex-direction: column;
+}
+
+/* Keyboard focus indicators */
+:focus-visible {
+  outline: 2px solid var(--color-burgundy);
+  outline-offset: 2px;
+}
+
+:focus:not(:focus-visible) {
+  outline: none;
 }
 
 /* Scrollbar theming */
@@ -110,6 +127,7 @@ body {
    ════════════════════════════════════════════════════════ */
 
 .app-shell {
+  height: 100vh;
   height: 100dvh;
   display: flex;
   flex-direction: column;
@@ -121,7 +139,8 @@ body {
   flex-shrink: 0;
   z-index: 50;
   width: 100%;
-  height: var(--topbar-height);
+  height: calc(var(--topbar-height) + env(safe-area-inset-top, 0px));
+  padding-top: env(safe-area-inset-top, 0px);
   background-color: rgba(250, 246, 240, 0.95);
   backdrop-filter: blur(12px);
   border-bottom: 1px solid rgba(28, 25, 23, 0.08);
@@ -130,7 +149,7 @@ body {
 .topbar-inner {
   width: 100%;
   height: 100%;
-  padding: 0 24px;
+  padding: 0 max(24px, env(safe-area-inset-right, 0px)) 0 max(24px, env(safe-area-inset-left, 0px));
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -177,18 +196,27 @@ body {
 }
 
 .topbar-settings-btn {
-  padding: 6px;
+  padding: 10px;
+  min-width: 44px;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   border-radius: 8px;
   border: none;
   background: none;
   color: var(--color-ink-muted);
   cursor: pointer;
-  transition: background-color 0.15s ease, color 0.15s ease;
+  transition: background-color var(--duration-fast) ease, color var(--duration-fast) ease;
 }
 
 .topbar-settings-btn:hover {
   background-color: rgba(28, 25, 23, 0.06);
   color: var(--color-ink-secondary);
+}
+
+.topbar-settings-btn:focus-visible {
+  outline-offset: -2px;
 }
 
 /* ─── App Body (sidebar + main) ─── */
@@ -237,7 +265,7 @@ body {
   font-size: 0.9rem;
   font-weight: 500;
   font-family: var(--font-sans);
-  transition: all 0.15s ease;
+  transition: all var(--duration-fast) ease;
   width: 100%;
   text-align: left;
 }
@@ -258,6 +286,10 @@ body {
 .sidebar-nav-item--active:hover {
   background-color: rgba(139, 65, 87, 0.1);
   color: var(--color-burgundy);
+}
+
+.sidebar-nav-item:focus-visible {
+  outline-offset: -2px;
 }
 
 .sidebar-nav-icon {
@@ -312,7 +344,7 @@ body {
   flex-shrink: 0;
   background-color: var(--color-parchment);
   border-top: 1px solid rgba(28, 25, 23, 0.08);
-  padding: 0 8px;
+  padding: 0 max(8px, env(safe-area-inset-right, 0px)) 0 max(8px, env(safe-area-inset-left, 0px));
   padding-bottom: env(safe-area-inset-bottom, 0px);
 }
 
@@ -345,7 +377,7 @@ body {
   font-size: 0.8rem;
   font-weight: 500;
   font-family: var(--font-sans);
-  transition: all 0.15s ease;
+  transition: all var(--duration-fast) ease;
 }
 
 .mobile-tab-item:hover {
@@ -356,6 +388,10 @@ body {
   background-color: var(--color-burgundy-soft);
   color: var(--color-burgundy);
   font-weight: 600;
+}
+
+.mobile-tab-item:focus-visible {
+  outline-offset: -2px;
 }
 
 .mobile-tab-label {
@@ -402,7 +438,7 @@ body {
 
 @media (max-width: 599px) {
   .main-content-inner {
-    padding: 16px 16px 32px;
+    padding: 16px max(16px, env(safe-area-inset-right, 0px)) 32px max(16px, env(safe-area-inset-left, 0px));
   }
 }
 
@@ -412,7 +448,7 @@ body {
 
 @media (min-width: 900px) {
   .lesson-card-row {
-    transition: box-shadow 0.2s ease, transform 0.15s ease;
+    transition: box-shadow var(--duration-normal) ease, transform var(--duration-fast) ease;
   }
   .lesson-card-row:hover {
     box-shadow: var(--shadow-card-hover);
@@ -450,7 +486,7 @@ body {
   background-color: var(--color-card);
   color: var(--color-ink);
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all var(--duration-fast) ease;
 }
 
 .mcq-option:not(:disabled):hover {
@@ -463,12 +499,18 @@ body {
   cursor: default;
 }
 
+.mcq-option:focus-visible {
+  border-color: var(--color-burgundy);
+  box-shadow: 0 0 0 2px rgba(139, 65, 87, 0.25);
+  outline: none;
+}
+
 /* ════════════════════════════════════════════════════════
    COMPONENT: Timeline layout
    ════════════════════════════════════════════════════════ */
 
 .timeline-event-card {
-  transition: background-color 0.15s ease;
+  transition: background-color var(--duration-fast) ease;
 }
 
 @media (min-width: 900px) {
@@ -670,7 +712,7 @@ body {
 
 .result-dot-btn {
   cursor: pointer;
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  transition: transform var(--duration-fast) ease, box-shadow var(--duration-fast) ease;
   border: none;
   padding: 0;
   outline: none;
@@ -694,8 +736,8 @@ body {
   justify-content: center;
   padding: 24px;
   background: rgba(28, 25, 23, 0.4);
-  backdrop-filter: blur(6px);
-  animation: backdropFadeIn 0.2s ease-out forwards;
+  backdrop-filter: blur(4px);
+  animation: backdropFadeIn var(--duration-normal) ease-out forwards;
 }
 
 .dot-modal-content {
@@ -703,7 +745,7 @@ body {
   max-width: 500px;
   max-height: 80vh;
   overflow-y: auto;
-  animation: modalSlideUp 0.25s ease-out forwards;
+  animation: modalSlideUp var(--duration-slow) ease-out forwards;
 }
 
 .dot-highlight {

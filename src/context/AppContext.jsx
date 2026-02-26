@@ -9,7 +9,7 @@ function getInitialState() {
         const saved = localStorage.getItem(STORAGE_KEY);
         if (saved) {
             const parsed = JSON.parse(saved);
-            return { ...defaultState, ...parsed };
+            return { ...defaultState, ...parsed, settingsOpen: false };
         }
     } catch (e) {
         console.error('Failed to load state:', e);
@@ -189,12 +189,14 @@ export function AppProvider({ children }) {
     );
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export function useApp() {
     const ctx = useContext(AppContext);
     if (!ctx) throw new Error('useApp must be used within AppProvider');
     return ctx;
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export function useIsLessonUnlocked(lessonIndex, lessons) {
     const { state } = useApp();
     if (lessonIndex === 0) return true;

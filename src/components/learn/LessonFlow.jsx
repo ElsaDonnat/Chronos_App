@@ -1,7 +1,7 @@
 import { useState, useMemo, useCallback, useRef, useEffect } from 'react';
 import { useApp } from '../../context/AppContext';
 import { getEventsByIds, getEventById, ALL_EVENTS, CATEGORY_CONFIG, ERA_BOUNDARY_EVENTS, ERA_RANGES, getEraBoundaryInfo } from '../../data/events';
-import { scoreDateAnswer, generateLocationOptions, generateWhatOptions, generateDateMCQOptions, calculateXP } from '../../data/quiz';
+import { scoreDateAnswer, generateLocationOptions, generateWhatOptions, generateDateMCQOptions, generateDescriptionOptions, calculateXP, SCORE_COLORS, getScoreColor, getScoreLabel } from '../../data/quiz';
 import { Card, Button, ProgressBar, CategoryTag, Divider, StarButton, ConfirmModal } from '../shared';
 import Mascot from '../Mascot';
 
@@ -95,8 +95,8 @@ export default function LessonFlow({ lesson, onComplete }) {
         return qs;
     }, [events, learnTypes]);
 
-    // Pre-generate recap questions (shuffled)
-    const recapQuestions = useMemo(() => {
+    // Pre-generate recap questions (shuffled once on mount)
+    const [recapQuestions] = useState(() => {
         const qs = [];
         // 3 remaining MCQ questions (one per card)
         events.forEach((event, i) => {
@@ -108,7 +108,7 @@ export default function LessonFlow({ lesson, onComplete }) {
         });
         // Shuffle all 6
         return qs.sort(() => Math.random() - 0.5);
-    }, [events, remainingTypes]);
+    });
 
     // Get current learn quiz questions for current card
     const currentCardLearnQs = useMemo(() => {
@@ -130,10 +130,6 @@ export default function LessonFlow({ lesson, onComplete }) {
         return quizResults.filter(r => r.firstScore === 'red' || r.firstScore === 'yellow');
     }, [quizResults]);
 
-    const redResults = useMemo(() => {
-        return quizResults.filter(r => r.firstScore === 'red' && !r.retryScore);
-    }, [quizResults]);
-
     // Total counts
     const totalQuestions = 12; // always 12
     const answeredCount = quizResults.length;
@@ -143,7 +139,6 @@ export default function LessonFlow({ lesson, onComplete }) {
         if (phase === PHASE.SUMMARY && !xpDispatched.current) {
             xpDispatched.current = true;
             const xp = calculateXP(quizResults);
-            const redCount = quizResults.filter(r => r.firstScore === 'red').length;
             dispatch({ type: 'COMPLETE_LESSON', lessonId: lesson.id });
             dispatch({ type: 'ADD_XP', amount: xp });
         }
@@ -155,11 +150,13 @@ export default function LessonFlow({ lesson, onComplete }) {
 
     // Helper: record answer
     const recordAnswer = useCallback((eventId, questionType, score) => {
+        const event = getEventById(eventId);
         setQuizResults(prev => [...prev, {
             eventId,
             questionType,
             firstScore: score,
             retryScore: null,
+            difficulty: event?.difficulty || 1,
         }]);
         dispatch({
             type: 'UPDATE_EVENT_MASTERY',
@@ -308,7 +305,6 @@ export default function LessonFlow({ lesson, onComplete }) {
     if (phase === PHASE.LEARN_CARD) {
         const event = events[cardIndex];
         if (!event) {
-            // All cards done → transition to recap
             setPhase(PHASE.RECAP_TRANSITION);
             return null;
         }
@@ -424,7 +420,6 @@ export default function LessonFlow({ lesson, onComplete }) {
     if (phase === PHASE.LEARN_QUIZ) {
         const q = currentCardLearnQs[learnQuizIndex];
         if (!q) {
-            // Done with this card's quiz → next card
             const next = cardIndex + 1;
             if (next < events.length) {
                 setCardIndex(next);
@@ -504,7 +499,6 @@ export default function LessonFlow({ lesson, onComplete }) {
     if (phase === PHASE.RECAP) {
         const q = recapQuestions[recapIndex];
         if (!q) {
-            // Done with recap
             if (hardResults.length > 0) {
                 setReviewIndex(0);
                 setPhase(PHASE.FINAL_REVIEW);
@@ -798,12 +792,6 @@ function QuizQuestion({ question, lessonEventIds, onAnswer, onNext, onBack, onSk
         onAnswer(s);
     }, [answered, onAnswer]);
 
-    const scoreColors = {
-        green: { bg: 'rgba(5, 150, 105, 0.08)', border: 'var(--color-success)' },
-        yellow: { bg: 'rgba(198, 134, 42, 0.08)', border: 'var(--color-warning)' },
-        red: { bg: 'rgba(166, 61, 61, 0.08)', border: 'var(--color-error)' },
-    };
-
     const renderButtons = () => {
         if (answered) {
             return (
@@ -828,7 +816,7 @@ function QuizQuestion({ question, lessonEventIds, onAnswer, onNext, onBack, onSk
     if (type === 'location') {
         return (
             <div className="animate-slide-in-right">
-                <Card style={answered && score ? { backgroundColor: scoreColors[score].bg, borderLeft: `3px solid ${scoreColors[score].border}` } : {}}>
+                <Card style={answered && score ? { backgroundColor: SCORE_COLORS[score].bg, borderLeft: `3px solid ${SCORE_COLORS[score].border}` } : {}}>
                     <p className="text-xs uppercase tracking-wider font-semibold mb-2" style={{ color: 'var(--color-ink-faint)' }}>Where did this happen?</p>
                     <h3 className="text-xl font-bold mb-1" style={{ fontFamily: 'var(--font-serif)' }}>{event.title}</h3>
                     <p className="text-sm mb-5" style={{ color: 'var(--color-burgundy)' }}>{event.date}</p>
@@ -866,7 +854,7 @@ function QuizQuestion({ question, lessonEventIds, onAnswer, onNext, onBack, onSk
     if (type === 'date') {
         return (
             <div className="animate-slide-in-right">
-                <Card style={answered && score ? { backgroundColor: scoreColors[score].bg, borderLeft: `3px solid ${scoreColors[score].border}` } : {}}>
+                <Card style={answered && score ? { backgroundColor: SCORE_COLORS[score].bg, borderLeft: `3px solid ${SCORE_COLORS[score].border}` } : {}}>
                     <p className="text-xs uppercase tracking-wider font-semibold mb-2" style={{ color: 'var(--color-ink-faint)' }}>When did this happen?</p>
                     <h3 className="text-xl font-bold mb-1" style={{ fontFamily: 'var(--font-serif)' }}>{event.title}</h3>
                     <p className="text-sm mb-2 leading-relaxed" style={{ color: 'var(--color-ink-secondary)' }}>
@@ -903,7 +891,7 @@ function QuizQuestion({ question, lessonEventIds, onAnswer, onNext, onBack, onSk
     if (type === 'what') {
         return (
             <div className="animate-slide-in-right">
-                <Card style={answered && score ? { backgroundColor: scoreColors[score].bg, borderLeft: `3px solid ${scoreColors[score].border}` } : {}}>
+                <Card style={answered && score ? { backgroundColor: SCORE_COLORS[score].bg, borderLeft: `3px solid ${SCORE_COLORS[score].border}` } : {}}>
                     <p className="text-xs uppercase tracking-wider font-semibold mb-2" style={{ color: 'var(--color-ink-faint)' }}>What happened?</p>
                     <p className="text-xl font-semibold mb-1" style={{ color: 'var(--color-burgundy)' }}>{event.date}</p>
                     <p className="text-sm mb-5" style={{ color: 'var(--color-ink-muted)' }}>
@@ -939,7 +927,7 @@ function QuizQuestion({ question, lessonEventIds, onAnswer, onNext, onBack, onSk
     if (type === 'description') {
         return (
             <div className="animate-slide-in-right">
-                <Card style={answered && score ? { backgroundColor: scoreColors[score].bg, borderLeft: `3px solid ${scoreColors[score].border}` } : {}}>
+                <Card style={answered && score ? { backgroundColor: SCORE_COLORS[score].bg, borderLeft: `3px solid ${SCORE_COLORS[score].border}` } : {}}>
                     <p className="text-xs uppercase tracking-wider font-semibold mb-2" style={{ color: 'var(--color-ink-faint)' }}>Which description fits?</p>
                     <h3 className="text-xl font-bold mb-1" style={{ fontFamily: 'var(--font-serif)' }}>{event.title}</h3>
                     <p className="text-sm mb-5" style={{ color: 'var(--color-burgundy)' }}>{event.date}</p>
@@ -991,12 +979,6 @@ function DateInputQuestion({ event, onAnswer, onNext, onBack, onSkip }) {
         onAnswer(s);
     }, [answered, dateInput, era, event, onAnswer]);
 
-    const scoreColors = {
-        green: { bg: 'rgba(5, 150, 105, 0.08)', border: 'var(--color-success)' },
-        yellow: { bg: 'rgba(198, 134, 42, 0.08)', border: 'var(--color-warning)' },
-        red: { bg: 'rgba(166, 61, 61, 0.08)', border: 'var(--color-error)' },
-    };
-
     const isRange = event.yearEnd != null;
     const hint = isRange
         ? 'Enter any year within the range'
@@ -1004,7 +986,7 @@ function DateInputQuestion({ event, onAnswer, onNext, onBack, onSkip }) {
 
     return (
         <div className="animate-slide-in-right">
-            <Card style={answered && score ? { backgroundColor: scoreColors[score].bg, borderLeft: `3px solid ${scoreColors[score].border}` } : {}}>
+            <Card style={answered && score ? { backgroundColor: SCORE_COLORS[score].bg, borderLeft: `3px solid ${SCORE_COLORS[score].border}` } : {}}>
                 <div className="flex items-center gap-2 mb-2">
                     <span className="text-[10px] uppercase tracking-widest font-bold px-2 py-0.5 rounded-full"
                         style={{ backgroundColor: 'rgba(139, 65, 87, 0.1)', color: 'var(--color-burgundy)' }}>
@@ -1058,9 +1040,9 @@ function DateInputQuestion({ event, onAnswer, onNext, onBack, onSkip }) {
                 ) : (
                     <div className="mt-2">
                         <p className="text-sm font-semibold mb-1" style={{
-                            color: score === 'green' ? 'var(--color-success)' : score === 'yellow' ? 'var(--color-warning)' : 'var(--color-error)'
+                            color: getScoreColor(score).border
                         }}>
-                            {score === 'green' ? 'Excellent!' : score === 'yellow' ? 'Close!' : 'Not quite'}
+                            {getScoreLabel(score)}
                         </p>
                         <p className="text-sm" style={{ color: 'var(--color-ink-secondary)' }}>
                             <strong>{event.title}</strong> — <strong style={{ color: 'var(--color-burgundy)' }}>{event.date}</strong>

@@ -1,5 +1,22 @@
 import { ALL_EVENTS } from './events';
 
+// ─── Centralized score color mapping ────────────────
+export const SCORE_COLORS = {
+    green: { bg: 'rgba(5, 150, 105, 0.08)', border: 'var(--color-success)' },
+    yellow: { bg: 'rgba(198, 134, 42, 0.08)', border: 'var(--color-warning)' },
+    red: { bg: 'rgba(166, 61, 61, 0.08)', border: 'var(--color-error)' },
+};
+
+export function getScoreColor(score) {
+    return SCORE_COLORS[score] || SCORE_COLORS.red;
+}
+
+export function getScoreLabel(score) {
+    if (score === 'green') return '\u2713 Correct!';
+    if (score === 'yellow') return '\u2248 Close!';
+    return '\u2717 Not quite';
+}
+
 // Score a date answer — single number input
 // For range events: green if within range, otherwise score by distance to nearest edge
 export function scoreDateAnswer(userYear, userEra, event) {
@@ -243,13 +260,14 @@ export function generateDescriptionOptions(correctEvent, allEvents = ALL_EVENTS)
     return options.sort(() => Math.random() - 0.5);
 }
 
-// Calculate XP for a session
+// Calculate XP for a session — difficulty multiplier applied per result
 export function calculateXP(results) {
     let xp = 0;
     for (const r of results) {
-        if (r.firstScore === "green") xp += 10;
-        else if (r.firstScore === "yellow") xp += 5;
-        else if (r.firstScore === "red" && r.retryScore && r.retryScore !== "red") xp += 5;
+        const diff = r.difficulty || 1;
+        if (r.firstScore === "green") xp += 10 * diff;
+        else if (r.firstScore === "yellow") xp += 5 * diff;
+        else if (r.firstScore === "red" && r.retryScore && r.retryScore !== "red") xp += 5 * diff;
     }
     return xp;
 }

@@ -2,7 +2,7 @@ import { useState, useMemo, useEffect } from 'react';
 import { useApp } from '../context/AppContext';
 import { ALL_EVENTS, getEventById, CATEGORY_CONFIG } from '../data/events';
 import { LESSONS } from '../data/lessons';
-import { scoreDateAnswer, generateLocationOptions, generateWhatOptions, generateDescriptionOptions } from '../data/quiz';
+import { scoreDateAnswer, generateLocationOptions, generateWhatOptions, generateDescriptionOptions, SCORE_COLORS, getScoreColor, getScoreLabel } from '../data/quiz';
 import { Card, Button, MasteryDots, ProgressBar, Divider, CategoryTag, StarButton, TabSelector, ConfirmModal } from '../components/shared';
 import Mascot from '../components/Mascot';
 
@@ -61,6 +61,16 @@ export default function PracticePage({ onSessionChange }) {
     const weakEvents = useMemo(() => {
         return [...eventStats].sort((a, b) => a.overall - b.overall);
     }, [eventStats]);
+
+    // Group results by event for per-event breakdown (used in RESULTS view)
+    const eventBreakdown = useMemo(() => {
+        const map = {};
+        results.forEach(r => {
+            if (!map[r.eventId]) map[r.eventId] = { event: getEventById(r.eventId), questions: [] };
+            map[r.eventId].questions.push(r);
+        });
+        return Object.values(map);
+    }, [results]);
 
     // ─── Question generation ─────────────────────────
     const generateQuestionsForPool = (eventPool) => {
@@ -147,13 +157,21 @@ export default function PracticePage({ onSessionChange }) {
     // ═══════════════════════════════════════════════════
     if (view === VIEW.SESSION) {
         const q = sessionQuestions[currentIndex];
-        if (!q) {
-            // Session done → calculate XP and show results
-            const xp = results.reduce((s, r) => s + (r.score === 'green' ? 5 : r.score === 'yellow' ? 2 : 0), 0);
-            if (xp > 0) dispatch({ type: 'ADD_XP', amount: xp });
-            setView(VIEW.RESULTS);
-            return null;
-        }
+        if (!q) return null;
+
+        const handleSessionNext = () => {
+            if (currentIndex + 1 >= sessionQuestions.length) {
+                // Session complete — calculate XP and show results
+                const xp = results.reduce((s, r) => {
+                    const diff = getEventById(r.eventId)?.difficulty || 1;
+                    return s + (r.score === 'green' ? 5 * diff : r.score === 'yellow' ? 2 * diff : 0);
+                }, 0);
+                if (xp > 0) dispatch({ type: 'ADD_XP', amount: xp });
+                setView(VIEW.RESULTS);
+            } else {
+                setCurrentIndex(i => i + 1);
+            }
+        };
 
         return (
             <>
@@ -201,7 +219,7 @@ export default function PracticePage({ onSessionChange }) {
                                 score,
                             });
                         }}
-                        onNext={() => setCurrentIndex(i => i + 1)}
+                        onNext={handleSessionNext}
                         onBack={currentIndex > 0 ? () => setCurrentIndex(i => i - 1) : null}
                     />
                 </div>
@@ -218,16 +236,6 @@ export default function PracticePage({ onSessionChange }) {
         const yellowCount = results.filter(r => r.score === 'yellow').length;
         const redCount = results.filter(r => r.score === 'red').length;
         const perfectSession = redCount === 0 && yellowCount === 0 && results.length > 0;
-
-        // Group results by event for per-event breakdown
-        const eventBreakdown = useMemo(() => {
-            const map = {};
-            results.forEach(r => {
-                if (!map[r.eventId]) map[r.eventId] = { event: getEventById(r.eventId), questions: [] };
-                map[r.eventId].questions.push(r);
-            });
-            return Object.values(map);
-        }, [results]);
 
         return (
             <div className="py-8 animate-fade-in">
@@ -330,9 +338,6 @@ export default function PracticePage({ onSessionChange }) {
     // LESSON PICKER
     // ═══════════════════════════════════════════════════
     if (view === VIEW.LESSON_PICKER) {
-        const completedLessons = LESSONS.filter(l =>
-            !l.isLesson0 && state.completedLessons[l.id]
-        );
         const availableLessons = LESSONS.filter(l =>
             !l.isLesson0 && l.eventIds.some(id => (state.seenEvents || []).includes(id))
         );
@@ -449,7 +454,6 @@ export default function PracticePage({ onSessionChange }) {
 
             {practiceTab === 'hub' ? (
                 <HubView
-                    learnedEvents={learnedEvents}
                     starredEvents={starredEvents}
                     weakEvents={weakEvents}
                     tiers={tiers}
@@ -461,7 +465,6 @@ export default function PracticePage({ onSessionChange }) {
                 />
             ) : (
                 <CollectionView
-                    eventStats={eventStats}
                     tiers={tiers}
                     collectionSort={collectionSort}
                     setCollectionSort={setCollectionSort}
@@ -479,7 +482,7 @@ export default function PracticePage({ onSessionChange }) {
 // ═══════════════════════════════════════════════════════
 // HUB VIEW — Practice mode cards
 // ═══════════════════════════════════════════════════════
-function HubView({ learnedEvents, starredEvents, weakEvents, tiers, state, dispatch, onStartSmartReview, onStartFavorites, onOpenLessonPicker }) {
+function HubView({ starredEvents, weakEvents, tiers, state, dispatch, onStartSmartReview, onStartFavorites, onOpenLessonPicker }) {
     const needsWork = tiers.struggling.length + tiers.learning.length;
 
     return (
@@ -619,15 +622,7 @@ function HubView({ learnedEvents, starredEvents, weakEvents, tiers, state, dispa
 // ═══════════════════════════════════════════════════════
 // COLLECTION VIEW — Card triage
 // ═══════════════════════════════════════════════════════
-function CollectionView({ eventStats, tiers, collectionSort, setCollectionSort, expandedEventId, setExpandedEventId, state, dispatch, onStartSession }) {
-    const sortedStats = useMemo(() => {
-        const copy = [...eventStats];
-        if (collectionSort === 'success') {
-            return copy.sort((a, b) => a.successRate - b.successRate);
-        }
-        return copy.sort((a, b) => a.timesReviewed - b.timesReviewed);
-    }, [eventStats, collectionSort]);
-
+function CollectionView({ tiers, collectionSort, setCollectionSort, expandedEventId, setExpandedEventId, state, dispatch, onStartSession }) {
     const tierConfig = [
         {
             key: 'struggling',
@@ -702,7 +697,7 @@ function CollectionView({ eventStats, tiers, collectionSort, setCollectionSort, 
                             {(collectionSort === 'success'
                                 ? [...tier.items].sort((a, b) => a.successRate - b.successRate)
                                 : [...tier.items].sort((a, b) => a.timesReviewed - b.timesReviewed)
-                            ).map(({ event, mastery, overall, timesReviewed, successRate }) => {
+                            ).map(({ event, mastery, timesReviewed, successRate }) => {
                                 const isExpanded = expandedEventId === event.id;
                                 return (
                                     <div key={event.id}>
@@ -808,12 +803,6 @@ function PracticeQuestion({ question, isStarred, onToggleStar, onAnswer, onNext,
     const [descriptionOptions] = useState(() => generateDescriptionOptions(event));
 
 
-    const scoreColors = {
-        green: { bg: 'rgba(5, 150, 105, 0.08)', border: 'var(--color-success)' },
-        yellow: { bg: 'rgba(198, 134, 42, 0.08)', border: 'var(--color-warning)' },
-        red: { bg: 'rgba(166, 61, 61, 0.08)', border: 'var(--color-error)' },
-    };
-
     const handleMCQ = (answer, correct) => {
         if (answered) return;
         setSelectedAnswer(answer);
@@ -840,9 +829,9 @@ function PracticeQuestion({ question, isStarred, onToggleStar, onAnswer, onNext,
             <div className="mt-3 pt-3" style={{ borderTop: '1px solid rgba(28,25,23,0.06)' }}>
                 <div className="flex items-center justify-between">
                     <p className="text-sm font-semibold" style={{
-                        color: score === 'green' ? 'var(--color-success)' : score === 'yellow' ? 'var(--color-warning)' : 'var(--color-error)'
+                        color: getScoreColor(score).border
                     }}>
-                        {score === 'green' ? '✓ Correct!' : score === 'yellow' ? '≈ Close!' : '✗ Not quite'}
+                        {getScoreLabel(score)}
                     </p>
                     <StarButton isStarred={isStarred} onClick={onToggleStar} size={16} />
                 </div>
@@ -859,7 +848,7 @@ function PracticeQuestion({ question, isStarred, onToggleStar, onAnswer, onNext,
     if (type === 'location') {
         return (
             <div className="animate-slide-in-right">
-                <Card style={answered && score ? { backgroundColor: scoreColors[score].bg, borderLeft: `3px solid ${scoreColors[score].border}` } : {}}>
+                <Card style={answered && score ? { backgroundColor: SCORE_COLORS[score].bg, borderLeft: `3px solid ${SCORE_COLORS[score].border}` } : {}}>
                     <p className="text-xs uppercase tracking-wider font-semibold mb-2" style={{ color: 'var(--color-ink-faint)' }}>Where did this happen?</p>
                     <h3 className="text-xl font-bold mb-1" style={{ fontFamily: 'var(--font-serif)' }}>{event.title}</h3>
                     <p className="text-sm mb-5" style={{ color: 'var(--color-burgundy)' }}>{event.date}</p>
@@ -901,7 +890,7 @@ function PracticeQuestion({ question, isStarred, onToggleStar, onAnswer, onNext,
 
         return (
             <div className="animate-slide-in-right">
-                <Card style={answered && score ? { backgroundColor: scoreColors[score].bg, borderLeft: `3px solid ${scoreColors[score].border}` } : {}}>
+                <Card style={answered && score ? { backgroundColor: SCORE_COLORS[score].bg, borderLeft: `3px solid ${SCORE_COLORS[score].border}` } : {}}>
                     <p className="text-xs uppercase tracking-wider font-semibold mb-2" style={{ color: 'var(--color-ink-faint)' }}>When did this happen?</p>
                     <h3 className="text-lg font-bold mb-1" style={{ fontFamily: 'var(--font-serif)' }}>{event.title}</h3>
                     <p className="text-sm mb-2 leading-relaxed" style={{ color: 'var(--color-ink-secondary)' }}>{event.description.substring(0, 100)}…</p>
@@ -950,7 +939,7 @@ function PracticeQuestion({ question, isStarred, onToggleStar, onAnswer, onNext,
     if (type === 'what') {
         return (
             <div className="animate-slide-in-right">
-                <Card style={answered && score ? { backgroundColor: scoreColors[score].bg, borderLeft: `3px solid ${scoreColors[score].border}` } : {}}>
+                <Card style={answered && score ? { backgroundColor: SCORE_COLORS[score].bg, borderLeft: `3px solid ${SCORE_COLORS[score].border}` } : {}}>
                     <p className="text-xs uppercase tracking-wider font-semibold mb-2" style={{ color: 'var(--color-ink-faint)' }}>What happened?</p>
                     <p className="text-xl font-semibold mb-1" style={{ color: 'var(--color-burgundy)' }}>{event.date}</p>
                     <p className="text-sm mb-5" style={{ color: 'var(--color-ink-muted)' }}>{event.location.region}</p>
@@ -990,7 +979,7 @@ function PracticeQuestion({ question, isStarred, onToggleStar, onAnswer, onNext,
     if (type === 'description') {
         return (
             <div className="animate-slide-in-right">
-                <Card style={answered && score ? { backgroundColor: scoreColors[score].bg, borderLeft: `3px solid ${scoreColors[score].border}` } : {}}>
+                <Card style={answered && score ? { backgroundColor: SCORE_COLORS[score].bg, borderLeft: `3px solid ${SCORE_COLORS[score].border}` } : {}}>
                     <p className="text-xs uppercase tracking-wider font-semibold mb-2" style={{ color: 'var(--color-ink-faint)' }}>Which description fits?</p>
                     <h3 className="text-xl font-bold mb-1" style={{ fontFamily: 'var(--font-serif)' }}>{event.title}</h3>
                     <p className="text-sm mb-5" style={{ color: 'var(--color-burgundy)' }}>{event.date}</p>

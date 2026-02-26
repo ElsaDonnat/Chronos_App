@@ -25,8 +25,8 @@ export function MasteryDots({ mastery, size = 'sm' }) {
         return 'var(--color-ink-faint)';
     };
 
-    const labels = ['Where', 'When', 'What'];
-    const scores = [mastery?.locationScore, mastery?.dateScore, mastery?.whatScore];
+    const labels = ['Where', 'When', 'What', 'Why'];
+    const scores = [mastery?.locationScore, mastery?.dateScore, mastery?.whatScore, mastery?.descriptionScore];
 
     return (
         <div className={`flex items-center ${gap}`} title={scores.map((s, i) => `${labels[i]}: ${s || 'not tested'}`).join(', ')}>
@@ -56,7 +56,7 @@ export function Divider() {
     );
 }
 
-export function ProgressBar({ value, max, colorClass = 'bg-burgundy' }) {
+export function ProgressBar({ value, max }) {
     const pct = Math.min((value / max) * 100, 100);
     return (
         <div className="w-full h-1.5 rounded-full overflow-hidden" style={{ backgroundColor: 'rgba(28, 25, 23, 0.06)' }}>
@@ -127,7 +127,7 @@ export function StarButton({ isStarred, onClick, size = 18 }) {
         <button
             onClick={(e) => { e.stopPropagation(); onClick(); }}
             className="flex items-center justify-center transition-all duration-200 active:scale-90"
-            style={{ color: isStarred ? '#E6A817' : 'var(--color-ink-faint)' }}
+            style={{ color: isStarred ? '#E6A817' : 'var(--color-ink-faint)', minWidth: '44px', minHeight: '44px' }}
             title={isStarred ? 'Remove from favorites' : 'Add to favorites'}
         >
             <svg width={size} height={size} viewBox="0 0 24 24" fill={isStarred ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
