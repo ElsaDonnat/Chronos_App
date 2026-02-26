@@ -23,33 +23,33 @@ const QUESTION_TYPES = ['date', 'location', 'what', 'description'];
 const PERIOD_INFO = {
     prehistory: {
         title: 'Prehistory',
-        subtitle: 'c. 7 million years ago – c. 3200 BCE',
-        description: 'The longest chapter in human history — from our first split with ape ancestors through mastering fire, developing language, and settling into farming communities.',
-        color: '#0D9488', icon: '🦴',
+        subtitle: 'c. 7\u20136 million years ago \u2013 c. 3200 BCE',
+        description: 'Literally "before written records," prehistory spans 99% of the human story \u2014 from bipedalism and stone tools through the mastery of fire, the emergence of language, migration out of Africa, and the Neolithic transition to settled agriculture.',
+        color: '#0D9488', icon: '\uD83E\uDDB4',
     },
     ancient: {
         title: 'The Ancient World',
-        subtitle: 'c. 3200 BCE – 500 CE',
-        description: 'Writing is invented, cities rise, empires clash. From Sumer to Rome, humanity builds the foundations of law, philosophy, religion, and governance.',
-        color: '#6B5B73', icon: '🏛️',
+        subtitle: 'c. 3200 BCE \u2013 476 CE',
+        description: 'Defined by writing, cities, states, and empires. From Sumer and Egypt to Greece, Rome, China, and India \u2014 humanity built the foundations of law, philosophy, science, and organized religion.',
+        color: '#6B5B73', icon: '\uD83C\uDFDB\uFE0F',
     },
     medieval: {
         title: 'The Medieval World',
-        subtitle: '500 – 1500 CE',
-        description: 'Empires fragment and reform. Faiths spread across continents, scholars preserve knowledge, and horseback conquerors redraw the map.',
-        color: '#A0522D', icon: '⚔️',
+        subtitle: '476 \u2013 c. 1500 CE',
+        description: 'An era of transformation, not darkness. The rise of Islam, Byzantine continuity, feudal Europe, the Mongol Empire, the Crusades, and the first universities \u2014 from Rome\u2019s fall to the reconnection of the world.',
+        color: '#A0522D', icon: '\u2694\uFE0F',
     },
     earlymodern: {
         title: 'The Early Modern Period',
-        subtitle: '1500 – 1800 CE',
-        description: 'Print breaks the monopoly on knowledge, ships connect every continent, and thinkers challenge the divine right of kings.',
-        color: '#65774A', icon: '🧭',
+        subtitle: 'c. 1500 \u2013 1789',
+        description: 'Exploration, colonization, the Renaissance, Reformation, Scientific Revolution, and Enlightenment \u2014 from a fragmented world to an interconnected one, ending when Enlightenment ideals erupted into revolution.',
+        color: '#65774A', icon: '\uD83E\uDDED',
     },
     modern: {
         title: 'The Modern World',
-        subtitle: '1800 – Present',
-        description: 'Industry, ideology, and information transform human life at accelerating speed. Wars reshape the global order and networks connect billions.',
-        color: '#8B4157', icon: '🌍',
+        subtitle: '1789 \u2013 Present',
+        description: 'More change in two centuries than in the previous two millennia. Industrialization, world wars, decolonization, the Cold War, and the digital revolution. The defining theme is acceleration.',
+        color: '#8B4157', icon: '\uD83C\uDF0D',
     },
 };
 
@@ -181,7 +181,7 @@ export default function LessonFlow({ lesson, onComplete }) {
                     <span className="text-xs font-semibold uppercase tracking-widest block mb-2" style={{ color: 'var(--color-ink-faint)' }}>
                         Lesson {lesson.number}
                     </span>
-                    <h1 className="text-3xl font-bold mb-3" style={{ fontFamily: 'var(--font-serif)', color: 'var(--color-ink)' }}>
+                    <h1 className="lesson-intro-title font-bold mb-3" style={{ fontFamily: 'var(--font-serif)', color: 'var(--color-ink)' }}>
                         {lesson.title}
                     </h1>
                     <p className="text-sm mb-4" style={{ color: 'var(--color-ink-muted)' }}>
@@ -245,10 +245,10 @@ export default function LessonFlow({ lesson, onComplete }) {
                     </span>
                 </div>
                 <div className="animate-slide-in-right">
-                    <Card style={{ borderLeft: `4px solid ${period.color}` }}>
-                        <div className="text-center mb-4"><span className="text-4xl">{period.icon}</span></div>
-                        <h2 className="text-2xl font-bold text-center mb-1" style={{ fontFamily: 'var(--font-serif)' }}>{period.title}</h2>
-                        <p className="text-sm font-semibold text-center mb-4" style={{ color: period.color }}>{period.subtitle}</p>
+                    <Card className="era-card-content" style={{ borderLeft: `4px solid ${period.color}` }}>
+                        <div className="text-center mb-2 sm:mb-4"><span className="era-card-icon">{period.icon}</span></div>
+                        <h2 className="era-card-title font-bold text-center mb-1" style={{ fontFamily: 'var(--font-serif)' }}>{period.title}</h2>
+                        <p className="text-sm font-semibold text-center mb-2 sm:mb-4" style={{ color: period.color }}>{period.subtitle}</p>
                         <Divider />
                         <p className="text-sm leading-relaxed mt-4" style={{ color: 'var(--color-ink-secondary)' }}>{period.description}</p>
                         {(() => {

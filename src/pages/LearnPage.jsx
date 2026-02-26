@@ -31,15 +31,15 @@ export default function LearnPage({ onSessionChange, registerBackHandler }) {
     }
 
     return (
-        <div className="py-6">
-            <div className="text-center mb-8">
-                <h2 className="text-sm font-semibold uppercase tracking-widest mb-1" style={{ color: 'var(--color-ink-muted)' }}>
+        <div className="py-3 sm:py-6">
+            <div className="text-center mb-6">
+                <h2 className="learn-page-chapter font-semibold uppercase tracking-widest mb-1" style={{ color: 'var(--color-ink-muted)' }}>
                     Chapter 1
                 </h2>
-                <h1 className="text-3xl font-bold" style={{ fontFamily: 'var(--font-serif)', color: 'var(--color-ink)' }}>
+                <h1 className="learn-page-title font-bold" style={{ fontFamily: 'var(--font-serif)', color: 'var(--color-ink)' }}>
                     The Story of Humanity
                 </h1>
-                <p className="text-sm mt-2" style={{ color: 'var(--color-ink-muted)' }}>
+                <p className="learn-page-subtitle mt-1" style={{ color: 'var(--color-ink-muted)' }}>
                     60 events across 16 lessons
                 </p>
             </div>

@@ -668,10 +668,10 @@ export const CATEGORY_CONFIG = {
 
 export const ERA_RANGES = [
     { id: "prehistory", label: "Prehistory", start: -7000000, end: -3200 },
-    { id: "ancient", label: "Ancient", start: -3200, end: 500 },
-    { id: "medieval", label: "Medieval", start: 500, end: 1500 },
-    { id: "earlymodern", label: "Early Modern", start: 1500, end: 1800 },
-    { id: "modern", label: "Modern", start: 1800, end: 2000 }
+    { id: "ancient", label: "Ancient", start: -3200, end: 476 },
+    { id: "medieval", label: "Medieval", start: 476, end: 1500 },
+    { id: "earlymodern", label: "Early Modern", start: 1500, end: 1789 },
+    { id: "modern", label: "Modern", start: 1789, end: 9999 }
 ];
 
 export const ERA_BOUNDARY_EVENTS = {

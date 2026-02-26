@@ -1,12 +1,12 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
-  <!-- Background circle -->
-  <rect width="1024" height="1024" rx="224" fill="#FAF6F0"/>
+  <!-- Full-bleed background (no rounded corners — Android adaptive icon handles masking) -->
+  <rect width="1024" height="1024" fill="#FAF6F0"/>
 
-  <!-- Subtle border -->
-  <rect x="16" y="16" width="992" height="992" rx="208" fill="none" stroke="#E8DFD3" stroke-width="4"/>
+  <!-- Sand-colored border matching the hourglass stroke weight -->
+  <rect x="8" y="8" width="1008" height="1008" rx="216" fill="none" stroke="#E8DFD3" stroke-width="16"/>
 
-  <!-- Hourglass icon centered -->
-  <g transform="translate(512, 512) scale(16)" stroke="#8B4157" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" fill="none">
+  <!-- Hourglass icon (shifted up) -->
+  <g transform="translate(512, 440) scale(16)" stroke="#8B4157" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" fill="none">
     <!-- Top and bottom bars -->
     <line x1="-7" y1="-9" x2="7" y2="-9"/>
     <line x1="-7" y1="9" x2="7" y2="9"/>
@@ -14,13 +14,11 @@
     <path d="M-5 -9 C-5 -9 -5 -3 0 0 C-5 3 -5 9 -5 9"/>
     <path d="M5 -9 C5 -9 5 -3 0 0 C5 3 5 9 5 9"/>
     <!-- Sand top -->
-    <path d="M-2.5 -5.5 L2.5 -5.5" stroke-width="1.2" opacity="0.5"/>
-    <!-- Sand falling -->
-    <line x1="0" y1="0" x2="0" y2="3" stroke-width="1" opacity="0.4"/>
+    <path d="M-2.5 -5.5 L2.5 -5.5" stroke="#C9A96E" stroke-width="1.2" opacity="0.7"/>
     <!-- Sand pile bottom -->
-    <path d="M-3 7 Q0 4.5 3 7" stroke-width="1.2" fill="#A8596E" fill-opacity="0.25" opacity="0.6"/>
+    <path d="M-3 7 Q0 3 3 7" stroke="#C9A96E" stroke-width="1.2" fill="#B8943E" fill-opacity="0.7" opacity="0.9"/>
   </g>
 
-  <!-- App name text -->
-  <text x="512" y="720" text-anchor="middle" font-family="Georgia, serif" font-size="96" font-weight="700" fill="#1C1917" letter-spacing="-1">Chronos</text>
+  <!-- App name text (15% bigger, lowered) -->
+  <text x="512" y="790" text-anchor="middle" font-family="Georgia, serif" font-size="110" font-weight="700" fill="#1C1917" letter-spacing="-1">Chronos</text>
 </svg>
