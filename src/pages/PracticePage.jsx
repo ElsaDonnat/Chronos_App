@@ -3,7 +3,7 @@ import { useApp } from '../context/AppContext';
 import { ALL_EVENTS, getEventById, CATEGORY_CONFIG } from '../data/events';
 import { LESSONS } from '../data/lessons';
 import { scoreDateAnswer, generateLocationOptions, generateWhatOptions, generateDescriptionOptions, SCORE_COLORS, getScoreColor, getScoreLabel } from '../data/quiz';
-import { Card, Button, MasteryDots, ProgressBar, Divider, CategoryTag, StarButton, TabSelector, ConfirmModal } from '../components/shared';
+import { Card, Button, MasteryDots, ProgressBar, Divider, CategoryTag, StarButton, TabSelector, ConfirmModal, ExpandableText } from '../components/shared';
 import Mascot from '../components/Mascot';
 
 // ─── Views ───────────────────────────────────────────
@@ -251,91 +251,95 @@ export default function PracticePage({ onSessionChange, registerBackHandler }) {
         const perfectSession = redCount === 0 && yellowCount === 0 && results.length > 0;
 
         return (
-            <div className="py-8 animate-fade-in">
-                <div className="text-center">
-                    <Mascot mood={perfectSession ? 'celebrating' : redCount === 0 ? 'happy' : greenCount > redCount ? 'happy' : 'thinking'} size={70} />
-                    <h2 className="text-2xl font-bold mt-4 mb-1" style={{ fontFamily: 'var(--font-serif)' }}>
-                        {perfectSession ? '🎯 Perfect Session!' : 'Practice Complete'}
-                    </h2>
-                    <p className="text-sm mb-1" style={{ color: 'var(--color-ink-muted)' }}>
-                        {sessionMode} · {results.length} questions
-                    </p>
-                </div>
-
-                <Card className="mt-4">
-                    {/* Score dots */}
-                    <div className="flex items-center gap-1 mb-4 justify-center flex-wrap">
-                        {results.map((r, i) => (
-                            <div key={i} className="w-2.5 h-2.5 rounded-full" style={{
-                                backgroundColor: r.score === 'green' ? 'var(--color-success)' :
-                                    r.score === 'yellow' ? 'var(--color-warning)' : 'var(--color-error)'
-                            }} />
-                        ))}
-                    </div>
-
-                    {/* Score summary */}
-                    <div className="grid grid-cols-3 gap-3 text-center">
-                        <div>
-                            <div className="text-lg font-bold" style={{ color: 'var(--color-success)' }}>{greenCount}</div>
-                            <div className="text-xs" style={{ color: 'var(--color-ink-muted)' }}>Exact</div>
+            <div className="lesson-flow-container animate-fade-in">
+                <div className="flex-1 min-h-0 overflow-y-auto">
+                    <div className="py-4">
+                        <div className="text-center">
+                            <Mascot mood={perfectSession ? 'celebrating' : redCount === 0 ? 'happy' : greenCount > redCount ? 'happy' : 'thinking'} size={70} />
+                            <h2 className="text-2xl font-bold mt-4 mb-1" style={{ fontFamily: 'var(--font-serif)' }}>
+                                {perfectSession ? '\uD83C\uDFAF Perfect Session!' : 'Practice Complete'}
+                            </h2>
+                            <p className="text-sm mb-1" style={{ color: 'var(--color-ink-muted)' }}>
+                                {sessionMode} \u00B7 {results.length} questions
+                            </p>
                         </div>
-                        <div>
-                            <div className="text-lg font-bold" style={{ color: 'var(--color-warning)' }}>{yellowCount}</div>
-                            <div className="text-xs" style={{ color: 'var(--color-ink-muted)' }}>Close</div>
-                        </div>
-                        <div>
-                            <div className="text-lg font-bold" style={{ color: 'var(--color-error)' }}>{redCount}</div>
-                            <div className="text-xs" style={{ color: 'var(--color-ink-muted)' }}>Missed</div>
-                        </div>
-                    </div>
-                </Card>
 
-                {/* Per-event breakdown */}
-                <h3 className="text-sm font-semibold mt-6 mb-3" style={{ color: 'var(--color-ink-muted)' }}>
-                    Event Breakdown
-                </h3>
-                <div className="space-y-2">
-                    {eventBreakdown.map(({ event, questions }) => {
-                        if (!event) return null;
-                        const allGreen = questions.every(q => q.score === 'green');
-                        const hasRed = questions.some(q => q.score === 'red');
-                        const borderColor = allGreen ? 'var(--color-success)' : hasRed ? 'var(--color-error)' : 'var(--color-warning)';
-                        return (
-                            <Card key={event.id} className="p-3" style={{ borderLeft: `3px solid ${borderColor}` }}>
-                                <div className="flex items-center justify-between">
-                                    <div className="flex-1 min-w-0">
-                                        <h4 className="text-sm font-semibold truncate" style={{ fontFamily: 'var(--font-serif)' }}>
-                                            {event.title}
-                                        </h4>
-                                        <div className="flex items-center gap-2 mt-1">
-                                            {questions.map((q, i) => {
-                                                const label = q.type === 'location' ? 'Where' : q.type === 'date' ? 'When' : q.type === 'description' ? 'Desc' : 'What';
-                                                return (
-                                                    <span key={i} className="text-[10px] font-semibold px-1.5 py-0.5 rounded"
-                                                        style={{
-                                                            backgroundColor: q.score === 'green' ? 'rgba(5,150,105,0.1)' :
-                                                                q.score === 'yellow' ? 'rgba(198,134,42,0.1)' : 'rgba(166,61,61,0.1)',
-                                                            color: q.score === 'green' ? 'var(--color-success)' :
-                                                                q.score === 'yellow' ? 'var(--color-warning)' : 'var(--color-error)',
-                                                        }}>
-                                                        {label}
-                                                    </span>
-                                                );
-                                            })}
-                                        </div>
-                                    </div>
-                                    <StarButton
-                                        isStarred={(state.starredEvents || []).includes(event.id)}
-                                        onClick={() => dispatch({ type: 'TOGGLE_STAR', eventId: event.id })}
-                                        size={16}
-                                    />
+                        <Card className="mt-4">
+                            {/* Score dots */}
+                            <div className="flex items-center gap-1 mb-4 justify-center flex-wrap">
+                                {results.map((r, i) => (
+                                    <div key={i} className="w-2.5 h-2.5 rounded-full" style={{
+                                        backgroundColor: r.score === 'green' ? 'var(--color-success)' :
+                                            r.score === 'yellow' ? 'var(--color-warning)' : 'var(--color-error)'
+                                    }} />
+                                ))}
+                            </div>
+
+                            {/* Score summary */}
+                            <div className="grid grid-cols-3 gap-3 text-center">
+                                <div>
+                                    <div className="text-lg font-bold" style={{ color: 'var(--color-success)' }}>{greenCount}</div>
+                                    <div className="text-xs" style={{ color: 'var(--color-ink-muted)' }}>Exact</div>
                                 </div>
-                            </Card>
-                        );
-                    })}
+                                <div>
+                                    <div className="text-lg font-bold" style={{ color: 'var(--color-warning)' }}>{yellowCount}</div>
+                                    <div className="text-xs" style={{ color: 'var(--color-ink-muted)' }}>Close</div>
+                                </div>
+                                <div>
+                                    <div className="text-lg font-bold" style={{ color: 'var(--color-error)' }}>{redCount}</div>
+                                    <div className="text-xs" style={{ color: 'var(--color-ink-muted)' }}>Missed</div>
+                                </div>
+                            </div>
+                        </Card>
+
+                        {/* Per-event breakdown */}
+                        <h3 className="text-sm font-semibold mt-6 mb-3" style={{ color: 'var(--color-ink-muted)' }}>
+                            Event Breakdown
+                        </h3>
+                        <div className="space-y-2">
+                            {eventBreakdown.map(({ event, questions }) => {
+                                if (!event) return null;
+                                const allGreen = questions.every(q => q.score === 'green');
+                                const hasRed = questions.some(q => q.score === 'red');
+                                const borderColor = allGreen ? 'var(--color-success)' : hasRed ? 'var(--color-error)' : 'var(--color-warning)';
+                                return (
+                                    <Card key={event.id} className="p-3" style={{ borderLeft: `3px solid ${borderColor}` }}>
+                                        <div className="flex items-center justify-between">
+                                            <div className="flex-1 min-w-0">
+                                                <h4 className="text-sm font-semibold truncate" style={{ fontFamily: 'var(--font-serif)' }}>
+                                                    {event.title}
+                                                </h4>
+                                                <div className="flex items-center gap-2 mt-1">
+                                                    {questions.map((q, i) => {
+                                                        const label = q.type === 'location' ? 'Where' : q.type === 'date' ? 'When' : q.type === 'description' ? 'Desc' : 'What';
+                                                        return (
+                                                            <span key={i} className="text-[10px] font-semibold px-1.5 py-0.5 rounded"
+                                                                style={{
+                                                                    backgroundColor: q.score === 'green' ? 'rgba(5,150,105,0.1)' :
+                                                                        q.score === 'yellow' ? 'rgba(198,134,42,0.1)' : 'rgba(166,61,61,0.1)',
+                                                                    color: q.score === 'green' ? 'var(--color-success)' :
+                                                                        q.score === 'yellow' ? 'var(--color-warning)' : 'var(--color-error)',
+                                                                }}>
+                                                                {label}
+                                                            </span>
+                                                        );
+                                                    })}
+                                                </div>
+                                            </div>
+                                            <StarButton
+                                                isStarred={(state.starredEvents || []).includes(event.id)}
+                                                onClick={() => dispatch({ type: 'TOGGLE_STAR', eventId: event.id })}
+                                                size={16}
+                                            />
+                                        </div>
+                                    </Card>
+                                );
+                            })}
+                        </div>
+                    </div>
                 </div>
 
-                <div className="flex gap-3 mt-6">
+                <div className="flex-shrink-0 flex gap-3 pt-4 pb-2">
                     <Button variant="secondary" onClick={() => { setView(VIEW.HUB); setPracticeTab('hub'); }}>
                         Done
                     </Button>
@@ -356,84 +360,88 @@ export default function PracticePage({ onSessionChange, registerBackHandler }) {
         );
 
         return (
-            <div className="py-4 animate-fade-in">
-                <div className="flex items-center justify-between mb-4">
-                    <button onClick={() => { setView(VIEW.HUB); setSelectedLessons([]); }}
-                        className="text-sm flex items-center gap-1" style={{ color: 'var(--color-ink-muted)' }}>
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                            <polyline points="15 18 9 12 15 6" />
-                        </svg>
-                        Back
-                    </button>
-                    <span className="text-sm font-medium" style={{ color: 'var(--color-ink-muted)' }}>
-                        {selectedLessons.length} selected
-                    </span>
-                </div>
-
-                <h2 className="text-lg font-bold mb-1" style={{ fontFamily: 'var(--font-serif)' }}>Choose Lessons</h2>
-                <p className="text-xs mb-4" style={{ color: 'var(--color-ink-muted)' }}>
-                    Select which lessons to practice. Events from all selected lessons will be combined.
-                </p>
-
-                <div className="space-y-2">
-                    {availableLessons.map(lesson => {
-                        const isSelected = selectedLessons.includes(lesson.id);
-                        const eventCount = lesson.eventIds.length;
-                        const masteredCount = lesson.eventIds.filter(id => {
-                            const m = state.eventMastery[id];
-                            return m && m.overallMastery >= 7;
-                        }).length;
-
-                        return (
-                            <Card
-                                key={lesson.id}
-                                onClick={() => {
-                                    setSelectedLessons(prev =>
-                                        prev.includes(lesson.id)
-                                            ? prev.filter(id => id !== lesson.id)
-                                            : [...prev, lesson.id]
-                                    );
-                                }}
-                                className="p-3"
-                                style={{
-                                    borderLeft: isSelected ? '3px solid var(--color-burgundy)' : '3px solid transparent',
-                                    backgroundColor: isSelected ? 'rgba(139, 65, 87, 0.04)' : 'var(--color-card)',
-                                }}
-                            >
-                                <div className="flex items-center gap-3">
-                                    <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0
-                                        ${isSelected ? '' : ''}`}
-                                        style={{
-                                            backgroundColor: isSelected ? 'var(--color-burgundy)' : 'rgba(28,25,23,0.06)',
-                                            color: isSelected ? 'white' : 'var(--color-ink-muted)',
-                                        }}>
-                                        {isSelected ? '✓' : lesson.number}
-                                    </div>
-                                    <div className="flex-1 min-w-0">
-                                        <h4 className="text-sm font-semibold truncate" style={{ fontFamily: 'var(--font-serif)' }}>
-                                            {lesson.title}
-                                        </h4>
-                                        <p className="text-xs" style={{ color: 'var(--color-ink-faint)' }}>
-                                            {eventCount} events · {masteredCount} mastered
-                                        </p>
-                                    </div>
-                                </div>
-                            </Card>
-                        );
-                    })}
-                </div>
-
-                {availableLessons.length === 0 && (
-                    <div className="text-center py-8">
-                        <p className="text-sm" style={{ color: 'var(--color-ink-muted)' }}>
-                            Complete lessons to unlock them for practice.
-                        </p>
+            <div className="lesson-flow-container animate-fade-in">
+                <div className="flex-shrink-0 pt-4">
+                    <div className="flex items-center justify-between mb-4">
+                        <button onClick={() => { setView(VIEW.HUB); setSelectedLessons([]); }}
+                            className="text-sm flex items-center gap-1" style={{ color: 'var(--color-ink-muted)' }}>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                <polyline points="15 18 9 12 15 6" />
+                            </svg>
+                            Back
+                        </button>
+                        <span className="text-sm font-medium" style={{ color: 'var(--color-ink-muted)' }}>
+                            {selectedLessons.length} selected
+                        </span>
                     </div>
-                )}
 
-                <div className="mt-6">
+                    <h2 className="text-lg font-bold mb-1" style={{ fontFamily: 'var(--font-serif)' }}>Choose Lessons</h2>
+                    <p className="text-xs mb-4" style={{ color: 'var(--color-ink-muted)' }}>
+                        Select which lessons to practice. Events from all selected lessons will be combined.
+                    </p>
+                </div>
+
+                <div className="flex-1 min-h-0 overflow-y-auto">
+                    <div className="space-y-2">
+                        {availableLessons.map(lesson => {
+                            const isSelected = selectedLessons.includes(lesson.id);
+                            const eventCount = lesson.eventIds.length;
+                            const masteredCount = lesson.eventIds.filter(id => {
+                                const m = state.eventMastery[id];
+                                return m && m.overallMastery >= 7;
+                            }).length;
+
+                            return (
+                                <Card
+                                    key={lesson.id}
+                                    onClick={() => {
+                                        setSelectedLessons(prev =>
+                                            prev.includes(lesson.id)
+                                                ? prev.filter(id => id !== lesson.id)
+                                                : [...prev, lesson.id]
+                                        );
+                                    }}
+                                    className="p-3"
+                                    style={{
+                                        borderLeft: isSelected ? '3px solid var(--color-burgundy)' : '3px solid transparent',
+                                        backgroundColor: isSelected ? 'rgba(139, 65, 87, 0.04)' : 'var(--color-card)',
+                                    }}
+                                >
+                                    <div className="flex items-center gap-3">
+                                        <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0
+                                            ${isSelected ? '' : ''}`}
+                                            style={{
+                                                backgroundColor: isSelected ? 'var(--color-burgundy)' : 'rgba(28,25,23,0.06)',
+                                                color: isSelected ? 'white' : 'var(--color-ink-muted)',
+                                            }}>
+                                            {isSelected ? '\u2713' : lesson.number}
+                                        </div>
+                                        <div className="flex-1 min-w-0">
+                                            <h4 className="text-sm font-semibold truncate" style={{ fontFamily: 'var(--font-serif)' }}>
+                                                {lesson.title}
+                                            </h4>
+                                            <p className="text-xs" style={{ color: 'var(--color-ink-faint)' }}>
+                                                {eventCount} events \u00B7 {masteredCount} mastered
+                                            </p>
+                                        </div>
+                                    </div>
+                                </Card>
+                            );
+                        })}
+                    </div>
+
+                    {availableLessons.length === 0 && (
+                        <div className="text-center py-8">
+                            <p className="text-sm" style={{ color: 'var(--color-ink-muted)' }}>
+                                Complete lessons to unlock them for practice.
+                            </p>
+                        </div>
+                    )}
+                </div>
+
+                <div className="flex-shrink-0 pt-4 pb-2">
                     <Button className="w-full" disabled={selectedLessons.length === 0} onClick={startLessonPractice}>
-                        Practice {selectedLessons.length > 0 ? `${selectedLessons.length} Lesson${selectedLessons.length > 1 ? 's' : ''}` : ''}  →
+                        Practice {selectedLessons.length > 0 ? `${selectedLessons.length} Lesson${selectedLessons.length > 1 ? 's' : ''}` : ''}  \u2192
                     </Button>
                 </div>
             </div>
@@ -763,9 +771,9 @@ function CollectionView({ tiers, collectionSort, setCollectionSort, expandedEven
                                                             {event.date}
                                                         </span>
                                                     </div>
-                                                    <p className="text-sm leading-relaxed mb-3" style={{ color: 'var(--color-ink-secondary)' }}>
+                                                    <ExpandableText lines={3} className="text-sm leading-relaxed mb-3" style={{ color: 'var(--color-ink-secondary)' }}>
                                                         {event.description}
-                                                    </p>
+                                                    </ExpandableText>
                                                     <div className="flex items-center gap-2 text-xs" style={{ color: 'var(--color-ink-muted)' }}>
                                                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                                             <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" /><circle cx="12" cy="10" r="3" />
@@ -886,12 +894,12 @@ function PracticeQuestion({ question, isStarred, onToggleStar, onAnswer, onNext,
                     {renderFeedback()}
                 </Card>
                 {answered ? (
-                    <div className="flex gap-3 mt-4">
+                    <div className="pinned-footer flex gap-3">
                         {onBack && <Button variant="secondary" onClick={onBack}>← Back</Button>}
                         <Button className="flex-1" onClick={onNext}>Continue →</Button>
                     </div>
                 ) : (
-                    onBack && <div className="mt-4"><Button variant="secondary" className="w-full" onClick={onBack}>← Back</Button></div>
+                    onBack && <div className="pinned-footer"><Button variant="secondary" className="w-full" onClick={onBack}>← Back</Button></div>
                 )}
             </div>
         );
@@ -940,7 +948,7 @@ function PracticeQuestion({ question, isStarred, onToggleStar, onAnswer, onNext,
                     )}
                 </Card>
                 {answered && (
-                    <div className="flex gap-3 mt-4">
+                    <div className="pinned-footer flex gap-3">
                         {onBack && <Button variant="secondary" onClick={onBack}>← Back</Button>}
                         <Button className="flex-1" onClick={onNext}>Continue →</Button>
                     </div>
@@ -978,12 +986,12 @@ function PracticeQuestion({ question, isStarred, onToggleStar, onAnswer, onNext,
                     {renderFeedback()}
                 </Card>
                 {answered ? (
-                    <div className="flex gap-3 mt-4">
+                    <div className="pinned-footer flex gap-3">
                         {onBack && <Button variant="secondary" onClick={onBack}>← Back</Button>}
                         <Button className="flex-1" onClick={onNext}>Continue →</Button>
                     </div>
                 ) : (
-                    onBack && <div className="mt-4"><Button variant="secondary" className="w-full" onClick={onBack}>← Back</Button></div>
+                    onBack && <div className="pinned-footer"><Button variant="secondary" className="w-full" onClick={onBack}>← Back</Button></div>
                 )}
             </div>
         );
@@ -1018,12 +1026,12 @@ function PracticeQuestion({ question, isStarred, onToggleStar, onAnswer, onNext,
                     {renderFeedback()}
                 </Card>
                 {answered ? (
-                    <div className="flex gap-3 mt-4">
+                    <div className="pinned-footer flex gap-3">
                         {onBack && <Button variant="secondary" onClick={onBack}>← Back</Button>}
                         <Button className="flex-1" onClick={onNext}>Continue →</Button>
                     </div>
                 ) : (
-                    onBack && <div className="mt-4"><Button variant="secondary" className="w-full" onClick={onBack}>← Back</Button></div>
+                    onBack && <div className="pinned-footer"><Button variant="secondary" className="w-full" onClick={onBack}>← Back</Button></div>
                 )}
             </div>
         );

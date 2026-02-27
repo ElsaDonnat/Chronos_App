@@ -5,6 +5,22 @@ Format follows [Keep a Changelog](https://keepachangelog.com/) and [Semantic Ver
 
 Use the latest version entry for Play Store "What's New" text.
 
+## [1.2.0] - 2026-02-27
+
+### Added
+- Streak visual indicator — TopBar flame icon now glows/pulses based on streak status (active, at-risk, inactive) with dynamic colors and animations
+- Streak detail modal — tap the flame to see contextual streak message with motivational copy based on streak length and status
+- Pinned action buttons — Continue, Back, Skip, and other command buttons now stick to the bottom of the viewport across all lesson flow phases, practice sessions, and quiz views so they're always reachable without scrolling
+- ExpandableText ("Read more") for long event descriptions in Timeline and Practice Collection views
+
+### Fixed
+- Action buttons unreachable on small screens — buttons in INTRO, RECAP_TRANSITION, SUMMARY, quiz questions, practice questions, results, and lesson picker views no longer scroll off-screen
+- CSS animation `forwards` fill-mode breaking `position: sticky` — changed to `backwards` so persistent transforms don't create containing blocks
+- Recap transition event tags overflowing horizontally (added flex-wrap)
+- Excess bottom padding when mobile tab bar is hidden during lesson/practice sessions
+
+---
+
 ## [1.1.1] - 2026-02-26
 
 ### Fixed

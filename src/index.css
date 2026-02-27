@@ -649,19 +649,19 @@ body {
 }
 
 .animate-fade-in-up {
-  animation: fadeInUp 0.3s ease-out forwards;
+  animation: fadeInUp 0.3s ease-out backwards;
 }
 
 .animate-fade-in {
-  animation: fadeIn 0.25s ease-out forwards;
+  animation: fadeIn 0.25s ease-out backwards;
 }
 
 .animate-slide-in-right {
-  animation: slideInRight 0.3s ease-out forwards;
+  animation: slideInRight 0.3s ease-out backwards;
 }
 
 .animate-slide-in-left {
-  animation: slideInLeft 0.3s ease-out forwards;
+  animation: slideInLeft 0.3s ease-out backwards;
 }
 
 .animate-pulse-glow {
@@ -784,6 +784,13 @@ body {
 }
 
 
+/* Reduce bottom padding when tab bar is hidden during sessions */
+@media (max-width: 899px) {
+  .main-content-inner.in-session {
+    padding-bottom: 16px;
+  }
+}
+
 /* Responsive font scaling for major text elements */
 .learn-page-title {
   font-size: clamp(1.5rem, 4vw, 2.25rem);
@@ -847,6 +854,162 @@ body {
       min-height: calc(100vh - 140px);
     }
   }
+}
+
+/* ════════════════════════════════════════════════════════
+   COMPONENT: Streak Flame Indicator
+   ════════════════════════════════════════════════════════ */
+
+@keyframes flameGlow {
+  0%, 100% { filter: drop-shadow(0 0 3px rgba(234, 136, 0, 0.4)); }
+  50% { filter: drop-shadow(0 0 8px rgba(234, 136, 0, 0.6)); }
+}
+
+@keyframes flamePulse {
+  0%, 100% { transform: scale(1); filter: drop-shadow(0 0 2px rgba(200, 150, 0, 0.3)); }
+  50% { transform: scale(1.1); filter: drop-shadow(0 0 6px rgba(200, 150, 0, 0.5)); }
+}
+
+@keyframes flameFlicker {
+  0%, 100% { transform: scale(1) rotate(0deg); }
+  25% { transform: scale(1.03) rotate(-2deg); }
+  50% { transform: scale(0.97) rotate(1deg); }
+  75% { transform: scale(1.02) rotate(-1deg); }
+}
+
+.streak-flame-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 8px;
+  margin: -4px -8px;
+  border-radius: 8px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  transition: background-color var(--duration-fast) ease;
+}
+
+.streak-flame-btn:hover {
+  background-color: rgba(28, 25, 23, 0.06);
+}
+
+.streak-flame-btn:active {
+  background-color: rgba(28, 25, 23, 0.1);
+}
+
+/* Active state: warm orange glow + flicker */
+.streak-flame--active {
+  animation: flameGlow 2s ease-in-out infinite, flameFlicker 3s ease-in-out infinite;
+}
+
+/* At risk state: amber pulse to create urgency */
+.streak-flame--at-risk {
+  animation: flamePulse 1.5s ease-in-out infinite;
+}
+
+/* Inactive: no animation, muted appearance handled via inline color */
+
+/* ─── Pinned Footer for Action Buttons ─── */
+.pinned-footer {
+  position: sticky;
+  bottom: 0;
+  z-index: 10;
+  padding: 16px 0 8px;
+  background: linear-gradient(to bottom,
+    rgba(250, 246, 240, 0) 0%,
+    rgba(250, 246, 240, 1) 16px
+  );
+}
+
+@media (min-width: 900px) {
+  .pinned-footer {
+    background: linear-gradient(to bottom,
+      rgba(243, 236, 226, 0) 0%,
+      rgba(243, 236, 226, 1) 16px
+    );
+  }
+}
+
+/* ─── Streak Detail Modal ─── */
+.streak-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(28, 25, 23, 0.4);
+  backdrop-filter: blur(4px);
+  animation: backdropFadeIn var(--duration-normal) ease-out forwards;
+}
+
+.streak-modal {
+  width: 100%;
+  max-width: 340px;
+  background: var(--color-card);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-elevated);
+  overflow: hidden;
+  animation: modalSlideUp var(--duration-slow) ease-out forwards;
+}
+
+.streak-modal-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 28px 24px 20px;
+  gap: 8px;
+}
+
+.streak-modal-flame {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.streak-modal-count {
+  font-family: var(--font-serif);
+  font-size: 2.5rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.streak-modal-label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-ink-secondary);
+}
+
+.streak-modal-body {
+  padding: 0 24px 24px;
+  text-align: center;
+}
+
+.streak-modal-message {
+  font-size: 0.85rem;
+  color: var(--color-ink-muted);
+  line-height: 1.5;
+  margin-bottom: 20px;
+}
+
+.streak-modal-close {
+  width: 100%;
+  padding: 12px;
+  border-radius: var(--radius-button);
+  border: 1px solid rgba(28, 25, 23, 0.1);
+  background: var(--color-parchment);
+  color: var(--color-ink-secondary);
+  font-size: 0.85rem;
+  font-weight: 600;
+  font-family: var(--font-sans);
+  cursor: pointer;
+  transition: background-color var(--duration-fast) ease;
+}
+
+.streak-modal-close:hover {
+  background-color: var(--color-parchment-dark);
 }
 
 /* ════════════════════════════════════════════════════════

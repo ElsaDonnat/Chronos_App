@@ -191,57 +191,57 @@ export default function LessonFlow({ lesson, onComplete }) {
     // INTRO
     // ════════════════════════════════════════════════════
     if (phase === PHASE.INTRO) {
+        const timesCompleted = state.completedLessons[lesson.id] || 0;
+        const startLesson = () => {
+            if (lesson.periodId && PERIOD_INFO[lesson.periodId]) {
+                setPhase(PHASE.PERIOD_INTRO);
+            } else {
+                setPhase(PHASE.LEARN_CARD);
+            }
+            setCardIndex(0);
+            dispatch({ type: 'MARK_EVENTS_SEEN', eventIds: events.map(e => e.id) });
+        };
+
         return (
-            <div className="py-8 animate-fade-in">
-                <button onClick={onComplete} className="flex items-center gap-1 mb-6 text-sm"
-                    style={{ color: 'var(--color-ink-muted)' }}>
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="15 18 9 12 15 6" /></svg>
-                    Back
-                </button>
-                <div className="text-center">
-                    <span className="text-xs font-semibold uppercase tracking-widest block mb-2" style={{ color: 'var(--color-ink-faint)' }}>
-                        Lesson {lesson.number}
-                    </span>
-                    <h1 className="lesson-intro-title font-bold mb-3" style={{ fontFamily: 'var(--font-serif)', color: 'var(--color-ink)' }}>
-                        {lesson.title}
-                    </h1>
-                    <p className="text-sm mb-4" style={{ color: 'var(--color-ink-muted)' }}>
-                        {lesson.subtitle}
-                    </p>
-                    <Divider />
-                    <p className="text-base italic my-6" style={{ fontFamily: 'var(--font-serif)', color: 'var(--color-ink-secondary)' }}>
-                        "{lesson.mood}"
-                    </p>
-                    <Divider />
-                    <p className="text-sm mt-4 mb-2" style={{ color: 'var(--color-ink-muted)' }}>
-                        {events.length} {events.length === 1 ? 'event' : 'events'} · {totalQuestions} questions · ~{Math.max(1, Math.round(totalQuestions / 2))} min
-                    </p>
-                    <Mascot mood="happy" size={64} />
-                    {(() => {
-                        const timesCompleted = state.completedLessons[lesson.id] || 0;
-                        return (
-                            <>
-                                {timesCompleted > 0 && (
-                                    <p className="text-xs font-medium mt-3 mb-1" style={{ color: 'var(--color-success)' }}>
-                                        ✓ Completed {timesCompleted} {timesCompleted === 1 ? 'time' : 'times'}
-                                    </p>
-                                )}
-                                <div className={timesCompleted > 0 ? "mt-3" : "mt-6"}>
-                                    <Button onClick={() => {
-                                        if (lesson.periodId && PERIOD_INFO[lesson.periodId]) {
-                                            setPhase(PHASE.PERIOD_INTRO);
-                                        } else {
-                                            setPhase(PHASE.LEARN_CARD);
-                                        }
-                                        setCardIndex(0);
-                                        dispatch({ type: 'MARK_EVENTS_SEEN', eventIds: events.map(e => e.id) });
-                                    }}>
-                                        {timesCompleted > 0 ? 'Learn Again' : 'Begin Learning'}
-                                    </Button>
-                                </div>
-                            </>
-                        );
-                    })()}
+            <div className="lesson-flow-container animate-fade-in">
+                <div className="flex-shrink-0 pt-4">
+                    <button onClick={onComplete} className="flex items-center gap-1 text-sm"
+                        style={{ color: 'var(--color-ink-muted)' }}>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="15 18 9 12 15 6" /></svg>
+                        Back
+                    </button>
+                </div>
+                <div className="flex-1 min-h-0 overflow-y-auto">
+                    <div className="text-center py-4">
+                        <span className="text-xs font-semibold uppercase tracking-widest block mb-2" style={{ color: 'var(--color-ink-faint)' }}>
+                            Lesson {lesson.number}
+                        </span>
+                        <h1 className="lesson-intro-title font-bold mb-3" style={{ fontFamily: 'var(--font-serif)', color: 'var(--color-ink)' }}>
+                            {lesson.title}
+                        </h1>
+                        <p className="text-sm mb-4" style={{ color: 'var(--color-ink-muted)' }}>
+                            {lesson.subtitle}
+                        </p>
+                        <Divider />
+                        <p className="text-base italic my-6" style={{ fontFamily: 'var(--font-serif)', color: 'var(--color-ink-secondary)' }}>
+                            "{lesson.mood}"
+                        </p>
+                        <Divider />
+                        <p className="text-sm mt-4 mb-2" style={{ color: 'var(--color-ink-muted)' }}>
+                            {events.length} {events.length === 1 ? 'event' : 'events'} · {totalQuestions} questions · ~{Math.max(1, Math.round(totalQuestions / 2))} min
+                        </p>
+                        <Mascot mood="happy" size={64} />
+                        {timesCompleted > 0 && (
+                            <p className="text-xs font-medium mt-3 mb-1" style={{ color: 'var(--color-success)' }}>
+                                ✓ Completed {timesCompleted} {timesCompleted === 1 ? 'time' : 'times'}
+                            </p>
+                        )}
+                    </div>
+                </div>
+                <div className="flex-shrink-0 pt-4 pb-2">
+                    <Button className="w-full" onClick={startLesson}>
+                        {timesCompleted > 0 ? 'Learn Again' : 'Begin Learning'}
+                    </Button>
                 </div>
             </div>
         );
@@ -496,33 +496,39 @@ export default function LessonFlow({ lesson, onComplete }) {
     // ════════════════════════════════════════════════════
     if (phase === PHASE.RECAP_TRANSITION) {
         return (
-            <div className="py-12 text-center animate-fade-in">
-                <div className="animate-recap-pulse">
-                    <Mascot mood="thinking" size={72} />
-                </div>
-                <h2 className="text-2xl font-bold mt-6 mb-2" style={{ fontFamily: 'var(--font-serif)', color: 'var(--color-ink)' }}>
-                    Time to Recap
-                </h2>
-                <p className="text-sm mb-1" style={{ color: 'var(--color-ink-muted)' }}>
-                    Now let's see how well you remember everything
-                </p>
-                <p className="text-xs mb-6" style={{ color: 'var(--color-ink-faint)' }}>
-                    {recapQuestions.length} {recapQuestions.length === 1 ? 'question' : 'questions'}{recapPerCard === 2 ? ' — including typing exact dates' : ''}
-                </p>
-                <div className="flex justify-center gap-2 mb-6">
-                    {events.map((e, i) => (
-                        <div key={i} className="px-3 py-1.5 rounded-lg text-xs font-medium"
-                            style={{ backgroundColor: 'var(--color-burgundy-soft)', color: 'var(--color-burgundy)' }}>
-                            {e.title.length > 20 ? e.title.substring(0, 18) + '…' : e.title}
+            <div className="lesson-flow-container animate-fade-in">
+                <div className="flex-1 min-h-0 overflow-y-auto">
+                    <div className="text-center py-6">
+                        <div className="animate-recap-pulse">
+                            <Mascot mood="thinking" size={72} />
                         </div>
-                    ))}
+                        <h2 className="text-2xl font-bold mt-6 mb-2" style={{ fontFamily: 'var(--font-serif)', color: 'var(--color-ink)' }}>
+                            Time to Recap
+                        </h2>
+                        <p className="text-sm mb-1" style={{ color: 'var(--color-ink-muted)' }}>
+                            Now let's see how well you remember everything
+                        </p>
+                        <p className="text-xs mb-6" style={{ color: 'var(--color-ink-faint)' }}>
+                            {recapQuestions.length} {recapQuestions.length === 1 ? 'question' : 'questions'}{recapPerCard === 2 ? ' \u2014 including typing exact dates' : ''}
+                        </p>
+                        <div className="flex justify-center gap-2 mb-4 flex-wrap">
+                            {events.map((e, i) => (
+                                <div key={i} className="px-3 py-1.5 rounded-lg text-xs font-medium"
+                                    style={{ backgroundColor: 'var(--color-burgundy-soft)', color: 'var(--color-burgundy)' }}>
+                                    {e.title.length > 20 ? e.title.substring(0, 18) + '\u2026' : e.title}
+                                </div>
+                            ))}
+                        </div>
+                    </div>
                 </div>
-                <Button onClick={() => {
-                    setRecapIndex(0);
-                    setPhase(PHASE.RECAP);
-                }}>
-                    Start Recap →
-                </Button>
+                <div className="flex-shrink-0 pt-4 pb-2">
+                    <Button className="w-full" onClick={() => {
+                        setRecapIndex(0);
+                        setPhase(PHASE.RECAP);
+                    }}>
+                        Start Recap \u2192
+                    </Button>
+                </div>
             </div>
         );
     }
@@ -650,72 +656,76 @@ export default function LessonFlow({ lesson, onComplete }) {
         const streak = state.currentStreak;
 
         return (
-            <div className="py-8 text-center animate-fade-in">
-                <Mascot mood={allPassed ? 'celebrating' : 'thinking'} size={80} />
-                <h2 className="text-2xl font-bold mt-4 mb-1" style={{ fontFamily: 'var(--font-serif)' }}>
-                    {allPassed ? 'Lesson Complete!' : 'Keep Practicing'}
-                </h2>
-                <p className="text-sm mb-6" style={{ color: 'var(--color-ink-muted)' }}>{lesson.title}</p>
+            <div className="lesson-flow-container animate-fade-in">
+                <div className="flex-1 min-h-0 overflow-y-auto">
+                    <div className="text-center py-4">
+                        <Mascot mood={allPassed ? 'celebrating' : 'thinking'} size={80} />
+                        <h2 className="text-2xl font-bold mt-4 mb-1" style={{ fontFamily: 'var(--font-serif)' }}>
+                            {allPassed ? 'Lesson Complete!' : 'Keep Practicing'}
+                        </h2>
+                        <p className="text-sm mb-6" style={{ color: 'var(--color-ink-muted)' }}>{lesson.title}</p>
 
-                <Card className={allPassed ? 'animate-celebration' : ''} style={{
-                    borderTop: allPassed ? '3px solid var(--color-success)' : '3px solid var(--color-warning)',
-                }}>
-                    <div className="text-sm font-semibold mb-3" style={{ color: 'var(--color-ink-secondary)' }}>
-                        {events.length} events · {quizResults.length} questions
-                    </div>
-
-                    <div className="flex items-center gap-1 mb-4 justify-center flex-wrap">
-                        {quizResults.map((r, i) => (
-                            <button key={i}
-                                className="w-3 h-3 rounded-full result-dot-btn"
-                                title={`${events.find(e => e.id === r.eventId)?.title || 'Event'} — ${r.questionType}`}
-                                onClick={() => setSelectedDot(r)}
-                                style={{
-                                    backgroundColor: r.firstScore === 'green' ? 'var(--color-success)' :
-                                        r.firstScore === 'yellow' ? 'var(--color-warning)' : 'var(--color-error)'
-                                }} />
-                        ))}
-                    </div>
-
-                    <div className="grid grid-cols-3 gap-3 text-center mb-4">
-                        <div>
-                            <div className="text-lg font-bold" style={{ color: 'var(--color-success)' }}>{greenCount}</div>
-                            <div className="text-xs" style={{ color: 'var(--color-ink-muted)' }}>Exact</div>
-                        </div>
-                        <div>
-                            <div className="text-lg font-bold" style={{ color: 'var(--color-warning)' }}>{yellowCount}</div>
-                            <div className="text-xs" style={{ color: 'var(--color-ink-muted)' }}>Close</div>
-                        </div>
-                        <div>
-                            <div className="text-lg font-bold" style={{ color: 'var(--color-error)' }}>{redCount}</div>
-                            <div className="text-xs" style={{ color: 'var(--color-ink-muted)' }}>Missed</div>
-                        </div>
-                    </div>
-
-                    <Divider />
-
-                    <div className="flex items-center justify-center gap-6 mt-3">
-                        <div className="flex items-center gap-2">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--color-bronze)" strokeWidth="2">
-                                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" fill="var(--color-bronze-light)" />
-                            </svg>
-                            <div className="text-left">
-                                <div className="text-xl font-bold leading-none" style={{ color: 'var(--color-burgundy)' }}>+{xp}</div>
-                                <div className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: 'var(--color-ink-faint)' }}>XP earned</div>
+                        <Card className={allPassed ? 'animate-celebration' : ''} style={{
+                            borderTop: allPassed ? '3px solid var(--color-success)' : '3px solid var(--color-warning)',
+                        }}>
+                            <div className="text-sm font-semibold mb-3" style={{ color: 'var(--color-ink-secondary)' }}>
+                                {events.length} events · {quizResults.length} questions
                             </div>
-                        </div>
-                        <div className="w-px h-10" style={{ backgroundColor: 'rgba(28, 25, 23, 0.08)' }} />
-                        <div className="flex items-center gap-2">
-                            <span className="text-2xl">🔥</span>
-                            <div className="text-left">
-                                <div className="text-xl font-bold leading-none" style={{ color: 'var(--color-burgundy)' }}>{streak}</div>
-                                <div className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: 'var(--color-ink-faint)' }}>Day streak</div>
-                            </div>
-                        </div>
-                    </div>
-                </Card>
 
-                <div className="mt-6">
+                            <div className="flex items-center gap-1 mb-4 justify-center flex-wrap">
+                                {quizResults.map((r, i) => (
+                                    <button key={i}
+                                        className="w-3 h-3 rounded-full result-dot-btn"
+                                        title={`${events.find(e => e.id === r.eventId)?.title || 'Event'} \u2014 ${r.questionType}`}
+                                        onClick={() => setSelectedDot(r)}
+                                        style={{
+                                            backgroundColor: r.firstScore === 'green' ? 'var(--color-success)' :
+                                                r.firstScore === 'yellow' ? 'var(--color-warning)' : 'var(--color-error)'
+                                        }} />
+                                ))}
+                            </div>
+
+                            <div className="grid grid-cols-3 gap-3 text-center mb-4">
+                                <div>
+                                    <div className="text-lg font-bold" style={{ color: 'var(--color-success)' }}>{greenCount}</div>
+                                    <div className="text-xs" style={{ color: 'var(--color-ink-muted)' }}>Exact</div>
+                                </div>
+                                <div>
+                                    <div className="text-lg font-bold" style={{ color: 'var(--color-warning)' }}>{yellowCount}</div>
+                                    <div className="text-xs" style={{ color: 'var(--color-ink-muted)' }}>Close</div>
+                                </div>
+                                <div>
+                                    <div className="text-lg font-bold" style={{ color: 'var(--color-error)' }}>{redCount}</div>
+                                    <div className="text-xs" style={{ color: 'var(--color-ink-muted)' }}>Missed</div>
+                                </div>
+                            </div>
+
+                            <Divider />
+
+                            <div className="flex items-center justify-center gap-6 mt-3">
+                                <div className="flex items-center gap-2">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--color-bronze)" strokeWidth="2">
+                                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" fill="var(--color-bronze-light)" />
+                                    </svg>
+                                    <div className="text-left">
+                                        <div className="text-xl font-bold leading-none" style={{ color: 'var(--color-burgundy)' }}>+{xp}</div>
+                                        <div className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: 'var(--color-ink-faint)' }}>XP earned</div>
+                                    </div>
+                                </div>
+                                <div className="w-px h-10" style={{ backgroundColor: 'rgba(28, 25, 23, 0.08)' }} />
+                                <div className="flex items-center gap-2">
+                                    <span className="text-2xl">\uD83D\uDD25</span>
+                                    <div className="text-left">
+                                        <div className="text-xl font-bold leading-none" style={{ color: 'var(--color-burgundy)' }}>{streak}</div>
+                                        <div className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: 'var(--color-ink-faint)' }}>Day streak</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </Card>
+                    </div>
+                </div>
+
+                <div className="flex-shrink-0 pt-4 pb-2">
                     <Button className="w-full" onClick={onComplete}>Continue</Button>
                 </div>
 
@@ -833,16 +843,16 @@ function QuizQuestion({ question, lessonEventIds, onAnswer, onNext, onBack, onSk
     const renderButtons = () => {
         if (answered) {
             return (
-                <div className="flex gap-3 mt-4">
-                    {onBack && <Button variant="secondary" onClick={onBack}>← Back</Button>}
-                    <Button className="flex-1" onClick={onNext}>Continue →</Button>
+                <div className="pinned-footer flex gap-3">
+                    {onBack && <Button variant="secondary" onClick={onBack}>\u2190 Back</Button>}
+                    <Button className="flex-1" onClick={onNext}>Continue \u2192</Button>
                 </div>
             );
         }
         if (onSkip || onBack) {
             return (
-                <div className="flex gap-3 mt-4">
-                    {onBack && <Button variant="secondary" onClick={onBack}>← Back</Button>}
+                <div className="pinned-footer flex gap-3">
+                    {onBack && <Button variant="secondary" onClick={onBack}>\u2190 Back</Button>}
                     {onSkip && <Button className="flex-1" variant="secondary" onClick={onSkip}>Skip</Button>}
                 </div>
             );
@@ -1090,7 +1100,7 @@ function DateInputQuestion({ event, onAnswer, onNext, onBack, onSkip }) {
             </Card>
 
             {answered && (
-                <div className="flex gap-3 mt-4">
+                <div className="pinned-footer flex gap-3">
                     {onBack && <Button variant="secondary" onClick={onBack}>← Back</Button>}
                     <Button className="flex-1" onClick={onNext}>Continue →</Button>
                 </div>

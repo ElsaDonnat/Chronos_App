@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react';
 import { useApp } from '../context/AppContext';
 import { ALL_EVENTS, CATEGORY_CONFIG, ERA_RANGES, ERA_BOUNDARY_EVENTS, getEraForYear, getEventById } from '../data/events';
-import { Card, CategoryTag, MasteryDots, Divider } from '../components/shared';
+import { Card, CategoryTag, MasteryDots, Divider, ExpandableText } from '../components/shared';
 import Mascot from '../components/Mascot';
 
 export default function TimelinePage() {
@@ -251,9 +251,9 @@ export default function TimelinePage() {
                                                         <h3 className="text-lg font-bold mb-2" style={{ fontFamily: 'var(--font-serif)' }}>
                                                             {event.title}
                                                         </h3>
-                                                        <p className="text-sm leading-relaxed mb-3" style={{ color: 'var(--color-ink-secondary)' }}>
+                                                        <ExpandableText lines={3} className="text-sm leading-relaxed mb-3" style={{ color: 'var(--color-ink-secondary)' }}>
                                                             {event.description}
-                                                        </p>
+                                                        </ExpandableText>
                                                         <div className="flex items-center gap-2 text-xs" style={{ color: 'var(--color-ink-muted)' }}>
                                                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                                                 <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" /><circle cx="12" cy="10" r="3" />

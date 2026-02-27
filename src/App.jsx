@@ -84,7 +84,7 @@ export default function App() {
       <div className="app-body">
         <Sidebar activeTab={activeTab} onTabChange={setActiveTab} />
         <main className="main-content" ref={mainRef}>
-          <div className="main-content-inner">
+          <div className={`main-content-inner${inSession ? ' in-session' : ''}`}>
             <div className="animate-fade-in" key={activeTab}>
               {activeTab === 'learn' && <LearnPage onSessionChange={setInSession} registerBackHandler={registerBackHandler} />}
               {activeTab === 'timeline' && <TimelinePage />}
