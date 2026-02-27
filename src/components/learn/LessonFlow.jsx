@@ -60,7 +60,9 @@ const PERIOD_INFO = {
 
 export default function LessonFlow({ lesson, onComplete }) {
     const { state, dispatch } = useApp();
-    const events = useMemo(() => getEventsByIds(lesson.eventIds), [lesson]);
+    const cardsPerLesson = state.cardsPerLesson || 3;
+    const recapPerCard = state.recapPerCard ?? 2;
+    const events = useMemo(() => getEventsByIds(lesson.eventIds).slice(0, cardsPerLesson), [lesson, cardsPerLesson]);
 
     const [phase, setPhase] = useState(PHASE.INTRO);
     const [cardIndex, setCardIndex] = useState(0);         // 0–2, current card in learn phase
@@ -101,17 +103,31 @@ export default function LessonFlow({ lesson, onComplete }) {
     }, [events, learnTypes]);
 
     // Pre-generate recap questions (shuffled once on mount)
+    // recapPerCard: 0 = no recap, 1 = one question per card (MCQ or date, random), 2 = full (MCQ + date)
     const [recapQuestions] = useState(() => {
+        if (recapPerCard === 0) return [];
         const qs = [];
-        // 3 remaining MCQ questions (one per card)
-        events.forEach((event, i) => {
-            qs.push({ event, type: remainingTypes[i], cardIdx: i, phase: 'recap', isDateInput: false });
-        });
-        // 3 date free-input questions (one per card)
-        events.forEach((event, i) => {
-            qs.push({ event, type: 'date_input', cardIdx: i, phase: 'recap', isDateInput: true });
-        });
-        // Shuffle all 6
+        if (recapPerCard === 2) {
+            // Full: 1 MCQ + 1 date input per card
+            events.forEach((event, i) => {
+                qs.push({ event, type: remainingTypes[i], cardIdx: i, phase: 'recap', isDateInput: false });
+            });
+            events.forEach((event, i) => {
+                qs.push({ event, type: 'date_input', cardIdx: i, phase: 'recap', isDateInput: true });
+            });
+        } else {
+            // Light: 1 question per card — randomly MCQ or date input
+            events.forEach((event, i) => {
+                const useDateInput = Math.random() < 0.5;
+                qs.push({
+                    event,
+                    type: useDateInput ? 'date_input' : remainingTypes[i],
+                    cardIdx: i,
+                    phase: 'recap',
+                    isDateInput: useDateInput,
+                });
+            });
+        }
         return qs.sort(() => Math.random() - 0.5);
     });
 
@@ -136,7 +152,7 @@ export default function LessonFlow({ lesson, onComplete }) {
     }, [quizResults]);
 
     // Total counts
-    const totalQuestions = 12; // always 12
+    const totalQuestions = events.length * (2 + recapPerCard);
     const answeredCount = quizResults.length;
 
     // ─── Dispatch XP on summary ───
@@ -198,7 +214,7 @@ export default function LessonFlow({ lesson, onComplete }) {
                     </p>
                     <Divider />
                     <p className="text-sm mt-4 mb-2" style={{ color: 'var(--color-ink-muted)' }}>
-                        {events.length} events · 12 questions
+                        {events.length} {events.length === 1 ? 'event' : 'events'} · {totalQuestions} questions · ~{Math.max(1, Math.round(totalQuestions / 2))} min
                     </p>
                     <Mascot mood="happy" size={64} />
                     {(() => {
@@ -218,7 +234,7 @@ export default function LessonFlow({ lesson, onComplete }) {
                                             setPhase(PHASE.LEARN_CARD);
                                         }
                                         setCardIndex(0);
-                                        dispatch({ type: 'MARK_EVENTS_SEEN', eventIds: lesson.eventIds });
+                                        dispatch({ type: 'MARK_EVENTS_SEEN', eventIds: events.map(e => e.id) });
                                     }}>
                                         {timesCompleted > 0 ? 'Learn Again' : 'Begin Learning'}
                                     </Button>
@@ -440,8 +456,11 @@ export default function LessonFlow({ lesson, onComplete }) {
                 setCardIndex(next);
                 setLearnQuizIndex(0);
                 setPhase(PHASE.LEARN_CARD);
-            } else {
+            } else if (recapPerCard > 0) {
                 setPhase(PHASE.RECAP_TRANSITION);
+            } else {
+                // No recap — skip straight to summary
+                setPhase(PHASE.SUMMARY);
             }
             return null;
         }
@@ -488,7 +507,7 @@ export default function LessonFlow({ lesson, onComplete }) {
                     Now let's see how well you remember everything
                 </p>
                 <p className="text-xs mb-6" style={{ color: 'var(--color-ink-faint)' }}>
-                    6 questions — including typing exact dates
+                    {recapQuestions.length} {recapQuestions.length === 1 ? 'question' : 'questions'}{recapPerCard === 2 ? ' — including typing exact dates' : ''}
                 </p>
                 <div className="flex justify-center gap-2 mb-6">
                     {events.map((e, i) => (

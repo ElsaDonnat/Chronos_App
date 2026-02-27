@@ -2,14 +2,16 @@ import { useState, useEffect } from 'react';
 import { useApp } from '../context/AppContext';
 import { LESSONS } from '../data/lessons';
 import { getEventsByIds } from '../data/events';
-import { Card, MasteryDots } from '../components/shared';
+import { Card, Button, MasteryDots } from '../components/shared';
 import LessonFlow from '../components/learn/LessonFlow';
 import Lesson0Flow from '../components/learn/Lesson0Flow';
 import Mascot from '../components/Mascot';
 
 export default function LearnPage({ onSessionChange, registerBackHandler }) {
-    const { state } = useApp();
+    const { state, dispatch } = useApp();
     const [activeLessonId, setActiveLessonId] = useState(null);
+    const [selectedCards, setSelectedCards] = useState(3);
+    const [selectedRecap, setSelectedRecap] = useState(2);
 
     useEffect(() => {
         onSessionChange?.(!!activeLessonId);
@@ -160,8 +162,91 @@ export default function LearnPage({ onSessionChange, registerBackHandler }) {
                 })}
             </div>
 
-            {/* Empty state mascot at the bottom */}
-            {Object.keys(state.completedLessons).length === 0 && (
+            {/* First-launch lesson settings chooser */}
+            {Object.keys(state.completedLessons).length === 0 && state.cardsPerLesson === undefined && (() => {
+                const totalQ = selectedCards * (2 + selectedRecap);
+                const estMin = Math.max(1, Math.round(totalQ / 2));
+                return (
+                    <Card className="mt-6 p-5 animate-fade-in">
+                        <div className="text-center mb-3">
+                            <Mascot mood="happy" size={52} />
+                        </div>
+                        <h3 className="text-base font-bold text-center mb-1" style={{ fontFamily: 'var(--font-serif)', color: 'var(--color-ink)' }}>
+                            How much time do you have?
+                        </h3>
+                        <p className="text-xs text-center mb-4" style={{ color: 'var(--color-ink-muted)' }}>
+                            Customize your lesson length. You can change this later in settings.
+                        </p>
+
+                        {/* Cards per lesson */}
+                        <div className="text-xs font-semibold mb-2" style={{ color: 'var(--color-ink-secondary)' }}>Cards per Lesson</div>
+                        <div className="flex gap-2 mb-4">
+                            {[1, 2, 3].map(n => {
+                                const isActive = selectedCards === n;
+                                return (
+                                    <button
+                                        key={n}
+                                        onClick={() => setSelectedCards(n)}
+                                        className="flex-1 py-2.5 rounded-xl text-sm font-semibold transition-colors"
+                                        style={{
+                                            backgroundColor: isActive ? 'var(--color-burgundy)' : 'var(--color-card)',
+                                            color: isActive ? 'white' : 'var(--color-ink-secondary)',
+                                            border: isActive ? 'none' : '1px solid rgba(28, 25, 23, 0.08)',
+                                        }}
+                                    >
+                                        {n} {n === 1 ? 'card' : 'cards'}
+                                    </button>
+                                );
+                            })}
+                        </div>
+
+                        {/* Recap intensity */}
+                        <div className="text-xs font-semibold mb-2" style={{ color: 'var(--color-ink-secondary)' }}>Recap Intensity</div>
+                        <div className="flex gap-2 mb-1">
+                            {[
+                                { value: 0, label: 'Off' },
+                                { value: 1, label: 'Light' },
+                                { value: 2, label: 'Full' },
+                            ].map(({ value, label }) => {
+                                const isActive = selectedRecap === value;
+                                return (
+                                    <button
+                                        key={value}
+                                        onClick={() => setSelectedRecap(value)}
+                                        className="flex-1 py-2.5 rounded-xl text-sm font-semibold transition-colors"
+                                        style={{
+                                            backgroundColor: isActive ? 'var(--color-burgundy)' : 'var(--color-card)',
+                                            color: isActive ? 'white' : 'var(--color-ink-secondary)',
+                                            border: isActive ? 'none' : '1px solid rgba(28, 25, 23, 0.08)',
+                                        }}
+                                    >
+                                        {label}
+                                    </button>
+                                );
+                            })}
+                        </div>
+                        <div className="flex gap-2 mb-4">
+                            <span className="flex-1 text-center text-[11px]" style={{ color: 'var(--color-ink-faint)' }}>No recap</span>
+                            <span className="flex-1 text-center text-[11px]" style={{ color: 'var(--color-ink-faint)' }}>1 per card</span>
+                            <span className="flex-1 text-center text-[11px]" style={{ color: 'var(--color-ink-faint)' }}>2 per card</span>
+                        </div>
+
+                        {/* Summary + confirm */}
+                        <p className="text-xs text-center mb-4" style={{ color: 'var(--color-ink-secondary)' }}>
+                            {totalQ} questions per lesson · ~{estMin} min
+                        </p>
+                        <Button className="w-full" onClick={() => {
+                            dispatch({ type: 'SET_CARDS_PER_LESSON', value: selectedCards });
+                            dispatch({ type: 'SET_RECAP_PER_CARD', value: selectedRecap });
+                        }}>
+                            Start Learning
+                        </Button>
+                    </Card>
+                );
+            })()}
+
+            {/* Empty state mascot (shown after setting is chosen or for returning users with no completions) */}
+            {Object.keys(state.completedLessons).length === 0 && state.cardsPerLesson !== undefined && (
                 <div className="text-center mt-10 animate-fade-in">
                     <Mascot mood="happy" size={60} />
                     <p className="text-sm mt-2" style={{ color: 'var(--color-ink-muted)', fontFamily: 'var(--font-serif)' }}>

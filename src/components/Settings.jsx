@@ -171,6 +171,74 @@ export default function Settings() {
                     </Card>
                 )}
 
+                {/* Lesson Settings */}
+                {(() => {
+                    const cards = state.cardsPerLesson || 3;
+                    const recap = state.recapPerCard ?? 2;
+                    const totalQ = cards * (2 + recap);
+                    const estMin = Math.max(1, Math.round(totalQ / 2));
+                    return (
+                        <>
+                        <Card className="mb-3 p-4">
+                            <div className="text-sm font-semibold mb-3" style={{ color: 'var(--color-ink-secondary)' }}>Cards per Lesson</div>
+                            <div className="flex gap-2">
+                                {[1, 2, 3].map(n => {
+                                    const isActive = cards === n;
+                                    return (
+                                        <button
+                                            key={n}
+                                            onClick={() => dispatch({ type: 'SET_CARDS_PER_LESSON', value: n })}
+                                            className="flex-1 py-2.5 rounded-xl text-sm font-semibold transition-colors"
+                                            style={{
+                                                backgroundColor: isActive ? 'var(--color-burgundy)' : 'var(--color-card)',
+                                                color: isActive ? 'white' : 'var(--color-ink-secondary)',
+                                                border: isActive ? 'none' : '1px solid rgba(28, 25, 23, 0.08)',
+                                            }}
+                                        >
+                                            {n} {n === 1 ? 'card' : 'cards'}
+                                        </button>
+                                    );
+                                })}
+                            </div>
+                        </Card>
+                        <Card className="mb-3 p-4">
+                            <div className="text-sm font-semibold mb-3" style={{ color: 'var(--color-ink-secondary)' }}>Recap Intensity</div>
+                            <div className="flex gap-2">
+                                {[
+                                    { value: 0, label: 'Off' },
+                                    { value: 1, label: 'Light' },
+                                    { value: 2, label: 'Full' },
+                                ].map(({ value, label }) => {
+                                    const isActive = recap === value;
+                                    return (
+                                        <button
+                                            key={value}
+                                            onClick={() => dispatch({ type: 'SET_RECAP_PER_CARD', value })}
+                                            className="flex-1 py-2.5 rounded-xl text-sm font-semibold transition-colors"
+                                            style={{
+                                                backgroundColor: isActive ? 'var(--color-burgundy)' : 'var(--color-card)',
+                                                color: isActive ? 'white' : 'var(--color-ink-secondary)',
+                                                border: isActive ? 'none' : '1px solid rgba(28, 25, 23, 0.08)',
+                                            }}
+                                        >
+                                            {label}
+                                        </button>
+                                    );
+                                })}
+                            </div>
+                            <div className="flex gap-2 mt-1">
+                                <span className="flex-1 text-center text-[11px]" style={{ color: 'var(--color-ink-faint)' }}>No recap</span>
+                                <span className="flex-1 text-center text-[11px]" style={{ color: 'var(--color-ink-faint)' }}>1 per card</span>
+                                <span className="flex-1 text-center text-[11px]" style={{ color: 'var(--color-ink-faint)' }}>2 per card</span>
+                            </div>
+                        </Card>
+                        <p className="text-xs text-center mb-4" style={{ color: 'var(--color-ink-muted)' }}>
+                            {totalQ} questions · ~{estMin} min per lesson
+                        </p>
+                        </>
+                    );
+                })()}
+
                 <Divider />
 
                 {/* Data Management */}

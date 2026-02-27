@@ -35,6 +35,8 @@ const defaultState = {
     settingsOpen: false,
     // Whether the rating prompt has been shown/dismissed
     ratingPromptDismissed: false,
+    // Cards per lesson setting (1, 2, or 3). Undefined until user makes a choice.
+    // cardsPerLesson: undefined (not set here — LessonFlow falls back to 3)
 };
 
 function calculateOverallMastery(mastery) {
@@ -164,6 +166,14 @@ function reducer(state, action) {
 
         case 'DISMISS_RATING_PROMPT': {
             return { ...state, ratingPromptDismissed: true };
+        }
+
+        case 'SET_CARDS_PER_LESSON': {
+            return { ...state, cardsPerLesson: action.value };
+        }
+
+        case 'SET_RECAP_PER_CARD': {
+            return { ...state, recapPerCard: action.value };
         }
 
         case 'RESET_PROGRESS': {
