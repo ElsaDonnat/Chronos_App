@@ -72,7 +72,10 @@ export default function LessonFlow({ lesson, onComplete }) {
     const [quizResults, setQuizResults] = useState([]);
     const [selectedDot, setSelectedDot] = useState(null);    // for result dot modal
     const [showExitConfirm, setShowExitConfirm] = useState(false);
+    const [celebrationData, setCelebrationData] = useState(null); // { event, greenCount, totalAnswered }
     const xpDispatched = useRef(false);
+    const pendingNextAction = useRef(null);
+    const lastAnswerScore = useRef(null);
 
     // For each card, randomly pick 3 of the 4 question types to use for MCQs (discarding 1)
     // Then assign 2 to the learn phase and 1 to the recap phase
@@ -171,6 +174,7 @@ export default function LessonFlow({ lesson, onComplete }) {
 
     // Helper: record answer
     const recordAnswer = useCallback((eventId, questionType, score) => {
+        lastAnswerScore.current = score;
         const event = getEventById(eventId);
         setQuizResults(prev => [...prev, {
             eventId,
@@ -186,6 +190,34 @@ export default function LessonFlow({ lesson, onComplete }) {
             score,
         });
     }, [dispatch]);
+
+    // Helper: wrap onNext to show celebration on green answers
+    // Note: quizResults hasn't yet re-rendered with the latest answer (setQuizResults is async),
+    // so we +1 both counts to include the current green answer.
+    const handleNext = useCallback((originalNext, questionEvent) => {
+        if (lastAnswerScore.current === 'green') {
+            const greenSoFar = quizResults.filter(r => r.firstScore === 'green').length + 1;
+            setCelebrationData({ event: questionEvent, greenCount: greenSoFar, totalAnswered: quizResults.length + 1 });
+            pendingNextAction.current = originalNext;
+        } else {
+            originalNext();
+        }
+    }, [quizResults]);
+
+    const dismissCelebration = useCallback(() => {
+        setCelebrationData(null);
+        if (pendingNextAction.current) {
+            pendingNextAction.current();
+            pendingNextAction.current = null;
+        }
+    }, []);
+
+    // ════════════════════════════════════════════════════
+    // CELEBRATION INTERSTITIAL
+    // ════════════════════════════════════════════════════
+    if (celebrationData) {
+        return <CelebrationCard data={celebrationData} onDismiss={dismissCelebration} />;
+    }
 
     // ════════════════════════════════════════════════════
     // INTRO
@@ -230,6 +262,37 @@ export default function LessonFlow({ lesson, onComplete }) {
                         <p className="text-sm mt-4 mb-2" style={{ color: 'var(--color-ink-muted)' }}>
                             {events.length} {events.length === 1 ? 'event' : 'events'} · {totalQuestions} questions · ~{Math.max(1, Math.round(totalQuestions / 2))} min
                         </p>
+                        {/* Event preview */}
+                        {lesson.isLesson0 ? (
+                            <div className="flex justify-center gap-3 mt-2 mb-4 flex-wrap">
+                                {Object.values(PERIOD_INFO).map((period, i) => (
+                                    <div key={i}
+                                        className="flex flex-col items-center gap-1 px-3 py-2 rounded-xl animate-fade-in-up"
+                                        style={{ backgroundColor: `${period.color}10`, animationDelay: `${i * 0.08}s` }}>
+                                        <span className="text-xl">{period.icon}</span>
+                                        <span className="text-[10px] font-semibold" style={{ color: period.color }}>{period.title}</span>
+                                    </div>
+                                ))}
+                            </div>
+                        ) : events.length > 0 && (
+                            <div className="flex flex-col gap-2 mt-2 mb-4 text-left">
+                                {events.map((event, i) => {
+                                    const catConfig = CATEGORY_CONFIG[event.category];
+                                    return (
+                                        <div key={event.id}
+                                            className="flex items-center gap-3 px-3 py-2.5 rounded-xl animate-fade-in-up"
+                                            style={{ backgroundColor: catConfig?.bg || 'var(--color-parchment-dark)', animationDelay: `${i * 0.1}s` }}>
+                                            <span className="flex-shrink-0 w-2 h-2 rounded-full" style={{ backgroundColor: catConfig?.color || 'var(--color-ink-faint)' }} />
+                                            <div className="min-w-0 flex-1">
+                                                <p className="text-sm font-semibold truncate" style={{ color: 'var(--color-ink)' }}>{event.title}</p>
+                                                <p className="text-xs" style={{ color: catConfig?.color || 'var(--color-ink-muted)' }}>{event.date}</p>
+                                            </div>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        )}
+
                         <Mascot mood="happy" size={64} />
                         {timesCompleted > 0 && (
                             <p className="text-xs font-medium mt-3 mb-1" style={{ color: 'var(--color-success)' }}>
@@ -483,7 +546,7 @@ export default function LessonFlow({ lesson, onComplete }) {
                         question={q}
                         lessonEventIds={lesson.eventIds}
                         onAnswer={(score) => recordAnswer(q.event.id, q.type, score)}
-                        onNext={() => setLearnQuizIndex(i => i + 1)}
+                        onNext={() => handleNext(() => setLearnQuizIndex(i => i + 1), q.event)}
                         onBack={learnQuizIndex > 0 ? () => setLearnQuizIndex(i => i - 1) : null}
                     />
                 </div>
@@ -566,7 +629,7 @@ export default function LessonFlow({ lesson, onComplete }) {
                         <DateInputQuestion
                             event={q.event}
                             onAnswer={(score) => recordAnswer(q.event.id, 'date_input', score)}
-                            onNext={() => setRecapIndex(i => i + 1)}
+                            onNext={() => handleNext(() => setRecapIndex(i => i + 1), q.event)}
                             onBack={recapIndex > 0 ? () => setRecapIndex(i => i - 1) : null}
                             onSkip={() => setRecapIndex(i => i + 1)}
                         />
@@ -575,7 +638,7 @@ export default function LessonFlow({ lesson, onComplete }) {
                             question={q}
                             lessonEventIds={lesson.eventIds}
                             onAnswer={(score) => recordAnswer(q.event.id, q.type, score)}
-                            onNext={() => setRecapIndex(i => i + 1)}
+                            onNext={() => handleNext(() => setRecapIndex(i => i + 1), q.event)}
                             onBack={recapIndex > 0 ? () => setRecapIndex(i => i - 1) : null}
                             onSkip={() => setRecapIndex(i => i + 1)}
                         />
@@ -1005,6 +1068,53 @@ function QuizQuestion({ question, lessonEventIds, onAnswer, onNext, onBack, onSk
     }
 
     return null;
+}
+
+// ═══════════════════════════════════════════════════════
+// CELEBRATION CARD (correct answer interstitial)
+// ═══════════════════════════════════════════════════════
+function CelebrationCard({ data, onDismiss }) {
+    const { event, greenCount, totalAnswered } = data;
+
+    useEffect(() => {
+        const timer = setTimeout(onDismiss, 1500);
+        return () => clearTimeout(timer);
+    }, [onDismiss]);
+
+    return (
+        <div className="lesson-flow-container animate-celebration-enter" onClick={onDismiss}
+            style={{ cursor: 'pointer', userSelect: 'none' }}>
+            <div className="flex-1 min-h-0 flex flex-col items-center justify-center py-6">
+                <Mascot mood="celebrating" size={64} />
+                <Card className="w-full mt-4" style={{
+                    borderTop: '3px solid var(--color-success)',
+                    backgroundColor: 'var(--color-success-light)',
+                }}>
+                    <div className="flex items-center gap-2 mb-2">
+                        <span className="flex items-center justify-center w-6 h-6 rounded-full"
+                            style={{ backgroundColor: 'var(--color-success)', color: 'white', fontSize: '14px' }}>
+                            ✓
+                        </span>
+                        <CategoryTag category={event.category} />
+                    </div>
+                    <h3 className="text-lg font-bold mb-1" style={{ fontFamily: 'var(--font-serif)', color: 'var(--color-ink)' }}>
+                        {event.title}
+                    </h3>
+                    <p className="text-sm font-semibold mb-3" style={{ color: 'var(--color-burgundy)' }}>
+                        {event.date}
+                    </p>
+                    <div className="flex items-center gap-2 pt-2" style={{ borderTop: '1px solid rgba(5, 150, 105, 0.15)' }}>
+                        <span className="text-sm font-bold" style={{ color: 'var(--color-success)' }}>
+                            {greenCount}/{totalAnswered} correct
+                        </span>
+                    </div>
+                </Card>
+                <p className="text-xs mt-4" style={{ color: 'var(--color-ink-faint)' }}>
+                    Tap to continue
+                </p>
+            </div>
+        </div>
+    );
 }
 
 // ═══════════════════════════════════════════════════════
