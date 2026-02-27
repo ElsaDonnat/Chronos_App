@@ -35,6 +35,11 @@ const defaultState = {
     settingsOpen: false,
     // Whether the rating prompt has been shown/dismissed
     ratingPromptDismissed: false,
+    // Notifications
+    notificationOnboardingDismissed: false,
+    notificationsEnabled: false,
+    dailyReminderTime: '09:00',
+    streakRemindersEnabled: true,
     // Cards per lesson setting (1, 2, or 3). Undefined until user makes a choice.
     // cardsPerLesson: undefined (not set here — LessonFlow falls back to 3)
 };
@@ -174,6 +179,32 @@ function reducer(state, action) {
 
         case 'SET_RECAP_PER_CARD': {
             return { ...state, recapPerCard: action.value };
+        }
+
+        case 'DISMISS_NOTIFICATION_ONBOARDING': {
+            return { ...state, notificationOnboardingDismissed: true };
+        }
+
+        case 'ENABLE_NOTIFICATIONS': {
+            return {
+                ...state,
+                notificationsEnabled: true,
+                notificationOnboardingDismissed: true,
+                ...(action.dailyReminderTime && { dailyReminderTime: action.dailyReminderTime }),
+                ...(action.streakRemindersEnabled !== undefined && { streakRemindersEnabled: action.streakRemindersEnabled }),
+            };
+        }
+
+        case 'DISABLE_NOTIFICATIONS': {
+            return { ...state, notificationsEnabled: false };
+        }
+
+        case 'SET_DAILY_REMINDER_TIME': {
+            return { ...state, dailyReminderTime: action.value };
+        }
+
+        case 'SET_STREAK_REMINDERS': {
+            return { ...state, streakRemindersEnabled: action.value };
         }
 
         case 'RESET_PROGRESS': {

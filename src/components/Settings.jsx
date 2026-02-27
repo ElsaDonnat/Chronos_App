@@ -1,9 +1,14 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useApp } from '../context/AppContext';
 import { ALL_EVENTS } from '../data/events';
 import { LESSONS } from '../data/lessons';
 import { Card, Button, Divider, ConfirmModal } from './shared';
 import Mascot from './Mascot';
+import {
+    rescheduleNotifications,
+    cancelAllReminders,
+    requestNotificationPermission,
+} from '../services/notifications';
 
 const STORAGE_KEY = 'chronos-state-v1';
 
@@ -28,6 +33,15 @@ export default function Settings() {
     const learnedCount = state.seenEvents.length;
     const totalEvents = ALL_EVENTS.length;
     const completedLessons = Object.keys(state.completedLessons).length;
+
+    // Reschedule notifications when settings change
+    useEffect(() => {
+        if (state.notificationsEnabled) {
+            rescheduleNotifications(state, state.currentStreak);
+        } else {
+            cancelAllReminders();
+        }
+    }, [state.notificationsEnabled, state.dailyReminderTime, state.streakRemindersEnabled]); // eslint-disable-line react-hooks/exhaustive-deps
 
     const masteryEntries = Object.values(state.eventMastery);
     const greenCount = masteryEntries.filter(m => m.overallMastery >= 7).length;
@@ -239,6 +253,85 @@ export default function Settings() {
                     );
                 })()}
 
+                {/* Notifications */}
+                <Card className="mb-3 p-4">
+                    <div className="flex items-center justify-between mb-1">
+                        <div className="text-sm font-semibold" style={{ color: 'var(--color-ink-secondary)' }}>Daily reminders</div>
+                        <button
+                            type="button"
+                            role="switch"
+                            aria-checked={state.notificationsEnabled}
+                            onClick={async () => {
+                                if (!state.notificationsEnabled) {
+                                    const result = await requestNotificationPermission();
+                                    if (result === 'denied') return;
+                                }
+                                dispatch({
+                                    type: state.notificationsEnabled ? 'DISABLE_NOTIFICATIONS' : 'ENABLE_NOTIFICATIONS',
+                                });
+                            }}
+                            className="relative w-11 h-6 rounded-full transition-colors"
+                            style={{
+                                backgroundColor: state.notificationsEnabled ? 'var(--color-burgundy)' : 'rgba(28, 25, 23, 0.15)',
+                            }}
+                        >
+                            <span
+                                className="absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white transition-transform"
+                                style={{
+                                    transform: state.notificationsEnabled ? 'translateX(20px)' : 'translateX(0)',
+                                    boxShadow: '0 1px 3px rgba(0,0,0,0.2)',
+                                }}
+                            />
+                        </button>
+                    </div>
+                    {state.notificationsEnabled && (
+                        <div className="mt-3 space-y-3 animate-fade-in">
+                            <div>
+                                <label
+                                    className="text-xs block mb-1.5"
+                                    style={{ color: 'var(--color-ink-muted)' }}
+                                >
+                                    Reminder time
+                                </label>
+                                <input
+                                    type="time"
+                                    value={state.dailyReminderTime}
+                                    onChange={e => dispatch({ type: 'SET_DAILY_REMINDER_TIME', value: e.target.value })}
+                                    className="w-full rounded-xl px-3 py-2 text-sm"
+                                    style={{
+                                        backgroundColor: 'var(--color-parchment)',
+                                        color: 'var(--color-ink)',
+                                        border: '1px solid rgba(28, 25, 23, 0.08)',
+                                    }}
+                                />
+                            </div>
+                            <div className="flex items-center justify-between">
+                                <span className="text-xs" style={{ color: 'var(--color-ink-muted)' }}>
+                                    Streak reminders
+                                </span>
+                                <button
+                                    type="button"
+                                    role="switch"
+                                    aria-checked={state.streakRemindersEnabled}
+                                    onClick={() => dispatch({ type: 'SET_STREAK_REMINDERS', value: !state.streakRemindersEnabled })}
+                                    className="relative w-11 h-6 rounded-full transition-colors"
+                                    style={{
+                                        backgroundColor: state.streakRemindersEnabled ? 'var(--color-burgundy)' : 'rgba(28, 25, 23, 0.15)',
+                                    }}
+                                >
+                                    <span
+                                        className="absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white transition-transform"
+                                        style={{
+                                            transform: state.streakRemindersEnabled ? 'translateX(20px)' : 'translateX(0)',
+                                            boxShadow: '0 1px 3px rgba(0,0,0,0.2)',
+                                        }}
+                                    />
+                                </button>
+                            </div>
+                        </div>
+                    )}
+                </Card>
+
                 <Divider />
 
                 {/* Data Management */}
@@ -314,6 +407,7 @@ export default function Settings() {
                     cancelLabel="Cancel"
                     danger
                     onConfirm={() => {
+                        cancelAllReminders();
                         dispatch({ type: 'RESET_PROGRESS' });
                         dispatch({ type: 'TOGGLE_SETTINGS' });
                     }}

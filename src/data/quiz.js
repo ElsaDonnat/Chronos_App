@@ -214,7 +214,7 @@ export function generateWhatOptions(correctEvent, lessonEventIds, allEvents = AL
 export function generateDescriptionOptions(correctEvent, allEvents = ALL_EVENTS) {
     const correctOption = {
         id: correctEvent.id,
-        description: correctEvent.description,
+        description: correctEvent.quizDescription || correctEvent.description,
         isCorrect: true,
     };
     const options = [correctOption];
@@ -239,7 +239,7 @@ export function generateDescriptionOptions(correctEvent, allEvents = ALL_EVENTS)
         if (options.length >= 4) break;
         options.push({
             id: e.id,
-            description: e.description,
+            description: e.quizDescription || e.description,
             isCorrect: false,
         });
     }
@@ -251,7 +251,7 @@ export function generateDescriptionOptions(correctEvent, allEvents = ALL_EVENTS)
             if (options.length >= 4) break;
             options.push({
                 id: e.id,
-                description: e.description,
+                description: e.quizDescription || e.description,
                 isCorrect: false,
             });
         }

@@ -7,7 +7,14 @@ import LearnPage from './pages/LearnPage';
 import TimelinePage from './pages/TimelinePage';
 import PracticePage from './pages/PracticePage';
 import Settings from './components/Settings';
+import NotificationOnboarding from './components/NotificationOnboarding';
 import { ConfirmModal } from './components/shared';
+import {
+  createNotificationChannel,
+  scheduleDailyReminder,
+  scheduleStreakReminder,
+  rescheduleNotifications,
+} from './services/notifications';
 
 const TAB_KEYS = { '1': 'learn', '2': 'timeline', '3': 'practice' };
 const RATING_MILESTONE = 3; // Show rating prompt after completing 3 lessons
@@ -78,6 +85,30 @@ export default function App() {
   const completedCount = Object.keys(state.completedLessons).length;
   const shouldShowRating = completedCount >= RATING_MILESTONE && !state.ratingPromptDismissed;
 
+  // Notification onboarding — show after first lesson, but not when rating is showing
+  const shouldShowNotificationOnboarding =
+    completedCount >= 1 &&
+    !state.notificationOnboardingDismissed &&
+    !shouldShowRating;
+
+  // Init notification channel + reschedule on mount
+  useEffect(() => {
+    createNotificationChannel();
+    if (state.notificationsEnabled) {
+      rescheduleNotifications(state, state.currentStreak);
+    }
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Reschedule notifications on app resume
+  useEffect(() => {
+    const listener = CapApp.addListener('appStateChange', ({ isActive }) => {
+      if (isActive && state.notificationsEnabled) {
+        rescheduleNotifications(state, state.currentStreak);
+      }
+    });
+    return () => { listener.then(l => l.remove()); };
+  }, [state.notificationsEnabled, state.dailyReminderTime, state.streakRemindersEnabled, state.currentStreak]); // eslint-disable-line react-hooks/exhaustive-deps
+
   return (
     <div className="app-shell">
       <TopBar activeTab={activeTab} />
@@ -108,6 +139,23 @@ export default function App() {
           onCancel={() => {
             dispatch({ type: 'DISMISS_RATING_PROMPT' });
           }}
+        />
+      )}
+      {shouldShowNotificationOnboarding && (
+        <NotificationOnboarding
+          onEnable={async (time, streakEnabled) => {
+            dispatch({
+              type: 'ENABLE_NOTIFICATIONS',
+              dailyReminderTime: time,
+              streakRemindersEnabled: streakEnabled,
+            });
+            const [h, m] = time.split(':').map(Number);
+            await scheduleDailyReminder(h, m);
+            if (streakEnabled) {
+              await scheduleStreakReminder(state.currentStreak);
+            }
+          }}
+          onSkip={() => dispatch({ type: 'DISMISS_NOTIFICATION_ONBOARDING' })}
         />
       )}
     </div>
