@@ -12,14 +12,32 @@ import {
 
 const STORAGE_KEY = 'chronos-state-v1';
 
-function exportProgress(state) {
+async function exportProgress(state) {
     const data = JSON.stringify(state, null, 2);
+    const filename = `chronos-backup-${new Date().toISOString().split('T')[0]}.json`;
+
+    // On Android / mobile, use Web Share API to let user save/send the file
+    if (navigator.share && navigator.canShare) {
+        const file = new File([data], filename, { type: 'application/json' });
+        if (navigator.canShare({ files: [file] })) {
+            try {
+                await navigator.share({ files: [file], title: 'Chronos Backup' });
+                return;
+            } catch (e) {
+                if (e.name === 'AbortError') return; // user cancelled, that's fine
+            }
+        }
+    }
+
+    // Fallback: blob download (works on desktop browsers)
     const blob = new Blob([data], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `chronos-backup-${new Date().toISOString().split('T')[0]}.json`;
+    a.download = filename;
+    document.body.appendChild(a);
     a.click();
+    document.body.removeChild(a);
     URL.revokeObjectURL(url);
 }
 

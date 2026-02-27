@@ -870,8 +870,8 @@ body {
    ════════════════════════════════════════════════════════ */
 
 @keyframes flameGlow {
-  0%, 100% { filter: drop-shadow(0 0 3px rgba(234, 136, 0, 0.4)); }
-  50% { filter: drop-shadow(0 0 8px rgba(234, 136, 0, 0.6)); }
+  0%, 100% { filter: drop-shadow(0 0 3px rgba(224, 85, 0, 0.4)); }
+  50% { filter: drop-shadow(0 0 8px rgba(255, 140, 0, 0.6)); }
 }
 
 @keyframes flamePulse {
