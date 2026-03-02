@@ -2,6 +2,7 @@ import { useState, useMemo, useCallback, useRef, useEffect } from 'react';
 import { useApp } from '../../context/AppContext';
 import { getEventsByIds, getEventById, ALL_EVENTS, CATEGORY_CONFIG, ERA_BOUNDARY_EVENTS, ERA_RANGES, getEraBoundaryInfo } from '../../data/events';
 import { scoreDateAnswer, generateLocationOptions, generateWhatOptions, generateDateMCQOptions, generateDescriptionOptions, calculateXP, SCORE_COLORS, getScoreColor, getScoreLabel, shuffle } from '../../data/quiz';
+import { calculateNextReview } from '../../data/spacedRepetition';
 import { Card, Button, ProgressBar, CategoryTag, Divider, StarButton, ConfirmModal, ExpandableText, ControversyNote, AnimatedCounter } from '../shared';
 import Mascot from '../Mascot';
 
@@ -76,6 +77,8 @@ export default function LessonFlow({ lesson, onComplete }) {
     const xpDispatched = useRef(false);
     const pendingNextAction = useRef(null);
     const lastAnswerScore = useRef(null);
+    const sessionStartTime = useRef(null);
+    const [sessionDuration, setSessionDuration] = useState(0);
 
     // For each card, randomly pick 3 of the 4 question types to use for MCQs (discarding 1)
     // Then assign 2 to the learn phase and 1 to the recap phase
@@ -158,13 +161,19 @@ export default function LessonFlow({ lesson, onComplete }) {
     const totalQuestions = events.length * (2 + recapPerCard);
     const answeredCount = quizResults.length;
 
-    // ─── Dispatch XP on summary ───
+    // Set session start time on mount
+    useEffect(() => { sessionStartTime.current = Date.now(); }, []);
+
+    // ─── Dispatch XP + record study session on summary ───
     useEffect(() => {
         if (phase === PHASE.SUMMARY && !xpDispatched.current) {
             xpDispatched.current = true;
             const xp = calculateXP(quizResults);
             dispatch({ type: 'COMPLETE_LESSON', lessonId: lesson.id });
             dispatch({ type: 'ADD_XP', amount: xp });
+            const duration = sessionStartTime.current ? Math.round((Date.now() - sessionStartTime.current) / 1000) : 0;
+            setSessionDuration(duration); // eslint-disable-line react-hooks/set-state-in-effect
+            dispatch({ type: 'RECORD_STUDY_SESSION', duration, sessionType: 'lesson', questionsAnswered: quizResults.length });
         }
     }, [phase, quizResults, lesson.id, dispatch]);
 
@@ -183,13 +192,18 @@ export default function LessonFlow({ lesson, onComplete }) {
             retryScore: null,
             difficulty: event?.difficulty || 1,
         }]);
+        const mappedType = questionType === 'date_input' ? 'date' : questionType;
         dispatch({
             type: 'UPDATE_EVENT_MASTERY',
             eventId,
-            questionType: questionType === 'date_input' ? 'date' : questionType,
+            questionType: mappedType,
             score,
         });
-    }, [dispatch]);
+        // Update spaced repetition schedule
+        const schedule = state.srSchedule?.[eventId] || { interval: 0, ease: 2.5, reviewCount: 0 };
+        const next = calculateNextReview(schedule, score);
+        dispatch({ type: 'UPDATE_SR_SCHEDULE', eventId, ...next });
+    }, [dispatch, state.srSchedule]);
 
     // Helper: wrap onNext to show celebration on green answers
     // Note: quizResults hasn't yet re-rendered with the latest answer (setQuizResults is async),
@@ -740,6 +754,9 @@ export default function LessonFlow({ lesson, onComplete }) {
             r.firstScore !== 'red' || (r.retryScore && r.retryScore !== 'red')
         );
         const streak = state.currentStreak;
+        const sessionMin = Math.floor(sessionDuration / 60);
+        const sessionSec = sessionDuration % 60;
+        const sessionTimeStr = sessionMin > 0 ? `${sessionMin}m ${sessionSec}s` : `${sessionSec}s`;
 
         return (
             <div className="lesson-flow-container animate-fade-in">
@@ -755,7 +772,7 @@ export default function LessonFlow({ lesson, onComplete }) {
                             borderTop: allPassed ? '3px solid var(--color-success)' : '3px solid var(--color-warning)',
                         }}>
                             <div className="text-sm font-semibold mb-3" style={{ color: 'var(--color-ink-secondary)' }}>
-                                {events.length} events \u00b7 {quizResults.length} questions
+                                {events.length} events · {quizResults.length} questions · {sessionTimeStr}
                             </div>
 
                             <div className="flex items-center gap-1 mb-4 justify-center flex-wrap">

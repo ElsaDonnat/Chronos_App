@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/widget_streak_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:padding="12dp"
+    android:background="@drawable/widget_background">
+
+    <TextView
+        android:id="@+id/streak_emoji"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="\uD83D\uDD25"
+        android:textSize="32sp" />
+
+    <TextView
+        android:id="@+id/streak_count"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="0"
+        android:textSize="36sp"
+        android:textStyle="bold"
+        android:textColor="#8B4157" />
+
+    <TextView
+        android:id="@+id/streak_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="day streak"
+        android:textSize="14sp"
+        android:textColor="#1C1917" />
+
+</LinearLayout>

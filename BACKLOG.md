@@ -10,21 +10,37 @@
 
 ---
 
-## P2 — Push notifications for streak reminders and daily learning
-
-Add push notification support using @capacitor/push-notifications or @capacitor/local-notifications. Two notification types: (1) Streak reminder — if the user hasn't completed a lesson today and it's getting late (e.g., 8pm), send a "Don't lose your X-day streak!" notification. (2) Daily learning reminder — the user sets a preferred learning time, and the app sends a gentle reminder at that time each day. On first app launch (or after an update that adds this feature), show a tasteful onboarding modal in the app's visual style (parchment background, serif headings, burgundy accents) that asks: "Would you like daily reminders to learn?" with a time picker and an opt-out option. Store the preference in localStorage. The notification text should be warm and encouraging, not pushy.
-
-## P3 — Onboarding flow for new users
-
-First-time users currently land on the Learn page with no context. Add a brief onboarding sequence (3-4 screens) that explains what Chronos is, how lessons work, and what streaks/XP mean. Should feel like flipping through a beautifully designed booklet. Skip button always available. Store a hasSeenOnboarding flag in localStorage.
-
 ## P3 — Sound effects and haptic feedback
 
 Add subtle audio feedback for correct/wrong answers and haptic vibration using @capacitor/haptics. Correct answer: brief positive chime + light haptic. Wrong answer: softer negative tone + different haptic pattern. Lesson complete: celebratory sound. Include a toggle in Settings to disable sounds and haptics independently. Keep sounds minimal and classy — not gamey.
 
-## P3 — Spaced repetition for practice mode
+## P3 — Event connections & cause-and-effect
 
-The practice mode currently picks events randomly or by lesson. Implement a basic spaced repetition algorithm: events the user gets wrong should appear more frequently, events consistently answered correctly should appear less often. Track last-reviewed date and difficulty rating per event in localStorage. This is the single biggest improvement for actual learning outcomes.
+Add a `relatedEvents` field to events in events.js, linking them with brief causal descriptions (e.g., French Revolution → "Led to the Napoleonic Wars"). Show connections on event cards in the timeline and on learn cards as a small "Connected events" section. Helps users understand history as a narrative rather than isolated facts. Start with the most obvious connections among existing events.
+
+## P3 — Weekly learning insights
+
+A recap card shown on the Learn page at the start of each week: events learned that week, strongest/weakest era, mastery improvement trend, total study time. Calculated entirely from existing state data (completedLessons, eventMastery, seenEvents). Dismissible with a close button. Reinforces progress and gives users direction on what to focus on next.
+
+## P3 — Map view for events
+
+A visual map showing where events happened. Could be a simple SVG world map with region highlights, accessible as a toggle/tab on the Timeline page. Even a basic region-highlighted map per era would significantly aid spatial memory and make location quiz questions more intuitive. Tap a region to see events from that area.
+
+## P3 — Themed collections
+
+Cross-cutting study paths like "Women in History", "Scientific Breakthroughs", "Revolutions That Changed the World". Groups existing events by theme rather than chronology. Accessible from the Practice page hub as additional collection tiles. Adds replay value and a fresh perspective without needing new content.
+
+## P3 — Share a challenge
+
+Let users generate a shareable quiz challenge ("Can you beat my score on Ancient History?"). Uses the Web Share API already integrated for progress export. Generate a simple image or text summary with score and challenge link. Simple viral growth mechanism that also makes learning social.
+
+## P4 — Dark mode
+
+Full dark theme using CSS custom properties alongside the existing @theme block. Toggle in Settings. Optionally respects system color-scheme preference. Swap parchment/ink colors while keeping category and mastery colors legible. Expected by many users, especially for evening study sessions.
+
+## P4 — Content expansion (more events & lessons)
+
+Add more events per era, deeper non-Western history coverage, and new lessons beyond the current 21. Plan for thematic content packs or era-specific expansions. Priority: regions currently underrepresented (Asia, Africa, Americas pre-colonization). This is a long-term effort — the app framework supports it, but content creation takes time.
 
 ---
 
@@ -39,3 +55,8 @@ The practice mode currently picks events randomly or by lesson. Implement a basi
 - **Polish — Fisher-Yates shuffle** (2026-03-02): Replaced all biased `.sort(() => Math.random() - 0.5)` shuffles with proper Fisher-Yates algorithm across quiz.js, LessonFlow, Lesson0Flow, and PracticePage.
 - **Polish — Timeline auto-scroll** (2026-03-02): Expanded timeline event cards now auto-scroll into view smoothly.
 - **Polish — ConfirmModal accessibility** (2026-03-02): Added `role="dialog"`, `aria-modal`, `aria-labelledby`, and auto-focus on cancel button.
+- **P2 — Achievements & badges system** (2026-03-02): 15 achievements across 7 categories (learning, streaks, XP, discovery, collection, mastery, daily quiz). Trophy button in TopBar with notification dot. AchievementsModal with 3-column grid showing unlocked/locked state with progress bars. Achievement toast slides in from top on unlock, auto-dismisses after 3.5s. Checker hook runs on state changes.
+- **P2 — Daily quick quiz ("This Day in History")** (2026-03-02): 10 days of "This Day in History" content (3 real historical events per day, cycling from March 2). Gold/amber visual theme distinct from lesson quizzes. 3-phase flow: learn cards → MCQ quiz → results. Double XP (20 per correct answer, max 60). Daily quiz card on Learn page shows completion state. Counts toward streak via ADD_XP.
+- **P3 — Onboarding flow for new users** (2026-03-02): Welcome screen → Lesson 0 guide → Post-lesson explanation → Placement quiz offer. 5 era-based placement quizzes (Prehistory, Ancient, Medieval, Early Modern, Modern) with MCQ questions. Passing unlocks all lessons in that era and marks events as seen/skipped. Skip tutorial available at every step.
+- **P3 — Spaced repetition for practice mode** (2026-03-02): SM-2 variant algorithm tracking interval, ease, next review date, and review count per event. 4-tier card status system (New → Learning → Known → Fully Assimilated). "Spaced Review" replaces old Smart Review, prioritizing due cards. SR schedule updates after every answer in both lessons and practice.
+- **P2 — Study timer & session stats** (2026-03-02): Tracks session duration for lessons, practice, and daily quiz. Shows time on completion screens (e.g., "3m 42s"). Displays cumulative study time and session count in Settings. Stores last 50 sessions. Study time preserved across progress resets.

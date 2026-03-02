@@ -1,10 +1,14 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useApp } from '../context/AppContext';
-import { LESSONS } from '../data/lessons';
+import { LESSONS, ERA_QUIZ_GROUPS } from '../data/lessons';
 import { getEventsByIds } from '../data/events';
+import { getNextPlacementEra } from '../data/placementQuiz';
+import { getTodaysDailyQuiz } from '../data/dailyQuiz';
 import { Card, Button, MasteryDots } from '../components/shared';
 import LessonFlow from '../components/learn/LessonFlow';
 import Lesson0Flow from '../components/learn/Lesson0Flow';
+import PlacementQuizFlow from '../components/learn/PlacementQuizFlow';
+import DailyQuizFlow from '../components/DailyQuizFlow';
 import Mascot from '../components/Mascot';
 
 export default function LearnPage({ onSessionChange, registerBackHandler }) {
@@ -12,17 +16,53 @@ export default function LearnPage({ onSessionChange, registerBackHandler }) {
     const [activeLessonId, setActiveLessonId] = useState(null);
     const [selectedCards, setSelectedCards] = useState(3);
     const [selectedRecap, setSelectedRecap] = useState(2);
+    const [showPlacement, setShowPlacement] = useState(false);
+    const [showDailyQuiz, setShowDailyQuiz] = useState(false);
+
+    const isOnboardingGuide = state.onboardingStep === 'guide_lesson0';
+    const isPlacementActive = state.onboardingStep === 'placement_active';
+
+    // Daily quiz data
+    const dailyData = useMemo(() => getTodaysDailyQuiz(), []);
+    const today = new Date().toISOString().split('T')[0];
+    const isDailyCompleted = state.dailyQuiz?.lastCompletedDate === today;
 
     useEffect(() => {
-        onSessionChange?.(!!activeLessonId);
-    }, [activeLessonId, onSessionChange]);
+        onSessionChange?.(!!activeLessonId || showPlacement || isPlacementActive || showDailyQuiz);
+    }, [activeLessonId, showPlacement, isPlacementActive, showDailyQuiz, onSessionChange]);
 
-    // Register back handler when in a lesson
+    // Register back handler when in a lesson, placement, or daily quiz
     useEffect(() => {
+        if (showDailyQuiz && registerBackHandler) {
+            return registerBackHandler(() => setShowDailyQuiz(false));
+        }
         if (activeLessonId && registerBackHandler) {
             return registerBackHandler(() => setActiveLessonId(null));
         }
-    }, [activeLessonId, registerBackHandler]);
+        if ((showPlacement || isPlacementActive) && registerBackHandler) {
+            return registerBackHandler(() => {
+                setShowPlacement(false);
+                if (isPlacementActive) {
+                    dispatch({ type: 'SET_ONBOARDING_STEP', step: 'complete' });
+                }
+            });
+        }
+    }, [showDailyQuiz, activeLessonId, showPlacement, isPlacementActive, registerBackHandler, dispatch]);
+
+    // Daily quiz flow
+    if (showDailyQuiz) {
+        return <DailyQuizFlow onComplete={() => setShowDailyQuiz(false)} />;
+    }
+
+    // Placement quiz flow (from onboarding or manual)
+    if (isPlacementActive || showPlacement) {
+        return <PlacementQuizFlow onComplete={() => {
+            setShowPlacement(false);
+            if (isPlacementActive) {
+                dispatch({ type: 'SET_ONBOARDING_STEP', step: 'complete' });
+            }
+        }} />;
+    }
 
     if (activeLessonId) {
         const lesson = LESSONS.find(l => l.id === activeLessonId);
@@ -31,6 +71,13 @@ export default function LearnPage({ onSessionChange, registerBackHandler }) {
         }
         return <LessonFlow lesson={lesson} onComplete={() => setActiveLessonId(null)} />;
     }
+
+    // Check if placement quizzes are available (lesson 0 done, not all eras passed)
+    const hasLesson0 = !!state.completedLessons['lesson-0'];
+    const allErasPassed = ERA_QUIZ_GROUPS.every(g => state.placementQuizzes[g.id]?.passed);
+    const nextEra = getNextPlacementEra(state.placementQuizzes);
+    const showPlacementBanner = hasLesson0 && !allErasPassed && nextEra
+        && (state.onboardingStep === 'complete' || state.onboardingStep === null);
 
     return (
         <div className="py-3 sm:py-6">
@@ -46,6 +93,99 @@ export default function LearnPage({ onSessionChange, registerBackHandler }) {
                 </p>
             </div>
 
+            {/* Daily Quiz card — "This Day in History" */}
+            {dailyData && (
+                <Card
+                    onClick={!isDailyCompleted ? () => setShowDailyQuiz(true) : undefined}
+                    className="mb-4 animate-fade-in daily-quiz-card"
+                    style={{
+                        borderLeft: isDailyCompleted ? '3px solid var(--color-success)' : '3px solid #E6A817',
+                        backgroundColor: isDailyCompleted ? 'rgba(5, 150, 105, 0.04)' : 'rgba(230, 168, 23, 0.04)',
+                    }}
+                >
+                    <div className="flex items-start gap-3">
+                        <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
+                            style={{ backgroundColor: isDailyCompleted ? 'rgba(5,150,105,0.1)' : 'rgba(230,168,23,0.12)' }}>
+                            {isDailyCompleted ? (
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--color-success)" strokeWidth="2.5">
+                                    <polyline points="20 6 9 17 4 12" />
+                                </svg>
+                            ) : (
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#B8860B" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+                                    <line x1="16" y1="2" x2="16" y2="6" />
+                                    <line x1="8" y1="2" x2="8" y2="6" />
+                                    <line x1="3" y1="10" x2="21" y2="10" />
+                                </svg>
+                            )}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2 mb-0.5">
+                                <h3 className="text-sm font-bold" style={{ fontFamily: 'var(--font-serif)' }}>
+                                    This Day in History
+                                </h3>
+                                {!isDailyCompleted && (
+                                    <span className="daily-quiz-bonus-pill-sm">2\u00d7 XP</span>
+                                )}
+                            </div>
+                            {isDailyCompleted ? (
+                                <p className="text-xs" style={{ color: 'var(--color-success)' }}>
+                                    Completed \u00b7 +{state.dailyQuiz?.lastXPEarned || 0} XP
+                                </p>
+                            ) : (
+                                <>
+                                    <p className="text-xs" style={{ color: 'var(--color-ink-muted)' }}>
+                                        {dailyData.dateLabel} \u2014 {dailyData.events.map(e => e.title).join(' \u00b7 ')}
+                                    </p>
+                                </>
+                            )}
+                        </div>
+                        {!isDailyCompleted && (
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#B8860B" strokeWidth="2" className="flex-shrink-0 mt-1">
+                                <polyline points="9 18 15 12 9 6" />
+                            </svg>
+                        )}
+                    </div>
+                </Card>
+            )}
+
+            {/* Placement quiz banner */}
+            {showPlacementBanner && (
+                <Card className="mb-4 p-4 animate-fade-in" style={{ borderLeft: '3px solid var(--color-burgundy)' }}>
+                    <div className="flex items-center gap-3">
+                        <span className="text-2xl">🎓</span>
+                        <div className="flex-1 min-w-0">
+                            <h3 className="text-sm font-bold" style={{ fontFamily: 'var(--font-serif)' }}>Placement Quizzes</h3>
+                            <p className="text-xs mt-0.5" style={{ color: 'var(--color-ink-muted)' }}>
+                                Skip ahead by testing your knowledge
+                            </p>
+                        </div>
+                        <Button onClick={() => setShowPlacement(true)} style={{ fontSize: '12px', padding: '6px 12px' }}>
+                            Take Quiz
+                        </Button>
+                    </div>
+                </Card>
+            )}
+
+            {/* Onboarding guide overlay for lesson 0 */}
+            {isOnboardingGuide && (
+                <div className="mb-4 animate-fade-in">
+                    <Card className="p-4" style={{ backgroundColor: 'rgba(139, 65, 87, 0.06)', border: '1px dashed var(--color-burgundy)' }}>
+                        <div className="flex items-center gap-3">
+                            <span className="text-xl">👇</span>
+                            <div className="flex-1">
+                                <p className="text-sm font-semibold" style={{ color: 'var(--color-burgundy)' }}>
+                                    Tap the Prologue below to start!
+                                </p>
+                                <p className="text-xs mt-0.5" style={{ color: 'var(--color-ink-muted)' }}>
+                                    It's a quick overview of the 5 eras of history.
+                                </p>
+                            </div>
+                        </div>
+                    </Card>
+                </div>
+            )}
+
             <div className="space-y-3">
                 {LESSONS.map((lesson, index) => {
                     const isUnlocked = index === 0 || state.completedLessons[LESSONS[index - 1].id];
@@ -54,12 +194,16 @@ export default function LearnPage({ onSessionChange, registerBackHandler }) {
                     const events = isLesson0 ? [] : getEventsByIds(lesson.eventIds);
                     const seenCount = isLesson0 ? 0 : lesson.eventIds.filter(id => state.seenEvents.includes(id)).length;
                     const masteryData = isLesson0 ? [] : lesson.eventIds.map(id => state.eventMastery[id]).filter(Boolean);
+                    const isSkipped = !isLesson0 && lesson.eventIds.every(id => (state.skippedEvents || []).includes(id));
+
+                    // Pulse lesson 0 during onboarding guide
+                    const pulseLesson0 = isOnboardingGuide && isLesson0;
 
                     return (
                         <Card
                             key={lesson.id}
                             onClick={isUnlocked ? () => setActiveLessonId(lesson.id) : undefined}
-                            className={`lesson-card-row animate-fade-in-up ${!isUnlocked ? 'opacity-50' : ''}`}
+                            className={`lesson-card-row animate-fade-in-up ${!isUnlocked ? 'opacity-50' : ''} ${pulseLesson0 ? 'onboarding-pulse' : ''}`}
                             style={{
                                 animationDelay: `${index * 60}ms`,
                                 animationFillMode: 'backwards',
@@ -120,6 +264,12 @@ export default function LearnPage({ onSessionChange, registerBackHandler }) {
                                         <span className="text-[11px] font-medium uppercase tracking-wider" style={{ color: 'var(--color-ink-faint)' }}>
                                             {isLesson0 ? 'Prologue' : `Lesson ${lesson.number}`}
                                         </span>
+                                        {isSkipped && (
+                                            <span className="text-[9px] font-bold uppercase px-1.5 py-0.5 rounded"
+                                                style={{ backgroundColor: 'rgba(139, 65, 87, 0.08)', color: 'var(--color-burgundy)' }}>
+                                                Placed
+                                            </span>
+                                        )}
                                         {masteryData.length > 0 && (
                                             <div className="flex gap-0.5">
                                                 {lesson.eventIds.slice(0, 7).map(id => {

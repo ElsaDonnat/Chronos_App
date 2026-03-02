@@ -4,4 +4,6 @@
     <string name="title_activity_main">Chronos</string>
     <string name="package_name">com.chronos.app</string>
     <string name="custom_url_scheme">com.chronos.app</string>
+    <string name="streak_widget_description">Shows your current learning streak</string>
+    <string name="practice_widget_description">Quick access to practice sessions</string>
 </resources>

@@ -37,9 +37,9 @@ export JAVA_HOME="/c/Program Files/Android/Android Studio/jbr"
 
 Single React Context + `useReducer` in `src/context/AppContext.jsx`. The `useApp()` hook provides `{ state, dispatch }`.
 
-Key state shape: `completedLessons` (lesson completion counts), `eventMastery` (per-event scores across 4 dimensions: location/date/what/description), `seenEvents`, `starredEvents`, `totalXP`, `currentStreak`.
+Key state shape: `completedLessons` (lesson completion counts), `eventMastery` (per-event scores across 4 dimensions: location/date/what/description), `seenEvents`, `starredEvents`, `totalXP`, `currentStreak`, `dailyQuiz` (last completed date/XP/count), `achievements` (unlocked timestamps), `newAchievements` (pending toasts), `totalStudyTime` (cumulative seconds), `studySessions` (last 50 sessions).
 
-Key actions: `COMPLETE_LESSON`, `UPDATE_EVENT_MASTERY`, `ADD_XP`, `MARK_EVENTS_SEEN`, `TOGGLE_STAR`, `UPDATE_STREAK`, `RESET_PROGRESS`.
+Key actions: `COMPLETE_LESSON`, `UPDATE_EVENT_MASTERY`, `ADD_XP`, `MARK_EVENTS_SEEN`, `TOGGLE_STAR`, `UPDATE_STREAK`, `RESET_PROGRESS`, `COMPLETE_DAILY_QUIZ`, `UNLOCK_ACHIEVEMENT`, `DISMISS_ACHIEVEMENT_TOAST`, `RECORD_STUDY_SESSION`.
 
 ### Routing
 
@@ -50,10 +50,12 @@ No router — `App.jsx` uses `activeTab` state (`'learn'` | `'timeline'` | `'pra
 - **`events.js`** — `ALL_EVENTS`: 60 historical events, each with `id`, `title`, `year`, `yearEnd` (for ranges), `location`, `category`, `difficulty` (1-3)
 - **`lessons.js`** — `LESSONS`: 21 lessons (0-20). Lesson 0 is special (era overview, no events). Lessons 1-20 each have exactly 3 `eventIds`
 - **`quiz.js`** — Quiz generation and scoring. Date scoring uses era-aware tolerances (prehistoric ±500K years vs modern ±10 years). XP calculated from difficulty × score
+- **`dailyQuiz.js`** — 10 days of daily quiz content (30 real historical events). Cycling: `dayIndex = daysSinceEpoch % 10`. Each day has 3 events with learn-then-quiz flow
+- **`achievements.js`** — 15 achievements across 7 categories + `useAchievementChecker()` hook that runs on state changes
 
 ### Lesson Flow (`src/components/learn/LessonFlow.jsx`)
 
-8-phase flow: INTRO → PERIOD_INTRO → (LEARN_CARD → LEARN_QUIZ) × 3 events → RECAP_TRANSITION → RECAP (6 questions) → FINAL_REVIEW → SUMMARY. Each lesson produces 12 total questions.
+8-phase flow: INTRO → PERIOD_INTRO → (LEARN_CARD → LEARN_QUIZ) × 3 events → RECAP_TRANSITION → RECAP (6 questions) → FINAL_REVIEW → SUMMARY. Each lesson produces 12 total questions. All flows (lessons, practice, daily quiz) auto-track duration via `useRef` timer and dispatch `RECORD_STUDY_SESSION` on completion.
 
 ### Mastery System
 
@@ -78,6 +80,30 @@ Reusable UI primitives (Button, Card, MasteryDots, CategoryTag, ProgressRing) ar
 **New event:** Add to `ALL_EVENTS` in `src/data/events.js` with id format `'fXX'`, must include year, location, category, difficulty.
 
 **New lesson:** Add to `LESSONS` in `src/data/lessons.js` with exactly 3 eventIds for regular lessons.
+
+### Android Widgets
+
+Two home screen widgets (Streak + Quick Practice) use the `capacitor-widget-bridge` plugin (v8.0.0) to bridge data from the web layer to native Android `SharedPreferences`.
+
+**Data flow:** React state change → `syncWidgetData()` in `src/services/widgetBridge.js` writes `currentStreak` and `totalXP` to SharedPreferences (group `"group.com.chronos.app.widgets"`) → calls `reloadAllTimelines()` → native `AppWidgetProvider.onUpdate()` reads SharedPreferences and updates the widget UI via `RemoteViews`.
+
+**Key files:**
+- `src/services/widgetBridge.js` — JS bridge (`initWidgets()`, `syncWidgetData()`)
+- `android/.../com/chronos/app/StreakWidget.java` — Streak widget provider
+- `android/.../com/chronos/app/QuickPracticeWidget.java` — Quick Practice widget provider
+- `android/.../res/layout/widget_streak.xml`, `widget_quick_practice.xml` — Widget layouts
+- `android/.../res/xml/streak_widget_info.xml`, `quick_practice_widget_info.xml` — Widget metadata
+- `android/.../res/drawable/widget_background.xml` — Shared rounded parchment background
+- `MainActivity.java` — Handles `openTab` intent extra for Quick Practice deep-link
+
+**Adding a new data field to widgets:**
+1. Add `WidgetBridgePlugin.setItem()` call in `syncWidgetData()` (`src/services/widgetBridge.js`)
+2. Read from `SharedPreferences` in the Java widget provider's `updateWidget()` method
+3. Add a `TextView` (or similar) in the widget layout XML and set it via `RemoteViews.setTextViewText()`
+
+**SharedPreferences group name:** `"group.com.chronos.app.widgets"` — must match exactly between JS and Java.
+
+**Widget UI limitations:** Widgets use `RemoteViews`, which supports only a limited set of views (`LinearLayout`, `TextView`, `ImageView`, etc.). No custom fonts, no complex animations, no WebView.
 
 ## Gotchas
 

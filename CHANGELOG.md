@@ -5,6 +5,20 @@ Format follows [Keep a Changelog](https://keepachangelog.com/) and [Semantic Ver
 
 Use the latest version entry for Play Store "What's New" text.
 
+## [1.3.0] - 2026-03-02
+
+### Added
+- Daily Quick Quiz ("This Day in History") — a daily 3-event quiz with learn-then-test flow, cycling through 10 days of real historical content (30 events total). Gold/amber card on Learn page with 2x XP badge, turns green when completed. Max 60 XP/day
+- Achievements & Badges — 15 achievements across 7 categories (Learning, Streaks, XP, Discovery, Collection, Mastery, Daily) with trophy button in TopBar, toast notifications on unlock, and progress bars on locked achievements
+- Study timer & session stats — automatic timing for lessons, practice sessions, and daily quizzes. Duration shown on summary/results screens. Total study time and session count displayed in Settings
+- Home screen widgets — two Android widgets users can add to their home screen:
+  - **Streak Widget** (2x2): shows flame icon and current streak count
+  - **Quick Practice Widget** (3x2): shows "Quick Practice" button with streak/XP stats, tapping opens directly to Practice tab
+- Widget data bridge via `capacitor-widget-bridge` plugin — syncs `currentStreak` and `totalXP` from app state to native Android SharedPreferences on every state change
+- Deep-link handling from Quick Practice widget — tapping opens the app directly to the Practice tab via intent extras
+
+---
+
 ## [1.2.0] - 2026-02-27
 
 ### Added

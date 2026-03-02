@@ -52,6 +52,12 @@ export default function Settings() {
     const totalEvents = ALL_EVENTS.length;
     const completedLessons = Object.keys(state.completedLessons).length;
 
+    // Format total study time
+    const totalSeconds = state.totalStudyTime || 0;
+    const hours = Math.floor(totalSeconds / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const studyTimeStr = hours > 0 ? `${hours}h ${minutes}m` : `${minutes}m`;
+
     // Reschedule notifications when settings change
     useEffect(() => {
         if (state.notificationsEnabled) {
@@ -182,6 +188,20 @@ export default function Settings() {
                         <div className="text-xs mt-1" style={{ color: 'var(--color-ink-muted)' }}>Lessons Complete</div>
                     </Card>
                 </div>
+
+                {totalSeconds > 0 && (
+                    <Card className="flex items-center gap-3 mb-4 p-4">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--color-burgundy)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="flex-shrink-0">
+                            <circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" />
+                        </svg>
+                        <div className="flex-1 min-w-0">
+                            <div className="text-sm font-semibold" style={{ color: 'var(--color-ink)' }}>{studyTimeStr} spent learning</div>
+                            <div className="text-xs" style={{ color: 'var(--color-ink-muted)' }}>
+                                {(state.studySessions || []).length} study sessions
+                            </div>
+                        </div>
+                    </Card>
+                )}
 
                 {masteryEntries.length > 0 && (
                     <Card className="mb-4 p-4">

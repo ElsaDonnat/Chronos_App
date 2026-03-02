@@ -1,26 +1,16 @@
-import { createContext, useContext, useReducer, useEffect } from 'react';
+import { createContext, useContext, useReducer, useEffect, useRef } from 'react';
+import { getEraQuizGroup } from '../data/lessons';
+import { calculateInitialInterval } from '../data/spacedRepetition';
+import { initWidgets, syncWidgetData } from '../services/widgetBridge';
 
 const AppContext = createContext(null);
 
 const STORAGE_KEY = 'chronos-state-v1';
 
-function getInitialState() {
-    try {
-        const saved = localStorage.getItem(STORAGE_KEY);
-        if (saved) {
-            const parsed = JSON.parse(saved);
-            return { ...defaultState, ...parsed, settingsOpen: false };
-        }
-    } catch (e) {
-        console.error('Failed to load state:', e);
-    }
-    return defaultState;
-}
-
 const defaultState = {
-    // Lesson completion: { [lessonId]: boolean }
+    // Lesson completion: { [lessonId]: number }
     completedLessons: {},
-    // Event mastery: { [eventId]: { locationScore, dateScore, whatScore, timesReviewed, lastSeen, overallMastery } }
+    // Event mastery: { [eventId]: { locationScore, dateScore, whatScore, descriptionScore, timesReviewed, lastSeen, overallMastery } }
     eventMastery: {},
     // Set of event IDs the user has seen the learn card for
     seenEvents: [],
@@ -44,7 +34,92 @@ const defaultState = {
     // cardsPerLesson: undefined (not set here — LessonFlow falls back to 3)
     // Whether the favorites tip has been shown
     hasSeenFavoriteTip: false,
+
+    // ─── Daily Quiz ───
+    dailyQuiz: {
+        lastCompletedDate: null,  // ISO date string 'YYYY-MM-DD'
+        lastXPEarned: 0,
+        totalCompleted: 0,
+    },
+
+    // ─── Achievements ───
+    achievements: {},       // { [achievementId]: ISO timestamp }
+    newAchievements: [],    // IDs unlocked this session (for toast)
+
+    // ─── Onboarding ───
+    // 'welcome' | 'guide_lesson0' | 'post_lesson0' | 'placement_offer' | 'placement_active' | 'complete' | null
+    onboardingStep: 'welcome',
+
+    // ─── Placement Quizzes ───
+    // { [eraId]: { passed, score, maxScore, completedAt } }
+    placementQuizzes: {},
+
+    // ─── Skipped Events (from placement) ───
+    skippedEvents: [],
+
+    // ─── Spaced Repetition Schedule ───
+    // { [eventId]: { interval, ease, nextReview, reviewCount, lastReviewScore } }
+    srSchedule: {},
+
+    // ─── Study Timer ───
+    totalStudyTime: 0,       // cumulative seconds
+    studySessions: [],       // [{ date, duration, type, questionsAnswered }] — last 50
 };
+
+function migrateState(parsed) {
+    const merged = { ...defaultState, ...parsed, settingsOpen: false };
+
+    // Migration: existing users skip onboarding
+    if (parsed.onboardingStep === undefined) {
+        const hasProgress = Object.keys(parsed.completedLessons || {}).length > 0
+            || (parsed.seenEvents || []).length > 0;
+        merged.onboardingStep = hasProgress ? 'complete' : 'welcome';
+    }
+
+    // Migration: ensure srSchedule exists for all seen events
+    if (!parsed.srSchedule) {
+        merged.srSchedule = {};
+        const today = getTodayDate();
+        (merged.seenEvents || []).forEach(id => {
+            const mastery = merged.eventMastery[id];
+            merged.srSchedule[id] = {
+                interval: mastery ? calculateInitialInterval(mastery) : 0,
+                ease: 2.5,
+                nextReview: today,
+                reviewCount: 0,
+                lastReviewScore: null,
+            };
+        });
+    }
+
+    // Migration: ensure new arrays/objects
+    if (!parsed.skippedEvents) merged.skippedEvents = [];
+    if (!parsed.placementQuizzes) merged.placementQuizzes = {};
+
+    // Migration: daily quiz + achievements
+    if (!parsed.dailyQuiz) merged.dailyQuiz = { lastCompletedDate: null, lastXPEarned: 0, totalCompleted: 0 };
+    if (!parsed.achievements) merged.achievements = {};
+    if (!parsed.newAchievements) merged.newAchievements = [];
+
+    // Migration: study timer
+    if (parsed.totalStudyTime === undefined) merged.totalStudyTime = 0;
+    if (!parsed.studySessions) merged.studySessions = [];
+
+    return merged;
+}
+
+function getInitialState() {
+    try {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (saved) {
+            const parsed = JSON.parse(saved);
+            return migrateState(parsed);
+        }
+    } catch (e) {
+        console.error('Failed to load state:', e);
+    }
+    return defaultState;
+}
 
 function calculateOverallMastery(mastery) {
     const scoreMap = { green: 3, yellow: 1, red: 0 };
@@ -74,7 +149,21 @@ function reducer(state, action) {
 
         case 'MARK_EVENTS_SEEN': {
             const newSeen = [...new Set([...state.seenEvents, ...action.eventIds])];
-            return { ...state, seenEvents: newSeen };
+            // Also initialize SR entries for newly seen events
+            const newSr = { ...state.srSchedule };
+            const today = getTodayDate();
+            action.eventIds.forEach(id => {
+                if (!newSr[id]) {
+                    newSr[id] = {
+                        interval: 0,
+                        ease: 2.5,
+                        nextReview: today,
+                        reviewCount: 0,
+                        lastReviewScore: null,
+                    };
+                }
+            });
+            return { ...state, seenEvents: newSeen, srSchedule: newSr };
         }
 
         case 'UPDATE_EVENT_MASTERY': {
@@ -168,7 +257,7 @@ function reducer(state, action) {
         }
 
         case 'IMPORT_STATE': {
-            return { ...defaultState, ...action.payload, settingsOpen: false };
+            return migrateState(action.payload);
         }
 
         case 'DISMISS_RATING_PROMPT': {
@@ -213,8 +302,133 @@ function reducer(state, action) {
             return { ...state, hasSeenFavoriteTip: true };
         }
 
+        // ─── Onboarding ───
+        case 'SET_ONBOARDING_STEP': {
+            return { ...state, onboardingStep: action.step };
+        }
+
+        // ─── Placement Quiz ───
+        case 'COMPLETE_PLACEMENT_QUIZ': {
+            const result = {
+                passed: action.passed,
+                score: action.score,
+                maxScore: action.maxScore,
+                completedAt: new Date().toISOString(),
+            };
+            const newQuizzes = { ...state.placementQuizzes, [action.eraId]: result };
+
+            if (!action.passed) {
+                return { ...state, placementQuizzes: newQuizzes };
+            }
+
+            // Passed: mark all lessons in era as completed, events as seen + skipped
+            const group = getEraQuizGroup(action.eraId);
+            const newCompleted = { ...state.completedLessons };
+            group.lessonIds.forEach(lid => {
+                if (!newCompleted[lid]) newCompleted[lid] = 1;
+            });
+            const newSeen = [...new Set([...state.seenEvents, ...group.eventIds])];
+            const newSkipped = [...new Set([...state.skippedEvents, ...group.eventIds])];
+
+            // Init SR entries for newly seen events
+            const newSr = { ...state.srSchedule };
+            const today = getTodayDate();
+            group.eventIds.forEach(id => {
+                if (!newSr[id]) {
+                    newSr[id] = {
+                        interval: 1,
+                        ease: 2.5,
+                        nextReview: today,
+                        reviewCount: 0,
+                        lastReviewScore: null,
+                    };
+                }
+            });
+
+            return {
+                ...state,
+                placementQuizzes: newQuizzes,
+                completedLessons: newCompleted,
+                seenEvents: newSeen,
+                skippedEvents: newSkipped,
+                srSchedule: newSr,
+            };
+        }
+
+        // ─── Spaced Repetition ───
+        case 'UPDATE_SR_SCHEDULE': {
+            return {
+                ...state,
+                srSchedule: {
+                    ...state.srSchedule,
+                    [action.eventId]: {
+                        interval: action.interval,
+                        ease: action.ease,
+                        nextReview: action.nextReview,
+                        reviewCount: action.reviewCount,
+                        lastReviewScore: action.lastReviewScore,
+                    },
+                },
+            };
+        }
+
+        // ─── Remove skipped tag once verified in practice ───
+        case 'REMOVE_SKIPPED_EVENT': {
+            return {
+                ...state,
+                skippedEvents: state.skippedEvents.filter(id => id !== action.eventId),
+            };
+        }
+
+        // ─── Study Timer ───
+        case 'RECORD_STUDY_SESSION': {
+            const session = {
+                date: new Date().toISOString(),
+                duration: action.duration,       // seconds
+                type: action.sessionType,        // 'lesson' | 'practice' | 'daily_quiz'
+                questionsAnswered: action.questionsAnswered || 0,
+            };
+            const sessions = [...state.studySessions, session].slice(-50); // keep last 50
+            return {
+                ...state,
+                totalStudyTime: state.totalStudyTime + action.duration,
+                studySessions: sessions,
+            };
+        }
+
+        // ─── Daily Quiz ───
+        case 'COMPLETE_DAILY_QUIZ': {
+            return {
+                ...state,
+                dailyQuiz: {
+                    lastCompletedDate: getTodayDate(),
+                    lastXPEarned: action.xpEarned,
+                    totalCompleted: (state.dailyQuiz?.totalCompleted || 0) + 1,
+                },
+            };
+        }
+
+        // ─── Achievements ───
+        case 'UNLOCK_ACHIEVEMENT': {
+            if (state.achievements[action.achievementId]) return state;
+            return {
+                ...state,
+                achievements: {
+                    ...state.achievements,
+                    [action.achievementId]: new Date().toISOString(),
+                },
+                newAchievements: [...(state.newAchievements || []), action.achievementId],
+            };
+        }
+
+        case 'DISMISS_ACHIEVEMENT_TOAST': {
+            return { ...state, newAchievements: [] };
+        }
+
         case 'RESET_PROGRESS': {
-            return { ...defaultState };
+            // After reset, don't re-show onboarding — user already knows the app
+            // Preserve total study time — it represents real effort
+            return { ...defaultState, onboardingStep: 'complete', totalStudyTime: state.totalStudyTime, studySessions: state.studySessions };
         }
 
         default:
@@ -225,18 +439,24 @@ function reducer(state, action) {
 export function AppProvider({ children }) {
     const [state, dispatch] = useReducer(reducer, null, getInitialState);
 
-    // Persist to localStorage
+    // Persist to localStorage + sync widgets
+    const widgetsInitialized = useRef(false);
     useEffect(() => {
         try {
             localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
         } catch (e) {
             console.error('Failed to save state:', e);
         }
+        syncWidgetData(state);
     }, [state]);
 
-    // Check streak on mount
+    // Check streak on mount + init widgets
     useEffect(() => {
         dispatch({ type: 'UPDATE_STREAK' });
+        if (!widgetsInitialized.current) {
+            widgetsInitialized.current = true;
+            initWidgets();
+        }
     }, []);
 
     return (

@@ -174,3 +174,61 @@ export const LESSONS = [
         eventIds: ["f58", "f59", "f60"]
     }
 ];
+
+// ─── Era-based quiz groups for placement quizzes ───
+export const ERA_QUIZ_GROUPS = [
+    {
+        id: 'prehistory',
+        label: 'Prehistory',
+        lessonIds: ['lesson-1', 'lesson-2', 'lesson-3'],
+        get eventIds() {
+            return this.lessonIds.flatMap(lid => LESSONS.find(l => l.id === lid)?.eventIds || []);
+        },
+        questionCount: 9,
+        passThreshold: 9, // ceil(0.9 * 9)
+    },
+    {
+        id: 'ancient',
+        label: 'The Ancient World',
+        lessonIds: ['lesson-4', 'lesson-5', 'lesson-6', 'lesson-7', 'lesson-8'],
+        get eventIds() {
+            return this.lessonIds.flatMap(lid => LESSONS.find(l => l.id === lid)?.eventIds || []);
+        },
+        questionCount: 10,
+        passThreshold: 9,
+    },
+    {
+        id: 'medieval',
+        label: 'The Medieval World',
+        lessonIds: ['lesson-9', 'lesson-10', 'lesson-11', 'lesson-12'],
+        get eventIds() {
+            return this.lessonIds.flatMap(lid => LESSONS.find(l => l.id === lid)?.eventIds || []);
+        },
+        questionCount: 10,
+        passThreshold: 9,
+    },
+    {
+        id: 'earlymodern',
+        label: 'The Early Modern Period',
+        lessonIds: ['lesson-13', 'lesson-14', 'lesson-15'],
+        get eventIds() {
+            return this.lessonIds.flatMap(lid => LESSONS.find(l => l.id === lid)?.eventIds || []);
+        },
+        questionCount: 9,
+        passThreshold: 9,
+    },
+    {
+        id: 'modern',
+        label: 'The Modern World',
+        lessonIds: ['lesson-16', 'lesson-17', 'lesson-18', 'lesson-19', 'lesson-20'],
+        get eventIds() {
+            return this.lessonIds.flatMap(lid => LESSONS.find(l => l.id === lid)?.eventIds || []);
+        },
+        questionCount: 10,
+        passThreshold: 9,
+    },
+];
+
+export function getEraQuizGroup(eraId) {
+    return ERA_QUIZ_GROUPS.find(g => g.id === eraId);
+}

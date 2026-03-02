@@ -1,8 +1,9 @@
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, useRef } from 'react';
 import { useApp } from '../context/AppContext';
 import { ALL_EVENTS, getEventById, CATEGORY_CONFIG } from '../data/events';
 import { LESSONS } from '../data/lessons';
 import { scoreDateAnswer, generateLocationOptions, generateWhatOptions, generateDescriptionOptions, SCORE_COLORS, getScoreColor, getScoreLabel, shuffle } from '../data/quiz';
+import { calculateNextReview, getDueEvents, getCardStatus } from '../data/spacedRepetition';
 import { Card, Button, MasteryDots, ProgressBar, Divider, CategoryTag, StarButton, TabSelector, ConfirmModal, ExpandableText, ControversyNote } from '../components/shared';
 import Mascot from '../components/Mascot';
 
@@ -27,6 +28,9 @@ export default function PracticePage({ onSessionChange, registerBackHandler }) {
     const [collectionSort, setCollectionSort] = useState('success'); // success | times
     const [expandedEventId, setExpandedEventId] = useState(null);
     const [showExitConfirm, setShowExitConfirm] = useState(false);
+    const sessionStartTime = useRef(null);
+    const sessionRecorded = useRef(false);
+    const [sessionDuration, setSessionDuration] = useState(0);
 
     useEffect(() => {
         onSessionChange?.(view === VIEW.SESSION || view === VIEW.RESULTS);
@@ -60,16 +64,24 @@ export default function PracticePage({ onSessionChange, registerBackHandler }) {
             const overall = mastery?.overallMastery ?? 0;
             const timesReviewed = mastery?.timesReviewed ?? 0;
             const successRate = timesReviewed > 0 ? Math.round((overall / 12) * 100) : 0;
-            return { event: e, mastery, overall, timesReviewed, successRate };
+            const cardStatus = getCardStatus(e.id, state.eventMastery, state.srSchedule || {}, state.skippedEvents || []);
+            return { event: e, mastery, overall, timesReviewed, successRate, cardStatus };
         });
-    }, [learnedEvents, state.eventMastery]);
+    }, [learnedEvents, state.eventMastery, state.srSchedule, state.skippedEvents]);
 
-    const tiers = useMemo(() => {
-        const struggling = eventStats.filter(s => s.overall <= 3);
-        const learning = eventStats.filter(s => s.overall > 3 && s.overall < 7);
-        const mastered = eventStats.filter(s => s.overall >= 7);
-        return { struggling, learning, mastered };
+    // 4-status card tiers (replaces old 3-tier system)
+    const statusTiers = useMemo(() => {
+        const newCards = eventStats.filter(s => s.cardStatus === 'new');
+        const learning = eventStats.filter(s => s.cardStatus === 'learning');
+        const known = eventStats.filter(s => s.cardStatus === 'known');
+        const assimilated = eventStats.filter(s => s.cardStatus === 'fully_assimilated');
+        return { new: newCards, learning, known, fully_assimilated: assimilated };
     }, [eventStats]);
+
+    // Spaced repetition: events due for review
+    const dueEvents = useMemo(() => {
+        return getDueEvents(state.srSchedule || {}, state.seenEvents || []);
+    }, [state.srSchedule, state.seenEvents]);
 
     const weakEvents = useMemo(() => {
         return [...eventStats].sort((a, b) => a.overall - b.overall);
@@ -125,14 +137,22 @@ export default function PracticePage({ onSessionChange, registerBackHandler }) {
         setCurrentIndex(0);
         setResults([]);
         setSessionMode(mode);
+        sessionStartTime.current = Date.now();
+        sessionRecorded.current = false;
         setView(VIEW.SESSION);
     };
 
-    const startSmartReview = () => {
-        const pool = weakEvents
-            .filter(w => w.overall < 7)
-            .map(w => w.event);
-        startSession('Smart Review', pool.length > 0 ? pool : learnedEvents);
+    const startSpacedReview = () => {
+        // Prioritize due events, then weak events as fallback
+        const dueIds = dueEvents.slice(0, 15).map(d => d.eventId);
+        const duePool = dueIds.map(id => getEventById(id)).filter(Boolean);
+        if (duePool.length > 0) {
+            startSession('Spaced Review', duePool);
+        } else {
+            // No events due — fall back to weak events
+            const pool = weakEvents.filter(w => w.overall < 7).map(w => w.event);
+            startSession('Spaced Review', pool.length > 0 ? pool : learnedEvents);
+        }
     };
 
     const startFavorites = () => {
@@ -180,6 +200,13 @@ export default function PracticePage({ onSessionChange, registerBackHandler }) {
                     return s + (r.score === 'green' ? 5 * diff : r.score === 'yellow' ? 2 * diff : 0);
                 }, 0);
                 if (xp > 0) dispatch({ type: 'ADD_XP', amount: xp });
+                // Record study session
+                if (!sessionRecorded.current && sessionStartTime.current) {
+                    sessionRecorded.current = true;
+                    const duration = Math.round((Date.now() - sessionStartTime.current) / 1000);
+                    setSessionDuration(duration);
+                    dispatch({ type: 'RECORD_STUDY_SESSION', duration, sessionType: 'practice', questionsAnswered: results.length });
+                }
                 setView(VIEW.RESULTS);
             } else {
                 setCurrentIndex(i => i + 1);
@@ -231,6 +258,14 @@ export default function PracticePage({ onSessionChange, registerBackHandler }) {
                                 questionType: q.type,
                                 score,
                             });
+                            // Update spaced repetition schedule
+                            const schedule = state.srSchedule?.[q.event.id] || { interval: 0, ease: 2.5, reviewCount: 0 };
+                            const next = calculateNextReview(schedule, score);
+                            dispatch({ type: 'UPDATE_SR_SCHEDULE', eventId: q.event.id, ...next });
+                            // Remove skipped tag on green answer
+                            if (score === 'green' && (state.skippedEvents || []).includes(q.event.id)) {
+                                dispatch({ type: 'REMOVE_SKIPPED_EVENT', eventId: q.event.id });
+                            }
                         }}
                         onNext={handleSessionNext}
                         onBack={currentIndex > 0 ? () => setCurrentIndex(i => i - 1) : null}
@@ -249,6 +284,9 @@ export default function PracticePage({ onSessionChange, registerBackHandler }) {
         const yellowCount = results.filter(r => r.score === 'yellow').length;
         const redCount = results.filter(r => r.score === 'red').length;
         const perfectSession = redCount === 0 && yellowCount === 0 && results.length > 0;
+        const sessionMin = Math.floor(sessionDuration / 60);
+        const sessionSec = sessionDuration % 60;
+        const sessionTimeStr = sessionMin > 0 ? `${sessionMin}m ${sessionSec}s` : `${sessionSec}s`;
 
         return (
             <div className="lesson-flow-container animate-fade-in">
@@ -260,7 +298,7 @@ export default function PracticePage({ onSessionChange, registerBackHandler }) {
                                 {perfectSession ? '\uD83C\uDFAF Perfect Session!' : 'Practice Complete'}
                             </h2>
                             <p className="text-sm mb-1" style={{ color: 'var(--color-ink-muted)' }}>
-                                {sessionMode} \u00B7 {results.length} questions
+                                {sessionMode} · {results.length} questions · {sessionTimeStr}
                             </p>
                         </div>
 
@@ -344,7 +382,7 @@ export default function PracticePage({ onSessionChange, registerBackHandler }) {
                     <Button variant="secondary" onClick={() => { setView(VIEW.HUB); setPracticeTab('hub'); }}>
                         Done
                     </Button>
-                    <Button className="flex-1" onClick={() => startSmartReview()}>
+                    <Button className="flex-1" onClick={() => startSpacedReview()}>
                         Practice Again
                     </Button>
                 </div>
@@ -478,16 +516,17 @@ export default function PracticePage({ onSessionChange, registerBackHandler }) {
                 <HubView
                     starredEvents={starredEvents}
                     weakEvents={weakEvents}
-                    tiers={tiers}
+                    statusTiers={statusTiers}
+                    dueCount={dueEvents.length}
                     state={state}
                     dispatch={dispatch}
-                    onStartSmartReview={startSmartReview}
+                    onStartSpacedReview={startSpacedReview}
                     onStartFavorites={startFavorites}
                     onOpenLessonPicker={() => setView(VIEW.LESSON_PICKER)}
                 />
             ) : (
                 <CollectionView
-                    tiers={tiers}
+                    statusTiers={statusTiers}
                     collectionSort={collectionSort}
                     setCollectionSort={setCollectionSort}
                     expandedEventId={expandedEventId}
@@ -504,28 +543,33 @@ export default function PracticePage({ onSessionChange, registerBackHandler }) {
 // ═══════════════════════════════════════════════════════
 // HUB VIEW — Practice mode cards
 // ═══════════════════════════════════════════════════════
-function HubView({ starredEvents, weakEvents, tiers, state, dispatch, onStartSmartReview, onStartFavorites, onOpenLessonPicker }) {
-    const needsWork = tiers.struggling.length + tiers.learning.length;
-
+function HubView({ starredEvents, weakEvents, statusTiers, dueCount, state, dispatch, onStartSpacedReview, onStartFavorites, onOpenLessonPicker }) {
     return (
         <div className="space-y-3">
-            {/* Smart Review */}
-            <Card onClick={onStartSmartReview} className="lesson-card-row p-4">
+            {/* Spaced Review */}
+            <Card onClick={onStartSpacedReview} className="lesson-card-row p-4">
                 <div className="flex items-start gap-3">
                     <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
                         style={{ backgroundColor: 'rgba(139, 65, 87, 0.1)' }}>
                         <span className="text-lg">🧠</span>
                     </div>
                     <div className="flex-1 min-w-0">
-                        <h3 className="text-sm font-bold" style={{ fontFamily: 'var(--font-serif)' }}>Smart Review</h3>
+                        <h3 className="text-sm font-bold" style={{ fontFamily: 'var(--font-serif)' }}>Spaced Review</h3>
                         <p className="text-xs mt-0.5" style={{ color: 'var(--color-ink-muted)' }}>
-                            Targets your weakest areas first
+                            Reviews cards at optimal intervals
                         </p>
-                        {needsWork > 0 && (
+                        {dueCount > 0 ? (
                             <div className="flex items-center gap-1.5 mt-2">
-                                <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: 'var(--color-error)' }} />
-                                <span className="text-[10px] font-semibold" style={{ color: 'var(--color-error)' }}>
-                                    {needsWork} event{needsWork !== 1 ? 's' : ''} need{needsWork === 1 ? 's' : ''} work
+                                <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: 'var(--color-burgundy)' }} />
+                                <span className="text-[10px] font-semibold" style={{ color: 'var(--color-burgundy)' }}>
+                                    {dueCount} card{dueCount !== 1 ? 's' : ''} due for review
+                                </span>
+                            </div>
+                        ) : (
+                            <div className="flex items-center gap-1.5 mt-2">
+                                <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: 'var(--color-success)' }} />
+                                <span className="text-[10px] font-semibold" style={{ color: 'var(--color-success)' }}>
+                                    All caught up!
                                 </span>
                             </div>
                         )}
@@ -545,13 +589,13 @@ function HubView({ starredEvents, weakEvents, tiers, state, dispatch, onStartSma
                 <div className="flex items-start gap-3">
                     <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
                         style={{ backgroundColor: 'rgba(230, 168, 23, 0.1)' }}>
-                        <span className="text-lg">⭐</span>
+                        <span className="text-lg">{'\u2B50'}</span>
                     </div>
                     <div className="flex-1 min-w-0">
                         <h3 className="text-sm font-bold" style={{ fontFamily: 'var(--font-serif)' }}>Favorites</h3>
                         <p className="text-xs mt-0.5" style={{ color: 'var(--color-ink-muted)' }}>
                             {starredEvents.length > 0
-                                ? `${starredEvents.length} starred event${starredEvents.length !== 1 ? 's' : ''} · shuffled`
+                                ? `${starredEvents.length} starred event${starredEvents.length !== 1 ? 's' : ''} \u00B7 shuffled`
                                 : 'Star events during lessons to add them here'
                             }
                         </p>
@@ -569,7 +613,7 @@ function HubView({ starredEvents, weakEvents, tiers, state, dispatch, onStartSma
                 <div className="flex items-start gap-3">
                     <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
                         style={{ backgroundColor: 'rgba(101, 119, 74, 0.1)' }}>
-                        <span className="text-lg">📖</span>
+                        <span className="text-lg">{'\uD83D\uDCD6'}</span>
                     </div>
                     <div className="flex-1 min-w-0">
                         <h3 className="text-sm font-bold" style={{ fontFamily: 'var(--font-serif)' }}>By Lesson</h3>
@@ -583,24 +627,28 @@ function HubView({ starredEvents, weakEvents, tiers, state, dispatch, onStartSma
                 </div>
             </Card>
 
-            {/* Stats overview */}
+            {/* Card Status overview */}
             <div className="mt-4">
                 <Divider />
                 <h3 className="text-xs font-semibold uppercase tracking-wider mb-3" style={{ color: 'var(--color-ink-faint)' }}>
-                    Mastery Overview
+                    Card Status
                 </h3>
-                <div className="grid grid-cols-3 gap-3">
-                    <div className="text-center p-3 rounded-xl" style={{ backgroundColor: 'rgba(166, 61, 61, 0.06)' }}>
-                        <div className="text-lg font-bold" style={{ color: 'var(--color-error)' }}>{tiers.struggling.length}</div>
-                        <div className="text-[10px] font-semibold" style={{ color: 'var(--color-error)' }}>Struggling</div>
+                <div className="grid grid-cols-4 gap-2">
+                    <div className="text-center p-2.5 rounded-xl" style={{ backgroundColor: 'rgba(28, 25, 23, 0.04)' }}>
+                        <div className="text-lg font-bold" style={{ color: 'var(--color-ink-muted)' }}>{statusTiers.new.length}</div>
+                        <div className="text-[9px] font-semibold" style={{ color: 'var(--color-ink-muted)' }}>New</div>
                     </div>
-                    <div className="text-center p-3 rounded-xl" style={{ backgroundColor: 'rgba(198, 134, 42, 0.06)' }}>
-                        <div className="text-lg font-bold" style={{ color: 'var(--color-warning)' }}>{tiers.learning.length}</div>
-                        <div className="text-[10px] font-semibold" style={{ color: 'var(--color-warning)' }}>Learning</div>
+                    <div className="text-center p-2.5 rounded-xl" style={{ backgroundColor: 'rgba(166, 61, 61, 0.06)' }}>
+                        <div className="text-lg font-bold" style={{ color: 'var(--color-error)' }}>{statusTiers.learning.length}</div>
+                        <div className="text-[9px] font-semibold" style={{ color: 'var(--color-error)' }}>Learning</div>
                     </div>
-                    <div className="text-center p-3 rounded-xl" style={{ backgroundColor: 'rgba(5, 150, 105, 0.06)' }}>
-                        <div className="text-lg font-bold" style={{ color: 'var(--color-success)' }}>{tiers.mastered.length}</div>
-                        <div className="text-[10px] font-semibold" style={{ color: 'var(--color-success)' }}>Mastered</div>
+                    <div className="text-center p-2.5 rounded-xl" style={{ backgroundColor: 'rgba(198, 134, 42, 0.06)' }}>
+                        <div className="text-lg font-bold" style={{ color: 'var(--color-warning)' }}>{statusTiers.known.length}</div>
+                        <div className="text-[9px] font-semibold" style={{ color: 'var(--color-warning)' }}>Known</div>
+                    </div>
+                    <div className="text-center p-2.5 rounded-xl" style={{ backgroundColor: 'rgba(5, 150, 105, 0.06)' }}>
+                        <div className="text-lg font-bold" style={{ color: 'var(--color-success)' }}>{statusTiers.fully_assimilated.length}</div>
+                        <div className="text-[9px] font-semibold" style={{ color: 'var(--color-success)' }}>Mastered</div>
                     </div>
                 </div>
             </div>
@@ -644,31 +692,43 @@ function HubView({ starredEvents, weakEvents, tiers, state, dispatch, onStartSma
 // ═══════════════════════════════════════════════════════
 // COLLECTION VIEW — Card triage
 // ═══════════════════════════════════════════════════════
-function CollectionView({ tiers, collectionSort, setCollectionSort, expandedEventId, setExpandedEventId, state, dispatch, onStartSession }) {
+function CollectionView({ statusTiers, collectionSort, setCollectionSort, expandedEventId, setExpandedEventId, state, dispatch, onStartSession }) {
     const tierConfig = [
         {
-            key: 'struggling',
-            label: 'Struggling',
-            emoji: '🔴',
-            color: 'var(--color-error)',
-            bg: 'rgba(166, 61, 61, 0.06)',
-            items: tiers.struggling,
+            key: 'new',
+            label: 'New',
+            emoji: '\uD83C\uDD95',
+            color: 'var(--color-ink-muted)',
+            bg: 'rgba(28, 25, 23, 0.04)',
+            items: statusTiers.new,
+            practiceLabel: 'Practice these',
         },
         {
             key: 'learning',
             label: 'Learning',
-            emoji: '🟡',
-            color: 'var(--color-warning)',
-            bg: 'rgba(198, 134, 42, 0.06)',
-            items: tiers.learning,
+            emoji: '\uD83D\uDD34',
+            color: 'var(--color-error)',
+            bg: 'rgba(166, 61, 61, 0.06)',
+            items: statusTiers.learning,
+            practiceLabel: 'Practice these',
         },
         {
-            key: 'mastered',
-            label: 'Mastered',
-            emoji: '🟢',
+            key: 'known',
+            label: 'Known',
+            emoji: '\uD83D\uDFE1',
+            color: 'var(--color-warning)',
+            bg: 'rgba(198, 134, 42, 0.06)',
+            items: statusTiers.known,
+            practiceLabel: null,
+        },
+        {
+            key: 'fully_assimilated',
+            label: 'Fully Assimilated',
+            emoji: '\uD83D\uDFE2',
             color: 'var(--color-success)',
             bg: 'rgba(5, 150, 105, 0.06)',
-            items: tiers.mastered,
+            items: statusTiers.fully_assimilated,
+            practiceLabel: null,
         },
     ];
 
@@ -696,13 +756,13 @@ function CollectionView({ tiers, collectionSort, setCollectionSort, expandedEven
                             style={{ backgroundColor: tier.bg, color: tier.color }}>
                             {tier.items.length}
                         </span>
-                        {tier.items.length > 0 && tier.key !== 'mastered' && (
+                        {tier.items.length > 0 && tier.practiceLabel && (
                             <button
                                 onClick={() => onStartSession(tier.items.map(i => i.event))}
                                 className="ml-auto text-[10px] font-semibold px-2 py-1 rounded-lg transition-all"
                                 style={{ backgroundColor: tier.bg, color: tier.color }}
                             >
-                                Practice these →
+                                {tier.practiceLabel} {'\u2192'}
                             </button>
                         )}
                     </div>
@@ -710,8 +770,10 @@ function CollectionView({ tiers, collectionSort, setCollectionSort, expandedEven
                     {tier.items.length === 0 ? (
                         <div className="text-center py-4 rounded-xl" style={{ backgroundColor: tier.bg }}>
                             <p className="text-xs" style={{ color: 'var(--color-ink-faint)' }}>
-                                {tier.key === 'struggling' ? 'No struggling events — great work!' :
-                                    tier.key === 'mastered' ? 'Keep practicing to master events' : 'No events in this tier'}
+                                {tier.key === 'new' ? 'All events have been reviewed' :
+                                    tier.key === 'learning' ? 'No cards still learning \u2014 great work!' :
+                                    tier.key === 'fully_assimilated' ? 'Keep practicing to fully assimilate cards' :
+                                    'No cards at this level yet'}
                             </p>
                         </div>
                     ) : (

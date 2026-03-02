@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { App as CapApp } from '@capacitor/app';
 import { useApp } from './context/AppContext';
+import { useAchievementChecker, ACHIEVEMENTS } from './data/achievements';
 import TopBar from './components/TopBar';
 import Sidebar, { MobileTabBar } from './components/layout/Sidebar';
 import LearnPage from './pages/LearnPage';
@@ -8,6 +9,7 @@ import TimelinePage from './pages/TimelinePage';
 import PracticePage from './pages/PracticePage';
 import Settings from './components/Settings';
 import NotificationOnboarding from './components/NotificationOnboarding';
+import OnboardingOverlay from './components/OnboardingOverlay';
 import { ConfirmModal } from './components/shared';
 import {
   createNotificationChannel,
@@ -21,12 +23,32 @@ const RATING_MILESTONE = 3; // Show rating prompt after completing 3 lessons
 const PLAY_STORE_URL = 'https://play.google.com/store/apps/details?id=com.chronos.app';
 
 export default function App() {
-  const [activeTab, setActiveTab] = useState('learn');
+  const [activeTab, setActiveTab] = useState(() => {
+    // Cold-start: widget may have set this global before React mounted
+    if (window.WIDGET_OPEN_TAB === 'practice') {
+      window.WIDGET_OPEN_TAB = null;
+      return 'practice';
+    }
+    return 'learn';
+  });
   const [inSession, setInSession] = useState(false);
   const { state, dispatch } = useApp();
   const mainRef = useRef(null);
   // Ref for child pages to register a back handler
   const backHandlerRef = useRef(null);
+
+  // Achievement checker — runs on state changes
+  useAchievementChecker();
+
+  // Auto-dismiss achievement toast after 3.5s
+  useEffect(() => {
+    if ((state.newAchievements || []).length > 0) {
+      const timer = setTimeout(() => {
+        dispatch({ type: 'DISMISS_ACHIEVEMENT_TOAST' });
+      }, 3500);
+      return () => clearTimeout(timer);
+    }
+  }, [state.newAchievements, dispatch]);
 
   useEffect(() => {
     mainRef.current?.scrollTo(0, 0);
@@ -81,15 +103,39 @@ export default function App() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [handleKeyDown]);
 
+  // Detect lesson 0 completion during onboarding
+  useEffect(() => {
+    if (state.onboardingStep === 'guide_lesson0' && state.completedLessons['lesson-0']) {
+      dispatch({ type: 'SET_ONBOARDING_STEP', step: 'post_lesson0' });
+    }
+  }, [state.completedLessons, state.onboardingStep, dispatch]);
+
   // Show rating prompt after milestone (derived from state, no effect needed)
   const completedCount = Object.keys(state.completedLessons).length;
   const shouldShowRating = completedCount >= RATING_MILESTONE && !state.ratingPromptDismissed;
 
-  // Notification onboarding — show after first lesson, but not when rating is showing
+  // Notification onboarding — show after first lesson, but not when rating is showing, and only after tutorial
+  const onboardingDone = state.onboardingStep === 'complete' || state.onboardingStep === null;
   const shouldShowNotificationOnboarding =
     completedCount >= 1 &&
     !state.notificationOnboardingDismissed &&
-    !shouldShowRating;
+    !shouldShowRating &&
+    onboardingDone;
+
+  // Determine if onboarding overlay should show
+  const showOnboardingOverlay = state.onboardingStep
+    && state.onboardingStep !== 'complete'
+    && state.onboardingStep !== 'placement_active'
+    && state.onboardingStep !== 'guide_lesson0';
+
+  // Widget deep-link: listen for "open to practice" event from native widget tap
+  useEffect(() => {
+    const handleWidgetOpen = (e) => {
+      if (e.detail === 'practice') setActiveTab('practice');
+    };
+    window.addEventListener('widgetOpenTab', handleWidgetOpen);
+    return () => window.removeEventListener('widgetOpenTab', handleWidgetOpen);
+  }, []);
 
   // Init notification channel + reschedule on mount
   useEffect(() => {
@@ -158,6 +204,25 @@ export default function App() {
           onSkip={() => dispatch({ type: 'DISMISS_NOTIFICATION_ONBOARDING' })}
         />
       )}
+      {showOnboardingOverlay && (
+        <OnboardingOverlay step={state.onboardingStep} dispatch={dispatch} />
+      )}
+
+      {/* Achievement unlock toast */}
+      {(state.newAchievements || []).length > 0 && (() => {
+        const achievementId = state.newAchievements[0];
+        const achievement = ACHIEVEMENTS.find(a => a.id === achievementId);
+        if (!achievement) return null;
+        return (
+          <div className="achievement-toast animate-slide-in-down" onClick={() => dispatch({ type: 'DISMISS_ACHIEVEMENT_TOAST' })}>
+            <span className="achievement-toast-emoji">{achievement.emoji}</span>
+            <div>
+              <p className="achievement-toast-label">Achievement Unlocked!</p>
+              <p className="achievement-toast-title">{achievement.title}</p>
+            </div>
+          </div>
+        );
+      })()}
     </div>
   );
 }

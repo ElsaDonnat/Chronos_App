@@ -1077,6 +1077,441 @@ body {
 }
 
 /* ════════════════════════════════════════════════════════
+   ONBOARDING OVERLAY
+   ════════════════════════════════════════════════════════ */
+
+.onboarding-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(28, 25, 23, 0.5);
+  backdrop-filter: blur(4px);
+  padding: 24px;
+}
+
+.onboarding-card {
+  background: var(--color-card);
+  border-radius: var(--radius-xl, 16px);
+  padding: 32px 24px;
+  max-width: 380px;
+  width: 100%;
+  text-align: center;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+}
+
+.onboarding-skip {
+  display: block;
+  margin: 0 auto;
+  font-size: 13px;
+  color: var(--color-ink-faint);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px 8px;
+  font-family: var(--font-sans);
+  transition: color 0.15s ease;
+}
+
+.onboarding-skip:hover {
+  color: var(--color-ink-muted);
+}
+
+@keyframes onboardingPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(139, 65, 87, 0.3); }
+  50% { box-shadow: 0 0 0 6px rgba(139, 65, 87, 0); }
+}
+
+.onboarding-pulse {
+  animation: onboardingPulse 2s ease-in-out infinite;
+}
+
+/* ════════════════════════════════════════════════════════
+   COMPONENT: Daily Quiz ("This Day in History")
+   ════════════════════════════════════════════════════════ */
+
+.daily-quiz-container {
+  display: flex;
+  flex-direction: column;
+  min-height: calc(100dvh - 120px);
+}
+@supports not (min-height: 1dvh) {
+  .daily-quiz-container {
+    min-height: calc(100vh - 120px);
+  }
+}
+@media (max-width: 599px) {
+  .daily-quiz-container {
+    min-height: calc(100dvh - 140px);
+  }
+  @supports not (min-height: 1dvh) {
+    .daily-quiz-container {
+      min-height: calc(100vh - 140px);
+    }
+  }
+}
+
+.daily-quiz-date-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #8B6914;
+  background-color: rgba(230, 168, 23, 0.1);
+}
+
+.daily-quiz-bonus-pill {
+  display: inline-block;
+  padding: 4px 14px;
+  border-radius: 20px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  color: #8B6914;
+  background: linear-gradient(135deg, rgba(230, 168, 23, 0.15), rgba(184, 134, 11, 0.2));
+  border: 1px solid rgba(230, 168, 23, 0.25);
+}
+
+.daily-quiz-bonus-pill-sm {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: #8B6914;
+  background-color: rgba(230, 168, 23, 0.12);
+}
+
+.daily-quiz-number {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #8B6914;
+  background-color: rgba(230, 168, 23, 0.1);
+  flex-shrink: 0;
+}
+
+.daily-quiz-preview-card {
+  animation: fadeInUp 0.3s ease-out backwards;
+}
+
+.daily-quiz-learn-card {
+  border-left: 3px solid #E6A817;
+}
+
+.daily-quiz-btn {
+  background-color: #B8860B !important;
+  box-shadow: 0 2px 8px rgba(184, 134, 11, 0.3) !important;
+}
+.daily-quiz-btn:hover {
+  background-color: #9A7209 !important;
+}
+
+.daily-quiz-phase-tag {
+  color: #8B6914;
+  background-color: rgba(230, 168, 23, 0.1);
+}
+
+.daily-quiz-option {
+  width: 100%;
+  text-align: left;
+  padding: 14px 18px;
+  border-radius: 12px;
+  border: 2px solid rgba(230, 168, 23, 0.15);
+  font-size: 0.875rem;
+  font-weight: 500;
+  font-family: var(--font-sans);
+  background-color: rgba(230, 168, 23, 0.03);
+  color: var(--color-ink);
+  cursor: pointer;
+  transition: all var(--duration-fast) ease;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.daily-quiz-option:not(:disabled):hover {
+  border-color: #E6A817;
+  background-color: rgba(230, 168, 23, 0.08);
+  box-shadow: var(--shadow-card);
+}
+
+.daily-quiz-option:disabled {
+  cursor: default;
+}
+
+.daily-quiz-option--correct {
+  background-color: rgba(5, 150, 105, 0.08) !important;
+  border-color: var(--color-success) !important;
+}
+
+.daily-quiz-option--wrong {
+  background-color: rgba(166, 61, 61, 0.08) !important;
+  border-color: var(--color-error) !important;
+}
+
+.daily-quiz-option--dimmed {
+  opacity: 0.5;
+}
+
+.daily-quiz-card-correct {
+  background-color: rgba(5, 150, 105, 0.04) !important;
+  border-left: 3px solid var(--color-success);
+}
+
+.daily-quiz-card-wrong {
+  background-color: rgba(166, 61, 61, 0.04) !important;
+  border-left: 3px solid var(--color-error);
+}
+
+.daily-quiz-xp-result {
+  display: inline-flex;
+  align-items: center;
+  margin-top: 12px;
+  padding: 8px 16px;
+  border-radius: 12px;
+  background-color: rgba(230, 168, 23, 0.08);
+}
+
+/* ════════════════════════════════════════════════════════
+   COMPONENT: Achievements Modal & Toast
+   ════════════════════════════════════════════════════════ */
+
+/* Trophy button in TopBar */
+.topbar-trophy-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  padding: 4px;
+  border-radius: 6px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  transition: background-color var(--duration-fast) ease;
+}
+
+.topbar-trophy-btn:hover {
+  background-color: rgba(28, 25, 23, 0.06);
+}
+
+.achievement-dot {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background-color: #E6A817;
+  border: 1.5px solid var(--color-card);
+  animation: popIn 0.3s ease-out;
+}
+
+/* Achievement Modal */
+.achievement-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  background: rgba(28, 25, 23, 0.45);
+  backdrop-filter: blur(4px);
+  animation: backdropFadeIn var(--duration-normal) ease-out forwards;
+}
+
+.achievement-modal {
+  width: 100%;
+  max-width: 420px;
+  max-height: 85vh;
+  background: var(--color-card);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-elevated);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  animation: modalSlideUp var(--duration-slow) ease-out forwards;
+}
+
+.achievement-modal-header {
+  padding: 20px 20px 16px;
+  border-bottom: 1px solid rgba(28, 25, 23, 0.06);
+  flex-shrink: 0;
+}
+
+.achievement-close-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  border: none;
+  background: rgba(28, 25, 23, 0.06);
+  color: var(--color-ink-muted);
+  cursor: pointer;
+  transition: background-color var(--duration-fast) ease;
+}
+
+.achievement-close-btn:hover {
+  background: rgba(28, 25, 23, 0.1);
+}
+
+.achievement-modal-body {
+  padding: 16px 20px 24px;
+  overflow-y: auto;
+  flex: 1;
+  min-height: 0;
+}
+
+.achievement-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+@media (max-width: 360px) {
+  .achievement-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.achievement-tile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 12px 8px;
+  border-radius: 12px;
+  background: rgba(28, 25, 23, 0.02);
+  transition: transform var(--duration-fast) ease;
+}
+
+.achievement-tile--unlocked {
+  background: rgba(230, 168, 23, 0.06);
+}
+
+.achievement-tile--locked {
+  opacity: 0.55;
+}
+
+.achievement-emoji {
+  font-size: 1.8rem;
+  line-height: 1;
+  margin-bottom: 6px;
+}
+
+.achievement-emoji--locked {
+  filter: grayscale(100%);
+  opacity: 0.5;
+}
+
+.achievement-title {
+  font-size: 0.7rem;
+  font-weight: 700;
+  font-family: var(--font-serif);
+  color: var(--color-ink);
+  margin-bottom: 2px;
+  line-height: 1.2;
+}
+
+.achievement-desc {
+  font-size: 0.6rem;
+  color: var(--color-ink-muted);
+  line-height: 1.3;
+  margin-bottom: 4px;
+}
+
+.achievement-progress-bar {
+  width: 100%;
+  height: 3px;
+  border-radius: 2px;
+  background: rgba(28, 25, 23, 0.08);
+  margin-top: 4px;
+  overflow: hidden;
+}
+
+.achievement-progress-fill {
+  height: 100%;
+  border-radius: 2px;
+  background: #B8860B;
+  transition: width 0.4s ease-out;
+}
+
+.achievement-progress-text {
+  font-size: 0.55rem;
+  color: var(--color-ink-faint);
+  margin-top: 2px;
+}
+
+.achievement-unlock-date {
+  font-size: 0.55rem;
+  color: var(--color-success);
+  margin-top: 2px;
+}
+
+/* Achievement Toast (slide-in from top) */
+@keyframes slideInDown {
+  from { opacity: 0; transform: translateX(-50%) translateY(-100%); }
+  to { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+
+.achievement-toast {
+  position: fixed;
+  top: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 18px;
+  border-radius: 14px;
+  background: var(--color-card);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12), 0 2px 8px rgba(0, 0, 0, 0.06);
+  border: 1px solid rgba(230, 168, 23, 0.2);
+  cursor: pointer;
+  max-width: 340px;
+  width: max-content;
+}
+
+.animate-slide-in-down {
+  animation: slideInDown 0.4s ease-out backwards;
+}
+
+.achievement-toast-emoji {
+  font-size: 1.4rem;
+}
+
+.achievement-toast-label {
+  font-size: 0.6rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #B8860B;
+}
+
+.achievement-toast-title {
+  font-size: 0.85rem;
+  font-weight: 700;
+  font-family: var(--font-serif);
+  color: var(--color-ink);
+}
+
+/* ════════════════════════════════════════════════════════
    ACCESSIBILITY: Reduced Motion
    ════════════════════════════════════════════════════════ */
 
