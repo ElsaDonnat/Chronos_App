@@ -14,6 +14,9 @@ Use the latest version entry for Play Store "What's New" text.
 - Mastery dots on lesson cards — colored dots next to the lesson number showing per-event mastery (green/yellow/red)
 - Weekly insights teaser card on Learn page — compact "This Week" card showing session count, questions, and study time. Appears every 3 days (dismissible with 3-day cooldown). Clicking opens Week Tracker
 - Collapsible daily quiz completed card — completed daily quiz now shows as a compact banner that expands to show the 3 events learned, each clickable to jump to Timeline
+- Collapsible timeline filters — filters collapse into a single "Filter" button by default, expand on click; all choices (era, category, hideUnknown) persist in localStorage
+- "Hide Unknown" filter in Timeline — warm beige toggle chip hides undiscovered event cards while preserving era section headers
+- Quick 5 Dates practice mode — 6 date MCQ questions targeting weakest-scoring events, accessible from Practice hub
 
 ### Changed
 - Hourglass logo redesigned across TopBar, Mascot, and Android widget drawable — solid filled rect frame caps, tighter glass curves (strokeWidth 1.6), beige sand color (#C8A882), sand line in top half, no falling sand stream
