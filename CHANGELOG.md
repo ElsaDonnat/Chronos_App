@@ -5,6 +5,28 @@ Format follows [Keep a Changelog](https://keepachangelog.com/) and [Semantic Ver
 
 Use the latest version entry for Play Store "What's New" text.
 
+## [1.5.0] - 2026-03-02
+
+### Added
+- Week Tracker modal — full-screen view with day-by-day activity row (Mon–Sun), session/question/time stats, streak display, and share button. Opens from TopBar streak or XP tap, and from the "This Week" teaser card on Learn page
+- "NEW" badge on lesson cards — unlocked-but-not-completed lessons show the lesson emoji in a burgundy-outlined circle with a small "New" pill at bottom-right
+- Green checkmark badge on completed lesson cards — small success-colored circle overlaid at bottom-right of the emoji icon
+- Mastery dots on lesson cards — colored dots next to the lesson number showing per-event mastery (green/yellow/red)
+- Weekly insights teaser card on Learn page — compact "This Week" card showing session count, questions, and study time. Appears every 3 days (dismissible with 3-day cooldown). Clicking opens Week Tracker
+- Collapsible daily quiz completed card — completed daily quiz now shows as a compact banner that expands to show the 3 events learned, each clickable to jump to Timeline
+
+### Changed
+- Hourglass logo redesigned across TopBar, Mascot, and Android widget drawable — solid filled rect frame caps, tighter glass curves (strokeWidth 1.6), beige sand color (#C8A882), sand line in top half, no falling sand stream
+- TopBar simplified — removed inline StreakModal, streak and XP areas now open the shared Week Tracker modal
+- Lesson cards no longer show "3/3" seen-event progress circles; replaced with emoji + badge approach
+
+### Fixed
+- Literal backslash characters (`\`) appearing before Unicode arrows (→, ←), em-dashes (—), and middle dots (·) in button text across PracticePage, LessonFlow, PlacementQuizFlow, DailyQuizFlow, and LearnPage
+- Corrupted emoji characters (??) in Practice page tier section headers — removed broken Unicode replacement bytes
+- Lesson progress showing "3/3" for unplayed lessons due to seenEvents being populated from daily quiz and practice sources
+
+---
+
 ## [1.4.0] - 2026-03-02
 
 ### Changed
