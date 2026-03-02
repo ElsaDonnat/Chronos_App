@@ -1495,6 +1495,30 @@ body {
   margin-top: 2px;
 }
 
+.achievement-tile--mystery {
+  opacity: 0.45;
+  background: repeating-linear-gradient(
+    135deg,
+    rgba(28, 25, 23, 0.02),
+    rgba(28, 25, 23, 0.02) 4px,
+    rgba(28, 25, 23, 0.05) 4px,
+    rgba(28, 25, 23, 0.05) 8px
+  );
+  border: 1px dashed rgba(28, 25, 23, 0.12);
+}
+
+.achievement-emoji--mystery {
+  font-size: 1.4rem;
+  font-family: var(--font-serif);
+  font-weight: bold;
+  color: var(--color-ink-faint);
+}
+
+.achievement-tile--bonus {
+  background: linear-gradient(135deg, rgba(184, 134, 11, 0.08), rgba(230, 168, 23, 0.12));
+  border: 1px solid rgba(184, 134, 11, 0.15);
+}
+
 /* Achievement Toast (slide-in from top) */
 @keyframes slideInDown {
   from { opacity: 0; transform: translateX(-50%) translateY(-100%); }

@@ -20,6 +20,7 @@ export default function LearnPage({ onSessionChange, registerBackHandler, onTabC
     const [showDailyQuiz, setShowDailyQuiz] = useState(false);
     const [expandedEra, setExpandedEra] = useState(null);
     const [paceWarningLessonId, setPaceWarningLessonId] = useState(null);
+    const [dailyCompletedExpanded, setDailyCompletedExpanded] = useState(false);
 
     const isOnboardingGuide = state.onboardingStep === 'guide_lesson0';
     const isPlacementActive = state.onboardingStep === 'placement_active';
@@ -47,6 +48,34 @@ export default function LearnPage({ onSessionChange, registerBackHandler, onTabC
         isDailyCompleted ? dailyData.eventIds.map(id => getEventById(id)).filter(Boolean) : [],
         [isDailyCompleted, dailyData.eventIds]
     );
+
+    // ─── Weekly insights (shown every 3 days) ─────────
+    const weekStart = useMemo(() => {
+        const d = new Date();
+        const day = d.getDay(); // 0=Sun
+        const diff = day === 0 ? 6 : day - 1; // shift to Monday start
+        d.setDate(d.getDate() - diff);
+        return d.toISOString().split('T')[0];
+    }, []);
+    const [weekInsightsDismissed, setWeekInsightsDismissed] = useState(() => {
+        const lastDismissed = localStorage.getItem('chronos-weekly-dismissed');
+        if (!lastDismissed) return false;
+        const daysSince = Math.floor((Date.now() - new Date(lastDismissed).getTime()) / 86400000);
+        return daysSince < 3;
+    });
+
+    const weeklyInsights = useMemo(() => {
+        const sessions = (state.studySessions || []).filter(s => s.date >= weekStart);
+        if (sessions.length === 0) return null;
+        return {
+            sessions: sessions.length,
+            weekQuestions: sessions.reduce((s, sess) => s + (sess.questionsAnswered || 0), 0),
+            weekSeconds: sessions.reduce((s, sess) => s + (sess.duration || 0), 0),
+        };
+    }, [state.studySessions, weekStart]);
+
+    const showWeeklyInsights = weeklyInsights && !weekInsightsDismissed
+        && (state.seenEvents || []).length >= 3;
 
     // Map lesson IDs to their era group (for skip-ahead dividers)
     const lessonEraEndMap = useMemo(() => {
@@ -152,7 +181,7 @@ export default function LearnPage({ onSessionChange, registerBackHandler, onTabC
                                 <span className="daily-quiz-bonus-pill-sm">{'2\× XP'}</span>
                             </div>
                             <p className="text-xs" style={{ color: 'var(--color-ink-muted)' }}>
-                                {dailyData.dateLabel} {'\—'} {dailyData.eventIds.map(id => getEventById(id)?.year).filter(Boolean).join(' \· ')}
+                                {dailyData.dateLabel} {'—'} {dailyData.eventIds.map(id => getEventById(id)?.year).filter(Boolean).join(' · ')}
                             </p>
                         </div>
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#B8860B" strokeWidth="2" className="flex-shrink-0 mt-1">
@@ -184,7 +213,7 @@ export default function LearnPage({ onSessionChange, registerBackHandler, onTabC
                                 Continue Today's Quiz
                             </h3>
                             <p className="text-xs" style={{ color: 'var(--color-ink-muted)' }}>
-                                {dailyData.dateLabel} {'\—'} pick up where you left off
+                                {dailyData.dateLabel} {'—'} pick up where you left off
                             </p>
                         </div>
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#B8860B" strokeWidth="2" className="flex-shrink-0 mt-1">
@@ -194,8 +223,37 @@ export default function LearnPage({ onSessionChange, registerBackHandler, onTabC
                 </Card>
             )}
 
-            {/* Daily Quiz — completed, show acquired cards */}
-            {dailyData && isDailyCompleted && (
+            {/* Daily Quiz — completed: collapsed banner or expanded cards */}
+            {dailyData && isDailyCompleted && !dailyCompletedExpanded && (
+                <button
+                    onClick={() => setDailyCompletedExpanded(true)}
+                    className="w-full mb-4 animate-fade-in flex items-center gap-2 px-3 py-2 rounded-xl cursor-pointer"
+                    style={{
+                        backgroundColor: 'rgba(230, 168, 23, 0.10)',
+                        border: '1px solid rgba(230, 168, 23, 0.25)',
+                    }}
+                >
+                    <div className="w-6 h-6 rounded-md flex items-center justify-center flex-shrink-0"
+                        style={{ backgroundColor: 'rgba(5, 150, 105, 0.15)' }}>
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#059669" strokeWidth="3">
+                            <polyline points="20 6 9 17 4 12" />
+                        </svg>
+                    </div>
+                    <span className="text-xs font-semibold flex-1 text-left" style={{ color: '#8B6914' }}>
+                        Today's Quiz Complete
+                    </span>
+                    {state.dailyQuiz?.lastXPEarned > 0 && (
+                        <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full"
+                            style={{ backgroundColor: 'rgba(5, 150, 105, 0.1)', color: '#059669' }}>
+                            +{state.dailyQuiz.lastXPEarned} XP
+                        </span>
+                    )}
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#B8860B" strokeWidth="2" className="flex-shrink-0">
+                        <polyline points="6 9 12 15 18 9" />
+                    </svg>
+                </button>
+            )}
+            {dailyData && isDailyCompleted && dailyCompletedExpanded && (
                 <Card
                     className="mb-4 animate-fade-in daily-quiz-card"
                     style={{
@@ -203,25 +261,29 @@ export default function LearnPage({ onSessionChange, registerBackHandler, onTabC
                         backgroundColor: 'rgba(5, 150, 105, 0.04)',
                     }}
                 >
-                    <div className="flex items-center gap-2 mb-2">
-                        <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0"
+                    <button
+                        onClick={() => setDailyCompletedExpanded(false)}
+                        className="w-full flex items-center gap-2 mb-2 cursor-pointer"
+                    >
+                        <div className="w-6 h-6 rounded-md flex items-center justify-center flex-shrink-0"
                             style={{ backgroundColor: 'rgba(5, 150, 105, 0.12)' }}>
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#059669" strokeWidth="2.5">
+                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#059669" strokeWidth="3">
                                 <polyline points="20 6 9 17 4 12" />
                             </svg>
                         </div>
-                        <div className="flex-1 min-w-0">
-                            <h3 className="text-sm font-bold" style={{ fontFamily: 'var(--font-serif)' }}>
-                                Today's Quiz {'\—'} Complete
-                            </h3>
-                        </div>
+                        <h3 className="text-sm font-bold flex-1 text-left" style={{ fontFamily: 'var(--font-serif)' }}>
+                            Today's Quiz {'\u2014'} Complete
+                        </h3>
                         {state.dailyQuiz?.lastXPEarned > 0 && (
-                            <span className="text-xs font-bold px-2 py-0.5 rounded-full"
+                            <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full"
                                 style={{ backgroundColor: 'rgba(5, 150, 105, 0.1)', color: '#059669' }}>
                                 +{state.dailyQuiz.lastXPEarned} XP
                             </span>
                         )}
-                    </div>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--color-ink-faint)" strokeWidth="2" className="flex-shrink-0">
+                            <polyline points="18 15 12 9 6 15" />
+                        </svg>
+                    </button>
                     <div className="space-y-1.5">
                         {todayEvents.map(event => (
                             <button
@@ -230,7 +292,7 @@ export default function LearnPage({ onSessionChange, registerBackHandler, onTabC
                                 style={{ backgroundColor: 'rgba(230, 168, 23, 0.05)', cursor: 'pointer' }}
                                 onClick={() => {
                                     window.CHRONOS_OPEN_EVENT = event.id;
-                                    onTabChange?.('practice');
+                                    onTabChange?.('timeline');
                                 }}
                             >
                                 <span className="text-xs font-bold flex-shrink-0" style={{ color: '#8B6914', fontFamily: 'var(--font-serif)', minWidth: '3rem' }}>
@@ -242,6 +304,46 @@ export default function LearnPage({ onSessionChange, registerBackHandler, onTabC
                                 <DiHBadge />
                             </button>
                         ))}
+                    </div>
+                </Card>
+            )}
+
+            {/* Weekly insights teaser — opens WeekTracker modal */}
+            {showWeeklyInsights && (
+                <Card
+                    onClick={() => window.dispatchEvent(new Event('openWeekTracker'))}
+                    className="mb-4 animate-fade-in"
+                    style={{ borderLeft: '3px solid #8B6DB5', backgroundColor: 'rgba(140, 100, 180, 0.04)' }}
+                >
+                    <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
+                            style={{ backgroundColor: 'rgba(140, 100, 180, 0.12)' }}>
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#7C5BAD" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
+                            </svg>
+                        </div>
+                        <div className="flex-1 min-w-0">
+                            <h3 className="text-sm font-bold mb-0.5" style={{ fontFamily: 'var(--font-serif)' }}>
+                                This Week
+                            </h3>
+                            <p className="text-xs" style={{ color: 'var(--color-ink-muted)' }}>
+                                {weeklyInsights.sessions} {weeklyInsights.sessions === 1 ? 'session' : 'sessions'} {'\u00B7'} {weeklyInsights.weekQuestions} questions {'\u00B7'} {weeklyInsights.weekSeconds >= 60 ? `${Math.floor(weeklyInsights.weekSeconds / 60)}m` : `${weeklyInsights.weekSeconds}s`}
+                            </p>
+                        </div>
+                        <div className="flex items-center gap-2 flex-shrink-0">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#8B6DB5" strokeWidth="2">
+                                <polyline points="9 18 15 12 9 6" />
+                            </svg>
+                            <button onClick={(e) => {
+                                e.stopPropagation();
+                                setWeekInsightsDismissed(true);
+                                localStorage.setItem('chronos-weekly-dismissed', new Date().toISOString().split('T')[0]);
+                            }} className="p-1 -mr-1" style={{ color: 'var(--color-ink-faint)' }}>
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                    <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+                                </svg>
+                            </button>
+                        </div>
                     </div>
                 </Card>
             )}
@@ -266,7 +368,12 @@ export default function LearnPage({ onSessionChange, registerBackHandler, onTabC
             )}
 
             <div className="space-y-3">
+                {/* Thematic emoji per lesson — shown as faded background on locked cards */}
                 {LESSONS.map((lesson, index) => {
+                    const LESSON_EMOJI = [
+                        '🌍', '🦶', '🧠', '🌾', '📜', '⚖️', '⚔️', '🏛️', '🐪', '🕌',
+                        '🏰', '🗡️', '💀', '🎨', '🚢', '🔭', '⚡', '🏭', '💣', '☢️', '🌐',
+                    ];
                     const isUnlocked = index === 0 || state.completedLessons[LESSONS[index - 1].id];
                     const isCompleted = state.completedLessons[lesson.id];
                     const isLesson0 = !!lesson.isLesson0;
@@ -289,59 +396,57 @@ export default function LearnPage({ onSessionChange, registerBackHandler, onTabC
                         <Fragment key={lesson.id}>
                         <Card
                             onClick={isUnlocked ? () => handleLessonClick(lesson.id) : undefined}
-                            className={`lesson-card-row animate-fade-in-up ${!isUnlocked ? 'opacity-50' : ''} ${pulseLesson0 ? 'onboarding-pulse' : ''}`}
+                            className={`lesson-card-row animate-fade-in-up ${!isUnlocked ? 'relative overflow-hidden' : ''} ${pulseLesson0 ? 'onboarding-pulse' : ''}`}
                             style={{
                                 animationDelay: `${index * 60}ms`,
                                 animationFillMode: 'backwards',
                                 backgroundColor: isCompleted ? 'rgba(5, 150, 105, 0.04)' : 'var(--color-card)',
                             }}
                         >
+                            {/* Locked lesson: faded emoji background + lock badge */}
+                            {!isUnlocked && (
+                                <>
+                                    <span className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none select-none"
+                                        style={{ fontSize: '48px', opacity: 0.06 }}>
+                                        {LESSON_EMOJI[lesson.number] || '📖'}
+                                    </span>
+                                    <div className="absolute top-2 right-2">
+                                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--color-ink-muted)" strokeWidth="2.5" opacity="0.45">
+                                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                                            <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                                        </svg>
+                                    </div>
+                                </>
+                            )}
                             <div className="flex items-center gap-4">
                                 {/* Progress indicator */}
                                 <div className="flex-shrink-0">
-                                    {!isUnlocked ? (
-                                        <div className="w-11 h-11 rounded-full flex items-center justify-center" style={{ backgroundColor: 'rgba(28, 25, 23, 0.06)' }}>
-                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-ink-faint)" strokeWidth="2">
-                                                <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
-                                                <path d="M7 11V7a5 5 0 0 1 10 0v4" />
-                                            </svg>
+                                    <div className="relative">
+                                        <div className="w-11 h-11 rounded-full flex items-center justify-center" style={{
+                                            backgroundColor: !isUnlocked ? 'rgba(28, 25, 23, 0.05)' :
+                                                isCompleted ? 'rgba(5, 150, 105, 0.10)' : 'rgba(139, 65, 87, 0.04)',
+                                            border: !isUnlocked ? 'none' :
+                                                isCompleted ? '2px solid rgba(5, 150, 105, 0.35)' : '2px solid var(--color-burgundy)',
+                                        }}>
+                                            <span className="text-lg" style={{ opacity: isUnlocked ? 1 : 0.45 }}>
+                                                {LESSON_EMOJI[lesson.number] || '📖'}
+                                            </span>
                                         </div>
-                                    ) : isCompleted ? (
-                                        <div className="w-11 h-11 rounded-full flex items-center justify-center"
-                                            style={{ backgroundColor: isLesson0 ? 'var(--color-burgundy)' : 'var(--color-success)', boxShadow: isLesson0 ? '0 2px 8px rgba(139, 65, 87, 0.3)' : '0 2px 8px rgba(5, 150, 105, 0.3)' }}>
-                                            {isLesson0 ? (
-                                                <span className="text-base">🌍</span>
-                                            ) : (
-                                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5">
+                                        {isUnlocked && isCompleted && (
+                                            <div className="absolute -bottom-0.5 -right-0.5 w-[18px] h-[18px] rounded-full flex items-center justify-center"
+                                                style={{ backgroundColor: 'var(--color-success)', boxShadow: '0 0 0 2px var(--color-card)' }}>
+                                                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3.5">
                                                     <polyline points="20 6 9 17 4 12" />
                                                 </svg>
-                                            )}
-                                        </div>
-                                    ) : isLesson0 ? (
-                                        <div className="w-11 h-11 rounded-full flex items-center justify-center"
-                                            style={{ border: '2px solid var(--color-burgundy)', background: 'var(--color-burgundy-soft)' }}>
-                                            <span className="text-base">🌍</span>
-                                        </div>
-                                    ) : seenCount > 0 ? (
-                                        <div className="w-11 h-11 rounded-full flex items-center justify-center relative"
-                                            style={{ border: '2px solid var(--color-burgundy)' }}>
-                                            <svg width="44" height="44" viewBox="0 0 44 44" className="absolute inset-0">
-                                                <circle cx="22" cy="22" r="19" fill="none" stroke="var(--color-burgundy)" strokeWidth="2"
-                                                    strokeDasharray={`${(seenCount / events.length) * 119} 119`}
-                                                    strokeLinecap="round" transform="rotate(-90 22 22)" opacity="0.3" />
-                                            </svg>
-                                            <span className="text-xs font-bold" style={{ color: 'var(--color-burgundy)' }}>
-                                                {seenCount}/{events.length}
-                                            </span>
-                                        </div>
-                                    ) : (
-                                        <div className="w-11 h-11 rounded-full flex items-center justify-center"
-                                            style={{ border: '2px solid var(--color-ink-faint)' }}>
-                                            <span className="text-sm font-bold" style={{ color: 'var(--color-ink-muted)' }}>
-                                                {lesson.number}
-                                            </span>
-                                        </div>
-                                    )}
+                                            </div>
+                                        )}
+                                        {isUnlocked && !isCompleted && (
+                                            <div className="absolute -bottom-0.5 -right-0.5 rounded-full flex items-center justify-center px-1 py-px"
+                                                style={{ backgroundColor: 'var(--color-burgundy)', boxShadow: '0 0 0 2px var(--color-card)' }}>
+                                                <span className="text-[8px] font-bold uppercase text-white leading-none">New</span>
+                                            </div>
+                                        )}
+                                    </div>
                                 </div>
 
                                 {/* Content */}
@@ -376,20 +481,22 @@ export default function LearnPage({ onSessionChange, registerBackHandler, onTabC
                                     <h3 className="text-base font-bold leading-tight" style={{ fontFamily: 'var(--font-serif)', color: isUnlocked ? 'var(--color-ink)' : 'var(--color-ink-faint)' }}>
                                         {lesson.title}
                                     </h3>
-                                    <p className="text-sm mt-0.5" style={{ color: 'var(--color-ink-muted)' }}>
+                                    <p className="text-sm mt-0.5" style={{ color: isUnlocked ? 'var(--color-ink-muted)' : 'var(--color-ink-faint)' }}>
                                         {lesson.subtitle}
                                     </p>
                                 </div>
 
                                 {/* Right side: event count + arrow */}
                                 <div className="flex items-center gap-3 flex-shrink-0">
-                                    <span className="text-xs hidden sm:block" style={{ color: 'var(--color-ink-faint)' }}>
-                                        {isLesson0 ? '5 eras' : `${events.length} events`}
-                                    </span>
                                     {isUnlocked && (
-                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-ink-faint)" strokeWidth="2" className="flex-shrink-0">
-                                            <polyline points="9 18 15 12 9 6" />
-                                        </svg>
+                                        <>
+                                            <span className="text-xs hidden sm:block" style={{ color: 'var(--color-ink-faint)' }}>
+                                                {isLesson0 ? '5 eras' : `${events.length} events`}
+                                            </span>
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-ink-faint)" strokeWidth="2" className="flex-shrink-0">
+                                                <polyline points="9 18 15 12 9 6" />
+                                            </svg>
+                                        </>
                                     )}
                                 </div>
                             </div>
@@ -419,7 +526,7 @@ export default function LearnPage({ onSessionChange, registerBackHandler, onTabC
                                                     {eraGroup.label}
                                                 </h3>
                                                 <p className="text-xs mt-0.5" style={{ color: 'var(--color-ink-muted)' }}>
-                                                    {eraGroup.questionCount} questions {'\·'} {eraGroup.lessonIds.length} lessons
+                                                    {eraGroup.questionCount} questions {'·'} {eraGroup.lessonIds.length} lessons
                                                 </p>
                                             </div>
                                             {eraUnlocked ? (
@@ -550,7 +657,7 @@ export default function LearnPage({ onSessionChange, registerBackHandler, onTabC
                             Take it slow!
                         </h3>
                         <p className="text-sm text-center mb-5" style={{ color: 'var(--color-ink-muted)' }}>
-                            You've done {todayLessonCount} lessons today {'\—'} impressive! But learning sticks better with time between sessions. Try practicing what you already know instead.
+                            You've done {todayLessonCount} lessons today {'—'} impressive! But learning sticks better with time between sessions. Try practicing what you already know instead.
                         </p>
                         <Button className="w-full mb-2" onClick={() => {
                             setPaceWarningLessonId(null);

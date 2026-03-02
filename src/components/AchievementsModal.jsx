@@ -1,5 +1,5 @@
 import { useApp } from '../context/AppContext';
-import { ACHIEVEMENTS } from '../data/achievements';
+import { ACHIEVEMENTS, BONUS_ACHIEVEMENTS } from '../data/achievements';
 
 const CATEGORY_LABELS = {
     learning: 'Learning',
@@ -14,7 +14,9 @@ const CATEGORY_LABELS = {
 export default function AchievementsModal({ onClose }) {
     const { state } = useApp();
     const unlocked = state.achievements || {};
-    const unlockedCount = Object.keys(unlocked).length;
+    const unlockedRegular = ACHIEVEMENTS.filter(a => unlocked[a.id]).length;
+    const unlockedBonus = BONUS_ACHIEVEMENTS.filter(a => unlocked[a.id]).length;
+    const totalUnlocked = unlockedRegular + unlockedBonus;
 
     // Group achievements by category
     const grouped = {};
@@ -36,7 +38,7 @@ export default function AchievementsModal({ onClose }) {
                                 Achievements
                             </h2>
                             <p className="text-xs mt-0.5" style={{ color: 'var(--color-ink-muted)' }}>
-                                {unlockedCount} / {ACHIEVEMENTS.length} unlocked
+                                {totalUnlocked} / {ACHIEVEMENTS.length + BONUS_ACHIEVEMENTS.length} unlocked
                             </p>
                         </div>
                         <button onClick={onClose} className="achievement-close-btn" aria-label="Close">
@@ -52,7 +54,7 @@ export default function AchievementsModal({ onClose }) {
                         <div
                             className="h-full rounded-full transition-all duration-700 ease-out"
                             style={{
-                                width: `${(unlockedCount / ACHIEVEMENTS.length) * 100}%`,
+                                width: `${(totalUnlocked / (ACHIEVEMENTS.length + BONUS_ACHIEVEMENTS.length)) * 100}%`,
                                 backgroundColor: '#B8860B',
                             }}
                         />
@@ -108,6 +110,44 @@ export default function AchievementsModal({ onClose }) {
                             </div>
                         );
                     })}
+
+                    {/* ─── Bonus (Secret) Achievements ─── */}
+                    <div className="mb-5">
+                        <h3 className="text-[10px] uppercase tracking-widest font-bold mb-2" style={{ color: '#B8860B' }}>
+                            Secret {unlockedBonus > 0 ? `\u2014 ${unlockedBonus}/${BONUS_ACHIEVEMENTS.length}` : ''}
+                        </h3>
+                        <div className="achievement-grid">
+                            {BONUS_ACHIEVEMENTS.map(a => {
+                                const isUnlocked = !!unlocked[a.id];
+
+                                if (isUnlocked) {
+                                    return (
+                                        <div key={a.id} className="achievement-tile achievement-tile--unlocked achievement-tile--bonus">
+                                            <div className="achievement-emoji">
+                                                {a.emoji}
+                                            </div>
+                                            <h4 className="achievement-title">{a.title}</h4>
+                                            <p className="achievement-desc">{a.description}</p>
+                                            <p className="achievement-unlock-date">
+                                                {new Date(unlocked[a.id]).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
+                                            </p>
+                                        </div>
+                                    );
+                                }
+
+                                // Hidden — show mystery tile
+                                return (
+                                    <div key={a.id} className="achievement-tile achievement-tile--mystery">
+                                        <div className="achievement-emoji achievement-emoji--mystery">
+                                            ?
+                                        </div>
+                                        <h4 className="achievement-title" style={{ color: 'var(--color-ink-faint)' }}>???</h4>
+                                        <p className="achievement-desc" style={{ color: 'var(--color-ink-faint)', fontStyle: 'italic' }}>Keep exploring...</p>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

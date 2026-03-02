@@ -17,7 +17,23 @@
       "Bash(export JAVA_HOME=\"/c/Program Files/Android/Android Studio/jbr\")",
       "Bash(./gradlew assembleDebug)",
       "Bash(node:*)",
-      "Bash(npx:*)"
+      "Bash(npx:*)",
+      "Bash(export:*)",
+      "Bash(xargs wc:*)",
+      "WebSearch",
+      "WebFetch(domain:capacitorjs.com)",
+      "Bash(npm install:*)",
+      "Bash(grep:*)",
+      "Bash(xargs grep:*)",
+      "WebFetch(domain:medium.com)",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:uttamroy.hashnode.dev)",
+      "WebFetch(domain:www.npmjs.com)",
+      "Bash(npm view capacitor-widget-bridge --json)",
+      "Bash(ls /c/Users/elsad/chronos/*.md)",
+      "Bash(npm run dev)",
+      "Bash(xxd -l 500 -s 1200 src/components/learn/Lesson0Flow.jsx)",
+      "Bash(xxd src/components/learn/Lesson0Flow.jsx)"
     ]
   }
 }

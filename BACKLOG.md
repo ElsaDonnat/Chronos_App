@@ -14,10 +14,6 @@
 
 Add a `relatedEvents` field to events in events.js, linking them with brief causal descriptions (e.g., French Revolution → "Led to the Napoleonic Wars"). Show connections on event cards in the timeline and on learn cards as a small "Connected events" section. Helps users understand history as a narrative rather than isolated facts. Start with the most obvious connections among existing events.
 
-## P3 — Weekly learning insights
-
-A recap card shown on the Learn page at the start of each week: events learned that week, strongest/weakest era, mastery improvement trend, total study time. Calculated entirely from existing state data (completedLessons, eventMastery, seenEvents). Dismissible with a close button. Reinforces progress and gives users direction on what to focus on next.
-
 ## P3 — Map view for events
 
 A visual map showing where events happened. Could be a simple SVG world map with region highlights, accessible as a toggle/tab on the Timeline page. Even a basic region-highlighted map per era would significantly aid spatial memory and make location quiz questions more intuitive. Tap a region to see events from that area.
@@ -54,3 +50,4 @@ Add more events per era, deeper non-Western history coverage, and new lessons be
 - **P2 — Study timer & session stats** (2026-03-02): Tracks session duration for lessons, practice, and daily quiz. Shows time on completion screens (e.g., "3m 42s"). Displays cumulative study time and session count in Settings. Stores last 50 sessions. Study time preserved across progress resets.
 - **P3 — Sound effects and haptic feedback** (2026-03-02): Web Audio API sine-wave tones (ascending minor third for correct, single warm tone for close, descending minor second for wrong, 3-note arpeggio for completion, 4-note sparkle for achievements) with native haptics via @capacitor/haptics. Module-level feedback service (`src/services/feedback.js`) configured from AppContext. Independent toggles in Settings for sound and haptics.
 - **P3 — Share a challenge** (2026-03-02): Text-based sharing via Web Share API (clipboard fallback on desktop). "Share Result" button on lesson summary, practice results, and daily quiz results. "Share Streak" button in streak modal (adaptive color per streak status). Messages include score, XP, streak, and Play Store link. Service in `src/services/share.js`.
+- **P3 — Weekly learning insights** (2026-03-02): "This Week" recap card on the Learn page showing sessions, questions answered, study time, strongest era, and weakest era (focus suggestion). Dismissible per week via localStorage. Only appears after 3+ events learned and at least 1 session that week. Calculated from existing state data (studySessions, seenEvents, eventMastery).

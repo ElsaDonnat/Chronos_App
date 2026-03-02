@@ -158,7 +158,7 @@ export default function DailyQuizFlow({ onComplete }) {
                         <div className="text-center mb-5">
                             <span className="daily-quiz-year">{event.year}</span>
                             <p className="text-sm mt-2 font-medium" style={{ color: 'var(--color-ink-muted)' }}>
-                                What happened in {event.year}?
+                                What happened on {dailyData.dateLabel}, {event.year}?
                             </p>
                         </div>
 
@@ -217,7 +217,7 @@ export default function DailyQuizFlow({ onComplete }) {
                                 <div className="flex items-center gap-2 mb-2">
                                     <DiHBadge />
                                     <span className="text-xs font-medium" style={{ color: 'var(--color-ink-faint)' }}>
-                                        {event.date}
+                                        {dailyData.dateLabel}, {event.year}
                                     </span>
                                 </div>
                                 <h3 className="text-base font-bold mb-1" style={{ fontFamily: 'var(--font-serif)', color: 'var(--color-ink)' }}>
@@ -237,7 +237,7 @@ export default function DailyQuizFlow({ onComplete }) {
                 {showCard && (
                     <div className="flex-shrink-0 mt-auto pt-4 pb-2">
                         <Button className="w-full daily-quiz-btn" onClick={handleNext}>
-                            {quizIndex + 1 < totalEvents ? 'Continue \→' : 'See Results'}
+                            {quizIndex + 1 < totalEvents ? 'Continue →' : 'See Results'}
                         </Button>
                     </div>
                 )}
@@ -261,7 +261,7 @@ export default function DailyQuizFlow({ onComplete }) {
                         </h2>
 
                         <p className="text-sm mb-2" style={{ color: 'var(--color-ink-muted)' }}>
-                            {dailyData.dateLabel} {'\·'} {correctCount}/{totalEvents} correct
+                            {dailyData.dateLabel} {'·'} {correctCount}/{totalEvents} correct
                         </p>
 
                         {xpEarned > 0 && (
@@ -295,7 +295,7 @@ export default function DailyQuizFlow({ onComplete }) {
                                                 </div>
                                                 <p className="text-sm font-semibold" style={{ fontFamily: 'var(--font-serif)' }}>{event.title}</p>
                                                 <p className="text-xs mt-0.5" style={{ color: 'var(--color-ink-muted)' }}>
-                                                    {event.year} {'\·'} {event.location.place}
+                                                    {dailyData.dateLabel}, {event.year} {'·'} {event.location.place}
                                                 </p>
                                             </div>
                                         </div>

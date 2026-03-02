@@ -155,6 +155,90 @@ export const ACHIEVEMENTS = [
     },
 ];
 
+// ─── Bonus (Hidden) Achievements ───
+// These remain hidden ("???") until randomly unlocked.
+// Each has a trigger condition (must be true) + a random chance per qualifying state change.
+export const BONUS_ACHIEVEMENTS = [
+    {
+        id: 'bonus-time-traveler',
+        title: 'Time Traveler',
+        description: 'The timeline whispered your name',
+        emoji: '\uD83D\uDD70\uFE0F',
+        category: 'bonus',
+        hidden: true,
+        // Triggers when user completes a lesson; 8% chance per lesson completion
+        triggerKey: (state) => Object.keys(state.completedLessons).length,
+        triggerCondition: (state) => Object.keys(state.completedLessons).length >= 1,
+        chance: 0.08,
+    },
+    {
+        id: 'bonus-lucky-scholar',
+        title: 'Lucky Scholar',
+        description: 'Fortune favors the curious',
+        emoji: '\uD83C\uDF40',
+        category: 'bonus',
+        hidden: true,
+        // Triggers on XP gain; 3% chance per XP change
+        triggerKey: (state) => state.totalXP,
+        triggerCondition: (state) => state.totalXP >= 50,
+        chance: 0.03,
+    },
+    {
+        id: 'bonus-night-owl',
+        title: 'Night Owl',
+        description: 'History never sleeps, and neither do you',
+        emoji: '\uD83E\uDD89',
+        category: 'bonus',
+        hidden: true,
+        // Triggers on study session; 20% chance if it's after 10 PM or before 5 AM
+        triggerKey: (state) => (state.studySessions || []).length,
+        triggerCondition: () => {
+            const hour = new Date().getHours();
+            return hour >= 22 || hour < 5;
+        },
+        chance: 0.20,
+    },
+    {
+        id: 'bonus-plot-twist',
+        title: 'Plot Twist',
+        description: 'History is full of surprises!',
+        emoji: '\uD83C\uDFAD',
+        category: 'bonus',
+        hidden: true,
+        // Triggers on daily quiz completion; 15% chance
+        triggerKey: (state) => state.dailyQuiz?.totalCompleted || 0,
+        triggerCondition: (state) => (state.dailyQuiz?.totalCompleted || 0) >= 1,
+        chance: 0.15,
+    },
+    {
+        id: 'bonus-deja-vu',
+        title: 'D\u00e9j\u00e0 Vu',
+        description: "Haven't we been here before?",
+        emoji: '\uD83D\uDD04',
+        category: 'bonus',
+        hidden: true,
+        // Triggers on streak continuation; 10% chance when streak >= 2
+        triggerKey: (state) => state.currentStreak,
+        triggerCondition: (state) => state.currentStreak >= 2,
+        chance: 0.10,
+    },
+    {
+        id: 'bonus-hidden-gem',
+        title: 'Hidden Gem',
+        description: 'A rare find in the annals of time',
+        emoji: '\uD83D\uDC8E',
+        category: 'bonus',
+        hidden: true,
+        // Triggers when starring events; 12% chance
+        triggerKey: (state) => (state.starredEvents || []).length,
+        triggerCondition: (state) => (state.starredEvents || []).length >= 1,
+        chance: 0.12,
+    },
+];
+
+/** All achievements combined */
+export const ALL_ACHIEVEMENTS = [...ACHIEVEMENTS, ...BONUS_ACHIEVEMENTS];
+
 /** Returns achievement IDs that should be unlocked but aren't yet */
 export function checkAchievements(state) {
     const unlocked = state.achievements || {};
@@ -163,29 +247,37 @@ export function checkAchievements(state) {
         .map(a => a.id);
 }
 
-/** Hook that checks for new achievements on state changes and dispatches unlocks.
- *  Skips the initial mount so achievements don't fire retroactively on app open. */
+/** Hook that checks for new achievements on state changes and dispatches unlocks. */
 export function useAchievementChecker() {
     const { state, dispatch } = useApp();
     const prevChecked = useRef(new Set(Object.keys(state.achievements || {})));
     const mounted = useRef(false);
+    const bonusRollKeys = useRef({}); // tracks last trigger key per bonus achievement
 
     // Destructure the specific fields we depend on for the lint rule
-    const { completedLessons, currentStreak, totalXP, seenEvents, starredEvents, eventMastery, dailyQuiz, achievements } = state;
+    const { completedLessons, currentStreak, totalXP, seenEvents, starredEvents, eventMastery, dailyQuiz, achievements, studySessions } = state;
 
     useEffect(() => {
-        // Skip the first render — don't award achievements for pre-existing state on app open
+        const currentState = { completedLessons, currentStreak, totalXP, seenEvents, starredEvents, eventMastery, dailyQuiz, achievements, studySessions };
+
         if (!mounted.current) {
-            // Seed prevChecked with everything that currently qualifies, so it won't fire later
-            const currentState = { completedLessons, currentStreak, totalXP, seenEvents, starredEvents, eventMastery, dailyQuiz, achievements };
+            // On mount: silently unlock all achievements that already qualify
             const alreadyQualified = checkAchievements(currentState);
             for (const id of alreadyQualified) {
+                if (!achievements[id]) {
+                    dispatch({ type: 'UNLOCK_ACHIEVEMENT', achievementId: id, silent: true });
+                }
                 prevChecked.current.add(id);
+            }
+            // Seed bonus roll keys so we don't roll on mount
+            for (const ba of BONUS_ACHIEVEMENTS) {
+                bonusRollKeys.current[ba.id] = ba.triggerKey(currentState);
             }
             mounted.current = true;
             return;
         }
-        const currentState = { completedLessons, currentStreak, totalXP, seenEvents, starredEvents, eventMastery, dailyQuiz, achievements };
+
+        // ─── Regular achievements ───
         const newlyUnlocked = checkAchievements(currentState);
         for (const id of newlyUnlocked) {
             if (!prevChecked.current.has(id)) {
@@ -193,5 +285,20 @@ export function useAchievementChecker() {
                 prevChecked.current.add(id);
             }
         }
-    }, [completedLessons, currentStreak, totalXP, seenEvents, starredEvents, eventMastery, dailyQuiz, achievements, dispatch]);
+
+        // ─── Bonus (hidden) achievements — random roll ───
+        const unlocked = achievements || {};
+        for (const ba of BONUS_ACHIEVEMENTS) {
+            if (unlocked[ba.id]) continue;
+            const currentKey = ba.triggerKey(currentState);
+            const prevKey = bonusRollKeys.current[ba.id];
+            // Only roll when the trigger key has changed (new activity occurred)
+            if (currentKey !== prevKey) {
+                bonusRollKeys.current[ba.id] = currentKey;
+                if (ba.triggerCondition(currentState) && Math.random() < ba.chance) {
+                    dispatch({ type: 'UNLOCK_ACHIEVEMENT', achievementId: ba.id });
+                }
+            }
+        }
+    }, [completedLessons, currentStreak, totalXP, seenEvents, starredEvents, eventMastery, dailyQuiz, achievements, studySessions, dispatch]);
 }

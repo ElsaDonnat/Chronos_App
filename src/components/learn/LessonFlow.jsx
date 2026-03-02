@@ -28,28 +28,28 @@ const PERIOD_INFO = {
         title: 'Prehistory',
         subtitle: 'c. 7\–6 million years ago \– c. 3200 BCE',
         keywords: 'Evolution, fire, farming.',
-        description: 'Literally "before written records," prehistory spans 99% of the human story \— from bipedalism and stone tools through the mastery of fire, the emergence of language, migration out of Africa, and the Neolithic transition to settled agriculture.',
+        description: 'Literally "before written records," prehistory spans 99% of the human story — from bipedalism and stone tools through the mastery of fire, the emergence of language, migration out of Africa, and the Neolithic transition to settled agriculture.',
         color: '#0D9488', icon: '\�\�',
     },
     ancient: {
         title: 'The Ancient World',
         subtitle: 'c. 3200 BCE \– 476 CE',
         keywords: 'Writing, cities, empires.',
-        description: 'Defined by writing, cities, states, and empires. From Sumer and Egypt to Greece, Rome, China, and India \— humanity built the foundations of law, philosophy, science, and organized religion.',
+        description: 'Defined by writing, cities, states, and empires. From Sumer and Egypt to Greece, Rome, China, and India — humanity built the foundations of law, philosophy, science, and organized religion.',
         color: '#6B5B73', icon: '\�\�\️',
     },
     medieval: {
         title: 'The Medieval World',
         subtitle: '476 \– c. 1500 CE',
         keywords: 'Islam, feudalism, Mongols.',
-        description: 'An era of transformation, not darkness. The rise of Islam, Byzantine continuity, feudal Europe, the Mongol Empire, the Crusades, and the first universities \— from Rome\’s fall to the reconnection of the world.',
+        description: 'An era of transformation, not darkness. The rise of Islam, Byzantine continuity, feudal Europe, the Mongol Empire, the Crusades, and the first universities — from Rome\’s fall to the reconnection of the world.',
         color: '#A0522D', icon: '\⚔\️',
     },
     earlymodern: {
         title: 'The Early Modern Period',
         subtitle: 'c. 1500 \– 1789',
         keywords: 'Exploration, Reformation, science.',
-        description: 'Exploration, colonization, the Renaissance, Reformation, Scientific Revolution, and Enlightenment \— from a fragmented world to an interconnected one, ending when Enlightenment ideals erupted into revolution.',
+        description: 'Exploration, colonization, the Renaissance, Reformation, Scientific Revolution, and Enlightenment — from a fragmented world to an interconnected one, ending when Enlightenment ideals erupted into revolution.',
         color: '#65774A', icon: '\�\�',
     },
     modern: {
@@ -620,7 +620,7 @@ export default function LessonFlow({ lesson, onComplete }) {
                             Now let's see how well you remember everything
                         </p>
                         <p className="text-xs mb-6" style={{ color: 'var(--color-ink-faint)' }}>
-                            {recapQuestions.length} {recapQuestions.length === 1 ? 'question' : 'questions'}{recapPerCard === 2 ? ' \— including typing exact dates' : ''}
+                            {recapQuestions.length} {recapQuestions.length === 1 ? 'question' : 'questions'}{recapPerCard === 2 ? ' — including typing exact dates' : ''}
                         </p>
                         <div className="flex justify-center gap-2 mb-4 flex-wrap">
                             {events.map((e, i) => (
@@ -637,7 +637,7 @@ export default function LessonFlow({ lesson, onComplete }) {
                         setRecapIndex(0);
                         setPhase(PHASE.RECAP);
                     }}>
-                        Start Recap \→
+                        Start Recap →
                     </Button>
                 </div>
             </div>
@@ -790,7 +790,7 @@ export default function LessonFlow({ lesson, onComplete }) {
                                 {quizResults.map((r, i) => (
                                     <button key={i}
                                         className="w-3 h-3 rounded-full result-dot-btn animate-dot-stagger"
-                                        title={`${events.find(e => e.id === r.eventId)?.title || 'Event'} \— ${r.questionType}`}
+                                        title={`${events.find(e => e.id === r.eventId)?.title || 'Event'} — ${r.questionType}`}
                                         onClick={() => setSelectedDot(r)}
                                         style={{
                                             animationDelay: `${i * 40}ms`,
@@ -984,15 +984,15 @@ function QuizQuestion({ question, lessonEventIds, onAnswer, onNext, onBack, onSk
         if (answered) {
             return (
                 <div className="pinned-footer flex gap-3">
-                    {onBack && <Button variant="secondary" onClick={onBack}>\← Back</Button>}
-                    <Button className="flex-1" onClick={onNext}>Continue \→</Button>
+                    {onBack && <Button variant="secondary" onClick={onBack}>← Back</Button>}
+                    <Button className="flex-1" onClick={onNext}>Continue →</Button>
                 </div>
             );
         }
         if (onSkip || onBack) {
             return (
                 <div className="pinned-footer flex gap-3">
-                    {onBack && <Button variant="secondary" onClick={onBack}>\← Back</Button>}
+                    {onBack && <Button variant="secondary" onClick={onBack}>← Back</Button>}
                     {onSkip && <Button className="flex-1" variant="secondary" onClick={onSkip}>Skip</Button>}
                 </div>
             );
@@ -1294,8 +1294,8 @@ function DateInputQuestion({ event, onAnswer, onNext, onBack, onSkip }) {
 
             {answered && (
                 <div className="pinned-footer flex gap-3">
-                    {onBack && <Button variant="secondary" onClick={onBack}>\← Back</Button>}
-                    <Button className="flex-1" onClick={onNext}>Continue \→</Button>
+                    {onBack && <Button variant="secondary" onClick={onBack}>← Back</Button>}
+                    <Button className="flex-1" onClick={onNext}>Continue →</Button>
                 </div>
             )}
         </div>

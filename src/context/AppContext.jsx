@@ -455,7 +455,9 @@ function reducer(state, action) {
                     ...state.achievements,
                     [action.achievementId]: new Date().toISOString(),
                 },
-                newAchievements: [...(state.newAchievements || []), action.achievementId],
+                newAchievements: action.silent
+                    ? (state.newAchievements || [])
+                    : [...(state.newAchievements || []), action.achievementId],
             };
         }
 

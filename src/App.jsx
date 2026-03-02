@@ -1,13 +1,14 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { App as CapApp } from '@capacitor/app';
 import { useApp } from './context/AppContext';
-import { useAchievementChecker, ACHIEVEMENTS } from './data/achievements';
+import { useAchievementChecker, ALL_ACHIEVEMENTS } from './data/achievements';
 import TopBar from './components/TopBar';
 import Sidebar, { MobileTabBar } from './components/layout/Sidebar';
 import LearnPage from './pages/LearnPage';
 import TimelinePage from './pages/TimelinePage';
 import PracticePage from './pages/PracticePage';
 import Settings from './components/Settings';
+import WeekTracker from './components/WeekTracker';
 import NotificationOnboarding from './components/NotificationOnboarding';
 import OnboardingOverlay from './components/OnboardingOverlay';
 import { ConfirmModal } from './components/shared';
@@ -33,6 +34,7 @@ export default function App() {
     return 'learn';
   });
   const [inSession, setInSession] = useState(false);
+  const [showWeekTracker, setShowWeekTracker] = useState(false);
   const { state, dispatch } = useApp();
   const mainRef = useRef(null);
   // Ref for child pages to register a back handler
@@ -140,6 +142,13 @@ export default function App() {
     return () => window.removeEventListener('widgetOpenTab', handleWidgetOpen);
   }, []);
 
+  // Week tracker: open from TopBar stats or LearnPage weekly card
+  useEffect(() => {
+    const handleOpen = () => setShowWeekTracker(true);
+    window.addEventListener('openWeekTracker', handleOpen);
+    return () => window.removeEventListener('openWeekTracker', handleOpen);
+  }, []);
+
   // Init notification channel + reschedule on mount
   useEffect(() => {
     createNotificationChannel();
@@ -207,6 +216,7 @@ export default function App() {
           onSkip={() => dispatch({ type: 'DISMISS_NOTIFICATION_ONBOARDING' })}
         />
       )}
+      {showWeekTracker && <WeekTracker onClose={() => setShowWeekTracker(false)} />}
       {showOnboardingOverlay && (
         <OnboardingOverlay step={state.onboardingStep} dispatch={dispatch} />
       )}
@@ -214,7 +224,7 @@ export default function App() {
       {/* Achievement unlock toast */}
       {(state.newAchievements || []).length > 0 && (() => {
         const achievementId = state.newAchievements[0];
-        const achievement = ACHIEVEMENTS.find(a => a.id === achievementId);
+        const achievement = ALL_ACHIEVEMENTS.find(a => a.id === achievementId);
         if (!achievement) return null;
         return (
           <div className="achievement-toast animate-slide-in-down" onClick={() => dispatch({ type: 'DISMISS_ACHIEVEMENT_TOAST' })}>

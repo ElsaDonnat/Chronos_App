@@ -410,7 +410,7 @@ export default function PracticePage({ onSessionChange, registerBackHandler }) {
                         <div className="text-center">
                             <Mascot mood={perfectSession ? 'celebrating' : redCount === 0 ? 'happy' : greenCount > redCount ? 'happy' : 'thinking'} size={70} />
                             <h2 className="text-2xl font-bold mt-4 mb-1" style={{ fontFamily: 'var(--font-serif)' }}>
-                                {perfectSession ? '\�\� Perfect Session!' : 'Practice Complete'}
+                                {perfectSession ? '⭐ Perfect Session!' : 'Practice Complete'}
                             </h2>
                             <p className="text-sm mb-1" style={{ color: 'var(--color-ink-muted)' }}>
                                 {sessionMode} · {results.length} questions · {sessionTimeStr}
@@ -598,7 +598,7 @@ export default function PracticePage({ onSessionChange, registerBackHandler }) {
                                                 {lesson.title}
                                             </h4>
                                             <p className="text-xs" style={{ color: 'var(--color-ink-faint)' }}>
-                                                {eventCount} events \· {masteredCount} mastered
+                                                {eventCount} events · {masteredCount} mastered
                                             </p>
                                         </div>
                                     </div>
@@ -618,7 +618,7 @@ export default function PracticePage({ onSessionChange, registerBackHandler }) {
 
                 <div className="flex-shrink-0 pt-4 pb-2">
                     <Button className="w-full" disabled={selectedLessons.length === 0} onClick={startLessonPractice}>
-                        Practice {selectedLessons.length > 0 ? `${selectedLessons.length} Lesson${selectedLessons.length > 1 ? 's' : ''}` : ''}  \→
+                        Practice {selectedLessons.length > 0 ? `${selectedLessons.length} Lesson${selectedLessons.length > 1 ? 's' : ''}` : ''}  →
                     </Button>
                 </div>
             </div>
@@ -733,7 +733,7 @@ function HubView({ starredEvents, weakEvents, statusTiers, dueCount, state, disp
                         <h3 className="text-sm font-bold" style={{ fontFamily: 'var(--font-serif)' }}>Favorites</h3>
                         <p className="text-xs mt-0.5" style={{ color: 'var(--color-ink-muted)' }}>
                             {starredEvents.length > 0
-                                ? `${starredEvents.length} starred event${starredEvents.length !== 1 ? 's' : ''} \· shuffled`
+                                ? `${starredEvents.length} starred event${starredEvents.length !== 1 ? 's' : ''} · shuffled`
                                 : 'Star events during lessons to add them here'
                             }
                         </p>
@@ -751,7 +751,7 @@ function HubView({ starredEvents, weakEvents, statusTiers, dueCount, state, disp
                 <div className="flex items-start gap-3">
                     <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
                         style={{ backgroundColor: 'rgba(101, 119, 74, 0.1)' }}>
-                        <span className="text-lg">{'\�\�'}</span>
+                        <span className="text-lg">{''}</span>
                     </div>
                     <div className="flex-1 min-w-0">
                         <h3 className="text-sm font-bold" style={{ fontFamily: 'var(--font-serif)' }}>By Lesson</h3>
@@ -835,7 +835,6 @@ function CollectionView({ statusTiers, collectionSort, setCollectionSort, expand
         {
             key: 'new',
             label: 'New',
-            emoji: '\�\�',
             color: 'var(--color-ink-muted)',
             bg: 'rgba(28, 25, 23, 0.04)',
             items: statusTiers.new,
@@ -844,7 +843,6 @@ function CollectionView({ statusTiers, collectionSort, setCollectionSort, expand
         {
             key: 'learning',
             label: 'Learning',
-            emoji: '\�\�',
             color: 'var(--color-error)',
             bg: 'rgba(166, 61, 61, 0.06)',
             items: statusTiers.learning,
@@ -853,7 +851,6 @@ function CollectionView({ statusTiers, collectionSort, setCollectionSort, expand
         {
             key: 'known',
             label: 'Known',
-            emoji: '\�\�',
             color: 'var(--color-warning)',
             bg: 'rgba(198, 134, 42, 0.06)',
             items: statusTiers.known,
@@ -862,7 +859,6 @@ function CollectionView({ statusTiers, collectionSort, setCollectionSort, expand
         {
             key: 'fully_assimilated',
             label: 'Fully Assimilated',
-            emoji: '\�\�',
             color: 'var(--color-success)',
             bg: 'rgba(5, 150, 105, 0.06)',
             items: statusTiers.fully_assimilated,
@@ -888,7 +884,6 @@ function CollectionView({ statusTiers, collectionSort, setCollectionSort, expand
             {tierConfig.map(tier => (
                 <div key={tier.key} className="mb-5">
                     <div className="flex items-center gap-2 mb-2">
-                        <span>{tier.emoji}</span>
                         <h3 className="text-sm font-bold" style={{ color: tier.color }}>{tier.label}</h3>
                         <span className="text-xs font-medium px-2 py-0.5 rounded-full"
                             style={{ backgroundColor: tier.bg, color: tier.color }}>
@@ -900,7 +895,7 @@ function CollectionView({ statusTiers, collectionSort, setCollectionSort, expand
                                 className="ml-auto text-[10px] font-semibold px-2 py-1 rounded-lg transition-all"
                                 style={{ backgroundColor: tier.bg, color: tier.color }}
                             >
-                                {tier.practiceLabel} {'\→'}
+                                {tier.practiceLabel} {'→'}
                             </button>
                         )}
                     </div>
@@ -909,7 +904,7 @@ function CollectionView({ statusTiers, collectionSort, setCollectionSort, expand
                         <div className="text-center py-4 rounded-xl" style={{ backgroundColor: tier.bg }}>
                             <p className="text-xs" style={{ color: 'var(--color-ink-faint)' }}>
                                 {tier.key === 'new' ? 'All events have been reviewed' :
-                                    tier.key === 'learning' ? 'No cards still learning \— great work!' :
+                                    tier.key === 'learning' ? 'No cards still learning — great work!' :
                                     tier.key === 'fully_assimilated' ? 'Keep practicing to fully assimilate cards' :
                                     'No cards at this level yet'}
                             </p>
@@ -1183,8 +1178,8 @@ function PracticeMatchQuestion({ question, onAnswer, onNext, onBack }) {
             </Card>
             {matchChecked && (
                 <div className="pinned-footer flex gap-3">
-                    {onBack && <Button variant="secondary" onClick={onBack}>{'\←'} Back</Button>}
-                    <Button className="flex-1" onClick={onNext}>Continue {'\→'}</Button>
+                    {onBack && <Button variant="secondary" onClick={onBack}>{'←'} Back</Button>}
+                    <Button className="flex-1" onClick={onNext}>Continue {'→'}</Button>
                 </div>
             )}
         </div>
@@ -1281,11 +1276,11 @@ function PracticeQuestion({ question, isStarred, onToggleStar, onAnswer, onNext,
                 {answered && <ControversyNote note={event.controversyNotes?.location} />}
                 {answered ? (
                     <div className="pinned-footer flex gap-3">
-                        {onBack && <Button variant="secondary" onClick={onBack}>\← Back</Button>}
-                        <Button className="flex-1" onClick={onNext}>Continue \→</Button>
+                        {onBack && <Button variant="secondary" onClick={onBack}>← Back</Button>}
+                        <Button className="flex-1" onClick={onNext}>Continue →</Button>
                     </div>
                 ) : (
-                    onBack && <div className="pinned-footer"><Button variant="secondary" className="w-full" onClick={onBack}>\← Back</Button></div>
+                    onBack && <div className="pinned-footer"><Button variant="secondary" className="w-full" onClick={onBack}>← Back</Button></div>
                 )}
             </div>
         );
@@ -1336,8 +1331,8 @@ function PracticeQuestion({ question, isStarred, onToggleStar, onAnswer, onNext,
                 {answered && <ControversyNote note={event.controversyNotes?.date} />}
                 {answered && (
                     <div className="pinned-footer flex gap-3">
-                        {onBack && <Button variant="secondary" onClick={onBack}>\← Back</Button>}
-                        <Button className="flex-1" onClick={onNext}>Continue \→</Button>
+                        {onBack && <Button variant="secondary" onClick={onBack}>← Back</Button>}
+                        <Button className="flex-1" onClick={onNext}>Continue →</Button>
                     </div>
                 )}
             </div>
@@ -1375,11 +1370,11 @@ function PracticeQuestion({ question, isStarred, onToggleStar, onAnswer, onNext,
                 {answered && <ControversyNote note={event.controversyNotes?.what} />}
                 {answered ? (
                     <div className="pinned-footer flex gap-3">
-                        {onBack && <Button variant="secondary" onClick={onBack}>\← Back</Button>}
-                        <Button className="flex-1" onClick={onNext}>Continue \→</Button>
+                        {onBack && <Button variant="secondary" onClick={onBack}>← Back</Button>}
+                        <Button className="flex-1" onClick={onNext}>Continue →</Button>
                     </div>
                 ) : (
-                    onBack && <div className="pinned-footer"><Button variant="secondary" className="w-full" onClick={onBack}>\← Back</Button></div>
+                    onBack && <div className="pinned-footer"><Button variant="secondary" className="w-full" onClick={onBack}>← Back</Button></div>
                 )}
             </div>
         );
@@ -1416,11 +1411,11 @@ function PracticeQuestion({ question, isStarred, onToggleStar, onAnswer, onNext,
                 {answered && <ControversyNote note={event.controversyNotes?.description} />}
                 {answered ? (
                     <div className="pinned-footer flex gap-3">
-                        {onBack && <Button variant="secondary" onClick={onBack}>\← Back</Button>}
-                        <Button className="flex-1" onClick={onNext}>Continue \→</Button>
+                        {onBack && <Button variant="secondary" onClick={onBack}>← Back</Button>}
+                        <Button className="flex-1" onClick={onNext}>Continue →</Button>
                     </div>
                 ) : (
-                    onBack && <div className="pinned-footer"><Button variant="secondary" className="w-full" onClick={onBack}>\← Back</Button></div>
+                    onBack && <div className="pinned-footer"><Button variant="secondary" className="w-full" onClick={onBack}>← Back</Button></div>
                 )}
             </div>
         );

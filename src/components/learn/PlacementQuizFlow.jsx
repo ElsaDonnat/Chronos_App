@@ -9,11 +9,11 @@ import * as feedback from '../../services/feedback';
 
 // Period icons/colors for era selection
 const ERA_STYLE = {
-    prehistory: { icon: '\�\�', color: '#0D9488' },
-    ancient: { icon: '\�\�\️', color: '#6B5B73' },
-    medieval: { icon: '\⚔\️', color: '#A0522D' },
-    earlymodern: { icon: '\�\�', color: '#65774A' },
-    modern: { icon: '\�\�', color: '#8B4157' },
+    prehistory: { icon: '🦴', color: '#0D9488' },
+    ancient: { icon: '🏛️', color: '#6B5B73' },
+    medieval: { icon: '⚔️', color: '#A0522D' },
+    earlymodern: { icon: '🧭', color: '#65774A' },
+    modern: { icon: '🌍', color: '#8B4157' },
 };
 
 export default function PlacementQuizFlow({ onComplete, initialEra }) {
@@ -100,7 +100,7 @@ export default function PlacementQuizFlow({ onComplete, initialEra }) {
                             {quizScore.passed ? 'Passed!' : 'Not quite'}
                         </h2>
                         <p className="text-sm mb-1" style={{ color: 'var(--color-ink-muted)' }}>
-                            {group?.label} \· {quizScore.score} / {quizScore.maxScore} points
+                            {group?.label} · {quizScore.score} / {quizScore.maxScore} points
                         </p>
                         {quizScore.passed ? (
                             <p className="text-sm mt-3 px-4" style={{ color: 'var(--color-success)' }}>
@@ -143,7 +143,7 @@ export default function PlacementQuizFlow({ onComplete, initialEra }) {
                     {quizScore.passed ? (
                         <Button className="flex-1" onClick={handleContinue}>
                             {initialEra ? 'Done' : (getNextPlacementEra({ ...state.placementQuizzes, [activeEra]: { passed: true } })
-                                ? 'Next Era \→' : 'Finish')}
+                                ? 'Next Era →' : 'Finish')}
                         </Button>
                     ) : (
                         <>
@@ -244,8 +244,8 @@ export default function PlacementQuizFlow({ onComplete, initialEra }) {
                                     <h3 className="text-sm font-bold" style={{ fontFamily: 'var(--font-serif)' }}>{group.label}</h3>
                                     <p className="text-xs mt-0.5" style={{ color: 'var(--color-ink-muted)' }}>
                                         {passed
-                                            ? `Passed \· ${quizResult.score}/${quizResult.maxScore} points`
-                                            : `${group.questionCount} questions \· ${group.lessonIds.length} lessons`}
+                                            ? `Passed · ${quizResult.score}/${quizResult.maxScore} points`
+                                            : `${group.questionCount} questions · ${group.lessonIds.length} lessons`}
                                     </p>
                                 </div>
                                 {unlocked && !passed && (
@@ -274,7 +274,7 @@ export default function PlacementQuizFlow({ onComplete, initialEra }) {
                 </Button>
                 {nextEra && (
                     <Button className="flex-1" onClick={() => startQuiz(nextEra.id)}>
-                        Start {nextEra.label} \→
+                        Start {nextEra.label} →
                     </Button>
                 )}
             </div>
@@ -324,8 +324,8 @@ function PlacementQuestion({ question, onAnswer, onNext }) {
             </p>
             {score !== 'green' && (
                 <div className="mt-2 text-xs leading-relaxed" style={{ color: 'var(--color-ink-secondary)' }}>
-                    <strong>{event.title}</strong> \— <span style={{ color: 'var(--color-burgundy)' }}>{event.date}</span>
-                    {type === 'location' && <span> \· {event.location.place}</span>}
+                    <strong>{event.title}</strong> — <span style={{ color: 'var(--color-burgundy)' }}>{event.date}</span>
+                    {type === 'location' && <span> · {event.location.place}</span>}
                 </div>
             )}
         </div>
@@ -359,7 +359,7 @@ function PlacementQuestion({ question, onAnswer, onNext }) {
                 </Card>
                 {answered && (
                     <div className="pinned-footer">
-                        <Button className="w-full" onClick={onNext}>Continue \→</Button>
+                        <Button className="w-full" onClick={onNext}>Continue →</Button>
                     </div>
                 )}
             </div>
@@ -395,7 +395,7 @@ function PlacementQuestion({ question, onAnswer, onNext }) {
                 </Card>
                 {answered && (
                     <div className="pinned-footer">
-                        <Button className="w-full" onClick={onNext}>Continue \→</Button>
+                        <Button className="w-full" onClick={onNext}>Continue →</Button>
                     </div>
                 )}
             </div>
@@ -431,7 +431,7 @@ function PlacementQuestion({ question, onAnswer, onNext }) {
                 </Card>
                 {answered && (
                     <div className="pinned-footer">
-                        <Button className="w-full" onClick={onNext}>Continue \→</Button>
+                        <Button className="w-full" onClick={onNext}>Continue →</Button>
                     </div>
                 )}
             </div>
@@ -467,7 +467,7 @@ function PlacementQuestion({ question, onAnswer, onNext }) {
                 </Card>
                 {answered && (
                     <div className="pinned-footer">
-                        <Button className="w-full" onClick={onNext}>Continue \→</Button>
+                        <Button className="w-full" onClick={onNext}>Continue →</Button>
                     </div>
                 )}
             </div>

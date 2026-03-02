@@ -20,6 +20,8 @@ Use the latest version entry for Play Store "What's New" text.
 - Timeline header now shows core events and bonus cards separately ("X of 60 events · Y bonus")
 - CSS styles for year display (.daily-quiz-year), year card (.daily-quiz-year-card), and card reveal animation (.daily-quiz-card-reveal)
 - Share results & streak — "Share Result" button on lesson summary, practice results, and daily quiz results; "Share Streak" button in streak modal. Uses Web Share API on Android, clipboard copy fallback on desktop. Messages include score, XP, streak, and Play Store link
+- Weekly learning insights — "This Week" card on the Learn page showing sessions completed, questions answered, study time, strongest era, and weakest era to focus on. Dismissible per week, resets each Monday
+- Matching questions in practice — event-to-date matching now appears in practice sessions (1 per session, counts as 2 questions). Picks 4 events across different eras, prioritizing weak date scores
 - Streak Widget flame now changes color based on streak status: orange/yellow when active, red when at risk of breaking, blue when lost. Flame subtly flickers via ViewFlipper animation (2 frames). Red flame is visually larger to convey urgency
 - Quick Practice Widget redesigned with prominent "Chronos" logo, burgundy play button, and stats row
 - Both widgets now have an elegant burgundy (#8B4157) border instead of the previous light gray

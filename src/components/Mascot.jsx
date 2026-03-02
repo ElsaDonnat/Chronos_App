@@ -93,15 +93,17 @@ export default function Mascot({ mood = 'happy', size = 80, className = '' }) {
                     {/* Hourglass — held out to the side, away from face */}
                     <g transform="translate(16, 7)" style={shakeHourglass ? { transformOrigin: '0px 0px', animation: 'hourglassShake 0.25s ease-in-out 2' } : {}}>
                         {/* Top cap */}
-                        <line x1="-2.2" y1="-3.5" x2="2.2" y2="-3.5" stroke="#8B4157" strokeWidth="0.8" strokeLinecap="round" />
+                        <rect x="-2.2" y="-4" width="4.4" height="0.9" rx="0.4" fill="#8B4157" />
                         {/* Bottom cap */}
-                        <line x1="-2.2" y1="3.5" x2="2.2" y2="3.5" stroke="#8B4157" strokeWidth="0.8" strokeLinecap="round" />
+                        <rect x="-2.2" y="3.1" width="4.4" height="0.9" rx="0.4" fill="#8B4157" />
                         {/* Glass left */}
-                        <path d="M -1.6 -3.5 Q -1.6 -0.5 0 0 Q -1.6 0.5 -1.6 3.5" stroke="#8B4157" strokeWidth="0.55" fill="none" strokeLinecap="round" />
+                        <path d="M -1.5 -3.1 C -1.5 -1 -0.8 -0.5 0 0 C -0.8 0.5 -1.5 1 -1.5 3.1" stroke="#8B4157" strokeWidth="0.6" fill="none" strokeLinecap="round" />
                         {/* Glass right */}
-                        <path d="M 1.6 -3.5 Q 1.6 -0.5 0 0 Q 1.6 0.5 1.6 3.5" stroke="#8B4157" strokeWidth="0.55" fill="none" strokeLinecap="round" />
-                        {/* Sand */}
-                        <circle cx="0" cy="2.2" r="0.5" fill="#A8596E" opacity="0.4" />
+                        <path d="M 1.5 -3.1 C 1.5 -1 0.8 -0.5 0 0 C 0.8 0.5 1.5 1 1.5 3.1" stroke="#8B4157" strokeWidth="0.6" fill="none" strokeLinecap="round" />
+                        {/* Sand top */}
+                        <line x1="-0.7" y1="-2" x2="0.7" y2="-2" stroke="#C8A882" strokeWidth="0.5" strokeLinecap="round" opacity="0.6" />
+                        {/* Sand bottom */}
+                        <path d="M -1 3 Q 0 1.5 1 3 Z" fill="#C8A882" opacity="0.5" />
                     </g>
 
                     {/* Fingers wrapping around hourglass */}
