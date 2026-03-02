@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, forwardRef } from 'react';
 import { CATEGORY_CONFIG } from '../data/events';
 
 /** Truncates text to `lines` lines with a "Read more / Less" toggle. */
@@ -116,7 +116,7 @@ export function ProgressBar({ value, max }) {
     );
 }
 
-export function Button({ children, onClick, variant = 'primary', disabled = false, className = '' }) {
+export const Button = forwardRef(function Button({ children, onClick, variant = 'primary', disabled = false, className = '' }, ref) {
     const base = 'px-6 py-3 rounded-xl font-semibold text-sm transition-all duration-200 active:scale-[0.98] cursor-pointer';
 
     const variants = {
@@ -137,6 +137,7 @@ export function Button({ children, onClick, variant = 'primary', disabled = fals
 
     return (
         <button
+            ref={ref}
             onClick={onClick}
             disabled={disabled}
             className={`${base} ${className}`}
@@ -149,7 +150,7 @@ export function Button({ children, onClick, variant = 'primary', disabled = fals
             {children}
         </button>
     );
-}
+});
 
 export function Card({ children, className = '', onClick, style = {} }) {
     return (
@@ -182,18 +183,27 @@ export function StarButton({ isStarred, onClick, size = 18 }) {
     );
 }
 
+let _confirmModalCounter = 0;
+
 export function ConfirmModal({ title, message, confirmLabel = 'Yes', cancelLabel = 'Cancel', onConfirm, onCancel, danger = false }) {
+    const cancelRef = useRef(null);
+    const [titleId] = useState(() => `confirm-title-${++_confirmModalCounter}`);
+
+    useEffect(() => {
+        cancelRef.current?.focus();
+    }, []);
+
     return (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-6" style={{ backgroundColor: 'rgba(28, 25, 23, 0.4)', backdropFilter: 'blur(4px)' }} onClick={onCancel}>
-            <div className="w-full max-w-sm rounded-2xl p-6 animate-fade-in" style={{ backgroundColor: 'var(--color-card)', boxShadow: '0 20px 60px rgba(0,0,0,0.2)' }} onClick={e => e.stopPropagation()}>
-                <h3 className="text-lg font-bold mb-2" style={{ fontFamily: 'var(--font-serif)', color: 'var(--color-ink)' }}>
+            <div role="dialog" aria-modal="true" aria-labelledby={titleId.current} className="w-full max-w-sm rounded-2xl p-6 animate-fade-in" style={{ backgroundColor: 'var(--color-card)', boxShadow: '0 20px 60px rgba(0,0,0,0.2)' }} onClick={e => e.stopPropagation()}>
+                <h3 id={titleId.current} className="text-lg font-bold mb-2" style={{ fontFamily: 'var(--font-serif)', color: 'var(--color-ink)' }}>
                     {title}
                 </h3>
                 <p className="text-sm mb-6" style={{ color: 'var(--color-ink-muted)' }}>
                     {message}
                 </p>
                 <div className="flex gap-3">
-                    <Button variant="secondary" className="flex-1" onClick={onCancel}>
+                    <Button ref={cancelRef} variant="secondary" className="flex-1" onClick={onCancel}>
                         {cancelLabel}
                     </Button>
                     <button
@@ -211,6 +221,62 @@ export function ConfirmModal({ title, message, confirmLabel = 'Yes', cancelLabel
             </div>
         </div>
     );
+}
+
+export function ControversyNote({ note }) {
+    const [expanded, setExpanded] = useState(false);
+    if (!note) return null;
+
+    return (
+        <div className="mt-3 animate-fade-in">
+            <button
+                onClick={() => setExpanded(e => !e)}
+                className="flex items-center gap-1.5 text-xs font-medium transition-colors duration-200"
+                style={{ color: 'var(--color-ink-muted)', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
+            >
+                <span className="w-5 h-5 rounded-full flex items-center justify-center text-[11px] font-bold"
+                    style={{ backgroundColor: 'rgba(139, 65, 87, 0.1)', color: 'var(--color-burgundy)' }}>
+                    ?
+                </span>
+                {expanded ? 'Hide scholarly note' : 'Scholarly note on this answer'}
+            </button>
+            {expanded && (
+                <div className="mt-2 px-3 py-2.5 rounded-lg text-xs leading-relaxed animate-fade-in"
+                    style={{
+                        backgroundColor: 'rgba(139, 65, 87, 0.04)',
+                        borderLeft: '2px solid var(--color-burgundy)',
+                        color: 'var(--color-ink-secondary)',
+                        fontStyle: 'italic',
+                    }}>
+                    {note}
+                </div>
+            )}
+        </div>
+    );
+}
+
+export function AnimatedCounter({ value, prefix = '', duration = 600, delay = 0, className = '', style = {} }) {
+    const [display, setDisplay] = useState(0);
+    const hasStarted = useRef(false);
+
+    useEffect(() => {
+        const timeout = setTimeout(() => {
+            if (hasStarted.current) return;
+            hasStarted.current = true;
+            const startTime = Date.now();
+            const animate = () => {
+                const elapsed = Date.now() - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                const eased = 1 - Math.pow(1 - progress, 3);
+                setDisplay(Math.round(value * eased));
+                if (progress < 1) requestAnimationFrame(animate);
+            };
+            requestAnimationFrame(animate);
+        }, delay);
+        return () => clearTimeout(timeout);
+    }, [value, duration, delay]);
+
+    return <span className={className} style={style}>{prefix}{display}</span>;
 }
 
 export function TabSelector({ tabs, activeTab, onChange }) {

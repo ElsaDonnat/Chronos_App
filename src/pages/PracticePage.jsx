@@ -2,8 +2,8 @@ import { useState, useMemo, useEffect } from 'react';
 import { useApp } from '../context/AppContext';
 import { ALL_EVENTS, getEventById, CATEGORY_CONFIG } from '../data/events';
 import { LESSONS } from '../data/lessons';
-import { scoreDateAnswer, generateLocationOptions, generateWhatOptions, generateDescriptionOptions, SCORE_COLORS, getScoreColor, getScoreLabel } from '../data/quiz';
-import { Card, Button, MasteryDots, ProgressBar, Divider, CategoryTag, StarButton, TabSelector, ConfirmModal, ExpandableText } from '../components/shared';
+import { scoreDateAnswer, generateLocationOptions, generateWhatOptions, generateDescriptionOptions, SCORE_COLORS, getScoreColor, getScoreLabel, shuffle } from '../data/quiz';
+import { Card, Button, MasteryDots, ProgressBar, Divider, CategoryTag, StarButton, TabSelector, ConfirmModal, ExpandableText, ControversyNote } from '../components/shared';
 import Mascot from '../components/Mascot';
 
 // ─── Views ───────────────────────────────────────────
@@ -88,7 +88,7 @@ export default function PracticePage({ onSessionChange, registerBackHandler }) {
     // ─── Question generation ─────────────────────────
     const generateQuestionsForPool = (eventPool) => {
         const qList = [];
-        const shuffled = [...eventPool].sort(() => Math.random() - 0.5);
+        const shuffled = shuffle([...eventPool]);
         const pool = shuffled.slice(0, 15);
 
         for (const event of pool) {
@@ -115,7 +115,7 @@ export default function PracticePage({ onSessionChange, registerBackHandler }) {
             if (qList.length >= 12) break;
         }
 
-        return qList.sort(() => Math.random() - 0.5);
+        return shuffle(qList);
     };
 
     const startSession = (mode, eventPool) => {
@@ -268,7 +268,8 @@ export default function PracticePage({ onSessionChange, registerBackHandler }) {
                             {/* Score dots */}
                             <div className="flex items-center gap-1 mb-4 justify-center flex-wrap">
                                 {results.map((r, i) => (
-                                    <div key={i} className="w-2.5 h-2.5 rounded-full" style={{
+                                    <div key={i} className="w-2.5 h-2.5 rounded-full animate-dot-stagger" style={{
+                                        animationDelay: `${i * 40}ms`,
                                         backgroundColor: r.score === 'green' ? 'var(--color-success)' :
                                             r.score === 'yellow' ? 'var(--color-warning)' : 'var(--color-error)'
                                     }} />
@@ -277,15 +278,15 @@ export default function PracticePage({ onSessionChange, registerBackHandler }) {
 
                             {/* Score summary */}
                             <div className="grid grid-cols-3 gap-3 text-center">
-                                <div>
+                                <div className="animate-scale-in" style={{ animationDelay: '200ms' }}>
                                     <div className="text-lg font-bold" style={{ color: 'var(--color-success)' }}>{greenCount}</div>
                                     <div className="text-xs" style={{ color: 'var(--color-ink-muted)' }}>Exact</div>
                                 </div>
-                                <div>
+                                <div className="animate-scale-in" style={{ animationDelay: '300ms' }}>
                                     <div className="text-lg font-bold" style={{ color: 'var(--color-warning)' }}>{yellowCount}</div>
                                     <div className="text-xs" style={{ color: 'var(--color-ink-muted)' }}>Close</div>
                                 </div>
-                                <div>
+                                <div className="animate-scale-in" style={{ animationDelay: '400ms' }}>
                                     <div className="text-lg font-bold" style={{ color: 'var(--color-error)' }}>{redCount}</div>
                                     <div className="text-xs" style={{ color: 'var(--color-ink-muted)' }}>Missed</div>
                                 </div>
@@ -893,13 +894,14 @@ function PracticeQuestion({ question, isStarred, onToggleStar, onAnswer, onNext,
                     </div>
                     {renderFeedback()}
                 </Card>
+                {answered && <ControversyNote note={event.controversyNotes?.location} />}
                 {answered ? (
                     <div className="pinned-footer flex gap-3">
-                        {onBack && <Button variant="secondary" onClick={onBack}>← Back</Button>}
-                        <Button className="flex-1" onClick={onNext}>Continue →</Button>
+                        {onBack && <Button variant="secondary" onClick={onBack}>\u2190 Back</Button>}
+                        <Button className="flex-1" onClick={onNext}>Continue \u2192</Button>
                     </div>
                 ) : (
-                    onBack && <div className="pinned-footer"><Button variant="secondary" className="w-full" onClick={onBack}>← Back</Button></div>
+                    onBack && <div className="pinned-footer"><Button variant="secondary" className="w-full" onClick={onBack}>\u2190 Back</Button></div>
                 )}
             </div>
         );
@@ -947,10 +949,11 @@ function PracticeQuestion({ question, isStarred, onToggleStar, onAnswer, onNext,
                         renderFeedback()
                     )}
                 </Card>
+                {answered && <ControversyNote note={event.controversyNotes?.date} />}
                 {answered && (
                     <div className="pinned-footer flex gap-3">
-                        {onBack && <Button variant="secondary" onClick={onBack}>← Back</Button>}
-                        <Button className="flex-1" onClick={onNext}>Continue →</Button>
+                        {onBack && <Button variant="secondary" onClick={onBack}>\u2190 Back</Button>}
+                        <Button className="flex-1" onClick={onNext}>Continue \u2192</Button>
                     </div>
                 )}
             </div>
@@ -985,13 +988,14 @@ function PracticeQuestion({ question, isStarred, onToggleStar, onAnswer, onNext,
                     </div>
                     {renderFeedback()}
                 </Card>
+                {answered && <ControversyNote note={event.controversyNotes?.what} />}
                 {answered ? (
                     <div className="pinned-footer flex gap-3">
-                        {onBack && <Button variant="secondary" onClick={onBack}>← Back</Button>}
-                        <Button className="flex-1" onClick={onNext}>Continue →</Button>
+                        {onBack && <Button variant="secondary" onClick={onBack}>\u2190 Back</Button>}
+                        <Button className="flex-1" onClick={onNext}>Continue \u2192</Button>
                     </div>
                 ) : (
-                    onBack && <div className="pinned-footer"><Button variant="secondary" className="w-full" onClick={onBack}>← Back</Button></div>
+                    onBack && <div className="pinned-footer"><Button variant="secondary" className="w-full" onClick={onBack}>\u2190 Back</Button></div>
                 )}
             </div>
         );
@@ -1025,13 +1029,14 @@ function PracticeQuestion({ question, isStarred, onToggleStar, onAnswer, onNext,
                     </div>
                     {renderFeedback()}
                 </Card>
+                {answered && <ControversyNote note={event.controversyNotes?.description} />}
                 {answered ? (
                     <div className="pinned-footer flex gap-3">
-                        {onBack && <Button variant="secondary" onClick={onBack}>← Back</Button>}
-                        <Button className="flex-1" onClick={onNext}>Continue →</Button>
+                        {onBack && <Button variant="secondary" onClick={onBack}>\u2190 Back</Button>}
+                        <Button className="flex-1" onClick={onNext}>Continue \u2192</Button>
                     </div>
                 ) : (
-                    onBack && <div className="pinned-footer"><Button variant="secondary" className="w-full" onClick={onBack}>← Back</Button></div>
+                    onBack && <div className="pinned-footer"><Button variant="secondary" className="w-full" onClick={onBack}>\u2190 Back</Button></div>
                 )}
             </div>
         );

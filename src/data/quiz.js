@@ -1,5 +1,15 @@
 import { ALL_EVENTS } from './events';
 
+// ─── Fisher-Yates shuffle ────────────────────────────
+export function shuffle(array) {
+    const arr = [...array];
+    for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+}
+
 // ─── Centralized score color mapping ────────────────
 export const SCORE_COLORS = {
     green: { bg: 'rgba(5, 150, 105, 0.08)', border: 'var(--color-success)' },
@@ -124,7 +134,7 @@ export function generateDateMCQOptions(correctEvent) {
         .sort((a, b) => a.dist - b.dist)
         .slice(0, 8); // pool of 8 nearby
 
-    const shuffledNearby = nearby.sort(() => Math.random() - 0.5);
+    const shuffledNearby = shuffle(nearby);
     let nearbyAdded = 0;
     for (const ne of shuffledNearby) {
         if (nearbyAdded >= 2 || options.length >= 4) break;
@@ -154,7 +164,7 @@ export function generateDateMCQOptions(correctEvent) {
     }
 
     // Shuffle
-    return options.sort(() => Math.random() - 0.5);
+    return shuffle(options);
 }
 
 // Generate location MCQ options
@@ -176,8 +186,8 @@ export function generateLocationOptions(correctEvent, allEvents = ALL_EVENTS) {
     const uniqueOther = [...new Set(otherRegion)];
 
     // Add 1-2 from same region, rest from other regions
-    const shuffledSame = uniqueSame.sort(() => Math.random() - 0.5);
-    const shuffledOther = uniqueOther.sort(() => Math.random() - 0.5);
+    const shuffledSame = shuffle(uniqueSame);
+    const shuffledOther = shuffle(uniqueOther);
 
     for (const place of shuffledSame.slice(0, 2)) {
         if (options.length < 4) options.push(place);
@@ -186,7 +196,7 @@ export function generateLocationOptions(correctEvent, allEvents = ALL_EVENTS) {
         if (options.length < 4) options.push(place);
     }
 
-    return options.sort(() => Math.random() - 0.5);
+    return shuffle(options);
 }
 
 // Generate "what happened" MCQ options
@@ -197,8 +207,8 @@ export function generateWhatOptions(correctEvent, lessonEventIds, allEvents = AL
     const lessonEvents = allEvents.filter(e => lessonEventIds.includes(e.id) && e.id !== correctEvent.id);
     const otherEvents = allEvents.filter(e => !lessonEventIds.includes(e.id) && e.id !== correctEvent.id);
 
-    const shuffledLesson = lessonEvents.sort(() => Math.random() - 0.5);
-    const shuffledOther = otherEvents.sort(() => Math.random() - 0.5);
+    const shuffledLesson = shuffle(lessonEvents);
+    const shuffledOther = shuffle(otherEvents);
 
     for (const e of shuffledLesson) {
         if (options.length < 4) options.push({ id: e.id, title: e.title, description: e.description });
@@ -207,7 +217,7 @@ export function generateWhatOptions(correctEvent, lessonEventIds, allEvents = AL
         if (options.length < 4) options.push({ id: e.id, title: e.title, description: e.description });
     }
 
-    return options.sort(() => Math.random() - 0.5);
+    return shuffle(options);
 }
 
 // Generate "description" MCQ options — given an event title, pick the right description
@@ -234,7 +244,7 @@ export function generateDescriptionOptions(correctEvent, allEvents = ALL_EVENTS)
         .sort((a, b) => a.dist - b.dist);
 
     // Pick up to 3 distractors, preferring nearby events
-    const shuffledPool = candidates.slice(0, 12).sort(() => Math.random() - 0.5);
+    const shuffledPool = shuffle(candidates.slice(0, 12));
     for (const e of shuffledPool) {
         if (options.length >= 4) break;
         options.push({
@@ -246,7 +256,7 @@ export function generateDescriptionOptions(correctEvent, allEvents = ALL_EVENTS)
 
     // Fill from farther events if needed
     if (options.length < 4) {
-        const remaining = candidates.slice(12).sort(() => Math.random() - 0.5);
+        const remaining = shuffle(candidates.slice(12));
         for (const e of remaining) {
             if (options.length >= 4) break;
             options.push({
@@ -257,7 +267,7 @@ export function generateDescriptionOptions(correctEvent, allEvents = ALL_EVENTS)
         }
     }
 
-    return options.sort(() => Math.random() - 0.5);
+    return shuffle(options);
 }
 
 // Calculate XP for a session — difficulty multiplier applied per result

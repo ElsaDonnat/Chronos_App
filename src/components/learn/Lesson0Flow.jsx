@@ -1,7 +1,7 @@
 import { useState, useMemo, useRef, useEffect } from 'react';
 import { useApp } from '../../context/AppContext';
 import { getEventById, ERA_BOUNDARY_EVENTS } from '../../data/events';
-import { SCORE_COLORS, getScoreLabel } from '../../data/quiz';
+import { SCORE_COLORS, getScoreLabel, shuffle } from '../../data/quiz';
 import { Card, Button, ProgressBar, Divider, ExpandableText } from '../shared';
 import Mascot from '../Mascot';
 
@@ -151,8 +151,8 @@ function pickFakeDates(periodId) {
     const pool = FAKE_DATES[periodId];
     const closeCount = Math.random() < 0.5 ? 1 : 2;
     const farCount = 3 - closeCount;
-    const shuffledClose = [...pool.close].sort(() => Math.random() - 0.5);
-    const shuffledFar = [...pool.far].sort(() => Math.random() - 0.5);
+    const shuffledClose = shuffle([...pool.close]);
+    const shuffledFar = shuffle([...pool.far]);
     return [
         ...shuffledClose.slice(0, closeCount),
         ...shuffledFar.slice(0, farCount),
@@ -167,7 +167,7 @@ function generateQuizQuestions() {
         // Q1: "When?" — given period name, pick correct date range
         // Wrong answers are plausible fakes, NOT real dates of other eras
         const fakes = pickFakeDates(period.id);
-        const dateOptions = [period.subtitle, ...fakes].sort(() => Math.random() - 0.5);
+        const dateOptions = shuffle([period.subtitle, ...fakes]);
         questions.push({
             type: 'date',
             periodId: period.id,
@@ -178,9 +178,8 @@ function generateQuizQuestions() {
         });
 
         // Q2: "What period?" — given date range, pick correct period name
-        const nameOptions = PERIODS
-            .map(p => ({ id: p.id, label: p.title, icon: p.icon }))
-            .sort(() => Math.random() - 0.5);
+        const nameOptions = shuffle(PERIODS
+            .map(p => ({ id: p.id, label: p.title, icon: p.icon })));
         questions.push({
             type: 'event',
             periodId: period.id,
@@ -193,10 +192,8 @@ function generateQuizQuestions() {
     }
 
     // Q11: Matching — match all 5 eras to their real date ranges
-    const shuffledNames = PERIODS.map(p => ({ id: p.id, label: `${p.icon} ${p.title}` }))
-        .sort(() => Math.random() - 0.5);
-    const shuffledDates = PERIODS.map(p => ({ id: p.id, label: p.subtitle }))
-        .sort(() => Math.random() - 0.5);
+    const shuffledNames = shuffle(PERIODS.map(p => ({ id: p.id, label: `${p.icon} ${p.title}` })));
+    const shuffledDates = shuffle(PERIODS.map(p => ({ id: p.id, label: p.subtitle })));
     questions.push({
         type: 'match',
         periodId: 'all',
@@ -206,7 +203,7 @@ function generateQuizQuestions() {
 
     // Shuffle MCQs but keep match question at the end
     const matchQ = questions.pop();
-    const shuffled = questions.sort(() => Math.random() - 0.5);
+    const shuffled = shuffle(questions);
     shuffled.push(matchQ);
     return shuffled;
 }

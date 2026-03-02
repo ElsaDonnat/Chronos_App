@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import { useApp } from '../context/AppContext';
 import { ALL_EVENTS, CATEGORY_CONFIG, ERA_RANGES, ERA_BOUNDARY_EVENTS, getEraForYear, getEventById } from '../data/events';
 import { Card, CategoryTag, MasteryDots, Divider, ExpandableText } from '../components/shared';
@@ -10,6 +10,11 @@ export default function TimelinePage() {
     const [selectedCategory, setSelectedCategory] = useState('all');
     const [expandedId, setExpandedId] = useState(null);
     const [expandedEraId, setExpandedEraId] = useState(null);
+    const expandedRef = useCallback(node => {
+        if (node) {
+            setTimeout(() => node.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 50);
+        }
+    }, []);
 
     const sortedEvents = useMemo(() => {
         return [...ALL_EVENTS].sort((a, b) => a.year - b.year);
@@ -240,7 +245,7 @@ export default function TimelinePage() {
                                             </div>
 
                                             {isExpanded && (
-                                                <div className="mt-4 animate-fade-in">
+                                                <div ref={expandedRef} className="mt-4 animate-fade-in">
                                                     <Card style={{ borderLeft: `3px solid ${catConfig?.color || '#999'}` }}>
                                                         <div className="flex items-center justify-between mb-3">
                                                             <CategoryTag category={event.category} />

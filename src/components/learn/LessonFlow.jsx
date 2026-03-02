@@ -1,8 +1,8 @@
 import { useState, useMemo, useCallback, useRef, useEffect } from 'react';
 import { useApp } from '../../context/AppContext';
 import { getEventsByIds, getEventById, ALL_EVENTS, CATEGORY_CONFIG, ERA_BOUNDARY_EVENTS, ERA_RANGES, getEraBoundaryInfo } from '../../data/events';
-import { scoreDateAnswer, generateLocationOptions, generateWhatOptions, generateDateMCQOptions, generateDescriptionOptions, calculateXP, SCORE_COLORS, getScoreColor, getScoreLabel } from '../../data/quiz';
-import { Card, Button, ProgressBar, CategoryTag, Divider, StarButton, ConfirmModal, ExpandableText } from '../shared';
+import { scoreDateAnswer, generateLocationOptions, generateWhatOptions, generateDateMCQOptions, generateDescriptionOptions, calculateXP, SCORE_COLORS, getScoreColor, getScoreLabel, shuffle } from '../../data/quiz';
+import { Card, Button, ProgressBar, CategoryTag, Divider, StarButton, ConfirmModal, ExpandableText, ControversyNote, AnimatedCounter } from '../shared';
 import Mascot from '../Mascot';
 
 // ─── PHASES ────────────────────────────────────────────
@@ -81,7 +81,7 @@ export default function LessonFlow({ lesson, onComplete }) {
     // Then assign 2 to the learn phase and 1 to the recap phase
     const selectedTypes = useMemo(() => {
         return events.map(() => {
-            const shuffled = [...QUESTION_TYPES].sort(() => Math.random() - 0.5);
+            const shuffled = shuffle([...QUESTION_TYPES]);
             return shuffled.slice(0, 3); // pick 3 types to test
         });
     }, [events]);
@@ -131,7 +131,7 @@ export default function LessonFlow({ lesson, onComplete }) {
                 });
             });
         }
-        return qs.sort(() => Math.random() - 0.5);
+        return shuffle(qs);
     });
 
     // Get current learn quiz questions for current card
@@ -732,16 +732,17 @@ export default function LessonFlow({ lesson, onComplete }) {
                             borderTop: allPassed ? '3px solid var(--color-success)' : '3px solid var(--color-warning)',
                         }}>
                             <div className="text-sm font-semibold mb-3" style={{ color: 'var(--color-ink-secondary)' }}>
-                                {events.length} events · {quizResults.length} questions
+                                {events.length} events \u00b7 {quizResults.length} questions
                             </div>
 
                             <div className="flex items-center gap-1 mb-4 justify-center flex-wrap">
                                 {quizResults.map((r, i) => (
                                     <button key={i}
-                                        className="w-3 h-3 rounded-full result-dot-btn"
+                                        className="w-3 h-3 rounded-full result-dot-btn animate-dot-stagger"
                                         title={`${events.find(e => e.id === r.eventId)?.title || 'Event'} \u2014 ${r.questionType}`}
                                         onClick={() => setSelectedDot(r)}
                                         style={{
+                                            animationDelay: `${i * 40}ms`,
                                             backgroundColor: r.firstScore === 'green' ? 'var(--color-success)' :
                                                 r.firstScore === 'yellow' ? 'var(--color-warning)' : 'var(--color-error)'
                                         }} />
@@ -749,15 +750,15 @@ export default function LessonFlow({ lesson, onComplete }) {
                             </div>
 
                             <div className="grid grid-cols-3 gap-3 text-center mb-4">
-                                <div>
+                                <div className="animate-scale-in" style={{ animationDelay: '200ms' }}>
                                     <div className="text-lg font-bold" style={{ color: 'var(--color-success)' }}>{greenCount}</div>
                                     <div className="text-xs" style={{ color: 'var(--color-ink-muted)' }}>Exact</div>
                                 </div>
-                                <div>
+                                <div className="animate-scale-in" style={{ animationDelay: '300ms' }}>
                                     <div className="text-lg font-bold" style={{ color: 'var(--color-warning)' }}>{yellowCount}</div>
                                     <div className="text-xs" style={{ color: 'var(--color-ink-muted)' }}>Close</div>
                                 </div>
-                                <div>
+                                <div className="animate-scale-in" style={{ animationDelay: '400ms' }}>
                                     <div className="text-lg font-bold" style={{ color: 'var(--color-error)' }}>{redCount}</div>
                                     <div className="text-xs" style={{ color: 'var(--color-ink-muted)' }}>Missed</div>
                                 </div>
@@ -766,20 +767,20 @@ export default function LessonFlow({ lesson, onComplete }) {
                             <Divider />
 
                             <div className="flex items-center justify-center gap-6 mt-3">
-                                <div className="flex items-center gap-2">
-                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--color-bronze)" strokeWidth="2">
+                                <div className="flex items-center gap-2 animate-scale-in" style={{ animationDelay: '500ms' }}>
+                                    <svg className="animate-xp-glow" style={{ animationDelay: '700ms' }} width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--color-bronze)" strokeWidth="2">
                                         <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" fill="var(--color-bronze-light)" />
                                     </svg>
                                     <div className="text-left">
-                                        <div className="text-xl font-bold leading-none" style={{ color: 'var(--color-burgundy)' }}>+{xp}</div>
+                                        <AnimatedCounter value={xp} prefix="+" duration={600} delay={600} className="text-xl font-bold leading-none" style={{ color: 'var(--color-burgundy)' }} />
                                         <div className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: 'var(--color-ink-faint)' }}>XP earned</div>
                                     </div>
                                 </div>
                                 <div className="w-px h-10" style={{ backgroundColor: 'rgba(28, 25, 23, 0.08)' }} />
-                                <div className="flex items-center gap-2">
-                                    <span className="text-2xl">\uD83D\uDD25</span>
+                                <div className="flex items-center gap-2 animate-scale-in" style={{ animationDelay: '600ms' }}>
+                                    <span className={`text-2xl ${streak > 1 ? 'animate-streak-bounce' : ''}`} style={{ animationDelay: '900ms', animationFillMode: 'backwards' }}>\uD83D\uDD25</span>
                                     <div className="text-left">
-                                        <div className="text-xl font-bold leading-none" style={{ color: 'var(--color-burgundy)' }}>{streak}</div>
+                                        <AnimatedCounter value={streak} duration={400} delay={800} className="text-xl font-bold leading-none" style={{ color: 'var(--color-burgundy)' }} />
                                         <div className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: 'var(--color-ink-faint)' }}>Day streak</div>
                                     </div>
                                 </div>
@@ -956,6 +957,7 @@ function QuizQuestion({ question, lessonEventIds, onAnswer, onNext, onBack, onSk
                         })}
                     </div>
                 </Card>
+                {answered && <ControversyNote note={event.controversyNotes?.location} />}
                 {renderButtons()}
             </div>
         );
@@ -993,6 +995,7 @@ function QuizQuestion({ question, lessonEventIds, onAnswer, onNext, onBack, onSk
                         })}
                     </div>
                 </Card>
+                {answered && <ControversyNote note={event.controversyNotes?.date} />}
                 {renderButtons()}
             </div>
         );
@@ -1029,6 +1032,7 @@ function QuizQuestion({ question, lessonEventIds, onAnswer, onNext, onBack, onSk
                         })}
                     </div>
                 </Card>
+                {answered && <ControversyNote note={event.controversyNotes?.what} />}
                 {renderButtons()}
             </div>
         );
@@ -1062,6 +1066,7 @@ function QuizQuestion({ question, lessonEventIds, onAnswer, onNext, onBack, onSk
                         })}
                     </div>
                 </Card>
+                {answered && <ControversyNote note={event.controversyNotes?.description} />}
                 {renderButtons()}
             </div>
         );
@@ -1091,7 +1096,7 @@ function CelebrationCard({ data, onDismiss }) {
                     backgroundColor: 'var(--color-success-light)',
                 }}>
                     <div className="flex items-center gap-2 mb-2">
-                        <span className="flex items-center justify-center w-6 h-6 rounded-full"
+                        <span className="flex items-center justify-center w-6 h-6 rounded-full animate-pop-in"
                             style={{ backgroundColor: 'var(--color-success)', color: 'white', fontSize: '14px' }}>
                             ✓
                         </span>
@@ -1208,11 +1213,12 @@ function DateInputQuestion({ event, onAnswer, onNext, onBack, onSkip }) {
                     </div>
                 )}
             </Card>
+            {answered && <ControversyNote note={event.controversyNotes?.date} />}
 
             {answered && (
                 <div className="pinned-footer flex gap-3">
-                    {onBack && <Button variant="secondary" onClick={onBack}>← Back</Button>}
-                    <Button className="flex-1" onClick={onNext}>Continue →</Button>
+                    {onBack && <Button variant="secondary" onClick={onBack}>\u2190 Back</Button>}
+                    <Button className="flex-1" onClick={onNext}>Continue \u2192</Button>
                 </div>
             )}
         </div>
