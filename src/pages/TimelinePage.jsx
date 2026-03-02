@@ -6,10 +6,17 @@ import Mascot from '../components/Mascot';
 
 export default function TimelinePage() {
     const { state } = useApp();
-    const [selectedEra, setSelectedEra] = useState('all');
-    const [selectedCategory, setSelectedCategory] = useState('all');
+    const [selectedEra, setSelectedEra] = useState(() => localStorage.getItem('chronos-tl-era') || 'all');
+    const [selectedCategory, setSelectedCategory] = useState(() => localStorage.getItem('chronos-tl-cat') || 'all');
+    const [hideUnknown, setHideUnknown] = useState(() => localStorage.getItem('chronos-tl-hide') === 'true');
     const [expandedId, setExpandedId] = useState(null);
     const [expandedEraId, setExpandedEraId] = useState(null);
+    const [filtersOpen, setFiltersOpen] = useState(() => {
+        const era = localStorage.getItem('chronos-tl-era') || 'all';
+        const cat = localStorage.getItem('chronos-tl-cat') || 'all';
+        const hide = localStorage.getItem('chronos-tl-hide') === 'true';
+        return era !== 'all' || cat !== 'all' || hide;
+    });
     const expandedRef = useCallback(node => {
         if (node) {
             setTimeout(() => node.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 50);
@@ -25,6 +32,8 @@ export default function TimelinePage() {
             .sort((a, b) => a.year - b.year);
     }, [acquiredDiHIds]);
 
+    const learnedIds = new Set(state.seenEvents);
+
     const filteredEvents = useMemo(() => {
         return sortedEvents.filter(event => {
             if (selectedCategory === 'daily') return isDiHEvent(event);
@@ -36,9 +45,12 @@ export default function TimelinePage() {
             return true;
         });
     }, [sortedEvents, selectedEra, selectedCategory]);
-
-    const learnedIds = new Set(state.seenEvents);
     const lesson0Complete = !!state.completedLessons['lesson-0'];
+
+    // Persist filter choices
+    const updateEra = (v) => { setSelectedEra(v); localStorage.setItem('chronos-tl-era', v); };
+    const updateCategory = (v) => { setSelectedCategory(v); localStorage.setItem('chronos-tl-cat', v); };
+    const toggleHideUnknown = () => { setHideUnknown(h => { const next = !h; localStorage.setItem('chronos-tl-hide', String(next)); return next; }); };
 
     const eraDetails = {
         prehistory: { icon: '🦴', title: 'Prehistory', subtitle: 'c. 7 million years ago – c. 3200 BCE', description: 'The longest chapter in human history — from the first split with our ape ancestors through mastering fire, developing language, migrating across the globe, and eventually settling into farming communities.', color: '#0D9488' },
@@ -70,29 +82,85 @@ export default function TimelinePage() {
                 </p>
             </div>
 
-            {/* Filter section — horizontal bar */}
-            <div className="mb-6 space-y-2">
-                <div className="flex gap-2 flex-wrap">
-                    <FilterChip label="All Eras" active={selectedEra === 'all'} onClick={() => setSelectedEra('all')} />
-                    {ERA_RANGES.map(era => (
-                        <FilterChip key={era.id} label={era.label} active={selectedEra === era.id}
-                            onClick={() => setSelectedEra(era.id)} />
-                    ))}
-                </div>
-                <div className="flex gap-2 flex-wrap">
-                    <FilterChip label="All Categories" active={selectedCategory === 'all'} onClick={() => setSelectedCategory('all')} />
-                    {Object.entries(CATEGORY_CONFIG).map(([key, config]) => (
-                        <FilterChip key={key} label={config.label} active={selectedCategory === key}
-                            onClick={() => setSelectedCategory(key)}
-                            dotColor={config.color} />
-                    ))}
-                    {acquiredDiHIds.size > 0 && (
-                        <FilterChip label="Day in History" active={selectedCategory === 'daily'}
-                            onClick={() => setSelectedCategory('daily')}
-                            dotColor="#E6A817" />
-                    )}
-                </div>
-            </div>
+            {/* Filter section — collapsed button or expanded chips */}
+            {(() => {
+                const hasActiveFilter = selectedEra !== 'all' || selectedCategory !== 'all' || hideUnknown;
+                const showChips = filtersOpen || hasActiveFilter;
+
+                return (
+                    <div className="mb-6">
+                        {!showChips ? (
+                            <button
+                                onClick={() => setFiltersOpen(true)}
+                                className="flex items-center gap-2 px-3.5 py-2 rounded-full text-xs font-semibold transition-all duration-200 cursor-pointer"
+                                style={{
+                                    backgroundColor: 'rgba(28, 25, 23, 0.04)',
+                                    color: 'var(--color-ink-muted)',
+                                    border: '1px solid rgba(28, 25, 23, 0.08)',
+                                }}
+                            >
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                                    <line x1="4" y1="6" x2="20" y2="6" />
+                                    <line x1="7" y1="12" x2="17" y2="12" />
+                                    <line x1="10" y1="18" x2="14" y2="18" />
+                                </svg>
+                                Filter
+                            </button>
+                        ) : (
+                            <div className="space-y-2 animate-fade-in">
+                                <div className="flex items-center gap-2 mb-1">
+                                    <span className="text-[10px] uppercase tracking-widest font-semibold" style={{ color: 'var(--color-ink-faint)' }}>
+                                        Filters
+                                    </span>
+                                    {hasActiveFilter && (
+                                        <button
+                                            onClick={() => { updateEra('all'); updateCategory('all'); setHideUnknown(false); localStorage.setItem('chronos-tl-hide', 'false'); setFiltersOpen(false); }}
+                                            className="text-[10px] font-semibold px-2 py-0.5 rounded-full cursor-pointer"
+                                            style={{ color: 'var(--color-burgundy)', backgroundColor: 'rgba(139, 65, 87, 0.08)' }}
+                                        >
+                                            Clear
+                                        </button>
+                                    )}
+                                    {!hasActiveFilter && (
+                                        <button
+                                            onClick={() => setFiltersOpen(false)}
+                                            className="ml-auto p-1 cursor-pointer"
+                                            style={{ color: 'var(--color-ink-faint)' }}
+                                        >
+                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                                <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+                                            </svg>
+                                        </button>
+                                    )}
+                                </div>
+                                <div className="flex gap-2 flex-wrap">
+                                    <FilterChip label="All Eras" active={selectedEra === 'all'} onClick={() => updateEra('all')} />
+                                    {ERA_RANGES.map(era => (
+                                        <FilterChip key={era.id} label={era.label} active={selectedEra === era.id}
+                                            onClick={() => updateEra(era.id)} />
+                                    ))}
+                                </div>
+                                <div className="flex gap-2 flex-wrap">
+                                    <FilterChip label="All Categories" active={selectedCategory === 'all'} onClick={() => updateCategory('all')} />
+                                    {Object.entries(CATEGORY_CONFIG).map(([key, config]) => (
+                                        <FilterChip key={key} label={config.label} active={selectedCategory === key}
+                                            onClick={() => updateCategory(key)}
+                                            dotColor={config.color} />
+                                    ))}
+                                    {acquiredDiHIds.size > 0 && (
+                                        <FilterChip label="Day in History" active={selectedCategory === 'daily'}
+                                            onClick={() => updateCategory('daily')}
+                                            dotColor="#E6A817" />
+                                    )}
+                                    <FilterChip label="Hide Unknown" active={hideUnknown} onClick={toggleHideUnknown}
+                                        bgColor="rgba(200, 168, 130, 0.15)" borderColor="rgba(200, 168, 130, 0.3)"
+                                        icon={<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94" /><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19" /><line x1="1" y1="1" x2="23" y2="23" /></svg>} />
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                );
+            })()}
 
             {filteredEvents.length === 0 ? (
                 <div className="text-center py-16 animate-fade-in">
@@ -210,7 +278,8 @@ export default function TimelinePage() {
                                     );
                                 })()}
 
-                                <div
+                                {/* Hide unknown event cards but keep era headers */}
+                                {hideUnknown && !isLearned ? null : <div
                                     className="timeline-event-card relative pl-16 py-3 animate-fade-in cursor-pointer rounded-lg transition-all duration-200"
                                     style={{ animationDelay: `${Math.min(index * 30, 500)}ms`, animationFillMode: 'backwards' }}
                                     onClick={() => isLearned && setExpandedId(isExpanded ? null : event.id)}
@@ -293,7 +362,7 @@ export default function TimelinePage() {
                                             </p>
                                         </div>
                                     )}
-                                </div>
+                                </div>}
                             </div>
                         );
                     })}
@@ -315,18 +384,19 @@ export default function TimelinePage() {
     );
 }
 
-function FilterChip({ label, active, onClick, dotColor }) {
+function FilterChip({ label, active, onClick, dotColor, icon, bgColor, borderColor }) {
     return (
         <button
             onClick={onClick}
             className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all duration-200 cursor-pointer"
             style={{
-                backgroundColor: active ? 'var(--color-burgundy)' : 'rgba(28, 25, 23, 0.04)',
+                backgroundColor: active ? 'var(--color-burgundy)' : (bgColor || 'rgba(28, 25, 23, 0.04)'),
                 color: active ? 'white' : 'var(--color-ink-muted)',
-                border: active ? 'none' : '1px solid rgba(28, 25, 23, 0.08)',
+                border: active ? 'none' : `1px solid ${borderColor || 'rgba(28, 25, 23, 0.08)'}`,
             }}
         >
-            {dotColor && !active && (
+            {icon && <span className="flex-shrink-0">{icon}</span>}
+            {dotColor && !active && !icon && (
                 <div className="w-2 h-2 rounded-full" style={{ backgroundColor: dotColor }} />
             )}
             {label}

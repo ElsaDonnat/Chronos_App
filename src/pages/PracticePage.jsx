@@ -2,7 +2,7 @@ import { useState, useMemo, useEffect, useRef } from 'react';
 import { useApp } from '../context/AppContext';
 import { ALL_EVENTS, getEventById, CATEGORY_CONFIG, isDiHEvent, getEraForYear } from '../data/events';
 import { LESSONS } from '../data/lessons';
-import { scoreDateAnswer, generateLocationOptions, generateWhatOptions, generateDescriptionOptions, SCORE_COLORS, getScoreColor, getScoreLabel, shuffle } from '../data/quiz';
+import { scoreDateAnswer, generateLocationOptions, generateWhatOptions, generateDescriptionOptions, generateDateMCQOptions, SCORE_COLORS, getScoreColor, getScoreLabel, shuffle } from '../data/quiz';
 import { calculateNextReview, getDueEvents, getCardStatus } from '../data/spacedRepetition';
 import { Card, Button, MasteryDots, ProgressBar, Divider, CategoryTag, DiHBadge, StarButton, TabSelector, ConfirmModal, ExpandableText, ControversyNote } from '../components/shared';
 import Mascot from '../components/Mascot';
@@ -256,6 +256,34 @@ export default function PracticePage({ onSessionChange, registerBackHandler }) {
         setSelectedLessons([]);
     };
 
+    const startQuickDates = () => {
+        const scoreOrder = { red: 0, null: 1, undefined: 1, yellow: 2, green: 3 };
+        // Sort by weakest date score, pick top 6
+        const pool = [...eventStats]
+            .sort((a, b) => {
+                const aScore = scoreOrder[a.mastery?.dateScore] ?? 1;
+                const bScore = scoreOrder[b.mastery?.dateScore] ?? 1;
+                if (aScore !== bScore) return aScore - bScore;
+                return a.overall - b.overall;
+            })
+            .slice(0, 8);
+        const picked = shuffle(pool).slice(0, 6);
+        const qs = picked.map(({ event }) => ({
+            event,
+            type: 'dateMCQ',
+            options: generateDateMCQOptions(event),
+            key: `quick-date-${event.id}-${Date.now()}-${Math.random()}`,
+        }));
+        if (qs.length === 0) return;
+        setSessionQuestions(qs);
+        setCurrentIndex(0);
+        setResults([]);
+        setSessionMode('Quick Dates');
+        sessionStartTime.current = Date.now();
+        sessionRecorded.current = false;
+        setView(VIEW.SESSION);
+    };
+
     // ─── No events learned ──────────────────────────
     if (learnedEvents.length === 0) {
         return (
@@ -369,7 +397,7 @@ export default function PracticePage({ onSessionChange, registerBackHandler }) {
                                 dispatch({
                                     type: 'UPDATE_EVENT_MASTERY',
                                     eventId: q.event.id,
-                                    questionType: q.type,
+                                    questionType: q.type === 'dateMCQ' ? 'date' : q.type,
                                     score,
                                 });
                                 // Update spaced repetition schedule
@@ -465,7 +493,7 @@ export default function PracticePage({ onSessionChange, registerBackHandler }) {
                                                 </h4>
                                                 <div className="flex items-center gap-2 mt-1">
                                                     {questions.map((q, i) => {
-                                                        const label = q.type === 'location' ? 'Where' : q.type === 'date' ? 'When' : q.type === 'description' ? 'Desc' : q.type === 'match' ? 'Match' : 'What';
+                                                        const label = q.type === 'location' ? 'Where' : (q.type === 'date' || q.type === 'dateMCQ') ? 'When' : q.type === 'description' ? 'Desc' : q.type === 'match' ? 'Match' : 'What';
                                                         return (
                                                             <span key={i} className="text-[10px] font-semibold px-1.5 py-0.5 rounded"
                                                                 style={{
@@ -659,8 +687,10 @@ export default function PracticePage({ onSessionChange, registerBackHandler }) {
                     state={state}
                     dispatch={dispatch}
                     onStartSpacedReview={startSpacedReview}
+                    onStartQuickDates={startQuickDates}
                     onStartFavorites={startFavorites}
                     onOpenLessonPicker={() => setView(VIEW.LESSON_PICKER)}
+                    learnedCount={learnedEvents.length}
                 />
             ) : (
                 <CollectionView
@@ -681,7 +711,7 @@ export default function PracticePage({ onSessionChange, registerBackHandler }) {
 // ═══════════════════════════════════════════════════════
 // HUB VIEW — Practice mode cards
 // ═══════════════════════════════════════════════════════
-function HubView({ starredEvents, weakEvents, statusTiers, dueCount, state, dispatch, onStartSpacedReview, onStartFavorites, onOpenLessonPicker }) {
+function HubView({ starredEvents, weakEvents, statusTiers, dueCount, state, dispatch, onStartSpacedReview, onStartQuickDates, onStartFavorites, onOpenLessonPicker, learnedCount }) {
     return (
         <div className="space-y-3">
             {/* Spaced Review */}
@@ -715,6 +745,34 @@ function HubView({ starredEvents, weakEvents, statusTiers, dueCount, state, disp
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-ink-faint)" strokeWidth="2" className="mt-2 flex-shrink-0">
                         <polyline points="9 18 15 12 9 6" />
                     </svg>
+                </div>
+            </Card>
+
+            {/* Quick 5 Dates */}
+            <Card
+                onClick={learnedCount >= 3 ? onStartQuickDates : undefined}
+                className="lesson-card-row p-4"
+                style={{ opacity: learnedCount >= 3 ? 1 : 0.5 }}
+            >
+                <div className="flex items-start gap-3">
+                    <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
+                        style={{ backgroundColor: 'rgba(59, 130, 246, 0.1)' }}>
+                        <span className="text-lg">📅</span>
+                    </div>
+                    <div className="flex-1 min-w-0">
+                        <h3 className="text-sm font-bold" style={{ fontFamily: 'var(--font-serif)' }}>Quick 5 Dates</h3>
+                        <p className="text-xs mt-0.5" style={{ color: 'var(--color-ink-muted)' }}>
+                            {learnedCount >= 3
+                                ? '6 date questions on your weakest events'
+                                : 'Learn at least 3 events to unlock'
+                            }
+                        </p>
+                    </div>
+                    {learnedCount >= 3 && (
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-ink-faint)" strokeWidth="2" className="mt-2 flex-shrink-0">
+                            <polyline points="9 18 15 12 9 6" />
+                        </svg>
+                    )}
                 </div>
             </Card>
 
@@ -1281,6 +1339,46 @@ function PracticeQuestion({ question, isStarred, onToggleStar, onAnswer, onNext,
                     </div>
                 ) : (
                     onBack && <div className="pinned-footer"><Button variant="secondary" className="w-full" onClick={onBack}>← Back</Button></div>
+                )}
+            </div>
+        );
+    }
+
+    if (type === 'dateMCQ') {
+        const dateMCQOpts = question.options || generateDateMCQOptions(event);
+        return (
+            <div className="animate-slide-in-right">
+                <Card style={answered && score ? { backgroundColor: SCORE_COLORS[score].bg, borderLeft: `3px solid ${SCORE_COLORS[score].border}` } : {}}>
+                    <p className="text-xs uppercase tracking-wider font-semibold mb-2" style={{ color: 'var(--color-ink-faint)' }}>When did this happen?</p>
+                    <h3 className="text-lg font-bold mb-1" style={{ fontFamily: 'var(--font-serif)' }}>{event.title}</h3>
+                    <p className="text-sm mb-5 leading-relaxed" style={{ color: 'var(--color-ink-secondary)' }}>{event.description.substring(0, 100)}…</p>
+                    <div className="mcq-options mcq-options--grid">
+                        {dateMCQOpts.map((opt, i) => {
+                            const isCorrect = opt.isCorrect;
+                            const isSelected = selectedAnswer === opt.label;
+                            let optStyle = {};
+                            if (answered) {
+                                if (isCorrect) optStyle = { backgroundColor: 'rgba(5, 150, 105, 0.1)', borderColor: 'var(--color-success)' };
+                                else if (isSelected) optStyle = { backgroundColor: 'rgba(166, 61, 61, 0.1)', borderColor: 'var(--color-error)' };
+                            }
+                            const correctLabel = dateMCQOpts.find(o => o.isCorrect)?.label;
+                            return (
+                                <button key={i} onClick={() => handleMCQ(opt.label, correctLabel)} disabled={answered}
+                                    className="mcq-option"
+                                    style={{ ...optStyle }}>
+                                    {opt.label}{answered && isCorrect && <span className="ml-2 text-xs" style={{ color: 'var(--color-success)' }}>✓</span>}
+                                </button>
+                            );
+                        })}
+                    </div>
+                    {renderFeedback()}
+                </Card>
+                {answered && <ControversyNote note={event.controversyNotes?.date} />}
+                {answered && (
+                    <div className="pinned-footer flex gap-3">
+                        {onBack && <Button variant="secondary" onClick={onBack}>← Back</Button>}
+                        <Button className="flex-1" onClick={onNext}>Continue →</Button>
+                    </div>
                 )}
             </div>
         );
