@@ -33,13 +33,15 @@ export function ExpandableText({ children, lines = 3, className = '', style = {}
                 {children}
             </p>
             {needsTruncation && (
-                <button
-                    onClick={() => setExpanded(e => !e)}
-                    className="text-xs font-medium mt-1"
-                    style={{ color: 'var(--color-burgundy)', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
-                >
-                    {expanded ? 'Show less' : 'Read more'}
-                </button>
+                <div className="text-right">
+                    <button
+                        onClick={() => setExpanded(e => !e)}
+                        className="text-xs font-medium mt-0.5"
+                        style={{ color: 'var(--color-burgundy)', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
+                    >
+                        {expanded ? 'Show less' : 'Read more'}
+                    </button>
+                </div>
             )}
         </div>
     );

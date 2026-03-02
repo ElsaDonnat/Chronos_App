@@ -324,7 +324,7 @@ export default function LessonFlow({ lesson, onComplete }) {
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="15 18 9 12 15 6" /></svg>
                             Exit
                         </button>
-                        <span className="text-[10px] uppercase tracking-widest font-bold px-2 py-0.5 rounded-full"
+                        <span className="text-xs uppercase tracking-widest font-bold px-2.5 py-1 rounded-full"
                             style={{ backgroundColor: `${period.color}15`, color: period.color }}>
                             Period Overview
                         </span>
@@ -419,7 +419,7 @@ export default function LessonFlow({ lesson, onComplete }) {
                     <ProgressBar value={cardIndex + 1} max={events.length} />
 
                     <div className="text-center mt-2 mb-1">
-                        <span className="text-[10px] uppercase tracking-widest font-bold px-2 py-0.5 rounded-full"
+                        <span className="text-xs uppercase tracking-widest font-bold px-2.5 py-1 rounded-full"
                             style={{ backgroundColor: 'var(--color-burgundy-soft)', color: 'var(--color-burgundy)' }}>
                             📖 Study
                         </span>
@@ -431,10 +431,33 @@ export default function LessonFlow({ lesson, onComplete }) {
                         <Card>
                             <div className="flex items-center justify-between">
                                 <CategoryTag category={event.category} />
-                                <StarButton
-                                    isStarred={(state.starredEvents || []).includes(event.id)}
-                                    onClick={() => dispatch({ type: 'TOGGLE_STAR', eventId: event.id })}
-                                />
+                                <div className="relative">
+                                    <StarButton
+                                        isStarred={(state.starredEvents || []).includes(event.id)}
+                                        onClick={() => dispatch({ type: 'TOGGLE_STAR', eventId: event.id })}
+                                    />
+                                    {lesson.id === 'lesson-1' && cardIndex === 0 && !state.hasSeenFavoriteTip && (
+                                        <div className="absolute right-0 top-full mt-1 w-56 z-50 animate-fade-in">
+                                            <div className="rounded-xl p-3 text-xs leading-relaxed"
+                                                style={{
+                                                    backgroundColor: 'var(--color-card)',
+                                                    boxShadow: '0 8px 30px rgba(0,0,0,0.15)',
+                                                    border: '1px solid rgba(139, 65, 87, 0.15)',
+                                                    color: 'var(--color-ink-secondary)',
+                                                }}>
+                                                <div className="absolute -top-1.5 right-4 w-3 h-3 rotate-45"
+                                                    style={{ backgroundColor: 'var(--color-card)', borderTop: '1px solid rgba(139, 65, 87, 0.15)', borderLeft: '1px solid rgba(139, 65, 87, 0.15)' }} />
+                                                <p><strong style={{ color: 'var(--color-ink)' }}>Tap the star</strong> to save events to your favorites. You can practice them anytime in the <strong style={{ color: 'var(--color-burgundy)' }}>Practice</strong> tab.</p>
+                                                <button
+                                                    onClick={(e) => { e.stopPropagation(); dispatch({ type: 'DISMISS_FAVORITE_TIP' }); }}
+                                                    className="mt-2 text-xs font-semibold"
+                                                    style={{ color: 'var(--color-burgundy)', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
+                                                    Got it
+                                                </button>
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
                             </div>
                             <h2 className="text-xl font-bold mt-3 mb-2 leading-snug" style={{ fontFamily: 'var(--font-serif)', color: 'var(--color-ink)' }}>
                                 {event.title}
@@ -458,7 +481,7 @@ export default function LessonFlow({ lesson, onComplete }) {
                                 ));
                             })()}
                             <ExpandableText lines={3} className="text-sm leading-relaxed mb-4" style={{ color: 'var(--color-ink-secondary)' }}>
-                                {event.description}
+                                {event.keywords && <><strong style={{ color: 'var(--color-ink)' }}>{event.keywords}</strong>{' '}</>}{event.description}
                             </ExpandableText>
                             <div className="flex items-center gap-2 text-xs" style={{ color: 'var(--color-ink-muted)' }}>
                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -534,7 +557,7 @@ export default function LessonFlow({ lesson, onComplete }) {
                     <span className="text-sm" style={{ color: 'var(--color-ink-muted)' }}>
                         Card {cardIndex + 1} · Question {learnQuizIndex + 1}/2
                     </span>
-                    <span className="text-[10px] uppercase tracking-widest font-bold px-2 py-0.5 rounded-full"
+                    <span className="text-xs uppercase tracking-widest font-bold px-2.5 py-1 rounded-full"
                         style={{ backgroundColor: 'var(--color-burgundy-soft)', color: 'var(--color-burgundy)' }}>
                         📝 Learn Quiz
                     </span>
@@ -617,7 +640,7 @@ export default function LessonFlow({ lesson, onComplete }) {
                     <span className="text-sm" style={{ color: 'var(--color-ink-muted)' }}>
                         Recap {recapIndex + 1} / {recapQuestions.length}
                     </span>
-                    <span className="text-[10px] uppercase tracking-widest font-bold px-2 py-0.5 rounded-full"
+                    <span className="text-xs uppercase tracking-widest font-bold px-2.5 py-1 rounded-full"
                         style={{ backgroundColor: 'rgba(139, 65, 87, 0.15)', color: 'var(--color-burgundy)' }}>
                         🔁 Recap
                     </span>
@@ -679,7 +702,7 @@ export default function LessonFlow({ lesson, onComplete }) {
                             <h2 className="text-xl font-bold mt-3 mb-2" style={{ fontFamily: 'var(--font-serif)' }}>{event.title}</h2>
                             <p className="text-lg font-semibold mb-3" style={{ color: 'var(--color-burgundy)' }}>{event.date}</p>
                             <ExpandableText lines={3} className="text-sm leading-relaxed mb-3" style={{ color: 'var(--color-ink-secondary)' }}>
-                                {event.description}
+                                {event.keywords && <><strong style={{ color: 'var(--color-ink)' }}>{event.keywords}</strong>{' '}</>}{event.description}
                             </ExpandableText>
                             <div className="flex items-center gap-2 text-xs" style={{ color: 'var(--color-ink-muted)' }}>
                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -808,7 +831,7 @@ export default function LessonFlow({ lesson, onComplete }) {
                             <div className="dot-modal-content" onClick={e => e.stopPropagation()}>
                                 <Card style={{ borderLeft: `3px solid ${dotColor}` }}>
                                     <div className="flex items-center justify-between mb-3">
-                                        <span className="text-[10px] uppercase tracking-widest font-bold px-2 py-0.5 rounded-full"
+                                        <span className="text-xs uppercase tracking-widest font-bold px-2.5 py-1 rounded-full"
                                             style={{ backgroundColor: hlBg, color: dotColor }}>
                                             {qType === 'date' || qType === 'date_input' ? '📅 Date Question'
                                                 : qType === 'location' ? '📍 Location Question'
@@ -1151,7 +1174,7 @@ function DateInputQuestion({ event, onAnswer, onNext, onBack, onSkip }) {
         <div className="animate-slide-in-right">
             <Card style={answered && score ? { backgroundColor: SCORE_COLORS[score].bg, borderLeft: `3px solid ${SCORE_COLORS[score].border}` } : {}}>
                 <div className="flex items-center gap-2 mb-2">
-                    <span className="text-[10px] uppercase tracking-widest font-bold px-2 py-0.5 rounded-full"
+                    <span className="text-xs uppercase tracking-widest font-bold px-2.5 py-1 rounded-full"
                         style={{ backgroundColor: 'rgba(139, 65, 87, 0.1)', color: 'var(--color-burgundy)' }}>
                         ✏️ Type the date
                     </span>

@@ -42,6 +42,8 @@ const defaultState = {
     streakRemindersEnabled: true,
     // Cards per lesson setting (1, 2, or 3). Undefined until user makes a choice.
     // cardsPerLesson: undefined (not set here — LessonFlow falls back to 3)
+    // Whether the favorites tip has been shown
+    hasSeenFavoriteTip: false,
 };
 
 function calculateOverallMastery(mastery) {
@@ -205,6 +207,10 @@ function reducer(state, action) {
 
         case 'SET_STREAK_REMINDERS': {
             return { ...state, streakRemindersEnabled: action.value };
+        }
+
+        case 'DISMISS_FAVORITE_TIP': {
+            return { ...state, hasSeenFavoriteTip: true };
         }
 
         case 'RESET_PROGRESS': {
