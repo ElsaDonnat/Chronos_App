@@ -5,6 +5,8 @@ import { scoreDateAnswer, generateLocationOptions, generateWhatOptions, generate
 import { calculateNextReview } from '../../data/spacedRepetition';
 import { Card, Button, ProgressBar, CategoryTag, Divider, StarButton, ConfirmModal, ExpandableText, ControversyNote, AnimatedCounter } from '../shared';
 import Mascot from '../Mascot';
+import * as feedback from '../../services/feedback';
+import { shareText, buildLessonShareText } from '../../services/share';
 
 // ─── PHASES ────────────────────────────────────────────
 const PHASE = {
@@ -24,38 +26,38 @@ const QUESTION_TYPES = ['date', 'location', 'what', 'description'];
 const PERIOD_INFO = {
     prehistory: {
         title: 'Prehistory',
-        subtitle: 'c. 7\u20136 million years ago \u2013 c. 3200 BCE',
+        subtitle: 'c. 7\–6 million years ago \– c. 3200 BCE',
         keywords: 'Evolution, fire, farming.',
-        description: 'Literally "before written records," prehistory spans 99% of the human story \u2014 from bipedalism and stone tools through the mastery of fire, the emergence of language, migration out of Africa, and the Neolithic transition to settled agriculture.',
-        color: '#0D9488', icon: '\uD83E\uDDB4',
+        description: 'Literally "before written records," prehistory spans 99% of the human story \— from bipedalism and stone tools through the mastery of fire, the emergence of language, migration out of Africa, and the Neolithic transition to settled agriculture.',
+        color: '#0D9488', icon: '\�\�',
     },
     ancient: {
         title: 'The Ancient World',
-        subtitle: 'c. 3200 BCE \u2013 476 CE',
+        subtitle: 'c. 3200 BCE \– 476 CE',
         keywords: 'Writing, cities, empires.',
-        description: 'Defined by writing, cities, states, and empires. From Sumer and Egypt to Greece, Rome, China, and India \u2014 humanity built the foundations of law, philosophy, science, and organized religion.',
-        color: '#6B5B73', icon: '\uD83C\uDFDB\uFE0F',
+        description: 'Defined by writing, cities, states, and empires. From Sumer and Egypt to Greece, Rome, China, and India \— humanity built the foundations of law, philosophy, science, and organized religion.',
+        color: '#6B5B73', icon: '\�\�\️',
     },
     medieval: {
         title: 'The Medieval World',
-        subtitle: '476 \u2013 c. 1500 CE',
+        subtitle: '476 \– c. 1500 CE',
         keywords: 'Islam, feudalism, Mongols.',
-        description: 'An era of transformation, not darkness. The rise of Islam, Byzantine continuity, feudal Europe, the Mongol Empire, the Crusades, and the first universities \u2014 from Rome\u2019s fall to the reconnection of the world.',
-        color: '#A0522D', icon: '\u2694\uFE0F',
+        description: 'An era of transformation, not darkness. The rise of Islam, Byzantine continuity, feudal Europe, the Mongol Empire, the Crusades, and the first universities \— from Rome\’s fall to the reconnection of the world.',
+        color: '#A0522D', icon: '\⚔\️',
     },
     earlymodern: {
         title: 'The Early Modern Period',
-        subtitle: 'c. 1500 \u2013 1789',
+        subtitle: 'c. 1500 \– 1789',
         keywords: 'Exploration, Reformation, science.',
-        description: 'Exploration, colonization, the Renaissance, Reformation, Scientific Revolution, and Enlightenment \u2014 from a fragmented world to an interconnected one, ending when Enlightenment ideals erupted into revolution.',
-        color: '#65774A', icon: '\uD83E\uDDED',
+        description: 'Exploration, colonization, the Renaissance, Reformation, Scientific Revolution, and Enlightenment \— from a fragmented world to an interconnected one, ending when Enlightenment ideals erupted into revolution.',
+        color: '#65774A', icon: '\�\�',
     },
     modern: {
         title: 'The Modern World',
-        subtitle: '1789 \u2013 Present',
+        subtitle: '1789 \– Present',
         keywords: 'Industry, world wars, digital.',
         description: 'More change in two centuries than in the previous two millennia. Industrialization, world wars, decolonization, the Cold War, and the digital revolution. The defining theme is acceleration.',
-        color: '#8B4157', icon: '\uD83C\uDF0D',
+        color: '#8B4157', icon: '\�\�',
     },
 };
 
@@ -79,6 +81,7 @@ export default function LessonFlow({ lesson, onComplete }) {
     const lastAnswerScore = useRef(null);
     const sessionStartTime = useRef(null);
     const [sessionDuration, setSessionDuration] = useState(0);
+    const [shareToast, setShareToast] = useState(false);
 
     // For each card, randomly pick 3 of the 4 question types to use for MCQs (discarding 1)
     // Then assign 2 to the learn phase and 1 to the recap phase
@@ -164,10 +167,18 @@ export default function LessonFlow({ lesson, onComplete }) {
     // Set session start time on mount
     useEffect(() => { sessionStartTime.current = Date.now(); }, []);
 
+    useEffect(() => {
+        if (shareToast) {
+            const t = setTimeout(() => setShareToast(false), 2000);
+            return () => clearTimeout(t);
+        }
+    }, [shareToast]);
+
     // ─── Dispatch XP + record study session on summary ───
     useEffect(() => {
         if (phase === PHASE.SUMMARY && !xpDispatched.current) {
             xpDispatched.current = true;
+            feedback.complete();
             const xp = calculateXP(quizResults);
             dispatch({ type: 'COMPLETE_LESSON', lessonId: lesson.id });
             dispatch({ type: 'ADD_XP', amount: xp });
@@ -609,13 +620,13 @@ export default function LessonFlow({ lesson, onComplete }) {
                             Now let's see how well you remember everything
                         </p>
                         <p className="text-xs mb-6" style={{ color: 'var(--color-ink-faint)' }}>
-                            {recapQuestions.length} {recapQuestions.length === 1 ? 'question' : 'questions'}{recapPerCard === 2 ? ' \u2014 including typing exact dates' : ''}
+                            {recapQuestions.length} {recapQuestions.length === 1 ? 'question' : 'questions'}{recapPerCard === 2 ? ' \— including typing exact dates' : ''}
                         </p>
                         <div className="flex justify-center gap-2 mb-4 flex-wrap">
                             {events.map((e, i) => (
                                 <div key={i} className="px-3 py-1.5 rounded-lg text-xs font-medium"
                                     style={{ backgroundColor: 'var(--color-burgundy-soft)', color: 'var(--color-burgundy)' }}>
-                                    {e.title.length > 20 ? e.title.substring(0, 18) + '\u2026' : e.title}
+                                    {e.title.length > 20 ? e.title.substring(0, 18) + '\…' : e.title}
                                 </div>
                             ))}
                         </div>
@@ -626,7 +637,7 @@ export default function LessonFlow({ lesson, onComplete }) {
                         setRecapIndex(0);
                         setPhase(PHASE.RECAP);
                     }}>
-                        Start Recap \u2192
+                        Start Recap \→
                     </Button>
                 </div>
             </div>
@@ -779,7 +790,7 @@ export default function LessonFlow({ lesson, onComplete }) {
                                 {quizResults.map((r, i) => (
                                     <button key={i}
                                         className="w-3 h-3 rounded-full result-dot-btn animate-dot-stagger"
-                                        title={`${events.find(e => e.id === r.eventId)?.title || 'Event'} \u2014 ${r.questionType}`}
+                                        title={`${events.find(e => e.id === r.eventId)?.title || 'Event'} \— ${r.questionType}`}
                                         onClick={() => setSelectedDot(r)}
                                         style={{
                                             animationDelay: `${i * 40}ms`,
@@ -818,7 +829,7 @@ export default function LessonFlow({ lesson, onComplete }) {
                                 </div>
                                 <div className="w-px h-10" style={{ backgroundColor: 'rgba(28, 25, 23, 0.08)' }} />
                                 <div className="flex items-center gap-2 animate-scale-in" style={{ animationDelay: '600ms' }}>
-                                    <span className={`text-2xl ${streak > 1 ? 'animate-streak-bounce' : ''}`} style={{ animationDelay: '900ms', animationFillMode: 'backwards' }}>\uD83D\uDD25</span>
+                                    <span className={`text-2xl ${streak > 1 ? 'animate-streak-bounce' : ''}`} style={{ animationDelay: '900ms', animationFillMode: 'backwards' }}>\�\�</span>
                                     <div className="text-left">
                                         <AnimatedCounter value={streak} duration={400} delay={800} className="text-xl font-bold leading-none" style={{ color: 'var(--color-burgundy)' }} />
                                         <div className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: 'var(--color-ink-faint)' }}>Day streak</div>
@@ -829,8 +840,32 @@ export default function LessonFlow({ lesson, onComplete }) {
                     </div>
                 </div>
 
-                <div className="flex-shrink-0 pt-4 pb-2">
+                <div className="flex-shrink-0 pt-4 pb-2 space-y-2">
                     <Button className="w-full" onClick={onComplete}>Continue</Button>
+                    <button
+                        onClick={async () => {
+                            const text = buildLessonShareText({
+                                lessonTitle: lesson.title, greenCount,
+                                totalQuestions: quizResults.length, xp, streak,
+                            });
+                            const result = await shareText({ title: 'Chronos', text });
+                            if (result === 'copied') setShareToast(true);
+                        }}
+                        className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-medium transition-colors cursor-pointer"
+                        style={{ color: 'var(--color-burgundy)', backgroundColor: 'rgba(139, 65, 87, 0.08)' }}
+                    >
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8" />
+                            <polyline points="16 6 12 2 8 6" />
+                            <line x1="12" y1="2" x2="12" y2="15" />
+                        </svg>
+                        Share Result
+                    </button>
+                    {shareToast && (
+                        <p className="text-xs text-center animate-fade-in" style={{ color: 'var(--color-success)' }}>
+                            Copied to clipboard!
+                        </p>
+                    )}
                 </div>
 
                 {/* Result Dot Modal */}
@@ -942,21 +977,22 @@ function QuizQuestion({ question, lessonEventIds, onAnswer, onNext, onBack, onSk
         setScore(s);
         setAnswered(true);
         onAnswer(s);
+        feedback.forScore(s);
     }, [answered, onAnswer]);
 
     const renderButtons = () => {
         if (answered) {
             return (
                 <div className="pinned-footer flex gap-3">
-                    {onBack && <Button variant="secondary" onClick={onBack}>\u2190 Back</Button>}
-                    <Button className="flex-1" onClick={onNext}>Continue \u2192</Button>
+                    {onBack && <Button variant="secondary" onClick={onBack}>\← Back</Button>}
+                    <Button className="flex-1" onClick={onNext}>Continue \→</Button>
                 </div>
             );
         }
         if (onSkip || onBack) {
             return (
                 <div className="pinned-footer flex gap-3">
-                    {onBack && <Button variant="secondary" onClick={onBack}>\u2190 Back</Button>}
+                    {onBack && <Button variant="secondary" onClick={onBack}>\← Back</Button>}
                     {onSkip && <Button className="flex-1" variant="secondary" onClick={onSkip}>Skip</Button>}
                 </div>
             );
@@ -1180,6 +1216,7 @@ function DateInputQuestion({ event, onAnswer, onNext, onBack, onSkip }) {
         setScore(s);
         setAnswered(true);
         onAnswer(s);
+        feedback.forScore(s);
     }, [answered, dateInput, era, event, onAnswer]);
 
     const isRange = event.yearEnd != null;
@@ -1257,8 +1294,8 @@ function DateInputQuestion({ event, onAnswer, onNext, onBack, onSkip }) {
 
             {answered && (
                 <div className="pinned-footer flex gap-3">
-                    {onBack && <Button variant="secondary" onClick={onBack}>\u2190 Back</Button>}
-                    <Button className="flex-1" onClick={onNext}>Continue \u2192</Button>
+                    {onBack && <Button variant="secondary" onClick={onBack}>\← Back</Button>}
+                    <Button className="flex-1" onClick={onNext}>Continue \→</Button>
                 </div>
             )}
         </div>

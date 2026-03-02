@@ -39,7 +39,7 @@ Single React Context + `useReducer` in `src/context/AppContext.jsx`. The `useApp
 
 Key state shape: `completedLessons` (lesson completion counts), `eventMastery` (per-event scores across 4 dimensions: location/date/what/description), `seenEvents`, `starredEvents`, `totalXP`, `currentStreak`, `dailyQuiz` (last completed date/XP/count), `achievements` (unlocked timestamps), `newAchievements` (pending toasts), `totalStudyTime` (cumulative seconds), `studySessions` (last 50 sessions).
 
-Key actions: `COMPLETE_LESSON`, `UPDATE_EVENT_MASTERY`, `ADD_XP`, `MARK_EVENTS_SEEN`, `TOGGLE_STAR`, `UPDATE_STREAK`, `RESET_PROGRESS`, `COMPLETE_DAILY_QUIZ`, `UNLOCK_ACHIEVEMENT`, `DISMISS_ACHIEVEMENT_TOAST`, `RECORD_STUDY_SESSION`.
+Key actions: `COMPLETE_LESSON`, `UPDATE_EVENT_MASTERY`, `ADD_XP`, `MARK_EVENTS_SEEN`, `TOGGLE_STAR`, `UPDATE_STREAK`, `RESET_PROGRESS`, `COMPLETE_DAILY_QUIZ`, `UNLOCK_ACHIEVEMENT`, `DISMISS_ACHIEVEMENT_TOAST`, `RECORD_STUDY_SESSION`, `TOGGLE_SOUND`, `TOGGLE_HAPTICS`.
 
 ### Routing
 
@@ -80,6 +80,10 @@ Reusable UI primitives (Button, Card, MasteryDots, CategoryTag, ProgressRing) ar
 **New event:** Add to `ALL_EVENTS` in `src/data/events.js` with id format `'fXX'`, must include year, location, category, difficulty.
 
 **New lesson:** Add to `LESSONS` in `src/data/lessons.js` with exactly 3 eventIds for regular lessons.
+
+### Feedback Service (`src/services/feedback.js`)
+
+Module-level sound + haptics service. `configure({ soundEnabled, hapticsEnabled })` is called from AppContext on every state persist. Quiz components call `feedback.correct()`, `feedback.wrong()`, `feedback.close()`, `feedback.complete()`, or `feedback.forScore(score)` directly — no hooks or state passing needed. Sounds use Web Audio API (sine oscillators, no audio files). Haptics use `@capacitor/haptics` (graceful no-op on web).
 
 ### Android Widgets
 

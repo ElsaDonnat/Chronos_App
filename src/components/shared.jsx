@@ -61,6 +61,31 @@ export function CategoryTag({ category }) {
     );
 }
 
+export function DiHBadge({ size = 'sm' }) {
+    const isSmall = size === 'sm';
+    return (
+        <span
+            className="inline-flex items-center gap-1 rounded-md font-semibold uppercase tracking-wider flex-shrink-0"
+            style={{
+                fontSize: isSmall ? '9px' : '11px',
+                padding: isSmall ? '2px 6px' : '3px 8px',
+                color: '#8B6914',
+                backgroundColor: 'rgba(230, 168, 23, 0.12)',
+                border: '1px solid rgba(230, 168, 23, 0.2)',
+            }}
+        >
+            <svg width={isSmall ? 10 : 12} height={isSmall ? 10 : 12} viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+                <line x1="16" y1="2" x2="16" y2="6" />
+                <line x1="8" y1="2" x2="8" y2="6" />
+                <line x1="3" y1="10" x2="21" y2="10" />
+            </svg>
+            Bonus
+        </span>
+    );
+}
+
 export function MasteryDots({ mastery, size = 'sm' }) {
     const dotSize = size === 'sm' ? 'w-2 h-2' : 'w-3 h-3';
     const gap = size === 'sm' ? 'gap-1' : 'gap-1.5';
@@ -103,7 +128,7 @@ export function Divider() {
     );
 }
 
-export function ProgressBar({ value, max }) {
+export function ProgressBar({ value, max, color }) {
     const pct = Math.min((value / max) * 100, 100);
     return (
         <div className="w-full h-1.5 rounded-full overflow-hidden" style={{ backgroundColor: 'rgba(28, 25, 23, 0.06)' }}>
@@ -111,7 +136,7 @@ export function ProgressBar({ value, max }) {
                 className="h-full rounded-full transition-all duration-500 ease-out"
                 style={{
                     width: `${pct}%`,
-                    backgroundColor: 'var(--color-burgundy)',
+                    backgroundColor: color || 'var(--color-burgundy)',
                 }}
             />
         </div>

@@ -83,15 +83,15 @@ export default function Mascot({ mood = 'happy', size = 80, className = '' }) {
 
                 {/* Right arm + hourglass grip */}
                 <g>
-                    {/* Arm */}
-                    <ellipse cx="10.5" cy="6.5" rx="3" ry="1.6" fill="#E8C0C6" transform="rotate(22 10.5 6.5)">
+                    {/* Arm — extended to hold hourglass away from body */}
+                    <ellipse cx="12" cy="7" rx="4.5" ry="1.4" fill="#E8C0C6" transform="rotate(10 12 7)">
                         {isCelebrating && (
-                            <animateTransform attributeName="transform" type="rotate" values="22 10.5 6.5;36 10.5 4.5;22 10.5 6.5" dur="0.6s" repeatCount="indefinite" additive="replace" />
+                            <animateTransform attributeName="transform" type="rotate" values="10 12 7;25 12 5;10 12 7" dur="0.6s" repeatCount="indefinite" additive="replace" />
                         )}
                     </ellipse>
 
-                    {/* Hourglass — at hand, subtle shake */}
-                    <g transform="translate(13, 4.5)" style={shakeHourglass ? { transformOrigin: '0px 0px', animation: 'hourglassShake 0.25s ease-in-out 2' } : {}}>
+                    {/* Hourglass — held out to the side, away from face */}
+                    <g transform="translate(16, 7)" style={shakeHourglass ? { transformOrigin: '0px 0px', animation: 'hourglassShake 0.25s ease-in-out 2' } : {}}>
                         {/* Top cap */}
                         <line x1="-2.2" y1="-3.5" x2="2.2" y2="-3.5" stroke="#8B4157" strokeWidth="0.8" strokeLinecap="round" />
                         {/* Bottom cap */}
@@ -105,10 +105,10 @@ export default function Mascot({ mood = 'happy', size = 80, className = '' }) {
                     </g>
 
                     {/* Fingers wrapping around hourglass */}
-                    <path d="M 11 5.5 Q 12 3.5 13 2" stroke="#E8C0C6" strokeWidth="1.1" fill="none" strokeLinecap="round" />
-                    <path d="M 11.3 6.8 Q 12.5 5 13.3 3.5" stroke="#DBBCC2" strokeWidth="0.9" fill="none" strokeLinecap="round" />
+                    <path d="M 15 7 Q 15.5 5 16 4" stroke="#E8C0C6" strokeWidth="1.1" fill="none" strokeLinecap="round" />
+                    <path d="M 15.5 7.8 Q 16 6 16.5 5" stroke="#DBBCC2" strokeWidth="0.9" fill="none" strokeLinecap="round" />
                     {/* Thumb on other side */}
-                    <path d="M 11.5 7.5 Q 13.5 5.5 14 5" stroke="#DBBCC2" strokeWidth="0.8" fill="none" strokeLinecap="round" />
+                    <path d="M 15.5 8.5 Q 17 8 17.5 7" stroke="#DBBCC2" strokeWidth="0.8" fill="none" strokeLinecap="round" />
                 </g>
 
                 {/* Feet — simple ovals */}

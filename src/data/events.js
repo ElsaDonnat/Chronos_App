@@ -1,4 +1,6 @@
-export const ALL_EVENTS = [
+import { DAILY_QUIZ_EVENTS } from './dailyQuiz';
+
+const CORE_EVENTS = [
     {
         id: "f1",
         title: "The Great Ancestral Split",
@@ -12,7 +14,7 @@ export const ALL_EVENTS = [
         category: "science",
         difficulty: 1,
         controversyNotes: {
-            date: "The human\u2013chimpanzee split is estimated at 4\u201313 million years ago depending on the method. Molecular clocks, fossil evidence, and genetic analyses give different results, and the divergence was likely gradual rather than a single event.",
+            date: "The human\–chimpanzee split is estimated at 4\–13 million years ago depending on the method. Molecular clocks, fossil evidence, and genetic analyses give different results, and the divergence was likely gradual rather than a single event.",
         }
     },
     {
@@ -290,7 +292,7 @@ export const ALL_EVENTS = [
         category: "war",
         difficulty: 1,
         controversyNotes: {
-            date: "476 CE (deposition of Romulus Augustulus) is the traditional date, but the 'fall' was a gradual process. Some historians prefer 410 (Visigoth sack of Rome), 455 (Vandal sack), or argue there was no single fall \u2014 Roman institutions simply dissolved over generations.",
+            date: "476 CE (deposition of Romulus Augustulus) is the traditional date, but the 'fall' was a gradual process. Some historians prefer 410 (Visigoth sack of Rome), 455 (Vandal sack), or argue there was no single fall \— Roman institutions simply dissolved over generations.",
         }
     },
     {
@@ -422,7 +424,7 @@ export const ALL_EVENTS = [
         category: "war",
         difficulty: 1,
         controversyNotes: {
-            date: "Some historians mark 1453 as the end of the Middle Ages, while others prefer 1492 (Columbus reaches the Americas) or 1517 (the Reformation). The medieval\u2013modern transition was too gradual for a single date, so this remains a matter of scholarly convention.",
+            date: "Some historians mark 1453 as the end of the Middle Ages, while others prefer 1492 (Columbus reaches the Americas) or 1517 (the Reformation). The medieval\–modern transition was too gradual for a single date, so this remains a matter of scholarly convention.",
         }
     },
     {
@@ -449,7 +451,7 @@ export const ALL_EVENTS = [
         category: "war",
         difficulty: 1,
         controversyNotes: {
-            location: "Columbus never reached the mainland Americas in 1492. He landed on an island in the Bahamas \u2014 probably San Salvador or Samana Cay (scholars disagree). He believed he had reached Asia until his death in 1506.",
+            location: "Columbus never reached the mainland Americas in 1492. He landed on an island in the Bahamas \— probably San Salvador or Samana Cay (scholars disagree). He believed he had reached Asia until his death in 1506.",
         }
     },
     {
@@ -811,6 +813,14 @@ export const ALL_EVENTS = [
         difficulty: 2
     }
 ];
+
+export const ALL_EVENTS = [...CORE_EVENTS, ...DAILY_QUIZ_EVENTS];
+
+export const CORE_EVENT_COUNT = CORE_EVENTS.length; // 60 — for display purposes
+
+export function isDiHEvent(event) {
+    return event?.source === 'daily';
+}
 
 export function getEventById(id) {
     return ALL_EVENTS.find(e => e.id === id);

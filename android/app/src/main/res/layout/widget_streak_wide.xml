@@ -4,15 +4,15 @@
     android:id="@+id/widget_streak_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
+    android:orientation="horizontal"
     android:gravity="center"
-    android:padding="8dp"
+    android:padding="12dp"
     android:background="@drawable/widget_background">
 
     <ViewFlipper
         android:id="@+id/flame_flipper"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
         android:autoStart="true"
         android:flipInterval="1100">
 
@@ -34,22 +34,31 @@
 
     </ViewFlipper>
 
-    <TextView
-        android:id="@+id/streak_count"
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="0"
-        android:textSize="24sp"
-        android:textStyle="bold"
-        android:fontFamily="serif"
-        android:textColor="#8B4157" />
+        android:orientation="vertical"
+        android:gravity="center_vertical"
+        android:layout_marginStart="10dp">
 
-    <TextView
-        android:id="@+id/streak_label"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="day streak"
-        android:textSize="11sp"
-        android:textColor="#1C1917" />
+        <TextView
+            android:id="@+id/streak_count"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="0"
+            android:textSize="32sp"
+            android:textStyle="bold"
+            android:fontFamily="serif"
+            android:textColor="#8B4157" />
+
+        <TextView
+            android:id="@+id/streak_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="day streak"
+            android:textSize="12sp"
+            android:textColor="#1C1917" />
+
+    </LinearLayout>
 
 </LinearLayout>

@@ -17,6 +17,7 @@ import {
   scheduleStreakReminder,
   rescheduleNotifications,
 } from './services/notifications';
+import * as feedback from './services/feedback';
 
 const TAB_KEYS = { '1': 'learn', '2': 'timeline', '3': 'practice' };
 const RATING_MILESTONE = 3; // Show rating prompt after completing 3 lessons
@@ -40,9 +41,10 @@ export default function App() {
   // Achievement checker — runs on state changes
   useAchievementChecker();
 
-  // Auto-dismiss achievement toast after 3.5s
+  // Auto-dismiss achievement toast after 3.5s + play sound
   useEffect(() => {
     if ((state.newAchievements || []).length > 0) {
+      feedback.achievement();
       const timer = setTimeout(() => {
         dispatch({ type: 'DISMISS_ACHIEVEMENT_TOAST' });
       }, 3500);
@@ -114,10 +116,11 @@ export default function App() {
   const completedCount = Object.keys(state.completedLessons).length;
   const shouldShowRating = completedCount >= RATING_MILESTONE && !state.ratingPromptDismissed;
 
-  // Notification onboarding — show after first lesson, but not when rating is showing, and only after tutorial
+  // Notification onboarding — show after first lesson, but not during a lesson/quiz session, not when rating is showing, and only after tutorial
   const onboardingDone = state.onboardingStep === 'complete' || state.onboardingStep === null;
   const shouldShowNotificationOnboarding =
     completedCount >= 1 &&
+    !inSession &&
     !state.notificationOnboardingDismissed &&
     !shouldShowRating &&
     onboardingDone;
@@ -163,7 +166,7 @@ export default function App() {
         <main className="main-content" ref={mainRef}>
           <div className={`main-content-inner${inSession ? ' in-session' : ''}`}>
             <div className="animate-fade-in" key={activeTab}>
-              {activeTab === 'learn' && <LearnPage onSessionChange={setInSession} registerBackHandler={registerBackHandler} />}
+              {activeTab === 'learn' && <LearnPage onSessionChange={setInSession} registerBackHandler={registerBackHandler} onTabChange={setActiveTab} />}
               {activeTab === 'timeline' && <TimelinePage />}
               {activeTab === 'practice' && <PracticePage onSessionChange={setInSession} registerBackHandler={registerBackHandler} />}
             </div>

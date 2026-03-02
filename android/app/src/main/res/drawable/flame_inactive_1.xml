@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="48dp"
+    android:height="48dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <!-- Outer flame - steel blue, smaller shape -->
+    <path
+        android:fillColor="#5B8DB8"
+        android:pathData="M12,3 C12,3 6,11 6,15.5 C6,19 8.7,21.5 12,21.5 C15.3,21.5 18,19 18,15.5 C18,11 12,3 12,3 Z" />
+    <!-- Inner flame - lighter blue -->
+    <path
+        android:fillColor="#7BAFD4"
+        android:pathData="M12,8 C12,8 8.5,13.5 8.5,16 C8.5,18.2 10,19.5 12,19.5 C14,19.5 15.5,18.2 15.5,16 C15.5,13.5 12,8 12,8 Z" />
+    <!-- Core - pale blue -->
+    <path
+        android:fillColor="#B8D8EA"
+        android:pathData="M12,12 C12,12 10.5,15 10.5,16.3 C10.5,17.3 11.2,18 12,18 C12.8,18 13.5,17.3 13.5,16.3 C13.5,15 12,12 12,12 Z" />
+</vector>

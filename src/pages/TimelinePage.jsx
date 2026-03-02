@@ -1,7 +1,7 @@
 import { useState, useMemo, useCallback } from 'react';
 import { useApp } from '../context/AppContext';
-import { ALL_EVENTS, CATEGORY_CONFIG, ERA_RANGES, ERA_BOUNDARY_EVENTS, getEraForYear, getEventById } from '../data/events';
-import { Card, CategoryTag, MasteryDots, Divider, ExpandableText } from '../components/shared';
+import { ALL_EVENTS, CORE_EVENT_COUNT, CATEGORY_CONFIG, ERA_RANGES, ERA_BOUNDARY_EVENTS, getEraForYear, getEventById, isDiHEvent } from '../data/events';
+import { Card, CategoryTag, DiHBadge, MasteryDots, Divider, ExpandableText } from '../components/shared';
 import Mascot from '../components/Mascot';
 
 export default function TimelinePage() {
@@ -16,12 +16,18 @@ export default function TimelinePage() {
         }
     }, []);
 
+    const acquiredDiHIds = useMemo(() => new Set(state.dailyQuiz?.acquiredEventIds || []), [state.dailyQuiz?.acquiredEventIds]);
+
     const sortedEvents = useMemo(() => {
-        return [...ALL_EVENTS].sort((a, b) => a.year - b.year);
-    }, []);
+        // Filter out DiH events that haven't been acquired yet
+        return [...ALL_EVENTS]
+            .filter(event => !isDiHEvent(event) || acquiredDiHIds.has(event.id))
+            .sort((a, b) => a.year - b.year);
+    }, [acquiredDiHIds]);
 
     const filteredEvents = useMemo(() => {
         return sortedEvents.filter(event => {
+            if (selectedCategory === 'daily') return isDiHEvent(event);
             if (selectedEra !== 'all') {
                 const era = ERA_RANGES.find(e => e.id === selectedEra);
                 if (era && (event.year < era.start || event.year >= era.end)) return false;
@@ -60,7 +66,7 @@ export default function TimelinePage() {
                     Timeline
                 </h1>
                 <p className="text-sm mt-1" style={{ color: 'var(--color-ink-muted)' }}>
-                    {learnedIds.size} of {ALL_EVENTS.length} events discovered
+                    {[...learnedIds].filter(id => !id.startsWith('dih-')).length} of {CORE_EVENT_COUNT} events{acquiredDiHIds.size > 0 ? ` · ${acquiredDiHIds.size} bonus` : ''}
                 </p>
             </div>
 
@@ -80,6 +86,11 @@ export default function TimelinePage() {
                             onClick={() => setSelectedCategory(key)}
                             dotColor={config.color} />
                     ))}
+                    {acquiredDiHIds.size > 0 && (
+                        <FilterChip label="Day in History" active={selectedCategory === 'daily'}
+                            onClick={() => setSelectedCategory('daily')}
+                            dotColor="#E6A817" />
+                    )}
                 </div>
             </div>
 
@@ -209,10 +220,10 @@ export default function TimelinePage() {
                                         {isLearned ? (
                                             <div className="w-[18px] h-[18px] rounded-full border-2 flex items-center justify-center"
                                                 style={{
-                                                    borderColor: catConfig?.color || '#999',
+                                                    borderColor: isDiHEvent(event) ? '#E6A817' : (catConfig?.color || '#999'),
                                                     backgroundColor: 'var(--color-card)',
                                                 }}>
-                                                <div className="w-2 h-2 rounded-full" style={{ backgroundColor: catConfig?.color || '#999' }} />
+                                                <div className="w-2 h-2 rounded-full" style={{ backgroundColor: isDiHEvent(event) ? '#E6A817' : (catConfig?.color || '#999') }} />
                                             </div>
                                         ) : (
                                             <div className="w-[18px] h-[18px] rounded-full flex items-center justify-center"
@@ -246,9 +257,12 @@ export default function TimelinePage() {
 
                                             {isExpanded && (
                                                 <div ref={expandedRef} className="mt-4 animate-fade-in">
-                                                    <Card style={{ borderLeft: `3px solid ${catConfig?.color || '#999'}` }}>
+                                                    <Card style={{ borderLeft: `3px solid ${isDiHEvent(event) ? '#E6A817' : (catConfig?.color || '#999')}` }}>
                                                         <div className="flex items-center justify-between mb-3">
-                                                            <CategoryTag category={event.category} />
+                                                            <div className="flex items-center gap-2">
+                                                                <CategoryTag category={event.category} />
+                                                                {isDiHEvent(event) && <DiHBadge />}
+                                                            </div>
                                                             <span className="text-sm font-semibold" style={{ color: 'var(--color-burgundy)' }}>
                                                                 {event.date}
                                                             </span>

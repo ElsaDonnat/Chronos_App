@@ -1,6 +1,7 @@
 import { useApp } from '../context/AppContext';
 import { useState, useEffect, useRef, useMemo } from 'react';
 import AchievementsModal from './AchievementsModal';
+import { shareText, buildStreakShareText } from '../services/share';
 
 const SECTION_NAMES = {
     learn: 'Chapter 1: The Story of Humanity',
@@ -26,25 +27,33 @@ const FLAME_COLORS = {
 
 function StreakModal({ streakStatus, currentStreak, onClose }) {
     const colors = FLAME_COLORS[streakStatus];
+    const [shareToast, setShareToast] = useState(false);
+
+    useEffect(() => {
+        if (shareToast) {
+            const t = setTimeout(() => setShareToast(false), 2000);
+            return () => clearTimeout(t);
+        }
+    }, [shareToast]);
 
     const { title, message } = useMemo(() => {
         if (streakStatus === 'active') {
             if (currentStreak >= 7) return {
                 title: 'Unstoppable!',
-                message: `${currentStreak} days in a row \u2014 you\u2019re building a real habit. Keep the flame burning!`
+                message: `${currentStreak} days in a row \— you\’re building a real habit. Keep the flame burning!`
             };
             if (currentStreak >= 3) return {
                 title: 'Nice streak!',
-                message: `${currentStreak} consecutive days of learning. You\u2019re on a roll!`
+                message: `${currentStreak} consecutive days of learning. You\’re on a roll!`
             };
             return {
                 title: 'Streak alive!',
-                message: `You\u2019ve studied ${currentStreak} day${currentStreak === 1 ? '' : 's'} in a row. Come back tomorrow to keep it going.`
+                message: `You\’ve studied ${currentStreak} day${currentStreak === 1 ? '' : 's'} in a row. Come back tomorrow to keep it going.`
             };
         }
         if (streakStatus === 'at-risk') return {
-            title: 'Don\u2019t lose it!',
-            message: `Your ${currentStreak}-day streak is still alive \u2014 complete a lesson today to keep the flame burning.`
+            title: 'Don\’t lose it!',
+            message: `Your ${currentStreak}-day streak is still alive \— complete a lesson today to keep the flame burning.`
         };
         return {
             title: 'Start a streak',
@@ -73,6 +82,29 @@ function StreakModal({ streakStatus, currentStreak, onClose }) {
                 </div>
                 <div className="streak-modal-body">
                     <p className="streak-modal-message">{message}</p>
+                    {currentStreak >= 1 && (
+                        <button
+                            onClick={async () => {
+                                const text = buildStreakShareText({ currentStreak });
+                                const result = await shareText({ title: 'Chronos', text });
+                                if (result === 'copied') setShareToast(true);
+                            }}
+                            className="w-full flex items-center justify-center gap-2 mb-3 py-2.5 rounded-xl text-sm font-semibold transition-colors cursor-pointer"
+                            style={{ color: colors.countColor, backgroundColor: `${colors.fill}22` }}
+                        >
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8" />
+                                <polyline points="16 6 12 2 8 6" />
+                                <line x1="12" y1="2" x2="12" y2="15" />
+                            </svg>
+                            Share Streak
+                        </button>
+                    )}
+                    {shareToast && (
+                        <p className="text-xs text-center mb-2 animate-fade-in" style={{ color: 'var(--color-success)' }}>
+                            Copied to clipboard!
+                        </p>
+                    )}
                     <button className="streak-modal-close" onClick={onClose}>Got it</button>
                 </div>
             </div>
@@ -120,7 +152,7 @@ export default function TopBar({ activeTab }) {
                 <div className="topbar-inner">
                     {/* Logo — left */}
                     <h1 className="topbar-logo">
-                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--color-burgundy)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--color-burgundy)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
                             <line x1="5" y1="3" x2="19" y2="3" />
                             <line x1="5" y1="21" x2="19" y2="21" />
                             <path d="M7 3 C7 3 7 9 12 12 C7 15 7 21 7 21" />
@@ -167,7 +199,7 @@ export default function TopBar({ activeTab }) {
                             <span className="text-sm font-semibold" style={{ color: 'var(--color-bronze)' }}>
                                 {displayXP}
                             </span>
-                            <span className="text-xs" style={{ color: 'var(--color-ink-faint)' }}>XP</span>
+                            <span className="text-xs hidden sm:inline" style={{ color: 'var(--color-ink-faint)' }}>XP</span>
                         </div>
 
                         {/* Achievements trophy */}

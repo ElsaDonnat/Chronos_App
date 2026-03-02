@@ -15,11 +15,26 @@ export async function initWidgets() {
       widgets: [
         'com.chronos.app.StreakWidget',
         'com.chronos.app.QuickPracticeWidget',
+        'com.chronos.app.ChronosWidget',
       ],
     });
   } catch (e) {
     console.warn('Widget registration failed:', e);
   }
+}
+
+/**
+ * Compute streak status from app state.
+ * Returns 'active' (studied today), 'at-risk' (yesterday, not today), or 'inactive' (lost).
+ */
+function getStreakStatus(state) {
+  if (!state.lastActiveDate || !state.currentStreak) return 'inactive';
+  const today = new Date().toISOString().split('T')[0];
+  if (state.lastActiveDate === today) return 'active';
+  const yesterday = new Date();
+  yesterday.setDate(yesterday.getDate() - 1);
+  if (state.lastActiveDate === yesterday.toISOString().split('T')[0]) return 'at-risk';
+  return 'inactive';
 }
 
 /**
@@ -34,6 +49,12 @@ export async function syncWidgetData(state) {
       group: WIDGET_GROUP,
       key: 'currentStreak',
       value: String(state.currentStreak || 0),
+    });
+
+    await WidgetBridgePlugin.setItem({
+      group: WIDGET_GROUP,
+      key: 'streakStatus',
+      value: getStreakStatus(state),
     });
 
     await WidgetBridgePlugin.setItem({

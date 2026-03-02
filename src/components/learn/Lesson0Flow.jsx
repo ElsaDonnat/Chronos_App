@@ -4,14 +4,15 @@ import { getEventById, ERA_BOUNDARY_EVENTS } from '../../data/events';
 import { SCORE_COLORS, getScoreLabel, shuffle } from '../../data/quiz';
 import { Card, Button, ProgressBar, Divider, ExpandableText } from '../shared';
 import Mascot from '../Mascot';
+import * as feedback from '../../services/feedback';
 
 // ─── Matching colors for pairing lines ──────────────────
 const MATCH_COLORS = [
-    '#8B4157', // burgundy
-    '#0D9488', // teal
-    '#6B5B73', // purple
-    '#C9A96E', // gold
-    '#A0522D', // brown
+    '#9B8EC4', // lavender
+    '#5A9BD5', // medium-light blue
+    '#D98C3B', // orange
+    '#D4739D', // pink
+    '#6BAFAC', // soft teal (distinct from success green)
 ];
 
 // ─── PHASES ────────────────────────────────────────────
@@ -29,38 +30,38 @@ const PERIODS = [
     const info = {
         prehistory: {
             title: 'Prehistory',
-            subtitle: 'c. 7\u20136 million years ago \u2013 c. 3200 BCE',
+            subtitle: 'c. 7\–6 million years ago \– c. 3200 BCE',
             keywords: 'Evolution, fire, farming.',
             description: 'Literally "before written records," prehistory spans 99% of the human story. It traces the arc from biological to cultural evolution: bipedalism, stone tools, the mastery of fire, the emergence of language and symbolic thought, the migration out of Africa to every continent, and finally the Neolithic transition from nomadic foraging to settled agriculture that made civilization possible.',
-            color: '#0D9488', icon: '\uD83E\uDDB4',
+            color: '#0D9488', icon: '\�\�',
         },
         ancient: {
             title: 'The Ancient World',
-            subtitle: 'c. 3200 BCE \u2013 476 CE',
+            subtitle: 'c. 3200 BCE \– 476 CE',
             keywords: 'Writing, cities, empires.',
-            description: 'Defined by the invention of writing, the rise of cities, and the emergence of states and empires. Mesopotamia, Egypt, Greece, Rome, China, and India each developed distinct traditions of law, philosophy, science, and organized religion. The era\u2019s arc runs from the first civilizations in Sumer to the collapse of the largest \u2014 the Western Roman Empire \u2014 under the weight of economic decay and Germanic invasions.',
-            color: '#6B5B73', icon: '\uD83C\uDFDB\uFE0F',
+            description: 'Defined by the invention of writing, the rise of cities, and the emergence of states and empires. Mesopotamia, Egypt, Greece, Rome, China, and India each developed distinct traditions of law, philosophy, science, and organized religion. The era\’s arc runs from the first civilizations in Sumer to the collapse of the largest \— the Western Roman Empire \— under the weight of economic decay and Germanic invasions.',
+            color: '#6B5B73', icon: '\�\�\️',
         },
         medieval: {
             title: 'The Medieval World',
-            subtitle: '476 \u2013 c. 1500 CE',
+            subtitle: '476 \– c. 1500 CE',
             keywords: 'Islam, feudalism, Mongols.',
-            description: 'Far from the "Dark Ages" of popular myth, this was an era of transformation. Islam rose and spread from Arabia to Iberia, the Byzantine Empire preserved Roman learning for a millennium, feudalism structured Western Europe, the Mongol Empire connected East and West, the Crusades reshaped Mediterranean trade, and Europe\u2019s first universities were founded. The era\u2019s arc runs from Rome\u2019s fall to the reconnection of the world.',
-            color: '#A0522D', icon: '\u2694\uFE0F',
+            description: 'Far from the "Dark Ages" of popular myth, this was an era of transformation. Islam rose and spread from Arabia to Iberia, the Byzantine Empire preserved Roman learning for a millennium, feudalism structured Western Europe, the Mongol Empire connected East and West, the Crusades reshaped Mediterranean trade, and Europe\’s first universities were founded. The era\’s arc runs from Rome\’s fall to the reconnection of the world.',
+            color: '#A0522D', icon: '\⚔\️',
         },
         earlymodern: {
             title: 'The Early Modern Period',
-            subtitle: 'c. 1500 \u2013 1789',
+            subtitle: 'c. 1500 \– 1789',
             keywords: 'Exploration, Reformation, science.',
             description: 'European exploration and colonization linked every continent for the first time. The Renaissance revived classical learning, the Reformation shattered religious unity, the Scientific Revolution overturned ancient certainties, and the Enlightenment challenged the divine right of kings. The Atlantic slave trade forcibly connected three continents. The arc is from a fragmented world to an interconnected one, ending when Enlightenment ideals erupted into revolution.',
-            color: '#65774A', icon: '\uD83E\uDDED',
+            color: '#65774A', icon: '\�\�',
         },
         modern: {
             title: 'The Modern World',
-            subtitle: '1789 \u2013 Present',
+            subtitle: '1789 \– Present',
             keywords: 'Industry, world wars, digital.',
-            description: 'More change in two centuries than in the previous two millennia. Industrialization transformed how people worked and lived, nationalism redrew the map of Europe, two world wars killed tens of millions and dismantled colonial empires, the Cold War split the globe, decolonization reshaped the Global South, and the digital revolution connected billions. The defining theme is acceleration \u2014 of technology, population, and the pace of change itself.',
-            color: '#8B4157', icon: '\uD83C\uDF0D',
+            description: 'More change in two centuries than in the previous two millennia. Industrialization transformed how people worked and lived, nationalism redrew the map of Europe, two world wars killed tens of millions and dismantled colonial empires, the Cold War split the globe, decolonization reshaped the Global South, and the digital revolution connected billions. The defining theme is acceleration \— of technology, population, and the pace of change itself.',
+            color: '#8B4157', icon: '\�\�',
         },
     }[id];
     const boundary = ERA_BOUNDARY_EVENTS[id];
@@ -76,72 +77,72 @@ const PERIODS = [
 const FAKE_DATES = {
     prehistory: {
         close: [
-            'c. 7\u20136 million years ago \u2013 c. 5000 BCE',
-            'c. 4 million years ago \u2013 c. 3200 BCE',
-            'c. 7\u20136 million years ago \u2013 c. 1500 BCE',
-            'c. 5 million years ago \u2013 c. 3000 BCE',
+            'c. 7\–6 million years ago \– c. 5000 BCE',
+            'c. 4 million years ago \– c. 3200 BCE',
+            'c. 7\–6 million years ago \– c. 1500 BCE',
+            'c. 5 million years ago \– c. 3000 BCE',
         ],
         far: [
-            'c. 10 million years ago \u2013 c. 8000 BCE',
-            'c. 2 million years ago \u2013 c. 500 BCE',
-            'c. 3 million years ago \u2013 c. 5000 BCE',
-            'c. 12 million years ago \u2013 c. 4000 BCE',
+            'c. 10 million years ago \– c. 8000 BCE',
+            'c. 2 million years ago \– c. 500 BCE',
+            'c. 3 million years ago \– c. 5000 BCE',
+            'c. 12 million years ago \– c. 4000 BCE',
         ],
     },
     ancient: {
         close: [
-            'c. 3200 BCE \u2013 200 CE',
-            'c. 3200 BCE \u2013 800 CE',
-            'c. 3500 BCE \u2013 600 CE',
-            'c. 3000 BCE \u2013 380 CE',
+            'c. 3200 BCE \– 200 CE',
+            'c. 3200 BCE \– 800 CE',
+            'c. 3500 BCE \– 600 CE',
+            'c. 3000 BCE \– 380 CE',
         ],
         far: [
-            'c. 4500 BCE \u2013 300 CE',
-            'c. 2500 BCE \u2013 700 CE',
-            'c. 3200 BCE \u2013 1100 CE',
-            'c. 4000 BCE \u2013 476 CE',
+            'c. 4500 BCE \– 300 CE',
+            'c. 2500 BCE \– 700 CE',
+            'c. 3200 BCE \– 1100 CE',
+            'c. 4000 BCE \– 476 CE',
         ],
     },
     medieval: {
         close: [
-            '476 \u2013 c. 1350 CE',
-            '476 \u2013 c. 1550 CE',
-            '476 \u2013 c. 1650 CE',
-            '520 \u2013 c. 1500 CE',
+            '476 \– c. 1350 CE',
+            '476 \– c. 1550 CE',
+            '476 \– c. 1650 CE',
+            '520 \– c. 1500 CE',
         ],
         far: [
-            '550 \u2013 1350 CE',
-            '476 \u2013 1700 CE',
-            '600 \u2013 c. 1500 CE',
-            '350 \u2013 c. 1250 CE',
+            '550 \– 1350 CE',
+            '476 \– 1700 CE',
+            '600 \– c. 1500 CE',
+            '350 \– c. 1250 CE',
         ],
     },
     earlymodern: {
         close: [
-            'c. 1500 \u2013 1648',
-            'c. 1500 \u2013 1850',
-            'c. 1400 \u2013 1789',
-            'c. 1550 \u2013 1820',
+            'c. 1500 \– 1648',
+            'c. 1500 \– 1850',
+            'c. 1400 \– 1789',
+            'c. 1550 \– 1820',
         ],
         far: [
-            '1350 \u2013 1700',
-            '1600 \u2013 1900',
-            '1450 \u2013 1750',
-            'c. 1550 \u2013 1900',
+            '1350 \– 1700',
+            '1600 \– 1900',
+            '1450 \– 1750',
+            'c. 1550 \– 1900',
         ],
     },
     modern: {
         close: [
-            '1820 \u2013 Present',
-            '1830 \u2013 Present',
-            '1720 \u2013 Present',
-            '1770 \u2013 Present',
+            '1820 \– Present',
+            '1830 \– Present',
+            '1720 \– Present',
+            '1770 \– Present',
         ],
         far: [
-            '1700 \u2013 Present',
-            '1860 \u2013 Present',
-            '1870 \u2013 Present',
-            '1680 \u2013 Present',
+            '1700 \– Present',
+            '1860 \– Present',
+            '1870 \– Present',
+            '1680 \– Present',
         ],
     },
 };
@@ -418,6 +419,7 @@ export default function Lesson0Flow({ lesson, onComplete }) {
         const handleNext = () => {
             if (quizIndex + 1 >= quizQuestions.length) {
                 setPhase(PHASE.SUMMARY);
+                feedback.complete();
             } else {
                 setQuizIndex(i => i + 1);
                 setSelectedAnswer(null);
@@ -519,15 +521,16 @@ export default function Lesson0Flow({ lesson, onComplete }) {
                                 Tap an era, then tap its date range
                             </p>
 
-                            <div className="flex gap-2">
+                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
                                 {/* Left column: era names */}
-                                <div className="flex-1 flex flex-col gap-1.5">
+                                <div className="flex flex-col gap-1.5">
                                     {q.names.map((n) => {
                                         const isPaired = !!matchPairs[n.id];
                                         const isActive = matchSelected === n.id;
                                         const color = nameColorMap[n.id];
                                         let bg = 'var(--color-card)';
                                         let border = 'rgba(28, 25, 23, 0.08)';
+                                        let borderStyle = 'solid';
                                         if (matchChecked && isPaired) {
                                             const isCorrect = matchPairs[n.id] === n.id;
                                             bg = isCorrect ? 'rgba(5, 150, 105, 0.1)' : 'rgba(166, 61, 61, 0.1)';
@@ -535,6 +538,7 @@ export default function Lesson0Flow({ lesson, onComplete }) {
                                         } else if (isActive) {
                                             bg = 'var(--color-burgundy-soft)';
                                             border = 'var(--color-burgundy)';
+                                            borderStyle = 'dashed';
                                         } else if (isPaired && color) {
                                             bg = `${color}18`;
                                             border = color;
@@ -544,14 +548,16 @@ export default function Lesson0Flow({ lesson, onComplete }) {
                                                 key={n.id}
                                                 onClick={() => handleNameClick(n.id)}
                                                 disabled={matchChecked}
-                                                className="text-left rounded-lg transition-all"
+                                                className="rounded-lg transition-all flex items-center justify-center"
                                                 style={{
-                                                    padding: '8px 10px',
+                                                    padding: '10px 6px',
+                                                    minHeight: '44px',
                                                     fontSize: '0.75rem',
                                                     fontWeight: 600,
                                                     fontFamily: 'var(--font-serif)',
+                                                    textAlign: 'center',
                                                     backgroundColor: bg,
-                                                    border: `2px solid ${border}`,
+                                                    border: `2px ${borderStyle} ${border}`,
                                                     color: 'var(--color-ink)',
                                                     cursor: matchChecked ? 'default' : 'pointer',
                                                 }}
@@ -563,13 +569,14 @@ export default function Lesson0Flow({ lesson, onComplete }) {
                                 </div>
 
                                 {/* Right column: date ranges */}
-                                <div className="flex-1 flex flex-col gap-1.5">
+                                <div className="flex flex-col gap-1.5">
                                     {q.dates.map((d) => {
                                         const pairedByName = Object.entries(matchPairs).find(([, dateId]) => dateId === d.id)?.[0];
                                         const isPaired = !!pairedByName;
                                         const color = dateColorMap[d.id];
                                         let bg = 'var(--color-card)';
                                         let border = 'rgba(28, 25, 23, 0.08)';
+                                        let borderStyle = 'solid';
                                         if (matchChecked && isPaired) {
                                             const isCorrect = pairedByName === d.id;
                                             bg = isCorrect ? 'rgba(5, 150, 105, 0.1)' : 'rgba(166, 61, 61, 0.1)';
@@ -579,19 +586,22 @@ export default function Lesson0Flow({ lesson, onComplete }) {
                                             border = color;
                                         } else if (matchSelected && !isPaired) {
                                             border = 'rgba(139, 65, 87, 0.3)';
+                                            borderStyle = 'dashed';
                                         }
                                         return (
                                             <button
                                                 key={d.id}
                                                 onClick={() => handleDateClick(d.id)}
                                                 disabled={matchChecked}
-                                                className="text-left rounded-lg transition-all"
+                                                className="rounded-lg transition-all flex items-center justify-center"
                                                 style={{
-                                                    padding: '8px 10px',
+                                                    padding: '10px 6px',
+                                                    minHeight: '44px',
                                                     fontSize: '0.7rem',
                                                     fontWeight: 500,
+                                                    textAlign: 'center',
                                                     backgroundColor: bg,
-                                                    border: `2px solid ${border}`,
+                                                    border: `2px ${borderStyle} ${border}`,
                                                     color: 'var(--color-ink-secondary)',
                                                     cursor: matchChecked ? 'default' : 'pointer',
                                                 }}
@@ -649,6 +659,7 @@ export default function Lesson0Flow({ lesson, onComplete }) {
             const score = isCorrect ? 'green' : 'red';
             setResults(prev => [...prev, { score, periodId: q.periodId, type: q.type }]);
             setAnswered(true);
+            feedback.forScore(score);
         };
 
         const currentScore = answered ? results[results.length - 1]?.score : null;

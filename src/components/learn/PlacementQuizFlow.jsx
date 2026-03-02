@@ -5,20 +5,21 @@ import { generatePlacementQuestions, scorePlacementQuiz, getNextPlacementEra, is
 import { generateLocationOptions, generateWhatOptions, generateDateMCQOptions, generateDescriptionOptions, SCORE_COLORS, getScoreColor, getScoreLabel, scoreDateAnswer } from '../../data/quiz';
 import { Card, Button, ProgressBar } from '../shared';
 import Mascot from '../Mascot';
+import * as feedback from '../../services/feedback';
 
 // Period icons/colors for era selection
 const ERA_STYLE = {
-    prehistory: { icon: '\uD83E\uDDB4', color: '#0D9488' },
-    ancient: { icon: '\uD83C\uDFDB\uFE0F', color: '#6B5B73' },
-    medieval: { icon: '\u2694\uFE0F', color: '#A0522D' },
-    earlymodern: { icon: '\uD83E\uDDED', color: '#65774A' },
-    modern: { icon: '\uD83C\uDF0D', color: '#8B4157' },
+    prehistory: { icon: '\�\�', color: '#0D9488' },
+    ancient: { icon: '\�\�\️', color: '#6B5B73' },
+    medieval: { icon: '\⚔\️', color: '#A0522D' },
+    earlymodern: { icon: '\�\�', color: '#65774A' },
+    modern: { icon: '\�\�', color: '#8B4157' },
 };
 
-export default function PlacementQuizFlow({ onComplete }) {
+export default function PlacementQuizFlow({ onComplete, initialEra }) {
     const { state, dispatch } = useApp();
-    const [activeEra, setActiveEra] = useState(null);
-    const [questions, setQuestions] = useState([]);
+    const [activeEra, setActiveEra] = useState(initialEra || null);
+    const [questions, setQuestions] = useState(() => initialEra ? generatePlacementQuestions(initialEra) : []);
     const [currentIndex, setCurrentIndex] = useState(0);
     const [results, setResults] = useState([]);
     const [showResults, setShowResults] = useState(false);
@@ -38,6 +39,7 @@ export default function PlacementQuizFlow({ onComplete }) {
 
     const handleAnswer = (score) => {
         setResults(prev => [...prev, { score }]);
+        feedback.forScore(score);
     };
 
     const handleNext = () => {
@@ -53,12 +55,17 @@ export default function PlacementQuizFlow({ onComplete }) {
                 maxScore: scored.maxScore,
             });
             setShowResults(true);
+            feedback.complete();
         } else {
             setCurrentIndex(i => i + 1);
         }
     };
 
     const handleContinue = () => {
+        if (initialEra) {
+            onComplete();
+            return;
+        }
         if (quizScore?.passed) {
             // Check if there's a next era
             const updated = { ...state.placementQuizzes, [activeEra]: { passed: true } };
@@ -93,7 +100,7 @@ export default function PlacementQuizFlow({ onComplete }) {
                             {quizScore.passed ? 'Passed!' : 'Not quite'}
                         </h2>
                         <p className="text-sm mb-1" style={{ color: 'var(--color-ink-muted)' }}>
-                            {group?.label} \u00B7 {quizScore.score} / {quizScore.maxScore} points
+                            {group?.label} \· {quizScore.score} / {quizScore.maxScore} points
                         </p>
                         {quizScore.passed ? (
                             <p className="text-sm mt-3 px-4" style={{ color: 'var(--color-success)' }}>
@@ -135,16 +142,16 @@ export default function PlacementQuizFlow({ onComplete }) {
                 <div className="flex-shrink-0 flex gap-3 pt-4 pb-2">
                     {quizScore.passed ? (
                         <Button className="flex-1" onClick={handleContinue}>
-                            {getNextPlacementEra({ ...state.placementQuizzes, [activeEra]: { passed: true } })
-                                ? 'Next Era \u2192' : 'Finish'}
+                            {initialEra ? 'Done' : (getNextPlacementEra({ ...state.placementQuizzes, [activeEra]: { passed: true } })
+                                ? 'Next Era \→' : 'Finish')}
                         </Button>
                     ) : (
                         <>
                             <Button variant="secondary" onClick={() => {
-                                dispatch({ type: 'SET_ONBOARDING_STEP', step: 'complete' });
+                                if (!initialEra) dispatch({ type: 'SET_ONBOARDING_STEP', step: 'complete' });
                                 onComplete();
                             }}>
-                                Start Learning
+                                {initialEra ? 'Back' : 'Start Learning'}
                             </Button>
                             <Button className="flex-1" onClick={() => startQuiz(activeEra)}>
                                 Retry
@@ -163,7 +170,7 @@ export default function PlacementQuizFlow({ onComplete }) {
             <div className="lesson-flow-container animate-fade-in">
                 <div className="flex-shrink-0 pt-4">
                     <div className="flex items-center justify-between mb-3">
-                        <button onClick={() => setActiveEra(null)} className="text-sm flex items-center gap-1"
+                        <button onClick={() => initialEra ? onComplete() : setActiveEra(null)} className="text-sm flex items-center gap-1"
                             style={{ color: 'var(--color-ink-muted)' }}>
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                 <polyline points="15 18 9 12 15 6" />
@@ -237,8 +244,8 @@ export default function PlacementQuizFlow({ onComplete }) {
                                     <h3 className="text-sm font-bold" style={{ fontFamily: 'var(--font-serif)' }}>{group.label}</h3>
                                     <p className="text-xs mt-0.5" style={{ color: 'var(--color-ink-muted)' }}>
                                         {passed
-                                            ? `Passed \u00B7 ${quizResult.score}/${quizResult.maxScore} points`
-                                            : `${group.questionCount} questions \u00B7 ${group.lessonIds.length} lessons`}
+                                            ? `Passed \· ${quizResult.score}/${quizResult.maxScore} points`
+                                            : `${group.questionCount} questions \· ${group.lessonIds.length} lessons`}
                                     </p>
                                 </div>
                                 {unlocked && !passed && (
@@ -267,7 +274,7 @@ export default function PlacementQuizFlow({ onComplete }) {
                 </Button>
                 {nextEra && (
                     <Button className="flex-1" onClick={() => startQuiz(nextEra.id)}>
-                        Start {nextEra.label} \u2192
+                        Start {nextEra.label} \→
                     </Button>
                 )}
             </div>
@@ -317,8 +324,8 @@ function PlacementQuestion({ question, onAnswer, onNext }) {
             </p>
             {score !== 'green' && (
                 <div className="mt-2 text-xs leading-relaxed" style={{ color: 'var(--color-ink-secondary)' }}>
-                    <strong>{event.title}</strong> \u2014 <span style={{ color: 'var(--color-burgundy)' }}>{event.date}</span>
-                    {type === 'location' && <span> \u00B7 {event.location.place}</span>}
+                    <strong>{event.title}</strong> \— <span style={{ color: 'var(--color-burgundy)' }}>{event.date}</span>
+                    {type === 'location' && <span> \· {event.location.place}</span>}
                 </div>
             )}
         </div>
@@ -343,7 +350,7 @@ function PlacementQuestion({ question, onAnswer, onNext }) {
                             return (
                                 <button key={i} onClick={() => handleMCQ(opt, event.location.place)} disabled={answered}
                                     className="mcq-option" style={s}>
-                                    {opt}{answered && isCorrect && <span className="ml-2 text-xs" style={{ color: 'var(--color-success)' }}>{'\u2713'}</span>}
+                                    {opt}{answered && isCorrect && <span className="ml-2 text-xs" style={{ color: 'var(--color-success)' }}>{'\✓'}</span>}
                                 </button>
                             );
                         })}
@@ -352,7 +359,7 @@ function PlacementQuestion({ question, onAnswer, onNext }) {
                 </Card>
                 {answered && (
                     <div className="pinned-footer">
-                        <Button className="w-full" onClick={onNext}>Continue \u2192</Button>
+                        <Button className="w-full" onClick={onNext}>Continue \→</Button>
                     </div>
                 )}
             </div>
@@ -366,7 +373,7 @@ function PlacementQuestion({ question, onAnswer, onNext }) {
                     <p className="text-xs uppercase tracking-wider font-semibold mb-2" style={{ color: 'var(--color-ink-faint)' }}>When did this happen?</p>
                     <h3 className="text-xl font-bold mb-1" style={{ fontFamily: 'var(--font-serif)' }}>{event.title}</h3>
                     <p className="text-sm mb-5 leading-relaxed" style={{ color: 'var(--color-ink-secondary)' }}>
-                        {(event.quizDescription || event.description).substring(0, 80)}\u2026
+                        {(event.quizDescription || event.description).substring(0, 80)}\…
                     </p>
                     <div className="mcq-options">
                         {dateOpts.map((opt, i) => {
@@ -379,7 +386,7 @@ function PlacementQuestion({ question, onAnswer, onNext }) {
                             return (
                                 <button key={i} onClick={() => handleDateMCQ(opt)} disabled={answered}
                                     className="mcq-option" style={s}>
-                                    {opt.label}{answered && opt.isCorrect && <span className="ml-2 text-xs" style={{ color: 'var(--color-success)' }}>{'\u2713'}</span>}
+                                    {opt.label}{answered && opt.isCorrect && <span className="ml-2 text-xs" style={{ color: 'var(--color-success)' }}>{'\✓'}</span>}
                                 </button>
                             );
                         })}
@@ -388,7 +395,7 @@ function PlacementQuestion({ question, onAnswer, onNext }) {
                 </Card>
                 {answered && (
                     <div className="pinned-footer">
-                        <Button className="w-full" onClick={onNext}>Continue \u2192</Button>
+                        <Button className="w-full" onClick={onNext}>Continue \→</Button>
                     </div>
                 )}
             </div>
@@ -415,7 +422,7 @@ function PlacementQuestion({ question, onAnswer, onNext }) {
                                 <button key={i} onClick={() => handleMCQ(opt.id, event.id)} disabled={answered}
                                     className="mcq-option" style={s}>
                                     <span className="font-semibold">{opt.title}</span>
-                                    {answered && isCorrect && <span className="ml-2 text-xs" style={{ color: 'var(--color-success)' }}>{'\u2713'}</span>}
+                                    {answered && isCorrect && <span className="ml-2 text-xs" style={{ color: 'var(--color-success)' }}>{'\✓'}</span>}
                                 </button>
                             );
                         })}
@@ -424,7 +431,7 @@ function PlacementQuestion({ question, onAnswer, onNext }) {
                 </Card>
                 {answered && (
                     <div className="pinned-footer">
-                        <Button className="w-full" onClick={onNext}>Continue \u2192</Button>
+                        <Button className="w-full" onClick={onNext}>Continue \→</Button>
                     </div>
                 )}
             </div>
@@ -451,7 +458,7 @@ function PlacementQuestion({ question, onAnswer, onNext }) {
                                 <button key={i} onClick={() => handleMCQ(opt.id, event.id)} disabled={answered}
                                     className="mcq-option" style={s}>
                                     <span className="leading-relaxed text-sm block" style={{ color: 'var(--color-ink-secondary)' }}>{opt.description}</span>
-                                    {answered && isCorrect && <span className="text-xs font-bold mt-1 block" style={{ color: 'var(--color-success)' }}>{'\u2713'} Correct</span>}
+                                    {answered && isCorrect && <span className="text-xs font-bold mt-1 block" style={{ color: 'var(--color-success)' }}>{'\✓'} Correct</span>}
                                 </button>
                             );
                         })}
@@ -460,7 +467,7 @@ function PlacementQuestion({ question, onAnswer, onNext }) {
                 </Card>
                 {answered && (
                     <div className="pinned-footer">
-                        <Button className="w-full" onClick={onNext}>Continue \u2192</Button>
+                        <Button className="w-full" onClick={onNext}>Continue \→</Button>
                     </div>
                 )}
             </div>

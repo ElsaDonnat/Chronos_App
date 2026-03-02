@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@drawable/widget_background"
+    android:padding="8dp"
+    android:baselineAligned="false">
+
+    <!-- Streak section — tap opens home -->
+    <LinearLayout
+        android:id="@+id/combo_streak_area"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="horizontal"
+        android:gravity="center">
+
+        <ViewFlipper
+            android:id="@+id/combo_flame_flipper"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:autoStart="true"
+            android:flipInterval="1100">
+
+            <ImageView
+                android:id="@+id/combo_flame_1"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="fitCenter"
+                android:src="@drawable/flame_active_1"
+                android:contentDescription="@null" />
+
+            <ImageView
+                android:id="@+id/combo_flame_2"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="fitCenter"
+                android:src="@drawable/flame_active_2"
+                android:contentDescription="@null" />
+
+        </ViewFlipper>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginStart="6dp">
+
+            <TextView
+                android:id="@+id/combo_streak_count"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="0"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:fontFamily="serif"
+                android:textColor="#8B4157" />
+
+            <TextView
+                android:id="@+id/combo_streak_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="day streak"
+                android:textSize="10sp"
+                android:textColor="#1C1917" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <!-- Horizontal divider (TextView for RemoteViews compatibility) -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="10dp"
+        android:background="#D6D0C8"
+        android:text="" />
+
+    <!-- Practice section — tap opens practice -->
+    <LinearLayout
+        android:id="@+id/combo_practice_area"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="horizontal"
+        android:gravity="center">
+
+        <ImageView
+            android:id="@+id/combo_practice_logo"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:src="@drawable/widget_hourglass_play"
+            android:scaleType="fitCenter"
+            android:contentDescription="@null" />
+
+        <TextView
+            android:id="@+id/combo_practice_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Practice"
+            android:textSize="11sp"
+            android:textStyle="bold"
+            android:textColor="#1C1917"
+            android:layout_marginStart="6dp" />
+
+    </LinearLayout>
+
+</LinearLayout>

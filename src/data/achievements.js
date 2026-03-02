@@ -163,15 +163,28 @@ export function checkAchievements(state) {
         .map(a => a.id);
 }
 
-/** Hook that checks for new achievements on state changes and dispatches unlocks */
+/** Hook that checks for new achievements on state changes and dispatches unlocks.
+ *  Skips the initial mount so achievements don't fire retroactively on app open. */
 export function useAchievementChecker() {
     const { state, dispatch } = useApp();
     const prevChecked = useRef(new Set(Object.keys(state.achievements || {})));
+    const mounted = useRef(false);
 
     // Destructure the specific fields we depend on for the lint rule
     const { completedLessons, currentStreak, totalXP, seenEvents, starredEvents, eventMastery, dailyQuiz, achievements } = state;
 
     useEffect(() => {
+        // Skip the first render — don't award achievements for pre-existing state on app open
+        if (!mounted.current) {
+            // Seed prevChecked with everything that currently qualifies, so it won't fire later
+            const currentState = { completedLessons, currentStreak, totalXP, seenEvents, starredEvents, eventMastery, dailyQuiz, achievements };
+            const alreadyQualified = checkAchievements(currentState);
+            for (const id of alreadyQualified) {
+                prevChecked.current.add(id);
+            }
+            mounted.current = true;
+            return;
+        }
         const currentState = { completedLessons, currentStreak, totalXP, seenEvents, starredEvents, eventMastery, dailyQuiz, achievements };
         const newlyUnlocked = checkAchievements(currentState);
         for (const id of newlyUnlocked) {

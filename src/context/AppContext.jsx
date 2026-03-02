@@ -2,6 +2,7 @@ import { createContext, useContext, useReducer, useEffect, useRef } from 'react'
 import { getEraQuizGroup } from '../data/lessons';
 import { calculateInitialInterval } from '../data/spacedRepetition';
 import { initWidgets, syncWidgetData } from '../services/widgetBridge';
+import { configure as configureFeedback } from '../services/feedback';
 
 const AppContext = createContext(null);
 
@@ -34,12 +35,17 @@ const defaultState = {
     // cardsPerLesson: undefined (not set here — LessonFlow falls back to 3)
     // Whether the favorites tip has been shown
     hasSeenFavoriteTip: false,
+    // Sound & haptic feedback
+    soundEnabled: true,
+    hapticsEnabled: true,
 
     // ─── Daily Quiz ───
     dailyQuiz: {
         lastCompletedDate: null,  // ISO date string 'YYYY-MM-DD'
+        lastAttemptedDate: null,  // ISO date string — set when quiz is opened (hides card for the day)
         lastXPEarned: 0,
         totalCompleted: 0,
+        acquiredEventIds: [],     // dih-X IDs acquired via daily quiz
     },
 
     // ─── Achievements ───
@@ -97,13 +103,21 @@ function migrateState(parsed) {
     if (!parsed.placementQuizzes) merged.placementQuizzes = {};
 
     // Migration: daily quiz + achievements
-    if (!parsed.dailyQuiz) merged.dailyQuiz = { lastCompletedDate: null, lastXPEarned: 0, totalCompleted: 0 };
+    if (!parsed.dailyQuiz) merged.dailyQuiz = { lastCompletedDate: null, lastAttemptedDate: null, lastXPEarned: 0, totalCompleted: 0, acquiredEventIds: [] };
+    else {
+        if (!('lastAttemptedDate' in parsed.dailyQuiz)) merged.dailyQuiz = { ...merged.dailyQuiz, lastAttemptedDate: null };
+        if (!parsed.dailyQuiz.acquiredEventIds) merged.dailyQuiz = { ...merged.dailyQuiz, acquiredEventIds: [] };
+    }
     if (!parsed.achievements) merged.achievements = {};
     if (!parsed.newAchievements) merged.newAchievements = [];
 
     // Migration: study timer
     if (parsed.totalStudyTime === undefined) merged.totalStudyTime = 0;
     if (!parsed.studySessions) merged.studySessions = [];
+
+    // Migration: sound & haptics (default on for existing users)
+    if (parsed.soundEnabled === undefined) merged.soundEnabled = true;
+    if (parsed.hapticsEnabled === undefined) merged.hapticsEnabled = true;
 
     return merged;
 }
@@ -302,6 +316,14 @@ function reducer(state, action) {
             return { ...state, hasSeenFavoriteTip: true };
         }
 
+        case 'TOGGLE_SOUND': {
+            return { ...state, soundEnabled: !state.soundEnabled };
+        }
+
+        case 'TOGGLE_HAPTICS': {
+            return { ...state, hapticsEnabled: !state.hapticsEnabled };
+        }
+
         // ─── Onboarding ───
         case 'SET_ONBOARDING_STEP': {
             return { ...state, onboardingStep: action.step };
@@ -397,13 +419,29 @@ function reducer(state, action) {
         }
 
         // ─── Daily Quiz ───
+        case 'START_DAILY_QUIZ': {
+            return {
+                ...state,
+                dailyQuiz: {
+                    ...state.dailyQuiz,
+                    lastAttemptedDate: getTodayDate(),
+                },
+            };
+        }
         case 'COMPLETE_DAILY_QUIZ': {
             return {
                 ...state,
                 dailyQuiz: {
+                    ...state.dailyQuiz,
                     lastCompletedDate: getTodayDate(),
                     lastXPEarned: action.xpEarned,
                     totalCompleted: (state.dailyQuiz?.totalCompleted || 0) + 1,
+                    acquiredEventIds: [
+                        ...new Set([
+                            ...(state.dailyQuiz?.acquiredEventIds || []),
+                            ...(action.eventIds || []),
+                        ]),
+                    ],
                 },
             };
         }
@@ -448,6 +486,7 @@ export function AppProvider({ children }) {
             console.error('Failed to save state:', e);
         }
         syncWidgetData(state);
+        configureFeedback({ soundEnabled: state.soundEnabled, hapticsEnabled: state.hapticsEnabled });
     }, [state]);
 
     // Check streak on mount + init widgets

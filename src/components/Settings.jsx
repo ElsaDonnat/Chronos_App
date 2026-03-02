@@ -370,6 +370,58 @@ export default function Settings() {
                     )}
                 </Card>
 
+                {/* Sound & Haptics */}
+                <Card className="mb-3 p-4">
+                    <div className="flex items-center justify-between mb-3">
+                        <div className="flex items-center gap-2">
+                            <span style={{ fontSize: '16px' }}>&#x1F50A;</span>
+                            <span className="text-sm font-semibold" style={{ color: 'var(--color-ink-secondary)' }}>Sound effects</span>
+                        </div>
+                        <button
+                            type="button"
+                            role="switch"
+                            aria-checked={state.soundEnabled}
+                            onClick={() => dispatch({ type: 'TOGGLE_SOUND' })}
+                            className="relative w-11 h-6 rounded-full transition-colors"
+                            style={{
+                                backgroundColor: state.soundEnabled ? 'var(--color-burgundy)' : 'rgba(28, 25, 23, 0.15)',
+                            }}
+                        >
+                            <span
+                                className="absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white transition-transform"
+                                style={{
+                                    transform: state.soundEnabled ? 'translateX(20px)' : 'translateX(0)',
+                                    boxShadow: '0 1px 3px rgba(0,0,0,0.2)',
+                                }}
+                            />
+                        </button>
+                    </div>
+                    <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                            <span style={{ fontSize: '16px' }}>&#x1F4F3;</span>
+                            <span className="text-sm font-semibold" style={{ color: 'var(--color-ink-secondary)' }}>Haptic feedback</span>
+                        </div>
+                        <button
+                            type="button"
+                            role="switch"
+                            aria-checked={state.hapticsEnabled}
+                            onClick={() => dispatch({ type: 'TOGGLE_HAPTICS' })}
+                            className="relative w-11 h-6 rounded-full transition-colors"
+                            style={{
+                                backgroundColor: state.hapticsEnabled ? 'var(--color-burgundy)' : 'rgba(28, 25, 23, 0.15)',
+                            }}
+                        >
+                            <span
+                                className="absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white transition-transform"
+                                style={{
+                                    transform: state.hapticsEnabled ? 'translateX(20px)' : 'translateX(0)',
+                                    boxShadow: '0 1px 3px rgba(0,0,0,0.2)',
+                                }}
+                            />
+                        </button>
+                    </div>
+                </Card>
+
                 <Divider />
 
                 {/* Data Management */}

@@ -6,4 +6,5 @@
     <string name="custom_url_scheme">com.chronos.app</string>
     <string name="streak_widget_description">Shows your current learning streak</string>
     <string name="practice_widget_description">Quick access to practice sessions</string>
+    <string name="chronos_widget_description">Streak and quick practice in one widget</string>
 </resources>

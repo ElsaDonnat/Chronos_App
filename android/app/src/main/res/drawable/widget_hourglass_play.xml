@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="48dp"
+    android:height="48dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <!-- Top bar -->
+    <path
+        android:fillColor="#00000000"
+        android:strokeColor="#8B4157"
+        android:strokeWidth="1.8"
+        android:strokeLineCap="round"
+        android:pathData="M5,3 L19,3" />
+    <!-- Bottom bar -->
+    <path
+        android:fillColor="#00000000"
+        android:strokeColor="#8B4157"
+        android:strokeWidth="1.8"
+        android:strokeLineCap="round"
+        android:pathData="M5,21 L19,21" />
+    <!-- Left glass curve -->
+    <path
+        android:fillColor="#00000000"
+        android:strokeColor="#8B4157"
+        android:strokeWidth="1.8"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:pathData="M7,3 C7,3 7,9 12,12 C7,15 7,21 7,21" />
+    <!-- Right glass curve -->
+    <path
+        android:fillColor="#00000000"
+        android:strokeColor="#8B4157"
+        android:strokeWidth="1.8"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:pathData="M17,3 C17,3 17,9 12,12 C17,15 17,21 17,21" />
+    <!-- Sand top line -->
+    <path
+        android:fillColor="#00000000"
+        android:strokeColor="#8B4157"
+        android:strokeWidth="1.2"
+        android:strokeLineCap="round"
+        android:strokeAlpha="0.5"
+        android:pathData="M9.5,6.5 L14.5,6.5" />
+    <!-- Sand stream -->
+    <path
+        android:fillColor="#00000000"
+        android:strokeColor="#8B4157"
+        android:strokeWidth="1"
+        android:strokeLineCap="round"
+        android:strokeAlpha="0.4"
+        android:pathData="M12,12 L12,14.5" />
+    <!-- Sand pile -->
+    <path
+        android:fillColor="#A8596E"
+        android:fillAlpha="0.25"
+        android:strokeColor="#8B4157"
+        android:strokeWidth="1.2"
+        android:strokeLineCap="round"
+        android:strokeAlpha="0.6"
+        android:pathData="M9,19 Q12,16.5 15,19" />
+    <!-- Play shadow (offset down-right, dark brown, heavier) -->
+    <path
+        android:fillColor="#3D1A25"
+        android:fillAlpha="0.45"
+        android:pathData="M13.9,5.1 L13.9,12.4 L20.1,8.75 Z" />
+    <!-- White play triangle with brown outline — 20% bigger, same position -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:strokeColor="#6E3344"
+        android:strokeWidth="0.9"
+        android:strokeLineJoin="round"
+        android:pathData="M13.3,4.4 L13.3,11.6 L19.3,8 Z" />
+</vector>

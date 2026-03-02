@@ -1,11 +1,18 @@
 import { useState, useMemo, useEffect, useRef } from 'react';
 import { useApp } from '../context/AppContext';
-import { ALL_EVENTS, getEventById, CATEGORY_CONFIG } from '../data/events';
+import { ALL_EVENTS, getEventById, CATEGORY_CONFIG, isDiHEvent, getEraForYear } from '../data/events';
 import { LESSONS } from '../data/lessons';
 import { scoreDateAnswer, generateLocationOptions, generateWhatOptions, generateDescriptionOptions, SCORE_COLORS, getScoreColor, getScoreLabel, shuffle } from '../data/quiz';
 import { calculateNextReview, getDueEvents, getCardStatus } from '../data/spacedRepetition';
-import { Card, Button, MasteryDots, ProgressBar, Divider, CategoryTag, StarButton, TabSelector, ConfirmModal, ExpandableText, ControversyNote } from '../components/shared';
+import { Card, Button, MasteryDots, ProgressBar, Divider, CategoryTag, DiHBadge, StarButton, TabSelector, ConfirmModal, ExpandableText, ControversyNote } from '../components/shared';
 import Mascot from '../components/Mascot';
+import * as feedback from '../services/feedback';
+import { shareText, buildPracticeShareText } from '../services/share';
+
+// ─── Matching colors (same palette as Lesson0Flow) ───
+const MATCH_COLORS = [
+    '#9B8EC4', '#5A9BD5', '#D98C3B', '#D4739D', '#6BAFAC',
+];
 
 // ─── Views ───────────────────────────────────────────
 const VIEW = {
@@ -19,22 +26,39 @@ const VIEW = {
 export default function PracticePage({ onSessionChange, registerBackHandler }) {
     const { state, dispatch } = useApp();
     const [view, setView] = useState(VIEW.HUB);
-    const [practiceTab, setPracticeTab] = useState('hub'); // hub | collection
+    const [practiceTab, setPracticeTab] = useState(() =>
+        window.CHRONOS_OPEN_EVENT ? 'collection' : 'hub'
+    ); // hub | collection
     const [sessionQuestions, setSessionQuestions] = useState([]);
     const [currentIndex, setCurrentIndex] = useState(0);
     const [results, setResults] = useState([]);
     const [sessionMode, setSessionMode] = useState(null);
     const [selectedLessons, setSelectedLessons] = useState([]);
     const [collectionSort, setCollectionSort] = useState('success'); // success | times
-    const [expandedEventId, setExpandedEventId] = useState(null);
+    const [expandedEventId, setExpandedEventId] = useState(() => {
+        if (window.CHRONOS_OPEN_EVENT) {
+            const id = window.CHRONOS_OPEN_EVENT;
+            window.CHRONOS_OPEN_EVENT = null;
+            return id;
+        }
+        return null;
+    });
     const [showExitConfirm, setShowExitConfirm] = useState(false);
     const sessionStartTime = useRef(null);
     const sessionRecorded = useRef(false);
     const [sessionDuration, setSessionDuration] = useState(0);
+    const [shareToast, setShareToast] = useState(false);
 
     useEffect(() => {
         onSessionChange?.(view === VIEW.SESSION || view === VIEW.RESULTS);
     }, [view, onSessionChange]);
+
+    useEffect(() => {
+        if (shareToast) {
+            const t = setTimeout(() => setShareToast(false), 2000);
+            return () => clearTimeout(t);
+        }
+    }, [shareToast]);
 
     // Register back handler for non-hub views
     useEffect(() => {
@@ -97,11 +121,65 @@ export default function PracticePage({ onSessionChange, registerBackHandler }) {
         return Object.values(map);
     }, [results]);
 
+    // ─── Select 4 events for a matching question ─────
+    const selectMatchEvents = (pool) => {
+        if (pool.length < 4) return null;
+        const scoreOrder = { red: 0, null: 1, undefined: 1, yellow: 2, green: 3 };
+        // Sort by date weakness (weakest first)
+        const sorted = [...pool].sort((a, b) => {
+            const aScore = scoreOrder[state.eventMastery[a.id]?.dateScore] ?? 1;
+            const bScore = scoreOrder[state.eventMastery[b.id]?.dateScore] ?? 1;
+            return aScore - bScore;
+        });
+        // Group by era, pick 1 per era for diversity
+        const byEra = {};
+        for (const ev of sorted) {
+            const eraId = getEraForYear(ev.year).id;
+            if (!byEra[eraId]) byEra[eraId] = [];
+            byEra[eraId].push(ev);
+        }
+        const picked = [];
+        const eras = Object.keys(byEra);
+        // One from each era (up to 4)
+        for (const era of eras) {
+            if (picked.length >= 4) break;
+            picked.push(byEra[era][0]);
+        }
+        // Fill remaining from weakest overall
+        if (picked.length < 4) {
+            const pickedIds = new Set(picked.map(e => e.id));
+            for (const ev of sorted) {
+                if (picked.length >= 4) break;
+                if (!pickedIds.has(ev.id)) {
+                    picked.push(ev);
+                    pickedIds.add(ev.id);
+                }
+            }
+        }
+        return picked.slice(0, 4);
+    };
+
     // ─── Question generation ─────────────────────────
     const generateQuestionsForPool = (eventPool) => {
         const qList = [];
         const shuffled = shuffle([...eventPool]);
         const pool = shuffled.slice(0, 15);
+
+        // Try to create one match question (counts as 2 slots)
+        const matchEvents = selectMatchEvents(pool);
+        const matchEventIds = matchEvents ? new Set(matchEvents.map(e => e.id)) : new Set();
+        let matchQuestion = null;
+        if (matchEvents) {
+            matchQuestion = {
+                type: 'match',
+                events: matchEvents,
+                names: shuffle(matchEvents.map(e => ({ id: e.id, label: e.title }))),
+                dates: shuffle(matchEvents.map(e => ({ id: e.id, label: e.date }))),
+                key: `practice-match-${Date.now()}-${Math.random()}`,
+            };
+        }
+
+        const regularCap = matchQuestion ? 10 : 12;
 
         for (const event of pool) {
             const mastery = state.eventMastery[event.id];
@@ -114,6 +192,8 @@ export default function PracticePage({ onSessionChange, registerBackHandler }) {
 
             const scoreOrder = { red: 0, null: 1, undefined: 1, yellow: 2, green: 3 };
             const types = Object.entries(scores)
+                // Skip date questions for events already in the match
+                .filter(([t]) => !(t === 'date' && matchEventIds.has(event.id)))
                 .sort((a, b) => (scoreOrder[a[1]] ?? 1) - (scoreOrder[b[1]] ?? 1));
 
             const numQs = Math.min(2, types.filter(t => (scoreOrder[t[1]] ?? 1) < 3).length || 1);
@@ -124,10 +204,16 @@ export default function PracticePage({ onSessionChange, registerBackHandler }) {
                     key: `practice-${event.id}-${types[i][0]}-${Date.now()}-${Math.random()}`,
                 });
             }
-            if (qList.length >= 12) break;
+            if (qList.length >= regularCap) break;
         }
 
-        return shuffle(qList);
+        const allQuestions = shuffle(qList);
+        // Insert match question at a random position
+        if (matchQuestion) {
+            const pos = Math.floor(Math.random() * (allQuestions.length + 1));
+            allQuestions.splice(pos, 0, matchQuestion);
+        }
+        return allQuestions;
     };
 
     const startSession = (mode, eventPool) => {
@@ -208,6 +294,7 @@ export default function PracticePage({ onSessionChange, registerBackHandler }) {
                     dispatch({ type: 'RECORD_STUDY_SESSION', duration, sessionType: 'practice', questionsAnswered: results.length });
                 }
                 setView(VIEW.RESULTS);
+                feedback.complete();
             } else {
                 setCurrentIndex(i => i + 1);
             }
@@ -246,30 +333,58 @@ export default function PracticePage({ onSessionChange, registerBackHandler }) {
                 <ProgressBar value={currentIndex + 1} max={sessionQuestions.length} />
 
                 <div className="mt-6">
-                    <PracticeQuestion
-                        question={q}
-                        isStarred={(state.starredEvents || []).includes(q.event.id)}
-                        onToggleStar={() => dispatch({ type: 'TOGGLE_STAR', eventId: q.event.id })}
-                        onAnswer={(score) => {
-                            setResults(prev => [...prev, { eventId: q.event.id, type: q.type, score }]);
-                            dispatch({
-                                type: 'UPDATE_EVENT_MASTERY',
-                                eventId: q.event.id,
-                                questionType: q.type,
-                                score,
-                            });
-                            // Update spaced repetition schedule
-                            const schedule = state.srSchedule?.[q.event.id] || { interval: 0, ease: 2.5, reviewCount: 0 };
-                            const next = calculateNextReview(schedule, score);
-                            dispatch({ type: 'UPDATE_SR_SCHEDULE', eventId: q.event.id, ...next });
-                            // Remove skipped tag on green answer
-                            if (score === 'green' && (state.skippedEvents || []).includes(q.event.id)) {
-                                dispatch({ type: 'REMOVE_SKIPPED_EVENT', eventId: q.event.id });
-                            }
-                        }}
-                        onNext={handleSessionNext}
-                        onBack={currentIndex > 0 ? () => setCurrentIndex(i => i - 1) : null}
-                    />
+                    {q.type === 'match' ? (
+                        <PracticeMatchQuestion
+                            question={q}
+                            onAnswer={(scores, events, pairs) => {
+                                // Push 2 result entries (match counts as 2 questions)
+                                setResults(prev => [
+                                    ...prev,
+                                    { eventId: events[0].id, type: 'match', score: scores[0] },
+                                    { eventId: events[1].id, type: 'match', score: scores[1] },
+                                ]);
+                                // Update mastery + SR for all 4 matched events
+                                events.forEach(ev => {
+                                    const isCorrect = pairs[ev.id] === ev.id;
+                                    const evScore = isCorrect ? 'green' : 'red';
+                                    dispatch({ type: 'UPDATE_EVENT_MASTERY', eventId: ev.id, questionType: 'date', score: evScore });
+                                    const schedule = state.srSchedule?.[ev.id] || { interval: 0, ease: 2.5, reviewCount: 0 };
+                                    const next = calculateNextReview(schedule, evScore);
+                                    dispatch({ type: 'UPDATE_SR_SCHEDULE', eventId: ev.id, ...next });
+                                    if (evScore === 'green' && (state.skippedEvents || []).includes(ev.id)) {
+                                        dispatch({ type: 'REMOVE_SKIPPED_EVENT', eventId: ev.id });
+                                    }
+                                });
+                            }}
+                            onNext={handleSessionNext}
+                            onBack={currentIndex > 0 ? () => setCurrentIndex(i => i - 1) : null}
+                        />
+                    ) : (
+                        <PracticeQuestion
+                            question={q}
+                            isStarred={(state.starredEvents || []).includes(q.event.id)}
+                            onToggleStar={() => dispatch({ type: 'TOGGLE_STAR', eventId: q.event.id })}
+                            onAnswer={(score) => {
+                                setResults(prev => [...prev, { eventId: q.event.id, type: q.type, score }]);
+                                dispatch({
+                                    type: 'UPDATE_EVENT_MASTERY',
+                                    eventId: q.event.id,
+                                    questionType: q.type,
+                                    score,
+                                });
+                                // Update spaced repetition schedule
+                                const schedule = state.srSchedule?.[q.event.id] || { interval: 0, ease: 2.5, reviewCount: 0 };
+                                const next = calculateNextReview(schedule, score);
+                                dispatch({ type: 'UPDATE_SR_SCHEDULE', eventId: q.event.id, ...next });
+                                // Remove skipped tag on green answer
+                                if (score === 'green' && (state.skippedEvents || []).includes(q.event.id)) {
+                                    dispatch({ type: 'REMOVE_SKIPPED_EVENT', eventId: q.event.id });
+                                }
+                            }}
+                            onNext={handleSessionNext}
+                            onBack={currentIndex > 0 ? () => setCurrentIndex(i => i - 1) : null}
+                        />
+                    )}
                 </div>
             </div>
             </>
@@ -295,7 +410,7 @@ export default function PracticePage({ onSessionChange, registerBackHandler }) {
                         <div className="text-center">
                             <Mascot mood={perfectSession ? 'celebrating' : redCount === 0 ? 'happy' : greenCount > redCount ? 'happy' : 'thinking'} size={70} />
                             <h2 className="text-2xl font-bold mt-4 mb-1" style={{ fontFamily: 'var(--font-serif)' }}>
-                                {perfectSession ? '\uD83C\uDFAF Perfect Session!' : 'Practice Complete'}
+                                {perfectSession ? '\�\� Perfect Session!' : 'Practice Complete'}
                             </h2>
                             <p className="text-sm mb-1" style={{ color: 'var(--color-ink-muted)' }}>
                                 {sessionMode} · {results.length} questions · {sessionTimeStr}
@@ -350,7 +465,7 @@ export default function PracticePage({ onSessionChange, registerBackHandler }) {
                                                 </h4>
                                                 <div className="flex items-center gap-2 mt-1">
                                                     {questions.map((q, i) => {
-                                                        const label = q.type === 'location' ? 'Where' : q.type === 'date' ? 'When' : q.type === 'description' ? 'Desc' : 'What';
+                                                        const label = q.type === 'location' ? 'Where' : q.type === 'date' ? 'When' : q.type === 'description' ? 'Desc' : q.type === 'match' ? 'Match' : 'What';
                                                         return (
                                                             <span key={i} className="text-[10px] font-semibold px-1.5 py-0.5 rounded"
                                                                 style={{
@@ -378,13 +493,36 @@ export default function PracticePage({ onSessionChange, registerBackHandler }) {
                     </div>
                 </div>
 
-                <div className="flex-shrink-0 flex gap-3 pt-4 pb-2">
-                    <Button variant="secondary" onClick={() => { setView(VIEW.HUB); setPracticeTab('hub'); }}>
-                        Done
-                    </Button>
-                    <Button className="flex-1" onClick={() => startSpacedReview()}>
-                        Practice Again
-                    </Button>
+                <div className="flex-shrink-0 pt-4 pb-2 space-y-2">
+                    <div className="flex gap-3">
+                        <Button variant="secondary" onClick={() => { setView(VIEW.HUB); setPracticeTab('hub'); }}>
+                            Done
+                        </Button>
+                        <Button className="flex-1" onClick={() => startSpacedReview()}>
+                            Practice Again
+                        </Button>
+                    </div>
+                    <button
+                        onClick={async () => {
+                            const text = buildPracticeShareText({ sessionMode, greenCount, totalQuestions: results.length, perfectSession });
+                            const result = await shareText({ title: 'Chronos', text });
+                            if (result === 'copied') setShareToast(true);
+                        }}
+                        className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-medium transition-colors cursor-pointer"
+                        style={{ color: 'var(--color-burgundy)', backgroundColor: 'rgba(139, 65, 87, 0.08)' }}
+                    >
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8" />
+                            <polyline points="16 6 12 2 8 6" />
+                            <line x1="12" y1="2" x2="12" y2="15" />
+                        </svg>
+                        Share Result
+                    </button>
+                    {shareToast && (
+                        <p className="text-xs text-center animate-fade-in" style={{ color: 'var(--color-success)' }}>
+                            Copied to clipboard!
+                        </p>
+                    )}
                 </div>
             </div>
         );
@@ -453,14 +591,14 @@ export default function PracticePage({ onSessionChange, registerBackHandler }) {
                                                 backgroundColor: isSelected ? 'var(--color-burgundy)' : 'rgba(28,25,23,0.06)',
                                                 color: isSelected ? 'white' : 'var(--color-ink-muted)',
                                             }}>
-                                            {isSelected ? '\u2713' : lesson.number}
+                                            {isSelected ? '\✓' : lesson.number}
                                         </div>
                                         <div className="flex-1 min-w-0">
                                             <h4 className="text-sm font-semibold truncate" style={{ fontFamily: 'var(--font-serif)' }}>
                                                 {lesson.title}
                                             </h4>
                                             <p className="text-xs" style={{ color: 'var(--color-ink-faint)' }}>
-                                                {eventCount} events \u00B7 {masteredCount} mastered
+                                                {eventCount} events \· {masteredCount} mastered
                                             </p>
                                         </div>
                                     </div>
@@ -480,7 +618,7 @@ export default function PracticePage({ onSessionChange, registerBackHandler }) {
 
                 <div className="flex-shrink-0 pt-4 pb-2">
                     <Button className="w-full" disabled={selectedLessons.length === 0} onClick={startLessonPractice}>
-                        Practice {selectedLessons.length > 0 ? `${selectedLessons.length} Lesson${selectedLessons.length > 1 ? 's' : ''}` : ''}  \u2192
+                        Practice {selectedLessons.length > 0 ? `${selectedLessons.length} Lesson${selectedLessons.length > 1 ? 's' : ''}` : ''}  \→
                     </Button>
                 </div>
             </div>
@@ -589,13 +727,13 @@ function HubView({ starredEvents, weakEvents, statusTiers, dueCount, state, disp
                 <div className="flex items-start gap-3">
                     <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
                         style={{ backgroundColor: 'rgba(230, 168, 23, 0.1)' }}>
-                        <span className="text-lg">{'\u2B50'}</span>
+                        <span className="text-lg">{'\⭐'}</span>
                     </div>
                     <div className="flex-1 min-w-0">
                         <h3 className="text-sm font-bold" style={{ fontFamily: 'var(--font-serif)' }}>Favorites</h3>
                         <p className="text-xs mt-0.5" style={{ color: 'var(--color-ink-muted)' }}>
                             {starredEvents.length > 0
-                                ? `${starredEvents.length} starred event${starredEvents.length !== 1 ? 's' : ''} \u00B7 shuffled`
+                                ? `${starredEvents.length} starred event${starredEvents.length !== 1 ? 's' : ''} \· shuffled`
                                 : 'Star events during lessons to add them here'
                             }
                         </p>
@@ -613,7 +751,7 @@ function HubView({ starredEvents, weakEvents, statusTiers, dueCount, state, disp
                 <div className="flex items-start gap-3">
                     <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
                         style={{ backgroundColor: 'rgba(101, 119, 74, 0.1)' }}>
-                        <span className="text-lg">{'\uD83D\uDCD6'}</span>
+                        <span className="text-lg">{'\�\�'}</span>
                     </div>
                     <div className="flex-1 min-w-0">
                         <h3 className="text-sm font-bold" style={{ fontFamily: 'var(--font-serif)' }}>By Lesson</h3>
@@ -697,7 +835,7 @@ function CollectionView({ statusTiers, collectionSort, setCollectionSort, expand
         {
             key: 'new',
             label: 'New',
-            emoji: '\uD83C\uDD95',
+            emoji: '\�\�',
             color: 'var(--color-ink-muted)',
             bg: 'rgba(28, 25, 23, 0.04)',
             items: statusTiers.new,
@@ -706,7 +844,7 @@ function CollectionView({ statusTiers, collectionSort, setCollectionSort, expand
         {
             key: 'learning',
             label: 'Learning',
-            emoji: '\uD83D\uDD34',
+            emoji: '\�\�',
             color: 'var(--color-error)',
             bg: 'rgba(166, 61, 61, 0.06)',
             items: statusTiers.learning,
@@ -715,7 +853,7 @@ function CollectionView({ statusTiers, collectionSort, setCollectionSort, expand
         {
             key: 'known',
             label: 'Known',
-            emoji: '\uD83D\uDFE1',
+            emoji: '\�\�',
             color: 'var(--color-warning)',
             bg: 'rgba(198, 134, 42, 0.06)',
             items: statusTiers.known,
@@ -724,7 +862,7 @@ function CollectionView({ statusTiers, collectionSort, setCollectionSort, expand
         {
             key: 'fully_assimilated',
             label: 'Fully Assimilated',
-            emoji: '\uD83D\uDFE2',
+            emoji: '\�\�',
             color: 'var(--color-success)',
             bg: 'rgba(5, 150, 105, 0.06)',
             items: statusTiers.fully_assimilated,
@@ -762,7 +900,7 @@ function CollectionView({ statusTiers, collectionSort, setCollectionSort, expand
                                 className="ml-auto text-[10px] font-semibold px-2 py-1 rounded-lg transition-all"
                                 style={{ backgroundColor: tier.bg, color: tier.color }}
                             >
-                                {tier.practiceLabel} {'\u2192'}
+                                {tier.practiceLabel} {'\→'}
                             </button>
                         )}
                     </div>
@@ -771,7 +909,7 @@ function CollectionView({ statusTiers, collectionSort, setCollectionSort, expand
                         <div className="text-center py-4 rounded-xl" style={{ backgroundColor: tier.bg }}>
                             <p className="text-xs" style={{ color: 'var(--color-ink-faint)' }}>
                                 {tier.key === 'new' ? 'All events have been reviewed' :
-                                    tier.key === 'learning' ? 'No cards still learning \u2014 great work!' :
+                                    tier.key === 'learning' ? 'No cards still learning \— great work!' :
                                     tier.key === 'fully_assimilated' ? 'Keep practicing to fully assimilate cards' :
                                     'No cards at this level yet'}
                             </p>
@@ -798,6 +936,7 @@ function CollectionView({ statusTiers, collectionSort, setCollectionSort, expand
                                                         <h4 className="text-sm font-semibold truncate" style={{ fontFamily: 'var(--font-serif)' }}>
                                                             {event.title}
                                                         </h4>
+                                                        {isDiHEvent(event) && <DiHBadge />}
                                                     </div>
                                                     <div className="flex items-center gap-3 mt-1">
                                                         <MasteryDots mastery={mastery} />
@@ -829,7 +968,10 @@ function CollectionView({ statusTiers, collectionSort, setCollectionSort, expand
                                             <div className="animate-fade-in mx-1 mt-1 mb-2">
                                                 <Card className="p-4" style={{ borderLeft: `3px solid ${tier.color}` }}>
                                                     <div className="flex items-center justify-between mb-2">
-                                                        <CategoryTag category={event.category} />
+                                                        <div className="flex items-center gap-2">
+                                                            <CategoryTag category={event.category} />
+                                                            {isDiHEvent(event) && <DiHBadge />}
+                                                        </div>
                                                         <span className="text-xs font-medium" style={{ color: 'var(--color-burgundy)' }}>
                                                             {event.date}
                                                         </span>
@@ -872,6 +1014,184 @@ function CollectionView({ statusTiers, collectionSort, setCollectionSort, expand
 }
 
 // ═══════════════════════════════════════════════════════
+// PRACTICE MATCH QUESTION — match 4 events to their dates
+// ═══════════════════════════════════════════════════════
+function PracticeMatchQuestion({ question, onAnswer, onNext, onBack }) {
+    const [matchPairs, setMatchPairs] = useState({});
+    const [matchSelected, setMatchSelected] = useState(null);
+    const [matchChecked, setMatchChecked] = useState(false);
+
+    const pairCount = Object.keys(matchPairs).length;
+    const allPaired = pairCount === 4;
+
+    const nameColorMap = {};
+    const dateColorMap = {};
+    Object.keys(matchPairs).forEach((nameId, i) => {
+        nameColorMap[nameId] = MATCH_COLORS[i % MATCH_COLORS.length];
+        dateColorMap[matchPairs[nameId]] = MATCH_COLORS[i % MATCH_COLORS.length];
+    });
+
+    const handleNameClick = (nameId) => {
+        if (matchChecked) return;
+        setMatchSelected(matchSelected === nameId ? null : nameId);
+    };
+
+    const handleDateClick = (dateId) => {
+        if (matchChecked) return;
+        if (!matchSelected) {
+            const pairedName = Object.entries(matchPairs).find(([, d]) => d === dateId)?.[0];
+            if (pairedName) {
+                setMatchPairs(prev => { const next = { ...prev }; delete next[pairedName]; return next; });
+            }
+            return;
+        }
+        setMatchPairs(prev => {
+            const next = { ...prev };
+            delete next[matchSelected];
+            const existing = Object.entries(next).find(([, d]) => d === dateId)?.[0];
+            if (existing) delete next[existing];
+            next[matchSelected] = dateId;
+            return next;
+        });
+        setMatchSelected(null);
+    };
+
+    const handleCheck = () => {
+        if (!allPaired || matchChecked) return;
+        const correctCount = question.names.filter(n => matchPairs[n.id] === n.id).length;
+        const wrongCount = 4 - correctCount;
+        // Scoring: 0 wrong = 2×green, 1 wrong = green+yellow, 2 wrong = 2×yellow, 3-4 wrong = 2×red
+        const scores = wrongCount === 0 ? ['green', 'green']
+            : wrongCount === 1 ? ['green', 'yellow']
+            : wrongCount === 2 ? ['yellow', 'yellow']
+            : ['red', 'red'];
+        setMatchChecked(true);
+        onAnswer(scores, question.events, matchPairs);
+        if (wrongCount === 0) feedback.forScore('green');
+        else if (wrongCount <= 2) feedback.forScore('yellow');
+        else feedback.forScore('red');
+    };
+
+    const matchScore = matchChecked
+        ? (question.names.filter(n => matchPairs[n.id] === n.id).length === 4 ? 'green'
+            : question.names.filter(n => matchPairs[n.id] === n.id).length >= 2 ? 'yellow' : 'red')
+        : null;
+
+    return (
+        <div className="animate-slide-in-right">
+            <Card style={matchChecked && matchScore ? {
+                backgroundColor: SCORE_COLORS[matchScore].bg,
+                borderLeft: `3px solid ${SCORE_COLORS[matchScore].border}`
+            } : {}}>
+                <p className="text-xs uppercase tracking-wider font-semibold mb-1" style={{ color: 'var(--color-ink-faint)' }}>
+                    Match each event to its date
+                </p>
+                <p className="text-[11px] mb-3" style={{ color: 'var(--color-ink-faint)' }}>
+                    Tap an event, then tap its date
+                </p>
+
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+                    {/* Left column: event names */}
+                    <div className="flex flex-col gap-1.5">
+                        {question.names.map((n) => {
+                            const isPaired = !!matchPairs[n.id];
+                            const isActive = matchSelected === n.id;
+                            const color = nameColorMap[n.id];
+                            let bg = 'var(--color-card)';
+                            let border = 'rgba(28, 25, 23, 0.08)';
+                            let borderStyle = 'solid';
+                            if (matchChecked && isPaired) {
+                                const isCorrect = matchPairs[n.id] === n.id;
+                                bg = isCorrect ? 'rgba(5, 150, 105, 0.1)' : 'rgba(166, 61, 61, 0.1)';
+                                border = isCorrect ? 'var(--color-success)' : 'var(--color-error)';
+                            } else if (isActive) {
+                                bg = 'var(--color-burgundy-soft)';
+                                border = 'var(--color-burgundy)';
+                                borderStyle = 'dashed';
+                            } else if (isPaired && color) {
+                                bg = `${color}18`;
+                                border = color;
+                            }
+                            return (
+                                <button key={n.id} onClick={() => handleNameClick(n.id)} disabled={matchChecked}
+                                    className="rounded-lg transition-all flex items-center justify-center"
+                                    style={{
+                                        padding: '10px 6px', minHeight: '44px',
+                                        fontSize: '0.7rem', fontWeight: 600, fontFamily: 'var(--font-serif)',
+                                        textAlign: 'center', backgroundColor: bg,
+                                        border: `2px ${borderStyle} ${border}`,
+                                        color: 'var(--color-ink)', cursor: matchChecked ? 'default' : 'pointer',
+                                    }}>
+                                    {n.label}
+                                </button>
+                            );
+                        })}
+                    </div>
+
+                    {/* Right column: dates */}
+                    <div className="flex flex-col gap-1.5">
+                        {question.dates.map((d) => {
+                            const pairedByName = Object.entries(matchPairs).find(([, dateId]) => dateId === d.id)?.[0];
+                            const isPaired = !!pairedByName;
+                            const color = dateColorMap[d.id];
+                            let bg = 'var(--color-card)';
+                            let border = 'rgba(28, 25, 23, 0.08)';
+                            let borderStyle = 'solid';
+                            if (matchChecked && isPaired) {
+                                const isCorrect = pairedByName === d.id;
+                                bg = isCorrect ? 'rgba(5, 150, 105, 0.1)' : 'rgba(166, 61, 61, 0.1)';
+                                border = isCorrect ? 'var(--color-success)' : 'var(--color-error)';
+                            } else if (isPaired && color) {
+                                bg = `${color}18`;
+                                border = color;
+                            } else if (matchSelected && !isPaired) {
+                                border = 'rgba(139, 65, 87, 0.3)';
+                                borderStyle = 'dashed';
+                            }
+                            return (
+                                <button key={d.id} onClick={() => handleDateClick(d.id)} disabled={matchChecked}
+                                    className="rounded-lg transition-all flex items-center justify-center"
+                                    style={{
+                                        padding: '10px 6px', minHeight: '44px',
+                                        fontSize: '0.7rem', fontWeight: 500,
+                                        textAlign: 'center', backgroundColor: bg,
+                                        border: `2px ${borderStyle} ${border}`,
+                                        color: 'var(--color-ink-secondary)', cursor: matchChecked ? 'default' : 'pointer',
+                                    }}>
+                                    {d.label}
+                                </button>
+                            );
+                        })}
+                    </div>
+                </div>
+
+                {!matchChecked && (
+                    <div className="mt-4">
+                        <Button className="w-full" onClick={handleCheck} disabled={!allPaired}>
+                            Check Matches
+                        </Button>
+                    </div>
+                )}
+
+                {matchChecked && (
+                    <div className="mt-3 pt-3" style={{ borderTop: '1px solid rgba(28,25,23,0.06)' }}>
+                        <p className="text-sm font-semibold" style={{ color: SCORE_COLORS[matchScore].border }}>
+                            {matchScore === 'green' ? 'Perfect match!' : matchScore === 'yellow' ? 'Close — some pairs were off' : 'Several pairs were wrong'}
+                        </p>
+                    </div>
+                )}
+            </Card>
+            {matchChecked && (
+                <div className="pinned-footer flex gap-3">
+                    {onBack && <Button variant="secondary" onClick={onBack}>{'\←'} Back</Button>}
+                    <Button className="flex-1" onClick={onNext}>Continue {'\→'}</Button>
+                </div>
+            )}
+        </div>
+    );
+}
+
+// ═══════════════════════════════════════════════════════
 // PRACTICE QUESTION — individual question card
 // ═══════════════════════════════════════════════════════
 function PracticeQuestion({ question, isStarred, onToggleStar, onAnswer, onNext, onBack }) {
@@ -894,6 +1214,7 @@ function PracticeQuestion({ question, isStarred, onToggleStar, onAnswer, onNext,
         setScore(s);
         setAnswered(true);
         onAnswer(s);
+        feedback.forScore(s);
     };
 
     const handleDateSubmit = () => {
@@ -904,6 +1225,7 @@ function PracticeQuestion({ question, isStarred, onToggleStar, onAnswer, onNext,
         setScore(s);
         setAnswered(true);
         onAnswer(s);
+        feedback.forScore(s);
     };
 
     // ─── Post-answer feedback card ───
@@ -959,11 +1281,11 @@ function PracticeQuestion({ question, isStarred, onToggleStar, onAnswer, onNext,
                 {answered && <ControversyNote note={event.controversyNotes?.location} />}
                 {answered ? (
                     <div className="pinned-footer flex gap-3">
-                        {onBack && <Button variant="secondary" onClick={onBack}>\u2190 Back</Button>}
-                        <Button className="flex-1" onClick={onNext}>Continue \u2192</Button>
+                        {onBack && <Button variant="secondary" onClick={onBack}>\← Back</Button>}
+                        <Button className="flex-1" onClick={onNext}>Continue \→</Button>
                     </div>
                 ) : (
-                    onBack && <div className="pinned-footer"><Button variant="secondary" className="w-full" onClick={onBack}>\u2190 Back</Button></div>
+                    onBack && <div className="pinned-footer"><Button variant="secondary" className="w-full" onClick={onBack}>\← Back</Button></div>
                 )}
             </div>
         );
@@ -1014,8 +1336,8 @@ function PracticeQuestion({ question, isStarred, onToggleStar, onAnswer, onNext,
                 {answered && <ControversyNote note={event.controversyNotes?.date} />}
                 {answered && (
                     <div className="pinned-footer flex gap-3">
-                        {onBack && <Button variant="secondary" onClick={onBack}>\u2190 Back</Button>}
-                        <Button className="flex-1" onClick={onNext}>Continue \u2192</Button>
+                        {onBack && <Button variant="secondary" onClick={onBack}>\← Back</Button>}
+                        <Button className="flex-1" onClick={onNext}>Continue \→</Button>
                     </div>
                 )}
             </div>
@@ -1053,11 +1375,11 @@ function PracticeQuestion({ question, isStarred, onToggleStar, onAnswer, onNext,
                 {answered && <ControversyNote note={event.controversyNotes?.what} />}
                 {answered ? (
                     <div className="pinned-footer flex gap-3">
-                        {onBack && <Button variant="secondary" onClick={onBack}>\u2190 Back</Button>}
-                        <Button className="flex-1" onClick={onNext}>Continue \u2192</Button>
+                        {onBack && <Button variant="secondary" onClick={onBack}>\← Back</Button>}
+                        <Button className="flex-1" onClick={onNext}>Continue \→</Button>
                     </div>
                 ) : (
-                    onBack && <div className="pinned-footer"><Button variant="secondary" className="w-full" onClick={onBack}>\u2190 Back</Button></div>
+                    onBack && <div className="pinned-footer"><Button variant="secondary" className="w-full" onClick={onBack}>\← Back</Button></div>
                 )}
             </div>
         );
@@ -1094,11 +1416,11 @@ function PracticeQuestion({ question, isStarred, onToggleStar, onAnswer, onNext,
                 {answered && <ControversyNote note={event.controversyNotes?.description} />}
                 {answered ? (
                     <div className="pinned-footer flex gap-3">
-                        {onBack && <Button variant="secondary" onClick={onBack}>\u2190 Back</Button>}
-                        <Button className="flex-1" onClick={onNext}>Continue \u2192</Button>
+                        {onBack && <Button variant="secondary" onClick={onBack}>\← Back</Button>}
+                        <Button className="flex-1" onClick={onNext}>Continue \→</Button>
                     </div>
                 ) : (
-                    onBack && <div className="pinned-footer"><Button variant="secondary" className="w-full" onClick={onBack}>\u2190 Back</Button></div>
+                    onBack && <div className="pinned-footer"><Button variant="secondary" className="w-full" onClick={onBack}>\← Back</Button></div>
                 )}
             </div>
         );

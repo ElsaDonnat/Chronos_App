@@ -10,10 +10,6 @@
 
 ---
 
-## P3 — Sound effects and haptic feedback
-
-Add subtle audio feedback for correct/wrong answers and haptic vibration using @capacitor/haptics. Correct answer: brief positive chime + light haptic. Wrong answer: softer negative tone + different haptic pattern. Lesson complete: celebratory sound. Include a toggle in Settings to disable sounds and haptics independently. Keep sounds minimal and classy — not gamey.
-
 ## P3 — Event connections & cause-and-effect
 
 Add a `relatedEvents` field to events in events.js, linking them with brief causal descriptions (e.g., French Revolution → "Led to the Napoleonic Wars"). Show connections on event cards in the timeline and on learn cards as a small "Connected events" section. Helps users understand history as a narrative rather than isolated facts. Start with the most obvious connections among existing events.
@@ -29,10 +25,6 @@ A visual map showing where events happened. Could be a simple SVG world map with
 ## P3 — Themed collections
 
 Cross-cutting study paths like "Women in History", "Scientific Breakthroughs", "Revolutions That Changed the World". Groups existing events by theme rather than chronology. Accessible from the Practice page hub as additional collection tiles. Adds replay value and a fresh perspective without needing new content.
-
-## P3 — Share a challenge
-
-Let users generate a shareable quiz challenge ("Can you beat my score on Ancient History?"). Uses the Web Share API already integrated for progress export. Generate a simple image or text summary with score and challenge link. Simple viral growth mechanism that also makes learning social.
 
 ## P4 — Dark mode
 
@@ -60,3 +52,5 @@ Add more events per era, deeper non-Western history coverage, and new lessons be
 - **P3 — Onboarding flow for new users** (2026-03-02): Welcome screen → Lesson 0 guide → Post-lesson explanation → Placement quiz offer. 5 era-based placement quizzes (Prehistory, Ancient, Medieval, Early Modern, Modern) with MCQ questions. Passing unlocks all lessons in that era and marks events as seen/skipped. Skip tutorial available at every step.
 - **P3 — Spaced repetition for practice mode** (2026-03-02): SM-2 variant algorithm tracking interval, ease, next review date, and review count per event. 4-tier card status system (New → Learning → Known → Fully Assimilated). "Spaced Review" replaces old Smart Review, prioritizing due cards. SR schedule updates after every answer in both lessons and practice.
 - **P2 — Study timer & session stats** (2026-03-02): Tracks session duration for lessons, practice, and daily quiz. Shows time on completion screens (e.g., "3m 42s"). Displays cumulative study time and session count in Settings. Stores last 50 sessions. Study time preserved across progress resets.
+- **P3 — Sound effects and haptic feedback** (2026-03-02): Web Audio API sine-wave tones (ascending minor third for correct, single warm tone for close, descending minor second for wrong, 3-note arpeggio for completion, 4-note sparkle for achievements) with native haptics via @capacitor/haptics. Module-level feedback service (`src/services/feedback.js`) configured from AppContext. Independent toggles in Settings for sound and haptics.
+- **P3 — Share a challenge** (2026-03-02): Text-based sharing via Web Share API (clipboard fallback on desktop). "Share Result" button on lesson summary, practice results, and daily quiz results. "Share Streak" button in streak modal (adaptive color per streak status). Messages include score, XP, streak, and Play Store link. Service in `src/services/share.js`.

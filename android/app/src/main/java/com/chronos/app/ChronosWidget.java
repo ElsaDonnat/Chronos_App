@@ -10,7 +10,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.RemoteViews;
 
-public class StreakWidget extends AppWidgetProvider {
+public class ChronosWidget extends AppWidgetProvider {
 
     private static final String PREFS_GROUP = "group.com.chronos.app.widgets";
 
@@ -31,28 +31,25 @@ public class StreakWidget extends AppWidgetProvider {
         String streak = prefs.getString("currentStreak", "0");
         String streakStatus = prefs.getString("streakStatus", "inactive");
 
-        // Determine widget dimensions to pick the right layout
+        // Pick horizontal or vertical layout based on aspect ratio
         Bundle options = appWidgetManager.getAppWidgetOptions(appWidgetId);
         int minWidth = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH, 110);
         int minHeight = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT, 110);
 
-        boolean isWide = minWidth > minHeight * 1.3;
-        boolean isSmall = minWidth < 90 && minHeight < 90;
+        boolean isVertical = minHeight > minWidth * 1.3;
+        boolean isNarrow = minWidth < 100; // ~1 column wide
+        int layoutRes = isVertical ? R.layout.widget_combined_v : R.layout.widget_combined_h;
 
-        int layoutRes = isWide ? R.layout.widget_streak_wide : R.layout.widget_streak;
         RemoteViews views = new RemoteViews(context.getPackageName(), layoutRes);
 
-        views.setTextViewText(R.id.streak_count, streak);
-        views.setTextViewText(R.id.streak_label, "1".equals(streak) ? "day streak" : "day streak");
+        // Streak data
+        views.setTextViewText(R.id.combo_streak_count, streak);
+        views.setTextViewText(R.id.combo_streak_label, "1".equals(streak) ? "day streak" : "day streak");
 
-        // Hide label on very small (1x1) widgets to save space
-        if (!isWide && isSmall) {
-            views.setViewVisibility(R.id.streak_label, View.GONE);
-        } else {
-            views.setViewVisibility(R.id.streak_label, View.VISIBLE);
-        }
+        // Hide "day streak" label when too narrow
+        views.setViewVisibility(R.id.combo_streak_label, isNarrow ? View.GONE : View.VISIBLE);
 
-        // Set flame drawable based on streak status
+        // Flame drawable based on streak status
         int flameRes1;
         int flameRes2;
 
@@ -65,25 +62,37 @@ public class StreakWidget extends AppWidgetProvider {
                 flameRes1 = R.drawable.flame_at_risk_1;
                 flameRes2 = R.drawable.flame_at_risk_2;
                 break;
-            default: // inactive
+            default:
                 flameRes1 = R.drawable.flame_inactive_1;
                 flameRes2 = R.drawable.flame_inactive_2;
                 break;
         }
 
-        views.setImageViewResource(R.id.flame_frame_1, flameRes1);
-        views.setImageViewResource(R.id.flame_frame_2, flameRes2);
-        views.setTextColor(R.id.streak_count, 0xFF8B4157); // burgundy, matches widget border
+        views.setImageViewResource(R.id.combo_flame_1, flameRes1);
+        views.setImageViewResource(R.id.combo_flame_2, flameRes2);
+        views.setTextColor(R.id.combo_streak_count, 0xFF8B4157); // burgundy, matches widget border
 
-        // Tap → open app
-        Intent intent = context.getPackageManager().getLaunchIntentForPackage(context.getPackageName());
-        if (intent != null) {
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            PendingIntent pendingIntent = PendingIntent.getActivity(
-                context, 0, intent,
+        // Streak section tap → open app home
+        Intent homeIntent = context.getPackageManager().getLaunchIntentForPackage(context.getPackageName());
+        if (homeIntent != null) {
+            homeIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            PendingIntent homePending = PendingIntent.getActivity(
+                context, 2, homeIntent,
                 PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
             );
-            views.setOnClickPendingIntent(R.id.widget_streak_root, pendingIntent);
+            views.setOnClickPendingIntent(R.id.combo_streak_area, homePending);
+        }
+
+        // Practice section tap → open practice tab
+        Intent practiceIntent = context.getPackageManager().getLaunchIntentForPackage(context.getPackageName());
+        if (practiceIntent != null) {
+            practiceIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            practiceIntent.putExtra("openTab", "practice");
+            PendingIntent practicePending = PendingIntent.getActivity(
+                context, 3, practiceIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
+            );
+            views.setOnClickPendingIntent(R.id.combo_practice_area, practicePending);
         }
 
         appWidgetManager.updateAppWidget(appWidgetId, views);

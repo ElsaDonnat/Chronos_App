@@ -6,45 +6,58 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:gravity="center"
-    android:padding="12dp"
+    android:padding="8dp"
     android:background="@drawable/widget_background">
 
     <TextView
+        android:id="@+id/practice_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Chronos"
-        android:textSize="14sp"
+        android:textSize="16sp"
         android:textStyle="bold"
+        android:fontFamily="serif"
         android:textColor="#8B4157" />
 
+    <ImageView
+        android:id="@+id/practice_play_button"
+        android:layout_width="44dp"
+        android:layout_height="44dp"
+        android:src="@drawable/widget_hourglass_play"
+        android:scaleType="fitCenter"
+        android:layout_marginTop="4dp"
+        android:contentDescription="@null" />
+
     <TextView
+        android:id="@+id/practice_label"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="▶ Quick Practice"
-        android:textSize="18sp"
+        android:text="Quick Practice"
+        android:textSize="12sp"
         android:textStyle="bold"
         android:textColor="#1C1917"
         android:layout_marginTop="4dp" />
 
     <LinearLayout
+        android:id="@+id/practice_stats_row"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:layout_marginTop="8dp">
+        android:layout_marginTop="4dp">
 
         <TextView
             android:id="@+id/practice_streak"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="0 day streak"
-            android:textSize="12sp"
+            android:textSize="11sp"
             android:textColor="#6B7280" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="  \u2022  "
-            android:textSize="12sp"
+            android:textSize="11sp"
             android:textColor="#6B7280" />
 
         <TextView
@@ -52,7 +65,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="0 XP"
-            android:textSize="12sp"
+            android:textSize="11sp"
             android:textColor="#6B7280" />
 
     </LinearLayout>

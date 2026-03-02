@@ -5,6 +5,29 @@ Format follows [Keep a Changelog](https://keepachangelog.com/) and [Semantic Ver
 
 Use the latest version entry for Play Store "What's New" text.
 
+## [1.4.0] - 2026-03-02
+
+### Changed
+- Daily Quiz redesigned as year-guessing format — shows 3 years, asks "What happened in [year]?" with 3 options (1 correct + 2 plausible wrong answers). Answering reveals a mini event card with title, description, and location as the learning moment
+- Daily Quiz events are now full-schema events integrated into ALL_EVENTS with `source: 'daily'` field, enabling them to work across Timeline, Practice, and collection systems
+- Daily Quiz card on Learn page now shows years instead of event titles in the preview
+
+### Added
+- Bonus DiH (Day in History) cards — completing the daily quiz adds 3 "Bonus DiH" cards to your collection with a gold badge
+- DiHBadge component — gold calendar badge displayed on all DiH event cards across Timeline, Practice collection, and quiz results
+- "Day in History" filter chip in Timeline — gold-colored filter to show only acquired DiH cards (appears after first quiz completion)
+- DiH cards in Practice — acquired bonus cards appear in My Cards collection with DiHBadge, fully practicable with spaced repetition
+- Timeline header now shows core events and bonus cards separately ("X of 60 events · Y bonus")
+- CSS styles for year display (.daily-quiz-year), year card (.daily-quiz-year-card), and card reveal animation (.daily-quiz-card-reveal)
+- Share results & streak — "Share Result" button on lesson summary, practice results, and daily quiz results; "Share Streak" button in streak modal. Uses Web Share API on Android, clipboard copy fallback on desktop. Messages include score, XP, streak, and Play Store link
+- Streak Widget flame now changes color based on streak status: orange/yellow when active, red when at risk of breaking, blue when lost. Flame subtly flickers via ViewFlipper animation (2 frames). Red flame is visually larger to convey urgency
+- Quick Practice Widget redesigned with prominent "Chronos" logo, burgundy play button, and stats row
+- Both widgets now have an elegant burgundy (#8B4157) border instead of the previous light gray
+- Both widgets are resizable from 1×1 up to 4×4 home screen cells (previously fixed at 2×2 / 3×2)
+- Widget bridge now syncs `streakStatus` (active/at-risk/inactive) alongside existing streak count and XP
+
+---
+
 ## [1.3.0] - 2026-03-02
 
 ### Added
@@ -16,6 +39,7 @@ Use the latest version entry for Play Store "What's New" text.
   - **Quick Practice Widget** (3x2): shows "Quick Practice" button with streak/XP stats, tapping opens directly to Practice tab
 - Widget data bridge via `capacitor-widget-bridge` plugin — syncs `currentStreak` and `totalXP` from app state to native Android SharedPreferences on every state change
 - Deep-link handling from Quick Practice widget — tapping opens the app directly to the Practice tab via intent extras
+- Sound effects & haptic feedback — musical tones via Web Audio API (ascending chime for correct, descending tone for wrong, arpeggio for completion, sparkle for achievements) with native haptics via @capacitor/haptics. Independent toggles for sound and haptics in Settings
 
 ---
 
