@@ -2,8 +2,8 @@
 <resources>
     <string name="app_name">Chronos</string>
     <string name="title_activity_main">Chronos</string>
-    <string name="package_name">com.chronos.app</string>
-    <string name="custom_url_scheme">com.chronos.app</string>
+    <string name="package_name">com.elsadonnat.chronos</string>
+    <string name="custom_url_scheme">com.elsadonnat.chronos</string>
     <string name="streak_widget_description">Shows your current learning streak</string>
     <string name="practice_widget_description">Quick access to practice sessions</string>
     <string name="chronos_widget_description">Streak and quick practice in one widget</string>

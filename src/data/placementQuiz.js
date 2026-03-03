@@ -63,14 +63,9 @@ export function getNextPlacementEra(placementQuizzes) {
 }
 
 /**
- * Check if a specific era quiz is unlocked (all previous eras must be passed).
+ * All eras are always available to take — no sequential locking.
  */
-export function isPlacementQuizUnlocked(eraId, placementQuizzes) {
-    const idx = ERA_QUIZ_GROUPS.findIndex(g => g.id === eraId);
-    if (idx === 0) return true;
-    for (let i = 0; i < idx; i++) {
-        const prev = placementQuizzes[ERA_QUIZ_GROUPS[i].id];
-        if (!prev?.passed) return false;
-    }
+// eslint-disable-next-line no-unused-vars
+export function isPlacementQuizUnlocked(_eraId, _placementQuizzes) {
     return true;
 }

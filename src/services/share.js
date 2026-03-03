@@ -2,7 +2,7 @@
  * Text sharing via Web Share API with clipboard fallback.
  */
 
-const STORE_URL = 'https://play.google.com/store/apps/details?id=com.chronos.app';
+const STORE_URL = 'https://play.google.com/store/apps/details?id=com.elsadonnat.chronos';
 
 /**
  * Share text content. Uses Web Share API on Android/mobile,

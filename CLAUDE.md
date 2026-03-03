@@ -89,12 +89,12 @@ Module-level sound + haptics service. `configure({ soundEnabled, hapticsEnabled 
 
 Two home screen widgets (Streak + Quick Practice) use the `capacitor-widget-bridge` plugin (v8.0.0) to bridge data from the web layer to native Android `SharedPreferences`.
 
-**Data flow:** React state change → `syncWidgetData()` in `src/services/widgetBridge.js` writes `currentStreak` and `totalXP` to SharedPreferences (group `"group.com.chronos.app.widgets"`) → calls `reloadAllTimelines()` → native `AppWidgetProvider.onUpdate()` reads SharedPreferences and updates the widget UI via `RemoteViews`.
+**Data flow:** React state change → `syncWidgetData()` in `src/services/widgetBridge.js` writes `currentStreak` and `totalXP` to SharedPreferences (group `"group.com.elsadonnat.chronos.widgets"`) → calls `reloadAllTimelines()` → native `AppWidgetProvider.onUpdate()` reads SharedPreferences and updates the widget UI via `RemoteViews`.
 
 **Key files:**
 - `src/services/widgetBridge.js` — JS bridge (`initWidgets()`, `syncWidgetData()`)
-- `android/.../com/chronos/app/StreakWidget.java` — Streak widget provider
-- `android/.../com/chronos/app/QuickPracticeWidget.java` — Quick Practice widget provider
+- `android/.../com/elsadonnat/chronos/StreakWidget.java` — Streak widget provider
+- `android/.../com/elsadonnat/chronos/QuickPracticeWidget.java` — Quick Practice widget provider
 - `android/.../res/layout/widget_streak.xml`, `widget_quick_practice.xml` — Widget layouts
 - `android/.../res/xml/streak_widget_info.xml`, `quick_practice_widget_info.xml` — Widget metadata
 - `android/.../res/drawable/widget_background.xml` — Shared rounded parchment background
@@ -105,7 +105,7 @@ Two home screen widgets (Streak + Quick Practice) use the `capacitor-widget-brid
 2. Read from `SharedPreferences` in the Java widget provider's `updateWidget()` method
 3. Add a `TextView` (or similar) in the widget layout XML and set it via `RemoteViews.setTextViewText()`
 
-**SharedPreferences group name:** `"group.com.chronos.app.widgets"` — must match exactly between JS and Java.
+**SharedPreferences group name:** `"group.com.elsadonnat.chronos.widgets"` — must match exactly between JS and Java.
 
 **Widget UI limitations:** Widgets use `RemoteViews`, which supports only a limited set of views (`LinearLayout`, `TextView`, `ImageView`, etc.). No custom fonts, no complex animations, no WebView.
 

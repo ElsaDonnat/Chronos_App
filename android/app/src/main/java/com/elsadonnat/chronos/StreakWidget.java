@@ -1,4 +1,4 @@
-package com.chronos.app;
+package com.elsadonnat.chronos;
 
 import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
@@ -12,7 +12,7 @@ import android.widget.RemoteViews;
 
 public class StreakWidget extends AppWidgetProvider {
 
-    private static final String PREFS_GROUP = "group.com.chronos.app.widgets";
+    private static final String PREFS_GROUP = "group.com.elsadonnat.chronos.widgets";
 
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
@@ -36,16 +36,24 @@ public class StreakWidget extends AppWidgetProvider {
         int minWidth = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH, 110);
         int minHeight = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT, 110);
 
-        boolean isWide = minWidth > minHeight * 1.3;
-        boolean isSmall = minWidth < 90 && minHeight < 90;
+        boolean isSmall = minWidth < 120 && minHeight < 120;   // 1x1
+        boolean isWide = !isSmall && minWidth > minHeight * 1.3;
 
-        int layoutRes = isWide ? R.layout.widget_streak_wide : R.layout.widget_streak;
+        int layoutRes;
+        if (isWide) {
+            layoutRes = R.layout.widget_streak_wide;
+        } else if (isSmall) {
+            layoutRes = R.layout.widget_streak_small;
+        } else {
+            layoutRes = R.layout.widget_streak;
+        }
         RemoteViews views = new RemoteViews(context.getPackageName(), layoutRes);
 
         views.setTextViewText(R.id.streak_count, streak);
-        views.setTextViewText(R.id.streak_label, "1".equals(streak) ? "day streak" : "day streak");
+        views.setTextViewText(R.id.streak_label, "days in a row");
 
-        // Hide label on very small (1x1) widgets to save space
+        // 1x1: show flame + number only; bigger: show label too
+        views.setViewVisibility(R.id.streak_count, View.VISIBLE);
         if (!isWide && isSmall) {
             views.setViewVisibility(R.id.streak_label, View.GONE);
         } else {
@@ -74,6 +82,10 @@ public class StreakWidget extends AppWidgetProvider {
         views.setImageViewResource(R.id.flame_frame_1, flameRes1);
         views.setImageViewResource(R.id.flame_frame_2, flameRes2);
         views.setTextColor(R.id.streak_count, 0xFF8B4157); // burgundy, matches widget border
+
+        // Show green tick when user has played today
+        views.setViewVisibility(R.id.check_tick,
+            "active".equals(streakStatus) ? View.VISIBLE : View.GONE);
 
         // Tap → open app
         Intent intent = context.getPackageManager().getLaunchIntentForPackage(context.getPackageName());

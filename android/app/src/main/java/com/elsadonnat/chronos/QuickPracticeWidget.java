@@ -1,4 +1,4 @@
-package com.chronos.app;
+package com.elsadonnat.chronos;
 
 import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
@@ -12,7 +12,7 @@ import android.widget.RemoteViews;
 
 public class QuickPracticeWidget extends AppWidgetProvider {
 
-    private static final String PREFS_GROUP = "group.com.chronos.app.widgets";
+    private static final String PREFS_GROUP = "group.com.elsadonnat.chronos.widgets";
 
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
@@ -36,23 +36,33 @@ public class QuickPracticeWidget extends AppWidgetProvider {
         int minWidth = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH, 110);
         int minHeight = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT, 110);
 
-        boolean isSmall = minWidth < 100 || minHeight < 100;      // ~1x1
+        // 1x1: both dimensions single-cell; 2x1/1x2: one dimension single-cell;
+        // 2x2+: both dimensions multi-cell
+        boolean isSmall = minWidth < 120 && minHeight < 120;         // 1x1
+        boolean isWide = minWidth >= 120 && minHeight < 120;          // 2x1
+        boolean isTall = minHeight >= 120 && minWidth < 120;          // 1x2
+        // else: 2x2+ (both dimensions >= 120)
 
-        RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget_quick_practice);
-        views.setTextViewText(R.id.practice_streak, streak + " day streak");
-        views.setTextViewText(R.id.practice_xp, totalXP + " XP");
-
-        // Size-responsive visibility
+        // Pick layout based on widget shape
+        int layoutRes;
         if (isSmall) {
-            // 1x1: just the hourglass+play logo
-            views.setViewVisibility(R.id.practice_title, View.GONE);
-            views.setViewVisibility(R.id.practice_label, View.GONE);
-            views.setViewVisibility(R.id.practice_stats_row, View.GONE);
+            layoutRes = R.layout.widget_quick_practice_small;
+        } else if (isWide) {
+            layoutRes = R.layout.widget_quick_practice_wide;
+        } else if (isTall) {
+            layoutRes = R.layout.widget_quick_practice_tall;
         } else {
-            // 2x2+: full display (Chronos, label, streak + XP)
-            views.setViewVisibility(R.id.practice_title, View.VISIBLE);
-            views.setViewVisibility(R.id.practice_label, View.VISIBLE);
-            views.setViewVisibility(R.id.practice_stats_row, View.VISIBLE);
+            layoutRes = R.layout.widget_quick_practice;
+        }
+
+        RemoteViews views = new RemoteViews(context.getPackageName(), layoutRes);
+
+        // Set stats only on full 2x2+ layout
+        if (!isSmall && !isWide && !isTall) {
+            String rewardXP = prefs.getString("practiceRewardXP", "60");
+            views.setTextViewText(R.id.practice_reward_xp, "Earn up to " + rewardXP + " XP");
+            views.setTextViewText(R.id.practice_streak, streak + " day streak");
+            views.setTextViewText(R.id.practice_xp, totalXP + " XP");
         }
 
         // Tap → open app to Practice tab

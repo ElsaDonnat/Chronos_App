@@ -206,18 +206,18 @@ export default function Settings() {
                 {masteryEntries.length > 0 && (
                     <Card className="mb-4 p-4">
                         <div className="text-sm font-semibold mb-2" style={{ color: 'var(--color-ink-secondary)' }}>Mastery Breakdown</div>
-                        <div className="flex items-center gap-3">
-                            <div className="flex items-center gap-1.5">
-                                <div className="w-3 h-3 rounded-full" style={{ backgroundColor: 'var(--color-success)' }} />
-                                <span className="text-sm">{greenCount} mastered</span>
+                        <div className="flex items-center gap-4">
+                            <div className="flex flex-col items-center">
+                                <span className="text-xl font-bold" style={{ color: 'var(--color-success)' }}>{greenCount}</span>
+                                <span className="text-[11px]" style={{ color: 'var(--color-ink-muted)' }}>mastered</span>
                             </div>
-                            <div className="flex items-center gap-1.5">
-                                <div className="w-3 h-3 rounded-full" style={{ backgroundColor: 'var(--color-warning)' }} />
-                                <span className="text-sm">{yellowCount} learning</span>
+                            <div className="flex flex-col items-center">
+                                <span className="text-xl font-bold" style={{ color: 'var(--color-warning)' }}>{yellowCount}</span>
+                                <span className="text-[11px]" style={{ color: 'var(--color-ink-muted)' }}>learning</span>
                             </div>
-                            <div className="flex items-center gap-1.5">
-                                <div className="w-3 h-3 rounded-full" style={{ backgroundColor: 'var(--color-error)' }} />
-                                <span className="text-sm">{redCount} needs work</span>
+                            <div className="flex flex-col items-center">
+                                <span className="text-xl font-bold" style={{ color: 'var(--color-error)' }}>{redCount}</span>
+                                <span className="text-[11px]" style={{ color: 'var(--color-ink-muted)' }}>needs work</span>
                             </div>
                         </div>
                     </Card>
@@ -231,62 +231,62 @@ export default function Settings() {
                     const estMin = Math.max(1, Math.round(totalQ / 2));
                     return (
                         <>
-                        <Card className="mb-3 p-4">
-                            <div className="text-sm font-semibold mb-3" style={{ color: 'var(--color-ink-secondary)' }}>Cards per Lesson</div>
-                            <div className="flex gap-2">
-                                {[1, 2, 3].map(n => {
-                                    const isActive = cards === n;
-                                    return (
-                                        <button
-                                            key={n}
-                                            onClick={() => dispatch({ type: 'SET_CARDS_PER_LESSON', value: n })}
-                                            className="flex-1 py-2.5 rounded-xl text-sm font-semibold transition-colors"
-                                            style={{
-                                                backgroundColor: isActive ? 'var(--color-burgundy)' : 'var(--color-card)',
-                                                color: isActive ? 'white' : 'var(--color-ink-secondary)',
-                                                border: isActive ? 'none' : '1px solid rgba(var(--color-ink-rgb), 0.08)',
-                                            }}
-                                        >
-                                            {n} {n === 1 ? 'card' : 'cards'}
-                                        </button>
-                                    );
-                                })}
-                            </div>
-                        </Card>
-                        <Card className="mb-3 p-4">
-                            <div className="text-sm font-semibold mb-3" style={{ color: 'var(--color-ink-secondary)' }}>Recap Intensity</div>
-                            <div className="flex gap-2">
-                                {[
-                                    { value: 0, label: 'Off' },
-                                    { value: 1, label: 'Light' },
-                                    { value: 2, label: 'Full' },
-                                ].map(({ value, label }) => {
-                                    const isActive = recap === value;
-                                    return (
-                                        <button
-                                            key={value}
-                                            onClick={() => dispatch({ type: 'SET_RECAP_PER_CARD', value })}
-                                            className="flex-1 py-2.5 rounded-xl text-sm font-semibold transition-colors"
-                                            style={{
-                                                backgroundColor: isActive ? 'var(--color-burgundy)' : 'var(--color-card)',
-                                                color: isActive ? 'white' : 'var(--color-ink-secondary)',
-                                                border: isActive ? 'none' : '1px solid rgba(var(--color-ink-rgb), 0.08)',
-                                            }}
-                                        >
-                                            {label}
-                                        </button>
-                                    );
-                                })}
-                            </div>
-                            <div className="flex gap-2 mt-1">
-                                <span className="flex-1 text-center text-[11px]" style={{ color: 'var(--color-ink-faint)' }}>No recap</span>
-                                <span className="flex-1 text-center text-[11px]" style={{ color: 'var(--color-ink-faint)' }}>1 per card</span>
-                                <span className="flex-1 text-center text-[11px]" style={{ color: 'var(--color-ink-faint)' }}>2 per card</span>
-                            </div>
-                        </Card>
-                        <p className="text-xs text-center mb-4" style={{ color: 'var(--color-ink-muted)' }}>
-                            {totalQ} questions · ~{estMin} min per lesson
-                        </p>
+                            <Card className="mb-3 p-4">
+                                <div className="text-sm font-semibold mb-3" style={{ color: 'var(--color-ink-secondary)' }}>Cards per Lesson</div>
+                                <div className="flex gap-2">
+                                    {[1, 2, 3].map(n => {
+                                        const isActive = cards === n;
+                                        return (
+                                            <button
+                                                key={n}
+                                                onClick={() => dispatch({ type: 'SET_CARDS_PER_LESSON', value: n })}
+                                                className="flex-1 py-2.5 rounded-xl text-sm font-semibold transition-colors"
+                                                style={{
+                                                    backgroundColor: isActive ? 'var(--color-burgundy)' : 'var(--color-card)',
+                                                    color: isActive ? 'white' : 'var(--color-ink-secondary)',
+                                                    border: isActive ? 'none' : '1px solid rgba(var(--color-ink-rgb), 0.08)',
+                                                }}
+                                            >
+                                                {n} {n === 1 ? 'card' : 'cards'}
+                                            </button>
+                                        );
+                                    })}
+                                </div>
+                            </Card>
+                            <Card className="mb-3 p-4">
+                                <div className="text-sm font-semibold mb-3" style={{ color: 'var(--color-ink-secondary)' }}>Recap Intensity</div>
+                                <div className="flex gap-2">
+                                    {[
+                                        { value: 0, label: 'Off' },
+                                        { value: 1, label: 'Light' },
+                                        { value: 2, label: 'Full' },
+                                    ].map(({ value, label }) => {
+                                        const isActive = recap === value;
+                                        return (
+                                            <button
+                                                key={value}
+                                                onClick={() => dispatch({ type: 'SET_RECAP_PER_CARD', value })}
+                                                className="flex-1 py-2.5 rounded-xl text-sm font-semibold transition-colors"
+                                                style={{
+                                                    backgroundColor: isActive ? 'var(--color-burgundy)' : 'var(--color-card)',
+                                                    color: isActive ? 'white' : 'var(--color-ink-secondary)',
+                                                    border: isActive ? 'none' : '1px solid rgba(var(--color-ink-rgb), 0.08)',
+                                                }}
+                                            >
+                                                {label}
+                                            </button>
+                                        );
+                                    })}
+                                </div>
+                                <div className="flex gap-2 mt-1">
+                                    <span className="flex-1 text-center text-[11px]" style={{ color: 'var(--color-ink-faint)' }}>No recap</span>
+                                    <span className="flex-1 text-center text-[11px]" style={{ color: 'var(--color-ink-faint)' }}>1 per card</span>
+                                    <span className="flex-1 text-center text-[11px]" style={{ color: 'var(--color-ink-faint)' }}>2 per card</span>
+                                </div>
+                            </Card>
+                            <p className="text-xs text-center mb-4" style={{ color: 'var(--color-ink-muted)' }}>
+                                {totalQ} questions · ~{estMin} min per lesson
+                            </p>
                         </>
                     );
                 })()}
@@ -383,7 +383,6 @@ export default function Settings() {
                             {[
                                 { value: 'light', label: 'Light' },
                                 { value: 'dark', label: 'Dark' },
-                                { value: 'system', label: 'Auto' },
                             ].map(opt => (
                                 <button
                                     key={opt.value}
@@ -482,6 +481,34 @@ export default function Settings() {
                     </div>
                 </Card>
 
+                {/* Placement Quizzes */}
+                <Card className="mb-3 p-4">
+                    <div className="flex items-center justify-between gap-3">
+                        <div className="min-w-0">
+                            <div className="text-sm font-semibold" style={{ color: 'var(--color-ink-secondary)' }}>Placement Quizzes</div>
+                            <div className="text-xs mt-0.5" style={{ color: 'var(--color-ink-muted)' }}>
+                                {Object.values(state.placementQuizzes || {}).filter(q => q.passed).length > 0
+                                    ? `${Object.values(state.placementQuizzes).filter(q => q.passed).length} era(s) skipped`
+                                    : 'Skip eras you already know'}
+                            </div>
+                        </div>
+                        <button
+                            onClick={() => {
+                                dispatch({ type: 'TOGGLE_SETTINGS' });
+                                dispatch({ type: 'SET_ONBOARDING_STEP', step: 'placement_active' });
+                            }}
+                            className="flex-shrink-0 px-3 py-1.5 rounded-xl text-xs font-semibold"
+                            style={{
+                                backgroundColor: 'var(--color-burgundy-soft)',
+                                color: 'var(--color-burgundy)',
+                                border: '1px solid rgba(139, 65, 87, 0.15)',
+                            }}
+                        >
+                            Take Quiz
+                        </button>
+                    </div>
+                </Card>
+
                 <Divider />
 
                 {/* Data Management */}
@@ -558,8 +585,11 @@ export default function Settings() {
                     danger
                     onConfirm={() => {
                         cancelAllReminders();
+                        localStorage.removeItem('chronos-level2-unlock-seen');
+                        localStorage.removeItem('chronos-learn-level');
+                        localStorage.removeItem('chronos-settings-tip-seen');
                         dispatch({ type: 'RESET_PROGRESS' });
-                        dispatch({ type: 'TOGGLE_SETTINGS' });
+                        setShowResetConfirm(false);
                     }}
                     onCancel={() => setShowResetConfirm(false)}
                 />

@@ -3,7 +3,7 @@ import { useApp } from '../../context/AppContext';
 import { getEventsByIds, getEventById, ALL_EVENTS, CATEGORY_CONFIG, ERA_BOUNDARY_EVENTS, ERA_RANGES, getEraBoundaryInfo } from '../../data/events';
 import { scoreDateAnswer, generateLocationOptions, generateWhatOptions, generateDateMCQOptions, generateDescriptionOptions, calculateXP, SCORE_COLORS, getScoreColor, getScoreLabel, shuffle } from '../../data/quiz';
 import { calculateNextReview } from '../../data/spacedRepetition';
-import { Card, Button, ProgressBar, CategoryTag, Divider, StarButton, ConfirmModal, ExpandableText, ControversyNote, AnimatedCounter, EventConnections } from '../shared';
+import { Card, Button, ProgressBar, CategoryTag, ImportanceTag, Divider, StarButton, ConfirmModal, ExpandableText, ControversyNote, AnimatedCounter, EventConnections, flyXPToStar } from '../shared';
 import Mascot from '../Mascot';
 import LessonIcon from '../LessonIcon';
 import { LEVEL2_CHAPTERS } from '../../data/lessons';
@@ -142,6 +142,7 @@ export default function LessonFlow({ lesson, onComplete }) {
     const sessionStartTime = useRef(null);
     const [sessionDuration, setSessionDuration] = useState(0);
     const [shareToast, setShareToast] = useState(false);
+    const [postLessonModal, setPostLessonModal] = useState(null); // null | 'placement' | 'support'
 
     // For each card, randomly pick 3 of the 4 question types to use for MCQs (discarding 1)
     // Then assign 2 to the learn phase and 1 to the recap phase
@@ -245,8 +246,16 @@ export default function LessonFlow({ lesson, onComplete }) {
             const duration = sessionStartTime.current ? Math.round((Date.now() - sessionStartTime.current) / 1000) : 0;
             setSessionDuration(duration); // eslint-disable-line react-hooks/set-state-in-effect
             dispatch({ type: 'RECORD_STUDY_SESSION', duration, sessionType: 'lesson', questionsAnswered: quizResults.length });
+            // Show post-lesson modals for specific lessons
+            if (!lesson.chapterId) {
+                if (lesson.number === 1) {
+                    setTimeout(() => setPostLessonModal('placement'), 1200);
+                } else if (lesson.number === 2 || lesson.number === 20) {
+                    setTimeout(() => setPostLessonModal('support'), 1200);
+                }
+            }
         }
-    }, [phase, quizResults, lesson.id, dispatch]);
+    }, [phase, quizResults, lesson.id, lesson.number, lesson.chapterId, dispatch]);
 
     const handleExit = useCallback(() => {
         setShowExitConfirm(true);
@@ -427,7 +436,7 @@ export default function LessonFlow({ lesson, onComplete }) {
                             <p className="text-sm font-semibold text-center mb-2 sm:mb-4" style={{ color: period.color }}>{period.subtitle}</p>
                             <Divider />
                             <ExpandableText lines={3} className="text-sm leading-relaxed mt-4" style={{ color: 'var(--color-ink-secondary)' }}>
-                                <strong style={{ color: 'var(--color-ink)' }}>{period.keywords}</strong>{' '}{period.description}
+                                <strong style={{ color: 'var(--color-ink)' }}>{period.keywords}</strong><span className="keyword-sep" aria-hidden="true" />{period.description}
                             </ExpandableText>
                             {(() => {
                                 const boundary = ERA_BOUNDARY_EVENTS[lesson.periodId];
@@ -519,7 +528,10 @@ export default function LessonFlow({ lesson, onComplete }) {
                     <div className="animate-slide-in-right">
                         <Card>
                             <div className="flex items-center justify-between">
-                                <CategoryTag category={event.category} />
+                                <div className="flex items-center gap-2">
+                                    <CategoryTag category={event.category} />
+                                    <ImportanceTag importance={event.importance} />
+                                </div>
                                 <div className="relative">
                                     <StarButton
                                         isStarred={(state.starredEvents || []).includes(event.id)}
@@ -570,7 +582,7 @@ export default function LessonFlow({ lesson, onComplete }) {
                                 ));
                             })()}
                             <ExpandableText lines={3} className="text-sm leading-relaxed mb-4" style={{ color: 'var(--color-ink-secondary)' }}>
-                                {event.keywords && <><strong style={{ color: 'var(--color-ink)' }}>{event.keywords}</strong>{' '}</>}{event.description}
+                                {event.keywords && <><strong style={{ color: 'var(--color-ink)' }}>{event.keywords}</strong><span className="keyword-sep" aria-hidden="true" /></>}{event.description}
                             </ExpandableText>
                             <div className="flex items-center gap-2 text-xs" style={{ color: 'var(--color-ink-muted)' }}>
                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -792,7 +804,7 @@ export default function LessonFlow({ lesson, onComplete }) {
                             <h2 className="text-xl font-bold mt-3 mb-2" style={{ fontFamily: 'var(--font-serif)' }}>{event.title}</h2>
                             <p className="text-lg font-semibold mb-3" style={{ color: 'var(--color-burgundy)' }}>{event.date}</p>
                             <ExpandableText lines={3} className="text-sm leading-relaxed mb-3" style={{ color: 'var(--color-ink-secondary)' }}>
-                                {event.keywords && <><strong style={{ color: 'var(--color-ink)' }}>{event.keywords}</strong>{' '}</>}{event.description}
+                                {event.keywords && <><strong style={{ color: 'var(--color-ink)' }}>{event.keywords}</strong><span className="keyword-sep" aria-hidden="true" /></>}{event.description}
                             </ExpandableText>
                             <div className="flex items-center gap-2 text-xs" style={{ color: 'var(--color-ink-muted)' }}>
                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -887,7 +899,7 @@ export default function LessonFlow({ lesson, onComplete }) {
                             <Divider />
 
                             <div className="flex items-center justify-center gap-6 mt-3">
-                                <div className="flex items-center gap-2 animate-scale-in" style={{ animationDelay: '500ms' }}>
+                                <div id="xp-earned-display" className="flex items-center gap-2 animate-xp-pop" style={{ animationDelay: '500ms' }}>
                                     <svg className="animate-xp-glow" style={{ animationDelay: '700ms' }} width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--color-bronze)" strokeWidth="2">
                                         <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" fill="var(--color-bronze-light)" />
                                     </svg>
@@ -910,7 +922,11 @@ export default function LessonFlow({ lesson, onComplete }) {
                 </div>
 
                 <div className="flex-shrink-0 pt-4 pb-2 space-y-2">
-                    <Button className="w-full" onClick={onComplete}>Continue</Button>
+                    <Button className="w-full" onClick={async () => {
+                        const el = document.getElementById('xp-earned-display');
+                        if (el) await flyXPToStar(el, xp);
+                        onComplete();
+                    }}>Continue</Button>
                     <button
                         onClick={async () => {
                             const text = buildLessonShareText({
@@ -1001,6 +1017,82 @@ export default function LessonFlow({ lesson, onComplete }) {
                         </div>
                     );
                 })()}
+
+                {/* Placement Quiz Prompt Modal (after lesson 1) */}
+                {postLessonModal === 'placement' && (
+                    <div className="dot-modal-backdrop" onClick={() => setPostLessonModal(null)}>
+                        <div className="dot-modal-content" onClick={e => e.stopPropagation()}>
+                            <Card>
+                                <div className="flex items-start justify-between mb-3">
+                                    <div className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0"
+                                        style={{ backgroundColor: 'rgba(139, 65, 87, 0.1)' }}>
+                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--color-burgundy)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                            <circle cx="12" cy="12" r="10" /><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" /><line x1="12" y1="17" x2="12.01" y2="17" />
+                                        </svg>
+                                    </div>
+                                    <button onClick={() => setPostLessonModal(null)}
+                                        className="w-7 h-7 rounded-full flex items-center justify-center text-sm"
+                                        style={{ color: 'var(--color-ink-muted)', backgroundColor: 'rgba(var(--color-ink-rgb), 0.05)' }}>✕</button>
+                                </div>
+                                <h3 className="text-base font-bold mb-1" style={{ fontFamily: 'var(--font-serif)' }}>Already know some history?</h3>
+                                <p className="text-sm leading-relaxed mb-4" style={{ color: 'var(--color-ink-secondary)' }}>
+                                    Placement quizzes in <strong>Settings</strong> let you skip lessons you already know — though we encourage completing each lesson first, they go fast!
+                                </p>
+                                <Button className="w-full" onClick={() => setPostLessonModal(null)}>Got it</Button>
+                            </Card>
+                        </div>
+                    </div>
+                )}
+
+                {/* Support Modal (after lessons 2 and 20) */}
+                {postLessonModal === 'support' && (
+                    <div className="dot-modal-backdrop" onClick={() => setPostLessonModal(null)}>
+                        <div className="dot-modal-content" onClick={e => e.stopPropagation()}>
+                            <Card>
+                                <div className="flex items-start justify-between mb-3">
+                                    <div className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0"
+                                        style={{ backgroundColor: 'rgba(139, 65, 87, 0.1)' }}>
+                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--color-burgundy)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+                                        </svg>
+                                    </div>
+                                    <button onClick={() => setPostLessonModal(null)}
+                                        className="w-7 h-7 rounded-full flex items-center justify-center text-sm"
+                                        style={{ color: 'var(--color-ink-muted)', backgroundColor: 'rgba(var(--color-ink-rgb), 0.05)' }}>✕</button>
+                                </div>
+                                <h3 className="text-base font-bold mb-1" style={{ fontFamily: 'var(--font-serif)' }}>Enjoying Chronos?</h3>
+                                <p className="text-sm leading-relaxed mb-4" style={{ color: 'var(--color-ink-secondary)' }}>
+                                    If you're finding it useful, consider supporting the app!
+                                </p>
+                                <div className="flex gap-2 mb-3">
+                                    <button
+                                        onClick={() => window.open('https://buymeacoffee.com/elsadonnat0', '_blank')}
+                                        className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-xs font-medium"
+                                        style={{ color: '#92400E', backgroundColor: 'rgba(201, 169, 110, 0.15)', border: '1px solid rgba(201, 169, 110, 0.25)' }}
+                                    >
+                                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                            <path d="M18 8h1a4 4 0 0 1 0 8h-1" /><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z" /><line x1="6" y1="1" x2="6" y2="4" /><line x1="10" y1="1" x2="10" y2="4" /><line x1="14" y1="1" x2="14" y2="4" />
+                                        </svg>
+                                        Buy me a coffee
+                                    </button>
+                                    <button
+                                        onClick={() => window.open('https://play.google.com/store/apps/details?id=com.elsadonnat.chronos', '_blank')}
+                                        className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-xs font-medium"
+                                        style={{ color: 'var(--color-ink-secondary)', backgroundColor: 'rgba(var(--color-ink-rgb), 0.05)', border: '1px solid rgba(var(--color-ink-rgb), 0.1)' }}
+                                    >
+                                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                                        </svg>
+                                        Rate the app
+                                    </button>
+                                </div>
+                                <button onClick={() => setPostLessonModal(null)}
+                                    className="w-full py-2 text-sm text-center"
+                                    style={{ color: 'var(--color-ink-faint)' }}>Maybe later</button>
+                            </Card>
+                        </div>
+                    </div>
+                )}
             </div>
         );
     }

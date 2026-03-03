@@ -1,4 +1,4 @@
-package com.getcapacitor.myapp;
+package com.elsadonnat.chronos;
 
 import static org.junit.Assert.*;
 

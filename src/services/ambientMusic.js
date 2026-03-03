@@ -1,251 +1,156 @@
 /**
- * Procedural ambient music generator — ancient Roman / antiquity style.
+ * Ambient music player — loops an MP3 track with smooth crossfade.
  *
- * Three layers:
- *   1. Warm drone pad — detuned oscillators at D2 + A2 (root + fifth)
- *   2. Gentle lyre plucks — randomized Dorian mode notes with fast attack / decay
- *   3. Ambient wind texture — filtered looped white noise
+ * Uses an HTML Audio element for efficient streaming of the file,
+ * routed through Web Audio API gain nodes for smooth fade-in/out
+ * and crossfade looping (so the track restarts seamlessly since
+ * it naturally fades quiet at the beginning and end).
  *
  * Usage:
  *   import * as ambientMusic from '../services/ambientMusic';
  *   ambientMusic.configure({ musicEnabled: true });
  */
 
+const TRACK_URL = '/bensound-silentwaves.mp3';
+const FADE_IN_SEC = 3;
+const FADE_OUT_SEC = 2;
+const CROSSFADE_SEC = 6; // overlap between ending and restarting
+const VOLUME = 0.13;
+
 let config = { musicEnabled: false };
 let ac = null;
+let audio = null;
+let sourceNode = null;
+let gainNode = null;
 let isPlaying = false;
-let masterGain = null;
-let droneOscillators = [];
-let droneGainNode = null;
-let windSource = null;
-let windGainNode = null;
-let pluckTimeout = null;
-
-// ── Dorian mode on D (frequencies across octaves 3–5) ──────────────────
-const DORIAN_FREQS = [
-    // Octave 3: D E F G A B C
-    146.83, 164.81, 174.61, 196.00, 220.00, 246.94, 261.63,
-    // Octave 4
-    293.66, 329.63, 349.23, 392.00, 440.00, 493.88, 523.25,
-    // Octave 5 (sparingly, for shimmer)
-    587.33, 659.25,
-];
-
-const DRONE_ROOT = 73.42;  // D2
-const DRONE_FIFTH = 110.00; // A2
+let savedTime = 0; // remember position for resume after WebView kill
 
 // ── AudioContext (lazy) ─────────────────────────────────────────────────
 function getAudioContext() {
-    if (!ac) {
+    if (!ac || ac.state === 'closed') {
         ac = new (window.AudioContext || window.webkitAudioContext)();
     }
     if (ac.state === 'suspended') ac.resume();
     return ac;
 }
 
-// ── Layer 1: Warm drone pad ─────────────────────────────────────────────
-function createDrone() {
+// ── Setup audio element + Web Audio routing ─────────────────────────────
+function createAudio() {
     const ctx = getAudioContext();
-    droneGainNode = ctx.createGain();
-    droneGainNode.gain.value = 0;
-    droneGainNode.connect(masterGain);
 
-    // Root (D2) — two slightly detuned sines for slow beating
-    for (const detune of [-4, 4]) {
-        const osc = ctx.createOscillator();
-        osc.type = 'sine';
-        osc.frequency.value = DRONE_ROOT;
-        osc.detune.value = detune;
-        osc.connect(droneGainNode);
-        osc.start();
-        droneOscillators.push(osc);
-    }
+    audio = new Audio(TRACK_URL);
+    audio.preload = 'auto';
+    audio.loop = false; // we handle looping ourselves for crossfade
 
-    // Fifth (A2) — two detuned sines, slightly quieter
-    const fifthGain = ctx.createGain();
-    fifthGain.gain.value = 0.7;
-    fifthGain.connect(droneGainNode);
-    for (const detune of [-3, 3]) {
-        const osc = ctx.createOscillator();
-        osc.type = 'sine';
-        osc.frequency.value = DRONE_FIFTH;
-        osc.detune.value = detune;
-        osc.connect(fifthGain);
-        osc.start();
-        droneOscillators.push(osc);
-    }
+    sourceNode = ctx.createMediaElementSource(audio);
+    gainNode = ctx.createGain();
+    gainNode.gain.value = 0;
 
-    // Harmonic richness — triangle one octave above root, very quiet
-    const harmGain = ctx.createGain();
-    harmGain.gain.value = 0.15;
-    harmGain.connect(droneGainNode);
-    const harmOsc = ctx.createOscillator();
-    harmOsc.type = 'triangle';
-    harmOsc.frequency.value = DRONE_ROOT * 2;
-    harmOsc.connect(harmGain);
-    harmOsc.start();
-    droneOscillators.push(harmOsc);
+    sourceNode.connect(gainNode);
+    gainNode.connect(ctx.destination);
 
-    // Slow fade in (3s)
-    const now = ctx.currentTime;
-    droneGainNode.gain.setValueAtTime(0, now);
-    droneGainNode.gain.linearRampToValueAtTime(0.5, now + 3);
-}
-
-// ── Layer 2: Gentle lyre plucks ─────────────────────────────────────────
-function playPluck() {
-    if (!isPlaying || !config.musicEnabled) return;
-    try {
-        const ctx = getAudioContext();
-        const freq = DORIAN_FREQS[Math.floor(Math.random() * DORIAN_FREQS.length)];
-        const duration = 0.8 + Math.random() * 0.7;
-        const gain = 0.03 + Math.random() * 0.04;
-
-        const osc = ctx.createOscillator();
-        const vol = ctx.createGain();
-        osc.type = 'triangle';
-        osc.frequency.value = freq;
-        osc.connect(vol);
-        vol.connect(masterGain);
-
-        const now = ctx.currentTime;
-        vol.gain.setValueAtTime(0, now);
-        vol.gain.linearRampToValueAtTime(gain, now + 0.005);
-        vol.gain.exponentialRampToValueAtTime(0.0001, now + duration);
-        osc.start(now);
-        osc.stop(now + duration + 0.05);
-
-        // 30% chance: play a second note (interval of a 3rd or 5th)
-        if (Math.random() < 0.3) {
-            const intervals = [1.25, 1.333, 1.5];
-            const secondFreq = freq * intervals[Math.floor(Math.random() * intervals.length)];
-            if (secondFreq < 800) {
-                const osc2 = ctx.createOscillator();
-                const vol2 = ctx.createGain();
-                osc2.type = 'triangle';
-                osc2.frequency.value = secondFreq;
-                osc2.connect(vol2);
-                vol2.connect(masterGain);
-                const delay = 0.08 + Math.random() * 0.06;
-                vol2.gain.setValueAtTime(0, now + delay);
-                vol2.gain.linearRampToValueAtTime(gain * 0.7, now + delay + 0.005);
-                vol2.gain.exponentialRampToValueAtTime(0.0001, now + delay + duration);
-                osc2.start(now + delay);
-                osc2.stop(now + delay + duration + 0.05);
-            }
+    // When the track ends, restart it (crossfade is handled by timeupdate)
+    audio.addEventListener('ended', () => {
+        if (isPlaying && config.musicEnabled) {
+            audio.currentTime = 0;
+            audio.play().catch(() => {});
+            fadeIn();
         }
-    } catch { /* silent */ }
+    });
+
+    // Track position for resume & crossfade near end
+    audio.addEventListener('timeupdate', () => {
+        if (!audio) return;
+        savedTime = audio.currentTime;
+        if (!isPlaying || !audio.duration) return;
+        const remaining = audio.duration - audio.currentTime;
+        if (remaining <= CROSSFADE_SEC && remaining > 0) {
+            const progress = remaining / CROSSFADE_SEC; // 1 → 0
+            gainNode.gain.value = progress * VOLUME;
+        }
+    });
 }
 
-function startPluckScheduler() {
-    function scheduleNext() {
-        if (!isPlaying) return;
-        const delay = 2000 + Math.random() * 3000; // 2–5 seconds
-        pluckTimeout = setTimeout(() => {
-            playPluck();
-            scheduleNext();
-        }, delay);
-    }
-    pluckTimeout = setTimeout(() => {
-        playPluck();
-        scheduleNext();
-    }, 1500);
+// ── Fade helpers ────────────────────────────────────────────────────────
+function fadeIn() {
+    if (!gainNode || !ac) return;
+    const now = ac.currentTime;
+    gainNode.gain.setValueAtTime(0, now);
+    gainNode.gain.linearRampToValueAtTime(VOLUME, now + FADE_IN_SEC);
 }
 
-// ── Layer 3: Wind texture ───────────────────────────────────────────────
-function createWindTexture() {
-    const ctx = getAudioContext();
-
-    // 2-second white-noise buffer, looped
-    const bufferSize = ctx.sampleRate * 2;
-    const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
-    const data = buffer.getChannelData(0);
-    for (let i = 0; i < bufferSize; i++) {
-        data[i] = Math.random() * 2 - 1;
-    }
-
-    windSource = ctx.createBufferSource();
-    windSource.buffer = buffer;
-    windSource.loop = true;
-
-    const filter = ctx.createBiquadFilter();
-    filter.type = 'bandpass';
-    filter.frequency.value = 600;
-    filter.Q.value = 0.5;
-
-    windGainNode = ctx.createGain();
-    windGainNode.gain.value = 0;
-
-    windSource.connect(filter);
-    filter.connect(windGainNode);
-    windGainNode.connect(masterGain);
-    windSource.start();
-
-    // Slow fade in (4s)
-    const now = ctx.currentTime;
-    windGainNode.gain.setValueAtTime(0, now);
-    windGainNode.gain.linearRampToValueAtTime(0.025, now + 4);
+function fadeOut(duration = FADE_OUT_SEC) {
+    if (!gainNode || !ac) return;
+    const now = ac.currentTime;
+    gainNode.gain.setValueAtTime(gainNode.gain.value, now);
+    gainNode.gain.linearRampToValueAtTime(0, now + duration);
 }
 
 // ── Cleanup ─────────────────────────────────────────────────────────────
-function cleanupNodes() {
-    try {
-        for (const osc of droneOscillators) {
-            osc.stop();
-            osc.disconnect();
-        }
-    } catch { /* already stopped */ }
-    droneOscillators = [];
-    if (droneGainNode) { droneGainNode.disconnect(); droneGainNode = null; }
-
-    try {
-        if (windSource) { windSource.stop(); windSource.disconnect(); }
-    } catch { /* already stopped */ }
-    windSource = null;
-    if (windGainNode) { windGainNode.disconnect(); windGainNode = null; }
-
-    if (masterGain) { masterGain.disconnect(); masterGain = null; }
+function cleanup() {
+    if (audio) {
+        savedTime = audio.currentTime || 0;
+        audio.pause();
+    }
+    if (sourceNode) { try { sourceNode.disconnect(); } catch { /* */ } sourceNode = null; }
+    if (gainNode) { try { gainNode.disconnect(); } catch { /* */ } gainNode = null; }
+    audio = null;
 }
 
 // ── Public API ──────────────────────────────────────────────────────────
 export function start() {
     if (isPlaying || !config.musicEnabled) return;
     try {
-        const ctx = getAudioContext();
-        masterGain = ctx.createGain();
-        masterGain.gain.value = 0.07;
-        masterGain.connect(ctx.destination);
-
-        createDrone();
-        createWindTexture();
-        startPluckScheduler();
+        if (!audio) createAudio();
+        audio.currentTime = 0;
+        savedTime = 0;
+        audio.play().catch(() => {});
+        fadeIn();
         isPlaying = true;
     } catch { /* silent */ }
 }
 
 export function stop() {
     if (!isPlaying) return;
-    try {
-        const ctx = getAudioContext();
-        masterGain.gain.setValueAtTime(masterGain.gain.value, ctx.currentTime);
-        masterGain.gain.linearRampToValueAtTime(0, ctx.currentTime + 2);
-        setTimeout(() => cleanupNodes(), 2200);
-    } catch {
-        cleanupNodes();
-    }
-    clearTimeout(pluckTimeout);
-    pluckTimeout = null;
+    fadeOut();
+    setTimeout(() => cleanup(), (FADE_OUT_SEC + 0.2) * 1000);
     isPlaying = false;
 }
 
 export function pause() {
-    if (!isPlaying || !ac) return;
-    try { if (ac.state === 'running') ac.suspend(); } catch { /* silent */ }
+    if (!isPlaying || !audio) return;
+    try {
+        savedTime = audio.currentTime || 0;
+        if (ac && ac.state === 'running') ac.suspend();
+    } catch { /* silent */ }
 }
 
 export function resume() {
-    if (!isPlaying || !ac) return;
-    try { if (ac.state === 'suspended') ac.resume(); } catch { /* silent */ }
+    if (!config.musicEnabled) return;
+
+    // If audio nodes are still alive, just resume the AudioContext
+    if (isPlaying && audio && ac) {
+        try {
+            if (ac.state === 'suspended') ac.resume();
+            // Also make sure audio element is actually playing
+            if (audio.paused) {
+                audio.play().catch(() => {});
+                fadeIn();
+            }
+        } catch { /* silent */ }
+        return;
+    }
+
+    // Audio was lost (WebView killed, etc.) — recreate and resume from saved position
+    if (!isPlaying && config.musicEnabled) {
+        try {
+            createAudio();
+            audio.currentTime = savedTime || 0;
+            audio.play().catch(() => {});
+            fadeIn();
+            isPlaying = true;
+        } catch { /* silent */ }
+    }
 }
 
 export function configure({ musicEnabled }) {

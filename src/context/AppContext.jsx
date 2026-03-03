@@ -58,7 +58,7 @@ const defaultState = {
     newAchievements: [],    // IDs unlocked this session (for toast)
 
     // ─── Onboarding ───
-    // 'welcome' | 'guide_lesson0' | 'post_lesson0' | 'placement_offer' | 'placement_active' | 'complete' | null
+    // 'welcome' | 'guide_lesson0' | 'placement_active' | 'complete' | null
     onboardingStep: 'welcome',
 
     // ─── Placement Quizzes ───
@@ -95,6 +95,11 @@ function migrateState(parsed) {
         const hasProgress = Object.keys(parsed.completedLessons || {}).length > 0
             || (parsed.seenEvents || []).length > 0;
         merged.onboardingStep = hasProgress ? 'complete' : 'welcome';
+    }
+
+    // Migration: removed onboarding steps — redirect to 'complete'
+    if (parsed.onboardingStep === 'post_lesson0' || parsed.onboardingStep === 'placement_offer') {
+        merged.onboardingStep = 'complete';
     }
 
     // Migration: ensure srSchedule exists for all seen events

@@ -24,7 +24,7 @@ import * as ambientMusic from './services/ambientMusic';
 
 const TAB_KEYS = { '1': 'learn', '2': 'timeline', '3': 'practice', '4': 'challenge' };
 const RATING_MILESTONE = 3; // Show rating prompt after completing 3 lessons
-const PLAY_STORE_URL = 'https://play.google.com/store/apps/details?id=com.chronos.app';
+const PLAY_STORE_URL = 'https://play.google.com/store/apps/details?id=com.elsadonnat.chronos';
 
 export default function App() {
   const [activeTab, setActiveTab] = useState(() => {
@@ -112,7 +112,7 @@ export default function App() {
   // Detect lesson 0 completion during onboarding
   useEffect(() => {
     if (state.onboardingStep === 'guide_lesson0' && state.completedLessons['lesson-0']) {
-      dispatch({ type: 'SET_ONBOARDING_STEP', step: 'post_lesson0' });
+      dispatch({ type: 'SET_ONBOARDING_STEP', step: 'complete' });
     }
   }, [state.completedLessons, state.onboardingStep, dispatch]);
 

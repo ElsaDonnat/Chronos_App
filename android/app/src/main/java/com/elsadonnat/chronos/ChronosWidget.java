@@ -1,4 +1,4 @@
-package com.chronos.app;
+package com.elsadonnat.chronos;
 
 import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
@@ -12,7 +12,7 @@ import android.widget.RemoteViews;
 
 public class ChronosWidget extends AppWidgetProvider {
 
-    private static final String PREFS_GROUP = "group.com.chronos.app.widgets";
+    private static final String PREFS_GROUP = "group.com.elsadonnat.chronos.widgets";
 
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {

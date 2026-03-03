@@ -1,6 +1,7 @@
 import { useApp } from '../context/AppContext';
 import { useState, useEffect, useRef } from 'react';
 import AchievementsModal from './AchievementsModal';
+import StreakFlame, { FLAME_COUNT_COLORS } from './StreakFlame';
 
 const SECTION_NAMES = {
     learn: 'Chapter 1: The Story of Humanity',
@@ -19,12 +20,6 @@ function getStreakStatus(lastActiveDate, currentStreak) {
     return 'inactive';
 }
 
-const FLAME_COLORS = {
-    active:    { stroke: '#E05500', fill: '#FF8C00', innerFill: '#FFB833', fillOpacity: 0.85, countColor: '#E05500' },
-    'at-risk': { stroke: '#C8A000', fill: '#E8D44C', fillOpacity: 0.5, countColor: '#C8A000' },
-    inactive:  { stroke: '#A8A29E', fill: '#D6D3D1', fillOpacity: 0.3, countColor: '#A8A29E' },
-};
-
 export default function TopBar({ activeTab }) {
     const { state, dispatch } = useApp();
     const [displayXP, setDisplayXP] = useState(state.totalXP);
@@ -33,7 +28,6 @@ export default function TopBar({ activeTab }) {
     const hasNewAchievements = (state.newAchievements || []).length > 0;
 
     const streakStatus = getStreakStatus(state.lastActiveDate, state.currentStreak);
-    const flameColors = FLAME_COLORS[streakStatus];
 
     // Animate XP counter
     useEffect(() => {
@@ -92,21 +86,14 @@ export default function TopBar({ activeTab }) {
                             onClick={() => window.dispatchEvent(new Event('openWeekTracker'))}
                             aria-label={`${state.currentStreak} day streak — click for details`}
                         >
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" strokeLinecap="round" strokeLinejoin="round"
-                                className={streakStatus !== 'inactive' ? `streak-flame--${streakStatus}` : undefined}
-                            >
-                                <path d="M12 2c0 4-4 6-4 10a4 4 0 0 0 8 0c0-4-4-6-4-10z"
-                                    stroke={flameColors.stroke} strokeWidth="2" fill={flameColors.fill} fillOpacity={flameColors.fillOpacity} />
-                                <path d="M12 22c-1.5 0-3-1-3-3 0-2 3-3 3-5 0 2 3 3 3 5 0 2-1.5 3-3 3z"
-                                    fill={flameColors.innerFill || flameColors.fill} stroke="none" opacity="0.5" />
-                            </svg>
-                            <span className="text-sm font-semibold" style={{ color: flameColors.countColor }}>
+                            <StreakFlame status={streakStatus} size={18} />
+                            <span className="text-sm font-semibold" style={{ color: FLAME_COUNT_COLORS[streakStatus] }}>
                                 {state.currentStreak}
                             </span>
                         </button>
 
                         {/* XP — key triggers animation replay on XP gain */}
-                        <div key={state.totalXP} className="topbar-stat animate-xp-glow"
+                        <div id="xp-star-target" key={state.totalXP} className="topbar-stat animate-xp-glow"
                             onClick={() => window.dispatchEvent(new Event('openWeekTracker'))}
                             style={{ cursor: 'pointer' }}>
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-bronze)" strokeWidth="2" strokeLinecap="round"

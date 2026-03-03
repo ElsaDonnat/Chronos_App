@@ -1,4 +1,4 @@
-package com.chronos.app;
+package com.elsadonnat.chronos;
 
 import android.content.Intent;
 import android.os.Bundle;

@@ -1,10 +1,10 @@
 import { useState, useMemo, useEffect, useRef } from 'react';
 import { useApp } from '../context/AppContext';
-import { ALL_EVENTS, getEventById, CATEGORY_CONFIG, isDiHEvent, getEraForYear } from '../data/events';
+import { ALL_EVENTS, getEventById, CATEGORY_CONFIG, IMPORTANCE_CONFIG, IMPORTANCE_ORDER, isDiHEvent, getEraForYear } from '../data/events';
 import { LESSONS, ALL_LEVEL2_LESSONS } from '../data/lessons';
 import { scoreDateAnswer, generateLocationOptions, generateWhatOptions, generateDescriptionOptions, generateDateMCQOptions, SCORE_COLORS, getScoreColor, getScoreLabel, shuffle } from '../data/quiz';
 import { calculateNextReview, getDueEvents, getCardStatus } from '../data/spacedRepetition';
-import { Card, Button, MasteryDots, ProgressBar, Divider, CategoryTag, DiHBadge, StarButton, TabSelector, ConfirmModal, ExpandableText, ControversyNote } from '../components/shared';
+import { Card, Button, MasteryDots, ProgressBar, Divider, CategoryTag, ImportanceTag, DiHBadge, StarButton, TabSelector, ConfirmModal, ExpandableText, ControversyNote } from '../components/shared';
 import Mascot from '../components/Mascot';
 import * as feedback from '../services/feedback';
 import { shareText, buildPracticeShareText } from '../services/share';
@@ -254,6 +254,12 @@ export default function PracticePage({ onSessionChange, registerBackHandler }) {
         const learned = events.filter(e => (state.seenEvents || []).includes(e.id));
         startSession('By Lesson', learned.length > 0 ? learned : events);
         setSelectedLessons([]);
+    };
+
+    const startByImportance = (importanceLevel) => {
+        const pool = learnedEvents.filter(e => e.importance === importanceLevel);
+        if (pool.length === 0) return;
+        startSession(`${IMPORTANCE_CONFIG[importanceLevel].label} Events`, pool);
     };
 
     const startQuickDates = () => {
@@ -690,6 +696,8 @@ export default function PracticePage({ onSessionChange, registerBackHandler }) {
                     onStartQuickDates={startQuickDates}
                     onStartFavorites={startFavorites}
                     onOpenLessonPicker={() => setView(VIEW.LESSON_PICKER)}
+                    onStartByImportance={startByImportance}
+                    learnedEvents={learnedEvents}
                     learnedCount={learnedEvents.length}
                 />
             ) : (
@@ -711,7 +719,7 @@ export default function PracticePage({ onSessionChange, registerBackHandler }) {
 // ═══════════════════════════════════════════════════════
 // HUB VIEW — Practice mode cards
 // ═══════════════════════════════════════════════════════
-function HubView({ starredEvents, weakEvents, statusTiers, dueCount, state, dispatch, onStartSpacedReview, onStartQuickDates, onStartFavorites, onOpenLessonPicker, learnedCount }) {
+function HubView({ starredEvents, weakEvents, statusTiers, dueCount, state, dispatch, onStartSpacedReview, onStartQuickDates, onStartFavorites, onOpenLessonPicker, onStartByImportance, learnedEvents, learnedCount }) {
     return (
         <div className="space-y-3">
             {/* Spaced Review */}
@@ -820,6 +828,45 @@ function HubView({ starredEvents, weakEvents, statusTiers, dueCount, state, disp
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-ink-faint)" strokeWidth="2" className="mt-2 flex-shrink-0">
                         <polyline points="9 18 15 12 9 6" />
                     </svg>
+                </div>
+            </Card>
+
+            {/* By Importance */}
+            <Card className="p-4">
+                <div className="flex items-start gap-3">
+                    <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
+                        style={{ backgroundColor: 'rgba(185, 28, 28, 0.08)' }}>
+                        <span className="text-lg">⭐</span>
+                    </div>
+                    <div className="flex-1 min-w-0">
+                        <h3 className="text-sm font-bold" style={{ fontFamily: 'var(--font-serif)' }}>By Importance</h3>
+                        <p className="text-xs mt-0.5 mb-2.5" style={{ color: 'var(--color-ink-muted)' }}>
+                            Practice events filtered by historical significance
+                        </p>
+                        <div className="flex flex-wrap gap-1.5">
+                            {IMPORTANCE_ORDER.map(level => {
+                                const config = IMPORTANCE_CONFIG[level];
+                                const count = learnedEvents.filter(e => e.importance === level).length;
+                                const enabled = count > 0;
+                                return (
+                                    <button
+                                        key={level}
+                                        onClick={enabled ? () => onStartByImportance(level) : undefined}
+                                        className="flex items-center gap-1 px-2 py-1 rounded-lg text-[10px] font-semibold transition-all duration-150"
+                                        style={{
+                                            backgroundColor: enabled ? config.bg : 'rgba(var(--color-ink-rgb), 0.04)',
+                                            color: enabled ? config.color : 'var(--color-ink-faint)',
+                                            opacity: enabled ? 1 : 0.45,
+                                            cursor: enabled ? 'pointer' : 'default',
+                                        }}
+                                    >
+                                        {config.label}
+                                        {enabled && <span className="opacity-60">({count})</span>}
+                                    </button>
+                                );
+                            })}
+                        </div>
+                    </div>
                 </div>
             </Card>
 
@@ -975,87 +1022,85 @@ function CollectionView({ statusTiers, collectionSort, setCollectionSort, expand
                             ).map(({ event, mastery, timesReviewed, successRate }) => {
                                 const isExpanded = expandedEventId === event.id;
                                 return (
-                                    <div key={event.id}>
-                                        <Card
-                                            onClick={() => setExpandedEventId(isExpanded ? null : event.id)}
-                                            className="p-3"
-                                            style={{
-                                                borderLeft: isExpanded ? `3px solid ${tier.color}` : '3px solid transparent',
-                                            }}
-                                        >
-                                            <div className="flex items-center gap-3">
-                                                <div className="flex-1 min-w-0">
-                                                    <div className="flex items-center gap-2">
-                                                        <h4 className="text-sm font-semibold truncate" style={{ fontFamily: 'var(--font-serif)' }}>
-                                                            {event.title}
-                                                        </h4>
+                                    <Card
+                                        key={event.id}
+                                        onClick={() => setExpandedEventId(isExpanded ? null : event.id)}
+                                        className="p-3"
+                                        style={{
+                                            borderLeft: `3px solid ${isExpanded ? tier.color : 'transparent'}`,
+                                        }}
+                                    >
+                                        <div className="flex items-center gap-3">
+                                            <div className="flex-1 min-w-0">
+                                                <div className="flex items-center gap-2">
+                                                    <h4 className="text-sm font-semibold truncate" style={{ fontFamily: 'var(--font-serif)' }}>
+                                                        {event.title}
+                                                    </h4>
+                                                    {isDiHEvent(event) && <DiHBadge />}
+                                                </div>
+                                                <div className="flex items-center gap-3 mt-1">
+                                                    <MasteryDots mastery={mastery} />
+                                                    <span className="text-[10px]" style={{ color: 'var(--color-ink-faint)' }}>
+                                                        {collectionSort === 'success'
+                                                            ? `${successRate}% success`
+                                                            : `${timesReviewed} time${timesReviewed !== 1 ? 's' : ''} seen`
+                                                        }
+                                                    </span>
+                                                </div>
+                                            </div>
+                                            <div className="flex items-center gap-2 flex-shrink-0">
+                                                <StarButton
+                                                    isStarred={(state.starredEvents || []).includes(event.id)}
+                                                    onClick={() => dispatch({ type: 'TOGGLE_STAR', eventId: event.id })}
+                                                    size={16}
+                                                />
+                                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--color-ink-faint)" strokeWidth="2"
+                                                    className="transition-transform duration-200"
+                                                    style={{ transform: isExpanded ? 'rotate(180deg)' : 'rotate(0deg)' }}>
+                                                    <polyline points="6 9 12 15 18 9" />
+                                                </svg>
+                                            </div>
+                                        </div>
+
+                                        {/* Expanded detail — same card */}
+                                        {isExpanded && (
+                                            <div className="animate-fade-in mt-3 pt-3" style={{ borderTop: '1px solid rgba(var(--color-ink-rgb), 0.06)' }}>
+                                                <div className="flex items-center justify-between mb-2">
+                                                    <div className="flex items-center gap-2 flex-wrap">
+                                                        <CategoryTag category={event.category} />
+                                                        <ImportanceTag importance={event.importance} />
                                                         {isDiHEvent(event) && <DiHBadge />}
                                                     </div>
-                                                    <div className="flex items-center gap-3 mt-1">
-                                                        <MasteryDots mastery={mastery} />
-                                                        <span className="text-[10px]" style={{ color: 'var(--color-ink-faint)' }}>
-                                                            {collectionSort === 'success'
-                                                                ? `${successRate}% success`
-                                                                : `${timesReviewed} time${timesReviewed !== 1 ? 's' : ''} seen`
-                                                            }
-                                                        </span>
-                                                    </div>
+                                                    <span className="text-xs font-medium" style={{ color: 'var(--color-burgundy)' }}>
+                                                        {event.date}
+                                                    </span>
                                                 </div>
-                                                <div className="flex items-center gap-2 flex-shrink-0">
-                                                    <StarButton
-                                                        isStarred={(state.starredEvents || []).includes(event.id)}
-                                                        onClick={() => dispatch({ type: 'TOGGLE_STAR', eventId: event.id })}
-                                                        size={16}
-                                                    />
-                                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--color-ink-faint)" strokeWidth="2"
-                                                        className="transition-transform duration-200"
-                                                        style={{ transform: isExpanded ? 'rotate(180deg)' : 'rotate(0deg)' }}>
-                                                        <polyline points="6 9 12 15 18 9" />
+                                                <ExpandableText lines={3} className="text-sm leading-relaxed mb-3" style={{ color: 'var(--color-ink-secondary)' }}>
+                                                    {event.keywords && <><strong style={{ color: 'var(--color-ink)' }}>{event.keywords}</strong>{' '}</>}{event.description}
+                                                </ExpandableText>
+                                                <div className="flex items-center gap-2 text-xs" style={{ color: 'var(--color-ink-muted)' }}>
+                                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" /><circle cx="12" cy="10" r="3" />
                                                     </svg>
+                                                    {event.location.place}
                                                 </div>
-                                            </div>
-                                        </Card>
-
-                                        {/* Expanded card detail */}
-                                        {isExpanded && (
-                                            <div className="animate-fade-in mx-1 mt-1 mb-2">
-                                                <Card className="p-4" style={{ borderLeft: `3px solid ${tier.color}` }}>
-                                                    <div className="flex items-center justify-between mb-2">
-                                                        <div className="flex items-center gap-2">
-                                                            <CategoryTag category={event.category} />
-                                                            {isDiHEvent(event) && <DiHBadge />}
-                                                        </div>
-                                                        <span className="text-xs font-medium" style={{ color: 'var(--color-burgundy)' }}>
-                                                            {event.date}
-                                                        </span>
+                                                <div className="flex items-center gap-4 mt-3 pt-3" style={{ borderTop: '1px solid rgba(var(--color-ink-rgb), 0.06)' }}>
+                                                    <div className="text-[10px]">
+                                                        <span style={{ color: 'var(--color-ink-faint)' }}>Reviewed: </span>
+                                                        <span className="font-bold">{timesReviewed}×</span>
                                                     </div>
-                                                    <ExpandableText lines={3} className="text-sm leading-relaxed mb-3" style={{ color: 'var(--color-ink-secondary)' }}>
-                                                        {event.keywords && <><strong style={{ color: 'var(--color-ink)' }}>{event.keywords}</strong>{' '}</>}{event.description}
-                                                    </ExpandableText>
-                                                    <div className="flex items-center gap-2 text-xs" style={{ color: 'var(--color-ink-muted)' }}>
-                                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                                            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" /><circle cx="12" cy="10" r="3" />
-                                                        </svg>
-                                                        {event.location.place}
+                                                    <div className="text-[10px]">
+                                                        <span style={{ color: 'var(--color-ink-faint)' }}>Success: </span>
+                                                        <span className="font-bold">{successRate}%</span>
                                                     </div>
-                                                    <div className="flex items-center gap-4 mt-3 pt-3" style={{ borderTop: '1px solid rgba(var(--color-ink-rgb), 0.06)' }}>
-                                                        <div className="text-[10px]">
-                                                            <span style={{ color: 'var(--color-ink-faint)' }}>Reviewed: </span>
-                                                            <span className="font-bold">{timesReviewed}×</span>
-                                                        </div>
-                                                        <div className="text-[10px]">
-                                                            <span style={{ color: 'var(--color-ink-faint)' }}>Success: </span>
-                                                            <span className="font-bold">{successRate}%</span>
-                                                        </div>
-                                                        <div className="text-[10px] flex items-center gap-1">
-                                                            <span style={{ color: 'var(--color-ink-faint)' }}>Mastery: </span>
-                                                            <MasteryDots mastery={mastery} />
-                                                        </div>
+                                                    <div className="text-[10px] flex items-center gap-1">
+                                                        <span style={{ color: 'var(--color-ink-faint)' }}>Mastery: </span>
+                                                        <MasteryDots mastery={mastery} />
                                                     </div>
-                                                </Card>
+                                                </div>
                                             </div>
                                         )}
-                                    </div>
+                                    </Card>
                                 );
                             })}
                         </div>

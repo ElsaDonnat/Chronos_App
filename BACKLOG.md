@@ -12,22 +12,28 @@
 
 ## P3 — Map view improvements (remaining)
 
-First batch of map improvements shipped (v1.5.1): pinch-to-zoom, larger pins, selected-pin pulse, ocean color, graticule, dark mode, legend, event descriptions. Remaining items:
+Four batches of map improvements shipped. Map now uses **Natural Earth I projection** (800×500 viewBox) with properly-shaped continents. Fullscreen uses 280% oversized scrollable container with auto-centering, sticky close button overlay. Inline uses 200% width with 2:1 aspect ratio. Pinch-to-zoom, category legend, dark mode, graticule all done. Remaining items in priority order:
 
-### Usability
-- **Cluster UX is shallow** — tapping a cluster shows a flat list; there's no way to "zoom into" the cluster area to see individual pins spread out. Consider a spider/spiderfy expansion or auto-zoom on cluster tap.
-- **Region labels overlap pins** — the static region name labels sit at fixed positions and can overlap event pins. Consider hiding them when zoomed in or making them semi-transparent when pins are nearby.
+### P2 — High impact UX
+- **Region auto-scroll in fullscreen** — tapping a region chip/dropdown should scroll the fullscreen map to center on that region. Currently chips filter pins but don't navigate the viewport.
+- **Double-tap to zoom** — standard mobile gesture. Double-tap should zoom to 2× centered on the tap point; double-tap again to reset.
+- **Swipe-down to dismiss fullscreen** — more discoverable than the small Close button. Pull down gesture closes the fullscreen overlay.
 
-### Features
-- **No connections on map** — events have cause-and-effect connections (EVENT_CONNECTIONS) but the map doesn't visualize them. Drawing faint arcs or lines between connected events would be a powerful visualization.
-- **No era coloring** — pins only show category color. An option to color by era instead would give a temporal view of geographic spread.
-- **No animation/timeline scrubber** — a slider that lets you "scrub through time" and see pins appear/disappear chronologically would be the killer feature for a history map.
-- **No search** — can't search for a specific event on the map. A search bar that highlights/centers the matching pin would be useful.
-- **Missing South America/Oceania detail** — the Americas path is one giant blob. Events in South America or Australia would benefit from more granular continent outlines.
+### P3 — Meaningful features
+- **Event connection arcs** — draw faint curved lines between related events on the map. Data already exists in `EVENT_CONNECTIONS`. Togglable via a button or auto-shown when a connected pin is selected.
+- **Pin labels on zoom** — when zoomed >2×, show event title text next to pins for identification without tapping.
+- **Animated pin entrance** — pins pop in with staggered animation when the map loads or filters change. Makes the map feel alive.
+- **Cluster drill-down** — tapping a cluster auto-zooms to that area so individual pins spread out, instead of the current flat list popup.
 
-### Technical
-- **Projection accuracy** — equirectangular projection distorts high latitudes significantly. For a learning app this is fine, but Mercator or Natural Earth projection would look more familiar.
-- **Cluster grid size is fixed** — `CLUSTER_GRID = 25` works for the full map but if zoom is added, clusters should re-compute at different zoom levels.
+### P4 — Ambitious features
+- **Timeline scrubber** — a slider along the bottom that scrubs through time; pins appear/disappear chronologically. The killer feature for a history map.
+- **Era coloring mode** — toggle to color pins by era (Prehistory/Ancient/Medieval/Early Modern/Modern) instead of category. Gives a temporal view of geographic spread.
+- **Search on map** — search bar that filters, highlights, and auto-scrolls to the matching pin.
+
+### P5 — Polish
+- **Region labels fade near pins** — the static continent name labels can overlap event pins. Fade them when pins are nearby or when zoomed in.
+- **Dynamic cluster recalculation** — `CLUSTER_GRID = 25` is fixed. Clusters should re-compute at different zoom levels so pins spread as you zoom in.
+- **Mini-map in fullscreen** — small overview rectangle showing which portion of the world map is currently in the viewport.
 
 ## P5 — Themed collections (remaining)
 
@@ -67,3 +73,8 @@ Add more events per era, deeper non-Western history coverage, and new lessons be
 - **P4 — Level 2 Chapter: Empires Rise & Fall** (2026-03-03): 4-lesson chapter with 9 new events (f88–f96) tracing empires from Persia to decolonization. Achaemenid Persia, Maurya & Ashoka, Han Dynasty, Gupta Golden Age, Ottoman Empire, Ming Dynasty, Mughal Empire, British Empire, Fall of the Ottomans. Reuses f15 (Alexander), f18 (Pax Romana), f56 (Decolonization). Purple theme, temple columns icon. Strong non-Western coverage.
 - **P4 — Level 2 Chapter: Plagues & Pandemics** (2026-03-03): 4-lesson chapter with 10 new events (f97–f106) tracing disease from ancient Rome to COVID-19. Antonine Plague, Smallpox & Aztecs, Great Plague of London, Jenner & vaccination, cholera & epidemiology, Spanish Flu, penicillin, smallpox eradication, HIV/AIDS, COVID-19 & mRNA. Reuses f22 (Plague of Justinian) and f30 (Black Death). Dark crimson theme, skull icon.
 - **P4 — Dark mode** (2026-03-03): Full dark theme via `html[data-theme="dark"]` CSS variable overrides. Warm dark palette (parchment #1A1816, card #23201D, ink #E8E4DF). 3-mode toggle in Settings (Light/Dark/Auto) with system `prefers-color-scheme` support. Added `--color-ink-rgb`/`--color-parchment-rgb` variables and replaced ~93 hardcoded rgba values across CSS and 11 JSX files. Meta theme-color updates dynamically.
+- **P2 — Map improvements batch 1** (2026-03-03): Pinch-to-zoom (up to 4x) and drag-to-pan, larger pins (6px/10px) with 18px hit areas and drop shadows, selected-pin pulse animation, distinct ocean color, graticule grid lines, collapsible category legend, event description in popup, full dark mode via CSS custom properties.
+- **P2 — Sub-region system** (2026-03-03): Expanded from 5 broad regions to 11 sub-regions (Europe, Middle East, North Africa, West Africa, East Africa, Southern Africa, South Asia, East Asia, North America, Central America, South America). All 126 events reclassified. Map chips filter by sub-region with continent SVG highlighting. Quiz distractors use sub-regions for smarter same-region options. Region labels updated across all UI (lesson cards, practice, quiz feedback).
+- **P3 — Map improvements batch 2** (2026-03-03): Cropped SVG viewBox from 800×450 to 800×370, removing empty Antarctica/southern ocean so northern hemisphere events fill more of the visible map. Added "Loca" region filter dropdown to Timeline filter bar — works in both list and map views, persisted to localStorage, syncs with map region chips.
+- **P3 — Map improvements batch 3** (2026-03-03): Fixed fullscreen map appearing as a tiny horizontal strip. Fullscreen now uses 280% oversized map in a scrollable container with auto-centering on Europe/Middle East. Simplified usePanZoom to use native scroll at base zoom and CSS transforms only when pinch-zoomed. Inline mode uses 200% width with 2:1 aspect ratio container.
+- **P2 — Map improvements batch 4: Natural Earth projection** (2026-03-03): Replaced equirectangular projection with Natural Earth I — continents now have familiar, properly-shaped proportions (Greenland, Scandinavia, northern regions no longer squished/distorted). SVG paths regenerated from world-atlas 110m data via d3-geo with `geoNaturalEarth1()`. ViewBox updated to 800×500. `projectToSVG()` reimplemented using Natural Earth I polynomial coefficients (scale 143.3071, translate [400, 250]). Close button moved from lost-above-map to sticky translucent overlay. Graticule lines rendered as projected polylines matching the curved projection. All REGION_CENTERS recalculated for new projection. Generation script at `scripts/generate-map-paths.mjs`.

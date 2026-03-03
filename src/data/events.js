@@ -10,7 +10,7 @@ const CORE_EVENTS = [
         keywords: "Bipedalism · Primates · Divergence",
         description: "The foundational moment when the human lineage branched away from the common ancestor we shared with chimpanzees. This began a millions-year journey of early ancestors slowly developing upright walking and smaller canine teeth.",
         quizDescription: "Humans diverged from our shared ancestor with chimpanzees.",
-        location: { lat: 1.5, lng: 36.8, region: "Africa", place: "Rift Valley, Africa" },
+        location: { lat: 1.5, lng: 36.8, region: "East Africa", place: "Rift Valley, Africa" },
         category: "science",
         difficulty: 1,
         controversyNotes: {
@@ -26,7 +26,7 @@ const CORE_EVENTS = [
         keywords: "Fire control · Brain growth · Nutrition",
         description: "Early humans stopped running from fire and started preserving it from natural strikes like lightning. Cooking acted as a 'pre-digestion' step, making it easier to absorb calories — allowing brains to grow and guts to shrink.",
         quizDescription: "Controlled fire and cooking let brains grow and guts shrink.",
-        location: { lat: 0, lng: 25, region: "Africa", place: "Africa and Eurasia" },
+        location: { lat: 0, lng: 25, region: "East Africa", place: "Africa and Eurasia" },
         category: "science",
         difficulty: 1,
         controversyNotes: {
@@ -41,7 +41,7 @@ const CORE_EVENTS = [
         keywords: "Flint tools · Fire-making · Adaptation",
         description: "The biological birth of our species and the technological leap from keeping fire to making it at will using tools like flint. This 'portable technology' allowed survival in any climate.",
         quizDescription: "Homo sapiens emerged in Africa, mastering fire creation.",
-        location: { lat: 5, lng: 30, region: "Africa", place: "Africa" },
+        location: { lat: 5, lng: 30, region: "East Africa", place: "Africa" },
         category: "science",
         difficulty: 1,
         controversyNotes: {
@@ -57,7 +57,7 @@ const CORE_EVENTS = [
         keywords: "Language · Abstract thought · Symbolic culture",
         description: "The 'Software Update' for humanity. Complex language and abstract thought allowed cooperation in much larger groups than any other species, enabling art, music, and symbolic culture.",
         quizDescription: "Complex language enabled large-scale cooperation and art.",
-        location: { lat: 9.6, lng: 40.5, region: "Africa", place: "Herto, Ethiopia" },
+        location: { lat: 9.6, lng: 40.5, region: "East Africa", place: "Herto, Ethiopia" },
         category: "culture",
         difficulty: 2,
         controversyNotes: {
@@ -73,7 +73,7 @@ const CORE_EVENTS = [
         keywords: "Bering Land Bridge · Hominid extinction · Global dispersal",
         description: "Small groups left Africa via the Arabian Peninsula, eventually crossing the Bering Land Bridge into the Americas. This led to the extinction of other hominid species and development of distinct cultures worldwide.",
         quizDescription: "Humans left Africa and spread across every continent.",
-        location: { lat: 15, lng: 45, region: "Middle East", place: "Global (from East Africa)" },
+        location: { lat: 15, lng: 45, region: "East Africa", place: "Global (from East Africa)" },
         category: "science",
         difficulty: 2
     },
@@ -114,7 +114,7 @@ const CORE_EVENTS = [
         keywords: "Pharaoh · Pyramids · Centralized state",
         description: "Upper and Lower Egypt merged under a single divine 'God-King' ruler and centralized bureaucracy capable of massive projects like the Pyramids, creating a state stable for nearly 3,000 years.",
         quizDescription: "Upper and Lower Egypt merged under a divine ruler.",
-        location: { lat: 26, lng: 31.5, region: "Africa", place: "Nile River Valley, Egypt" },
+        location: { lat: 26, lng: 31.5, region: "North Africa", place: "Nile River Valley, Egypt" },
         category: "politics",
         difficulty: 1
     },
@@ -195,7 +195,7 @@ const CORE_EVENTS = [
         keywords: "Universal ethics · Philosophy · Parallel emergence",
         description: "A global intellectual shift toward universal ethical systems and logic. It simultaneously produced the foundations of Greek rationalism, Buddhism, and Confucianism across different civilizations.",
         quizDescription: "Greek rationalism, Buddhism, and Confucianism emerged.",
-        location: { lat: 30, lng: 60, region: "Asia", place: "India, China, and Greece" },
+        location: { lat: 30, lng: 60, region: "South Asia", place: "India, China, and Greece" },
         category: "culture",
         difficulty: 2,
         controversyNotes: {
@@ -223,7 +223,7 @@ const CORE_EVENTS = [
         keywords: "Warring States · Standardization · National identity",
         description: "The end of the 'Warring States' period through brutal military expansion. By standardizing script and currency, the Qin created a cohesive 'Chinese' identity.",
         quizDescription: "Brutal conquest unified China under one script and currency.",
-        location: { lat: 34.3, lng: 108.9, region: "Asia", place: "China" },
+        location: { lat: 34.3, lng: 108.9, region: "East Asia", place: "China" },
         category: "politics",
         difficulty: 2
     },
@@ -317,7 +317,7 @@ const CORE_EVENTS = [
         keywords: "Hieroglyphs · Zero · Astronomical calendars",
         description: "While Europe entered the Middle Ages, the Maya reached their intellectual peak — developing hieroglyphic writing, the concept of zero, and incredibly accurate astronomical calendars.",
         quizDescription: "The Maya developed writing, zero, and precise calendars.",
-        location: { lat: 17, lng: -90, region: "Americas", place: "Mesoamerica (Mexico, Guatemala, Belize)" },
+        location: { lat: 17, lng: -90, region: "Central America", place: "Mesoamerica (Mexico, Guatemala, Belize)" },
         category: "culture",
         difficulty: 2
     },
@@ -343,7 +343,7 @@ const CORE_EVENTS = [
         keywords: "Trade routes · Buddhism · Cross-cultural exchange",
         description: "China's 'Golden Age' revitalized the Silk Road — not just for goods but as a 'highway of ideas' spreading Buddhism eastward and Middle Eastern inventions across Asia.",
         quizDescription: "China's Golden Age revitalized the Silk Road trade.",
-        location: { lat: 34.3, lng: 108.9, region: "Asia", place: "China and Central Asia" },
+        location: { lat: 34.3, lng: 108.9, region: "East Asia", place: "China and Central Asia" },
         category: "culture",
         difficulty: 2
     },
@@ -395,7 +395,7 @@ const CORE_EVENTS = [
         keywords: "Silk Road superhighway · Gunpowder transfer · Plague vectors",
         description: "Genghis Khan created the largest contiguous land empire. The Pax Mongolica turned the Silk Road into a 'superhighway' for trade, moving gunpowder and paper from China westward — but also plague-carrying rodents.",
         quizDescription: "Genghis Khan built the largest contiguous land empire.",
-        location: { lat: 47.9, lng: 106.9, region: "Asia", place: "Eurasia (China to Eastern Europe)" },
+        location: { lat: 47.9, lng: 106.9, region: "East Asia", place: "Eurasia (China to Eastern Europe)" },
         category: "war",
         difficulty: 1
     },
@@ -447,7 +447,7 @@ const CORE_EVENTS = [
         keywords: "Columbian Exchange · Indigenous devastation · Transatlantic contact",
         description: "Columbus landed in the Caribbean while searching for Asia, beginning the Columbian Exchange — a massive transfer of plants, animals, and diseases that devastated Indigenous populations.",
         quizDescription: "Columbus landed in the Caribbean while seeking Asia.",
-        location: { lat: 24, lng: -75, region: "Americas", place: "The Caribbean" },
+        location: { lat: 24, lng: -75, region: "Central America", place: "The Caribbean" },
         category: "war",
         difficulty: 1,
         controversyNotes: {
@@ -534,7 +534,7 @@ const CORE_EVENTS = [
         keywords: "Forced migration · Plantation economy · Racial hierarchy",
         description: "The forced migration of millions of Africans to work on American plantations became the backbone of a new global economy, generating enormous wealth for European empires and creating deep racial hierarchies.",
         quizDescription: "Millions of Africans were forcibly transported to the Americas.",
-        location: { lat: 10, lng: -30, region: "Africa", place: "Atlantic, Africa, Americas" },
+        location: { lat: 10, lng: -30, region: "West Africa", place: "Atlantic, Africa, Americas" },
         category: "politics",
         difficulty: 2,
         controversyNotes: {
@@ -575,7 +575,7 @@ const CORE_EVENTS = [
         keywords: "Declaration of Independence · Enlightenment in practice · Written constitution",
         description: "13 British colonies won independence, forming the United States. The Declaration of Independence (July 4, 1776) was the first large-scale implementation of Enlightenment ideals into a written constitution.",
         quizDescription: "Thirteen colonies won independence from Britain.",
-        location: { lat: 39, lng: -77, region: "Americas", place: "North America" },
+        location: { lat: 39, lng: -77, region: "North America", place: "North America" },
         category: "revolution",
         difficulty: 1
     },
@@ -658,7 +658,7 @@ const CORE_EVENTS = [
         keywords: "Emancipation · British trade ban · Brazil last to abolish",
         description: "A century-long movement saw major powers ban the slave trade and then slavery itself. British trade ban 1807, Abolition Act 1833, US Emancipation 1865, Brazil last in 1888.",
         quizDescription: "A century-long movement ended slavery across the Atlantic.",
-        location: { lat: 20, lng: -30, region: "Americas", place: "Atlantic World" },
+        location: { lat: 20, lng: -30, region: "North America", place: "Atlantic World" },
         category: "politics",
         difficulty: 2
     },
@@ -708,7 +708,7 @@ const CORE_EVENTS = [
         keywords: "Stock market crash · Safety nets · Rise of totalitarianism",
         description: "The most severe economic downturn in modern history, triggered by the US Stock Market Crash. It forced nations to adopt social safety nets and fueled the rise of totalitarian regimes.",
         quizDescription: "The worst modern economic crisis fueled totalitarian regimes.",
-        location: { lat: 40.7, lng: -74, region: "Americas", place: "Global (started in US)" },
+        location: { lat: 40.7, lng: -74, region: "North America", place: "Global (started in US)" },
         category: "politics",
         difficulty: 1
     },
@@ -732,7 +732,7 @@ const CORE_EVENTS = [
         keywords: "Human rights · Collective security · Replacing the League",
         description: "Established after WWII to replace the failed League of Nations, with a stronger mandate for international peace. It created the framework for modern International Human Rights Law.",
         quizDescription: "Created after WWII to maintain international peace.",
-        location: { lat: 37.8, lng: -122.4, region: "Americas", place: "San Francisco / New York" },
+        location: { lat: 37.8, lng: -122.4, region: "North America", place: "San Francisco / New York" },
         category: "politics",
         difficulty: 2
     },
@@ -758,7 +758,7 @@ const CORE_EVENTS = [
         keywords: "Self-determination · Global South · Sovereign states tripled",
         description: "Dozens of nations in Africa, Asia, and the Middle East gained independence from European rule, increasing sovereign states from ~50 to nearly 200 and shifting global politics toward the 'Global South.'",
         quizDescription: "Dozens of nations gained independence from European empires.",
-        location: { lat: 0, lng: 20, region: "Africa", place: "Africa, Asia, Oceania" },
+        location: { lat: 0, lng: 20, region: "East Africa", place: "Africa, Asia, Oceania" },
         category: "politics",
         difficulty: 2
     },
@@ -771,7 +771,7 @@ const CORE_EVENTS = [
         keywords: "Sputnik · Apollo 11 · Overview Effect",
         description: "From Sputnik (1957) to Apollo 11's Moon landing (July 20, 1969). The competition proved humanity could achieve extraterrestrial travel and fostered the 'Overview Effect.'",
         quizDescription: "Cold War competition drove humanity from Sputnik to the Moon.",
-        location: { lat: 28.6, lng: -80.6, region: "Americas", place: "US and USSR" },
+        location: { lat: 28.6, lng: -80.6, region: "North America", place: "US and USSR" },
         category: "science",
         difficulty: 1
     },
@@ -784,7 +784,7 @@ const CORE_EVENTS = [
         keywords: "ARPANET · Decentralized knowledge · Data-driven world",
         description: "From ARPANET to the public World Wide Web. The most significant communication shift since the printing press — decentralizing knowledge and creating the data-driven world.",
         quizDescription: "From ARPANET to the World Wide Web, connecting billions.",
-        location: { lat: 37.4, lng: -122.2, region: "Americas", place: "Global (started in US)" },
+        location: { lat: 37.4, lng: -122.2, region: "North America", place: "Global (started in US)" },
         category: "science",
         difficulty: 1
     },
@@ -837,7 +837,7 @@ const CORE_EVENTS = [
         keywords: "Slave revolt \u00B7 Toussaint Louverture \u00B7 First Black republic",
         description: "The only successful large-scale slave revolt in history. Enslaved Africans in the French colony of Saint-Domingue overthrew their masters, defeated Napoleon\u2019s expeditionary army, and established Haiti \u2014 the first free Black republic and the second independent nation in the Western Hemisphere after the United States.",
         quizDescription: "Enslaved people overthrew French colonial rule in Haiti.",
-        location: { lat: 19.0, lng: -72.0, region: "Americas", place: "Saint-Domingue (Haiti)" },
+        location: { lat: 19.0, lng: -72.0, region: "Central America", place: "Saint-Domingue (Haiti)" },
         category: "revolution",
         difficulty: 2
     },
@@ -850,7 +850,7 @@ const CORE_EVENTS = [
         keywords: "Bol\u00EDvar \u00B7 San Mart\u00EDn \u00B7 Colonial liberation",
         description: "Inspired by the American and French Revolutions and triggered by Napoleon\u2019s invasion of Spain, liberation movements led by Sim\u00F3n Bol\u00EDvar, Jos\u00E9 de San Mart\u00EDn, and others freed most of Central and South America from Spanish and Portuguese colonial rule within a single generation.",
         quizDescription: "Bol\u00EDvar and San Mart\u00EDn freed Latin America from colonial rule.",
-        location: { lat: -15, lng: -60, region: "Americas", place: "South America" },
+        location: { lat: -15, lng: -60, region: "South America", place: "South America" },
         category: "revolution",
         difficulty: 2
     },
@@ -876,7 +876,7 @@ const CORE_EVENTS = [
         keywords: "Mao Zedong \u00B7 Long March \u00B7 People\u2019s Republic",
         description: "A decades-long struggle between Mao Zedong\u2019s Communist Party and Chiang Kai-shek\u2019s Nationalists, interrupted by the Japanese invasion. Mao\u2019s victory in 1949 established the People\u2019s Republic of China, bringing a quarter of humanity under communist rule and reshaping the global balance of power.",
         quizDescription: "Mao\u2019s Communists defeated the Nationalists after decades of civil war.",
-        location: { lat: 39.9, lng: 116.4, region: "Asia", place: "China (Beijing)" },
+        location: { lat: 39.9, lng: 116.4, region: "East Asia", place: "China (Beijing)" },
         category: "revolution",
         difficulty: 2
     },
@@ -902,7 +902,7 @@ const CORE_EVENTS = [
         keywords: "Social media \u00B7 Pro-democracy \u00B7 Regime change",
         description: "A wave of anti-authoritarian protests swept across the Arab world, sparked by a street vendor\u2019s self-immolation in Tunisia. Social media amplified dissent at unprecedented speed. Some regimes fell (Tunisia, Egypt, Libya), while others descended into devastating civil wars (Syria, Yemen), reshaping the region.",
         quizDescription: "Pro-democracy protests swept the Arab world, amplified by social media.",
-        location: { lat: 34.0, lng: 9.0, region: "Africa", place: "Tunisia (spreading region-wide)" },
+        location: { lat: 34.0, lng: 9.0, region: "North Africa", place: "Tunisia (spreading region-wide)" },
         category: "revolution",
         difficulty: 2
     },
@@ -956,7 +956,7 @@ const CORE_EVENTS = [
         keywords: "Vacuum tubes \u00B7 Electronic computation \u00B7 Military origins",
         description: "ENIAC (Electronic Numerical Integrator and Computer), built at the University of Pennsylvania, was the first general-purpose electronic computer. Filling an entire room with 18,000 vacuum tubes, it could perform calculations thousands of times faster than any human \u2014 a military tool that proved electronic computing was possible.",
         quizDescription: "ENIAC proved electronic computing was possible with 18,000 vacuum tubes.",
-        location: { lat: 39.95, lng: -75.19, region: "Americas", place: "Philadelphia, Pennsylvania" },
+        location: { lat: 39.95, lng: -75.19, region: "North America", place: "Philadelphia, Pennsylvania" },
         category: "science",
         difficulty: 1,
         controversyNotes: {
@@ -972,7 +972,7 @@ const CORE_EVENTS = [
         keywords: "Semiconductor \u00B7 Miniaturization \u00B7 Silicon chip",
         description: "Bell Labs invented the transistor in 1947, replacing fragile vacuum tubes with tiny, reliable switches. Jack Kilby and Robert Noyce then independently created the integrated circuit in 1958, cramming multiple transistors onto a single chip. This launched the relentless miniaturization that would make computers millions of times more powerful within decades.",
         quizDescription: "The transistor and integrated circuit launched relentless computing miniaturization.",
-        location: { lat: 40.68, lng: -74.4, region: "Americas", place: "Murray Hill, New Jersey" },
+        location: { lat: 40.68, lng: -74.4, region: "North America", place: "Murray Hill, New Jersey" },
         category: "science",
         difficulty: 2
     },
@@ -984,7 +984,7 @@ const CORE_EVENTS = [
         keywords: "John McCarthy \u00B7 Artificial intelligence coined \u00B7 Symbolic reasoning",
         description: "A small summer workshop at Dartmouth College, organized by John McCarthy, Marvin Minsky, and others, coined the term \u2018artificial intelligence\u2019 and set the field\u2019s ambitious agenda: to make machines that could reason, learn, and use language. The optimism was enormous \u2014 researchers predicted human-level AI within a generation.",
         quizDescription: "A 1956 workshop coined \u2018artificial intelligence\u2019 and launched the field.",
-        location: { lat: 43.7, lng: -72.29, region: "Americas", place: "Hanover, New Hampshire" },
+        location: { lat: 43.7, lng: -72.29, region: "North America", place: "Hanover, New Hampshire" },
         category: "science",
         difficulty: 1
     },
@@ -997,7 +997,7 @@ const CORE_EVENTS = [
         keywords: "Lighthill Report \u00B7 Hype cycle \u00B7 Funding collapse",
         description: "After initial hype, AI hit two brutal \u2018winters.\u2019 The first (1974\u20131980) came when early AI failed to handle real-world complexity. A brief revival through rule-based \u2018expert systems\u2019 in the 1980s ended in a second winter (1987\u20131993) when those systems proved brittle and expensive. Each time, funding and confidence collapsed.",
         quizDescription: "Overpromising led to two brutal AI funding collapses.",
-        location: { lat: 38.9, lng: -77.04, region: "Americas", place: "Global (US, UK, Japan)" },
+        location: { lat: 38.9, lng: -77.04, region: "North America", place: "Global (US, UK, Japan)" },
         category: "science",
         difficulty: 2
     },
@@ -1009,7 +1009,7 @@ const CORE_EVENTS = [
         keywords: "IBM \u00B7 Chess \u00B7 Brute-force search",
         description: "IBM\u2019s Deep Blue supercomputer defeated reigning world chess champion Garry Kasparov in a six-game match \u2014 the first time a machine beat a world champion under standard rules. Though it relied on brute-force calculation rather than true \u2018understanding,\u2019 it was a watershed moment that showed machines could outperform humans in complex intellectual tasks.",
         quizDescription: "IBM\u2019s Deep Blue beat the world chess champion.",
-        location: { lat: 40.76, lng: -73.97, region: "Americas", place: "New York City, USA" },
+        location: { lat: 40.76, lng: -73.97, region: "North America", place: "New York City, USA" },
         category: "science",
         difficulty: 1
     },
@@ -1021,7 +1021,7 @@ const CORE_EVENTS = [
         keywords: "AlexNet \u00B7 Neural networks \u00B7 GPU training",
         description: "A neural network called AlexNet, trained on GPUs, crushed the competition in the ImageNet image recognition challenge, reducing error rates dramatically. This proved that deep neural networks \u2014 loosely inspired by the brain \u2014 could learn patterns from massive data, reigniting AI research and investment after decades of skepticism.",
         quizDescription: "AlexNet proved deep neural networks could learn from massive data.",
-        location: { lat: 43.47, lng: -80.52, region: "Americas", place: "Toronto, Canada" },
+        location: { lat: 43.47, lng: -80.52, region: "North America", place: "Toronto, Canada" },
         category: "science",
         difficulty: 2
     },
@@ -1034,7 +1034,7 @@ const CORE_EVENTS = [
         keywords: "Transformer \u00B7 GPT \u00B7 ChatGPT \u00B7 Generative AI",
         description: "Google\u2019s 2017 \u2018Attention Is All You Need\u2019 paper introduced the Transformer architecture, enabling models to process language with unprecedented power. This led to GPT, BERT, and eventually ChatGPT (2022), which stunned the world by holding coherent conversations, writing code, and passing professional exams \u2014 making AI a daily reality for billions.",
         quizDescription: "Transformers and ChatGPT made AI a daily reality for billions.",
-        location: { lat: 37.4, lng: -122.1, region: "Americas", place: "San Francisco Bay Area, USA" },
+        location: { lat: 37.4, lng: -122.1, region: "North America", place: "San Francisco Bay Area, USA" },
         category: "science",
         difficulty: 2
     },
@@ -1062,7 +1062,7 @@ const CORE_EVENTS = [
         keywords: "Harriet Tubman \u00B7 Escaped slaves \u00B7 Abolition",
         description: "A secret network of safe houses and brave guides helped thousands of enslaved people escape to freedom in the northern US and Canada. Frederick Douglass, who escaped slavery himself, became the movement\u2019s most powerful voice \u2014 his autobiography and speeches shattered white assumptions about Black intellect and made abolition impossible to ignore.",
         quizDescription: "Secret networks and Douglass\u2019s voice helped enslaved people escape and galvanized abolition.",
-        location: { lat: 39.3, lng: -76.6, region: "Americas", place: "Eastern United States" },
+        location: { lat: 39.3, lng: -76.6, region: "North America", place: "Eastern United States" },
         category: "politics",
         difficulty: 2
     },
@@ -1075,7 +1075,7 @@ const CORE_EVENTS = [
         keywords: "Women\u2019s suffrage \u00B7 Seneca Falls \u00B7 Emmeline Pankhurst",
         description: "The Seneca Falls Convention (1848) launched the organized fight for women\u2019s right to vote. In Britain, the Suffragettes used hunger strikes, protests, and civil disobedience. New Zealand became the first country to grant women\u2019s suffrage in 1893; the US followed in 1920. The movement proved that rights considered \u2018natural\u2019 had to be fought for by those excluded.",
         quizDescription: "Decades of protest won women the right to vote, starting with New Zealand in 1893.",
-        location: { lat: 42.9, lng: -76.8, region: "Americas", place: "Seneca Falls, New York / London" },
+        location: { lat: 42.9, lng: -76.8, region: "North America", place: "Seneca Falls, New York / London" },
         category: "politics",
         difficulty: 2
     },
@@ -1088,7 +1088,7 @@ const CORE_EVENTS = [
         keywords: "Non-violence \u00B7 Salt March \u00B7 Partition",
         description: "Mahatma Gandhi\u2019s strategy of non-violent resistance \u2014 mass boycotts, civil disobedience, and the iconic Salt March (1930) \u2014 united millions against British colonial rule. India gained independence in 1947, though at the terrible cost of Partition, which split the subcontinent into India and Pakistan and caused over a million deaths.",
         quizDescription: "Gandhi\u2019s non-violent resistance won India\u2019s independence from Britain.",
-        location: { lat: 28.6, lng: 77.2, region: "Asia", place: "India (subcontinent-wide)" },
+        location: { lat: 28.6, lng: 77.2, region: "South Asia", place: "India (subcontinent-wide)" },
         category: "politics",
         difficulty: 1
     },
@@ -1101,7 +1101,7 @@ const CORE_EVENTS = [
         keywords: "Martin Luther King Jr. \u00B7 Segregation \u00B7 Nonviolent protest",
         description: "From the Supreme Court\u2019s Brown v. Board ruling (1954) to the Civil Rights Act (1964) and the assassination of Martin Luther King Jr. (1968). Through sit-ins, marches, and Freedom Rides, Black Americans and their allies dismantled legal segregation \u2014 proving that Gandhi\u2019s non-violent methods could transform even the most entrenched racial hierarchy.",
         quizDescription: "Sit-ins, marches, and legislation dismantled legal segregation in America.",
-        location: { lat: 33.5, lng: -86.8, region: "Americas", place: "Southern United States" },
+        location: { lat: 33.5, lng: -86.8, region: "North America", place: "Southern United States" },
         category: "politics",
         difficulty: 1
     },
@@ -1114,7 +1114,7 @@ const CORE_EVENTS = [
         keywords: "Racial segregation \u00B7 Robben Island \u00B7 Rainbow Nation",
         description: "South Africa\u2019s apartheid system enforced racial segregation with brutal efficiency for nearly five decades. Nelson Mandela spent 27 years in prison \u2014 18 of them on Robben Island \u2014 before his release in 1990. International sanctions, internal resistance, and Mandela\u2019s extraordinary capacity for reconciliation led to the first free elections in 1994 and the birth of the \u2018Rainbow Nation.\u2019",
         quizDescription: "Mandela\u2019s 27-year imprisonment and reconciliation ended apartheid in South Africa.",
-        location: { lat: -33.9, lng: 18.4, region: "Africa", place: "South Africa" },
+        location: { lat: -33.9, lng: 18.4, region: "Southern Africa", place: "South Africa" },
         category: "politics",
         difficulty: 2
     },
@@ -1126,7 +1126,7 @@ const CORE_EVENTS = [
         keywords: "Gay liberation \u00B7 Pride \u00B7 Marsha P. Johnson",
         description: "On June 28, 1969, patrons of the Stonewall Inn in New York City fought back against a police raid, sparking days of protests. The uprising \u2014 in which figures like Marsha P. Johnson and Storm\u00e9 DeLarverie played key roles \u2014 launched the modern LGBTQ+ rights movement. Within a year, the first Pride marches were held. It proved that civil rights logic could expand to include sexual and gender identity.",
         quizDescription: "The Stonewall uprising launched the modern LGBTQ+ rights movement.",
-        location: { lat: 40.73, lng: -74.0, region: "Americas", place: "New York City, USA" },
+        location: { lat: 40.73, lng: -74.0, region: "North America", place: "New York City, USA" },
         category: "politics",
         difficulty: 2
     },
@@ -1138,7 +1138,7 @@ const CORE_EVENTS = [
         keywords: "Pro-democracy \u00B7 Tank Man \u00B7 Censorship",
         description: "In the spring of 1989, over a million Chinese students and workers occupied Beijing\u2019s Tiananmen Square demanding democratic reforms. On June 4, the government sent in tanks and troops, killing hundreds to thousands. The iconic \u2018Tank Man\u2019 image became a global symbol of individual courage against authoritarian power \u2014 and of the limits of peaceful protest when a state chooses violence.",
         quizDescription: "Pro-democracy protests in Beijing were crushed by the military on June 4, 1989.",
-        location: { lat: 39.9, lng: 116.4, region: "Asia", place: "Beijing, China" },
+        location: { lat: 39.9, lng: 116.4, region: "East Asia", place: "Beijing, China" },
         category: "politics",
         difficulty: 1
     },
@@ -1150,7 +1150,7 @@ const CORE_EVENTS = [
         keywords: "Hutu \u00B7 Tutsi \u00B7 International failure",
         description: "In just 100 days, Hutu extremists murdered approximately 800,000 Tutsi and moderate Hutu in Rwanda \u2014 while the world watched and did nothing. Colonial Belgium had deepened ethnic divisions; post-colonial politics weaponized them. The genocide exposed the hollow promise of \u2018Never Again\u2019 and led to the doctrine of \u2018Responsibility to Protect,\u2019 reshaping how the world thinks about intervention.",
         quizDescription: "800,000 were murdered in 100 days while the world failed to intervene.",
-        location: { lat: -1.9, lng: 29.9, region: "Africa", place: "Rwanda" },
+        location: { lat: -1.9, lng: 29.9, region: "East Africa", place: "Rwanda" },
         category: "war",
         difficulty: 2
     },
@@ -1163,7 +1163,7 @@ const CORE_EVENTS = [
         keywords: "Hashtag movements \u00B7 #MeToo \u00B7 Black Lives Matter",
         description: "Social media transformed protest. The Arab Spring (2011), #MeToo (2017), Black Lives Matter, and climate strikes all used hashtags, livestreams, and viral videos to organize millions across borders in days. Digital tools democratized activism \u2014 anyone with a phone could document injustice and rally support \u2014 but also exposed new vulnerabilities: surveillance, misinformation, and algorithmic suppression.",
         quizDescription: "Social media transformed protest with #MeToo, BLM, and climate strikes.",
-        location: { lat: 38.9, lng: -77.0, region: "Americas", place: "Global (US-centered online)" },
+        location: { lat: 38.9, lng: -77.0, region: "North America", place: "Global (US-centered online)" },
         category: "politics",
         difficulty: 2
     },
@@ -1191,7 +1191,7 @@ const CORE_EVENTS = [
         keywords: "Ashoka \u00B7 Non-violence \u00B7 Indian unification",
         description: "Chandragupta Maurya unified most of the Indian subcontinent for the first time. His grandson Ashoka, horrified by the carnage of his own conquest of Kalinga, renounced violence and embraced Buddhism. He erected stone pillars proclaiming religious tolerance and compassion \u2014 making the Maurya Empire the first state to be governed by an explicit moral philosophy.",
         quizDescription: "Ashoka renounced violence and governed India by Buddhist moral philosophy.",
-        location: { lat: 25.6, lng: 85.1, region: "Asia", place: "Pataliputra, India" },
+        location: { lat: 25.6, lng: 85.1, region: "South Asia", place: "Pataliputra, India" },
         category: "politics",
         difficulty: 2
     },
@@ -1204,7 +1204,7 @@ const CORE_EVENTS = [
         keywords: "Silk Road \u00B7 Civil service \u00B7 Paper invention",
         description: "The Han Dynasty consolidated China\u2019s vast territory, established a Confucian-based civil service, and opened the Silk Road, linking East Asia to Rome for the first time. They invented paper, advanced iron-casting, and created a bureaucratic model so successful that \u2018Han\u2019 remains the ethnic identity of China\u2019s majority population today.",
         quizDescription: "The Han opened the Silk Road and built a civil service model that endures today.",
-        location: { lat: 34.3, lng: 108.9, region: "Asia", place: "Chang\u2019an (Xi\u2019an), China" },
+        location: { lat: 34.3, lng: 108.9, region: "East Asia", place: "Chang\u2019an (Xi\u2019an), China" },
         category: "politics",
         difficulty: 2
     },
@@ -1217,7 +1217,7 @@ const CORE_EVENTS = [
         keywords: "Zero \u00B7 Sanskrit literature \u00B7 Hindu renaissance",
         description: "Under the Gupta Dynasty, India experienced a flowering of art, science, and philosophy. Mathematicians invented the concept of zero and the decimal system that the world uses today. Kalidasa wrote masterpieces of Sanskrit literature, and Hindu temple architecture reached new heights \u2014 making this era India\u2019s classical golden age.",
         quizDescription: "Gupta India invented zero, the decimal system, and experienced a cultural golden age.",
-        location: { lat: 25.3, lng: 83.0, region: "Asia", place: "Northern India" },
+        location: { lat: 25.3, lng: 83.0, region: "South Asia", place: "Northern India" },
         category: "culture",
         difficulty: 2
     },
@@ -1243,7 +1243,7 @@ const CORE_EVENTS = [
         keywords: "Zheng He \u00B7 Forbidden City \u00B7 Great Wall rebuilt",
         description: "After driving out the Mongols, the Ming Dynasty rebuilt China into the world\u2019s most advanced civilization. Admiral Zheng He commanded enormous treasure fleets that reached Africa decades before Columbus crossed the Atlantic. But China then turned inward, dismantling its fleet \u2014 one of history\u2019s great \u2018what ifs\u2019 that left the Age of Exploration to Europe.",
         quizDescription: "Ming China sent treasure fleets to Africa, then turned inward \u2014 leaving exploration to Europe.",
-        location: { lat: 39.9, lng: 116.4, region: "Asia", place: "Beijing, China" },
+        location: { lat: 39.9, lng: 116.4, region: "East Asia", place: "Beijing, China" },
         category: "politics",
         difficulty: 2
     },
@@ -1282,7 +1282,7 @@ const CORE_EVENTS = [
         keywords: "Taj Mahal \u00B7 Akbar\u2019s tolerance \u00B7 Hindu-Muslim synthesis",
         description: "Babur, a descendant of both Genghis Khan and Timur, conquered northern India and founded the Mughal Dynasty. Emperor Akbar created a remarkably tolerant multi-religious state. The Mughals built the Taj Mahal and blended Persian, Indian, and Islamic cultures \u2014 but internal decline and British exploitation eventually ended the dynasty during the 1857 revolt.",
         quizDescription: "The Mughals built the Taj Mahal and blended Persian, Indian, and Islamic cultures.",
-        location: { lat: 27.2, lng: 78.0, region: "Asia", place: "Agra / Delhi, India" },
+        location: { lat: 27.2, lng: 78.0, region: "South Asia", place: "Agra / Delhi, India" },
         category: "culture",
         difficulty: 2
     },
@@ -1313,7 +1313,7 @@ const CORE_EVENTS = [
         keywords: "Cort\u00E9s \u00B7 Tenochtitl\u00E1n \u00B7 Biological warfare",
         description: "When Hern\u00E1n Cort\u00E9s arrived in Mexico with 500 soldiers, smallpox arrived with him. The disease \u2014 to which Indigenous peoples had no immunity \u2014 killed an estimated 5\u20138 million Aztecs, far more than any battle. The great city of Tenochtitl\u00E1n fell not to Spanish swords but to an invisible enemy, setting the pattern for colonial conquest across the Americas.",
         quizDescription: "Smallpox killed millions of Aztecs and destroyed their empire more than Spanish swords.",
-        location: { lat: 19.4, lng: -99.1, region: "Americas", place: "Tenochtitl\u00E1n (Mexico City)" },
+        location: { lat: 19.4, lng: -99.1, region: "Central America", place: "Tenochtitl\u00E1n (Mexico City)" },
         category: "science",
         difficulty: 2,
         controversyNotes: {
@@ -1366,7 +1366,7 @@ const CORE_EVENTS = [
         keywords: "H1N1 \u00B7 50 million dead \u00B7 Wartime censorship",
         description: "The deadliest pandemic in modern history infected a third of the world\u2019s population and killed an estimated 50\u2013100 million people \u2014 more than World War I itself. Wartime censorship suppressed news of the virus in combatant nations; neutral Spain reported freely, giving the pandemic its misleading name. It struck the young and healthy hardest, devastating an already war-ravaged generation.",
         quizDescription: "History\u2019s deadliest modern pandemic killed 50\u2013100 million people worldwide.",
-        location: { lat: 39.0, lng: -95.0, region: "Americas", place: "Global (named after Spain)" },
+        location: { lat: 39.0, lng: -95.0, region: "North America", place: "Global (named after Spain)" },
         category: "science",
         difficulty: 1,
         controversyNotes: {
@@ -1406,7 +1406,7 @@ const CORE_EVENTS = [
         keywords: "Stigma \u00B7 Antiretroviral therapy \u00B7 40 million dead",
         description: "First identified in 1981, HIV/AIDS became the defining plague of a generation, killing over 40 million people \u2014 disproportionately in sub-Saharan Africa. Early responses were crippled by stigma and political neglect. The development of antiretroviral therapy (1996) turned a death sentence into a manageable condition, but the pandemic exposed how inequality determines who lives and who dies.",
         quizDescription: "HIV/AIDS killed 40 million; stigma delayed the response for years.",
-        location: { lat: -1.3, lng: 36.8, region: "Africa", place: "Global (epicenter: sub-Saharan Africa)" },
+        location: { lat: -1.3, lng: 36.8, region: "East Africa", place: "Global (epicenter: sub-Saharan Africa)" },
         category: "science",
         difficulty: 2
     },
@@ -1419,7 +1419,7 @@ const CORE_EVENTS = [
         keywords: "SARS-CoV-2 \u00B7 Lockdowns \u00B7 Vaccine revolution",
         description: "A novel coronavirus emerged in Wuhan, China, and spread worldwide within weeks, killing over 7 million people and locking billions indoors. The crisis also produced a scientific miracle: mRNA vaccines were developed, tested, and deployed in under a year \u2014 a process that normally takes a decade. The pandemic reshaped work, education, and trust in institutions, and proved that ancient plagues still threaten modern civilization.",
         quizDescription: "COVID-19 killed millions; mRNA vaccines were developed in record time.",
-        location: { lat: 30.6, lng: 114.3, region: "Asia", place: "Wuhan, China (spreading globally)" },
+        location: { lat: 30.6, lng: 114.3, region: "East Asia", place: "Wuhan, China (spreading globally)" },
         category: "science",
         difficulty: 1
     },
@@ -1434,7 +1434,7 @@ const CORE_EVENTS = [
         keywords: "Nubia \u00B7 Iron smelting \u00B7 Pyramids of Mero\u00EB",
         description: "South of Egypt, the Kingdom of Kush built a civilization that rivaled its northern neighbor. Kush conquered Egypt itself in the 8th century BCE, ruling as the 25th Dynasty. Its later capital at Mero\u00EB became an iron-smelting powerhouse \u2014 one of the earliest in Africa \u2014 and built more pyramids than Egypt ever did. Kush proved that Africa\u2019s story did not begin and end with the pharaohs.",
         quizDescription: "Kush conquered Egypt and built more pyramids than the pharaohs.",
-        location: { lat: 16.9, lng: 33.7, region: "Africa", place: "Mero\u00EB, Sudan" },
+        location: { lat: 16.9, lng: 33.7, region: "East Africa", place: "Mero\u00EB, Sudan" },
         category: "politics",
         difficulty: 2
     },
@@ -1447,7 +1447,7 @@ const CORE_EVENTS = [
         keywords: "Aksum \u00B7 Obelisks \u00B7 Ezana \u00B7 Ark of the Covenant",
         description: "The Aksumite Empire in modern-day Ethiopia and Eritrea was one of the ancient world\u2019s great trading powers, minting its own coins and trading with Rome, India, and Arabia. In the 4th century, King Ezana converted to Christianity, making Aksum one of the first states to adopt the faith \u2014 decades before Rome made it official. The towering stone obelisks of Aksum still stand as monuments to African engineering.",
         quizDescription: "Aksum adopted Christianity before Rome and traded across three continents.",
-        location: { lat: 14.1, lng: 38.7, region: "Africa", place: "Aksum, Ethiopia" },
+        location: { lat: 14.1, lng: 38.7, region: "East Africa", place: "Aksum, Ethiopia" },
         category: "culture",
         difficulty: 2
     },
@@ -1460,7 +1460,7 @@ const CORE_EVENTS = [
         keywords: "Wagadu \u00B7 Gold \u00B7 Salt trade \u00B7 Koumbi Saleh",
         description: "The Ghana Empire (also called Wagadu) controlled the trans-Saharan gold-salt trade, taxing every ounce that crossed its territory. Arab geographers called its ruler \u2018the richest king on the face of the earth.\u2019 Ghana\u2019s capital at Koumbi Saleh was a cosmopolitan city where Muslim merchants and traditional African rulers coexisted. Its wealth and trade networks laid the foundation for the even greater empires that followed.",
         quizDescription: "Ghana controlled the gold-salt trade and was called the richest kingdom on earth.",
-        location: { lat: 15.8, lng: -7.9, region: "Africa", place: "Koumbi Saleh, Mauritania" },
+        location: { lat: 15.8, lng: -7.9, region: "West Africa", place: "Koumbi Saleh, Mauritania" },
         category: "politics",
         difficulty: 2
     },
@@ -1473,7 +1473,7 @@ const CORE_EVENTS = [
         keywords: "Mansa Musa \u00B7 Timbuktu \u00B7 Hajj \u00B7 Gold",
         description: "The Mali Empire absorbed Ghana\u2019s territory and became the largest empire in West African history. Its most famous ruler, Mansa Musa, made a pilgrimage to Mecca in 1324, distributing so much gold along the way that he crashed the Egyptian economy for a decade. He built the great mosques of Timbuktu and Djenn\u00E9, turning Mali into a center of Islamic learning. By some measures, Mansa Musa was the richest person who ever lived.",
         quizDescription: "Mansa Musa\u2019s gold crashed Egypt\u2019s economy; he may be history\u2019s richest person.",
-        location: { lat: 16.8, lng: -3.0, region: "Africa", place: "Niani / Timbuktu, Mali" },
+        location: { lat: 16.8, lng: -3.0, region: "West Africa", place: "Niani / Timbuktu, Mali" },
         category: "politics",
         difficulty: 2,
         controversyNotes: {
@@ -1489,7 +1489,7 @@ const CORE_EVENTS = [
         keywords: "Stone walls \u00B7 Shona \u00B7 Gold trade \u00B7 Southern Africa",
         description: "In southern Africa, the Shona people built Great Zimbabwe \u2014 a massive stone city whose walls rise 11 meters high, constructed without mortar. At its peak, it housed 18,000 people and controlled the gold trade between the African interior and the Swahili coast. European colonizers refused to believe Africans built it, inventing myths about Phoenician or biblical origins. The ruins stand as proof of indigenous African architectural brilliance.",
         quizDescription: "Great Zimbabwe\u2019s mortar-free stone walls housed 18,000 people and controlled the gold trade.",
-        location: { lat: -20.3, lng: 30.9, region: "Africa", place: "Great Zimbabwe, Zimbabwe" },
+        location: { lat: -20.3, lng: 30.9, region: "Southern Africa", place: "Great Zimbabwe, Zimbabwe" },
         category: "culture",
         difficulty: 3
     },
@@ -1502,7 +1502,7 @@ const CORE_EVENTS = [
         keywords: "Sunni Ali \u00B7 Askia Muhammad \u00B7 University of Sankore",
         description: "The Songhai Empire conquered Mali and became the largest empire in African history, stretching across modern-day Mali, Niger, Nigeria, and Senegal. Under Askia Muhammad, Timbuktu became one of the world\u2019s great intellectual centers \u2014 the University of Sankore housed 25,000 students and hundreds of thousands of manuscripts. The empire fell in 1591 when Moroccan invaders with gunpowder defeated Songhai\u2019s cavalry.",
         quizDescription: "Songhai made Timbuktu a world-class university city with 25,000 students.",
-        location: { lat: 16.8, lng: 0.0, region: "Africa", place: "Gao / Timbuktu, Mali" },
+        location: { lat: 16.8, lng: 0.0, region: "West Africa", place: "Gao / Timbuktu, Mali" },
         category: "culture",
         difficulty: 2,
         controversyNotes: {
@@ -1518,7 +1518,7 @@ const CORE_EVENTS = [
         keywords: "Benin Bronzes \u00B7 Oba \u00B7 Edo people \u00B7 Lost-wax casting",
         description: "The Kingdom of Benin (in modern Nigeria) produced some of history\u2019s most sophisticated metal art using lost-wax casting techniques that astonished Europeans. The Benin Bronzes \u2014 thousands of plaques, sculptures, and heads \u2014 recorded royal history and ritual life with stunning realism. When the British sacked Benin City in 1897, they looted these treasures, scattering them across Western museums. Today, the Bronzes are at the center of the world\u2019s largest repatriation debate.",
         quizDescription: "Benin\u2019s lost-wax bronzes astonished Europe; their return is now a global debate.",
-        location: { lat: 6.3, lng: 5.6, region: "Africa", place: "Benin City, Nigeria" },
+        location: { lat: 6.3, lng: 5.6, region: "West Africa", place: "Benin City, Nigeria" },
         category: "culture",
         difficulty: 2
     },
@@ -1531,7 +1531,7 @@ const CORE_EVENTS = [
         keywords: "Shaka Zulu \u00B7 Mfecane \u00B7 Military revolution",
         description: "Shaka kaSenzangakhona transformed a small Zulu clan into the most powerful military force in southern Africa. He revolutionized warfare with the short stabbing spear (iklwa), the cowhide shield, and disciplined regiment tactics. The resulting upheaval \u2014 the Mfecane \u2014 reshaped the entire region, displacing millions and creating new kingdoms. Shaka\u2019s military innovations made the Zulu a force that would later fight the British Empire to a standstill at Isandlwana.",
         quizDescription: "Shaka\u2019s military revolution made the Zulu the dominant force in southern Africa.",
-        location: { lat: -28.5, lng: 31.0, region: "Africa", place: "KwaZulu-Natal, South Africa" },
+        location: { lat: -28.5, lng: 31.0, region: "Southern Africa", place: "KwaZulu-Natal, South Africa" },
         category: "war",
         difficulty: 2
     },
@@ -1543,7 +1543,7 @@ const CORE_EVENTS = [
         keywords: "Menelik II \u00B7 Italian invasion \u00B7 African sovereignty",
         description: "When Italy tried to colonize Ethiopia, Emperor Menelik II mobilized 100,000 troops and decisively defeated the Italian army at the Battle of Adwa. It was the most significant African victory over a European colonial power and ensured Ethiopia remained the only African nation (besides Liberia) never colonized. Adwa became a symbol of Black resistance worldwide, inspiring pan-African movements and proving that European military superiority was not inevitable.",
         quizDescription: "Ethiopia defeated Italy at Adwa, remaining the only uncolonized African nation.",
-        location: { lat: 14.2, lng: 38.9, region: "Africa", place: "Adwa, Ethiopia" },
+        location: { lat: 14.2, lng: 38.9, region: "East Africa", place: "Adwa, Ethiopia" },
         category: "war",
         difficulty: 2,
         controversyNotes: {
@@ -1559,7 +1559,7 @@ const CORE_EVENTS = [
         keywords: "Kwame Nkrumah \u00B7 Decolonization \u00B7 Pan-Africanism",
         description: "In 1957, Ghana became the first sub-Saharan African nation to gain independence, led by Kwame Nkrumah. His success triggered a cascade: by 1968, most of Africa was free. The year 1960 alone \u2014 \u2018The Year of Africa\u2019 \u2014 saw 17 nations gain independence. These new nations faced enormous challenges: artificial colonial borders, Cold War interference, and economic exploitation. But the achievement was historic \u2014 an entire continent reclaimed its sovereignty within a single generation.",
         quizDescription: "Ghana\u2019s 1957 independence triggered a wave that freed most of Africa by 1968.",
-        location: { lat: 5.6, lng: -0.2, region: "Africa", place: "Accra, Ghana" },
+        location: { lat: 5.6, lng: -0.2, region: "West Africa", place: "Accra, Ghana" },
         category: "politics",
         difficulty: 2
     },
@@ -1650,7 +1650,7 @@ const CORE_EVENTS = [
         keywords: "Louis Armstrong \u00B7 Langston Hughes \u00B7 Duke Ellington \u00B7 Cultural pride",
         description: "In the 1920s, Harlem became the capital of Black American culture. Jazz \u2014 born from blues, spirituals, and ragtime \u2014 became America\u2019s greatest cultural export, with Louis Armstrong and Duke Ellington redefining what music could be. Writers like Langston Hughes and Zora Neale Hurston celebrated Black identity and challenged racism through art. The Harlem Renaissance proved that marginalized communities don\u2019t just survive oppression \u2014 they create civilizations within it.",
         quizDescription: "Jazz and Black literature transformed American culture from Harlem.",
-        location: { lat: 40.8, lng: -73.9, region: "Americas", place: "New York & New Orleans, USA" },
+        location: { lat: 40.8, lng: -73.9, region: "North America", place: "New York & New Orleans, USA" },
         category: "culture",
         difficulty: 2
     },
@@ -1663,7 +1663,7 @@ const CORE_EVENTS = [
         keywords: "Talkies \u00B7 Hollywood \u00B7 Chaplin \u00B7 Hitchcock \u00B7 Mass entertainment",
         description: "The arrival of synchronized sound in 1927 (\u2018The Jazz Singer\u2019) transformed cinema from a novelty into the dominant art form of the 20th century. Hollywood\u2019s studio system produced Chaplin\u2019s social commentary, Disney\u2019s animation, Hitchcock\u2019s suspense, and Casablanca\u2019s romance. Cinema shaped how billions of people understood love, war, heroism, and villainy. For the first time in history, a single story could reach every human being on the planet simultaneously.",
         quizDescription: "Sound films made cinema the 20th century\u2019s dominant art form.",
-        location: { lat: 34.1, lng: -118.3, region: "Americas", place: "Hollywood, USA" },
+        location: { lat: 34.1, lng: -118.3, region: "North America", place: "Hollywood, USA" },
         category: "culture",
         difficulty: 2
     },
@@ -1688,7 +1688,7 @@ const CORE_EVENTS = [
         keywords: "YouTube \u00B7 Smartphones \u00B7 Democratization \u00B7 Streaming",
         description: "The launch of YouTube (2005), the iPhone (2007), and streaming platforms transformed every human being into a potential creator. For the first time in history, you didn\u2019t need a publisher, gallery, studio, or record label to reach millions. TikTok dances, indie games, self-published novels, and bedroom-produced albums proved that creativity no longer requires gatekeepers. The tools of art became as universal as the urge to create.",
         quizDescription: "YouTube, smartphones, and streaming turned everyone into a potential creator.",
-        location: { lat: 37.4, lng: -122.1, region: "Americas", place: "Global" },
+        location: { lat: 37.4, lng: -122.1, region: "North America", place: "Global" },
         category: "culture",
         difficulty: 1
     }
@@ -2413,7 +2413,42 @@ for (const event of CORE_EVENTS) {
     }
 }
 
-export const ALL_EVENTS = [...CORE_EVENTS, ...DAILY_QUIZ_EVENTS];
+// ─── Importance levels ────────────────────────────────────────────────────────
+// 5 tiers: fundamental → major → notable → minor → anecdotal
+// Applied via map to keep event objects clean.
+const IMPORTANCE_MAP = {
+    // ── Fundamental ── civilization-defining, reshapes human history
+    f1: 'fundamental', f2: 'fundamental', f3: 'fundamental', f4: 'fundamental',
+    f5: 'fundamental', f6: 'fundamental', f9: 'fundamental', f19: 'fundamental',
+    f21: 'fundamental', f24: 'fundamental', f30: 'fundamental', f32: 'fundamental',
+    f33: 'fundamental', f36: 'fundamental', f38: 'fundamental', f39: 'fundamental',
+    f40: 'fundamental', f43: 'fundamental', f46: 'fundamental', f50: 'fundamental',
+    f53: 'fundamental', f55: 'fundamental', f58: 'fundamental', f64: 'fundamental',
+    f100: 'fundamental',
+    // ── Major ── highly significant, wide and lasting impact
+    f7: 'major', f8: 'major', f10: 'major', f13: 'major', f14: 'major',
+    f15: 'major', f16: 'major', f17: 'major', f18: 'major', f20: 'major',
+    f22: 'major', f25: 'major', f26: 'major', f27: 'major', f29: 'major',
+    f31: 'major', f34: 'major', f37: 'major', f41: 'major', f42: 'major',
+    f44: 'major', f48: 'major', f49: 'major', f51: 'major', f52: 'major',
+    f54: 'major', f56: 'major', f57: 'major', f59: 'major',
+    f61: 'major', f62: 'major', f63: 'major', f65: 'major', f66: 'major',
+    f70: 'major', f72: 'major', f76: 'major', f77: 'major', f78: 'major',
+    f80: 'major', f81: 'major', f82: 'major', f83: 'major', f86: 'major',
+    f88: 'major', f89: 'major', f90: 'major', f92: 'major', f94: 'major',
+    f95: 'major', f98: 'major', f102: 'major', f103: 'major', f104: 'major',
+    f105: 'major', f110: 'major', f116: 'major', f117: 'major', f118: 'major',
+    // ── Notable ── historically significant; everything else defaults here
+};
+
+for (const event of CORE_EVENTS) {
+    event.importance = IMPORTANCE_MAP[event.id] || 'notable';
+}
+
+export const ALL_EVENTS = [
+    ...CORE_EVENTS,
+    ...DAILY_QUIZ_EVENTS.map(e => ({ ...e, importance: e.importance || 'minor' })),
+];
 
 export const CORE_EVENT_COUNT = CORE_EVENTS.length; // 126 (60 Level 1 + 66 Level 2)
 
@@ -2469,6 +2504,16 @@ export const CATEGORY_CONFIG = {
     culture: { label: "Culture", color: "#65774A", bg: "#F4F7F0" },
     revolution: { label: "Revolution", color: "#B45309", bg: "#FFF8F0" }
 };
+
+export const IMPORTANCE_CONFIG = {
+    fundamental: { label: "Fundamental", color: "#B91C1C", bg: "rgba(185, 28, 28, 0.09)"  },
+    major:       { label: "Major",       color: "#B45309", bg: "rgba(180, 83, 9, 0.09)"   },
+    notable:     { label: "Notable",     color: "#2D7B6E", bg: "rgba(45, 123, 110, 0.09)" },
+    minor:       { label: "Minor",       color: "#6B7BA4", bg: "rgba(107, 123, 164, 0.09)"},
+    anecdotal:   { label: "Anecdotal",   color: "#94A3B8", bg: "rgba(148, 163, 184, 0.09)"},
+};
+
+export const IMPORTANCE_ORDER = ['fundamental', 'major', 'notable', 'minor', 'anecdotal'];
 
 export const ERA_RANGES = [
     { id: "prehistory", label: "Prehistory", start: -7000000, end: -3200 },

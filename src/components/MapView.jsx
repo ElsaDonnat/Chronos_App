@@ -1,9 +1,7 @@
-import { useState, useMemo, useRef, useCallback } from 'react';
+import { useState, useMemo, useRef, useCallback, useEffect } from 'react';
 import { CATEGORY_CONFIG, isDiHEvent } from '../data/events';
-import { MAP_REGIONS, REGION_CENTERS, projectToSVG, normalizeRegion } from '../data/mapPaths';
-import { Card, CategoryTag, MasteryDots, ExpandableText } from './shared';
-
-const REGION_NAMES = ['Europe', 'Middle East', 'Americas', 'Africa', 'Asia'];
+import { MAP_REGIONS, projectToSVG, normalizeRegion, regionToContinent } from '../data/mapPaths';
+import { Card, CategoryTag, ImportanceTag, MasteryDots, ExpandableText } from './shared';
 const CLUSTER_GRID = 25; // SVG units per grid cell
 
 // Map-specific color tokens (light / dark via CSS vars with fallbacks)
@@ -53,18 +51,37 @@ function clusterPins(events, learnedIds) {
     });
 }
 
-// Graticule lines for the equirectangular projection (every 30 degrees)
+// Graticule lines for Natural Earth I projection (approximated as projected polylines)
 function Graticule() {
     const lines = [];
-    // Longitude lines
+    // Project a point using the same Natural Earth I formula as projectToSVG
+    const DEG2RAD = Math.PI / 180;
+    const S = 143.3071, TX = 400, TY = 250;
+    const proj = (lat, lng) => {
+        const lam = lng * DEG2RAD, phi = lat * DEG2RAD;
+        const p2 = phi * phi, p4 = p2 * p2;
+        return {
+            x: S * lam * (0.8707 + p2 * (-0.131979 + p2 * (-0.013791 + p4 * (0.003971 + p2 * -0.001529)))) + TX,
+            y: -S * phi * (1.007226 + p2 * (0.015085 + p2 * (-0.044475 + p4 * (0.028874 + p2 * -0.005916)))) + TY,
+        };
+    };
+    // Longitude lines (curved in Natural Earth I)
     for (let lng = -150; lng <= 180; lng += 30) {
-        const x = ((lng + 180) / 360) * 800;
-        lines.push(<line key={`lng${lng}`} x1={x} y1={0} x2={x} y2={450} />);
+        const pts = [];
+        for (let lat = -80; lat <= 84; lat += 4) {
+            const p = proj(lat, lng);
+            pts.push(`${p.x.toFixed(1)},${p.y.toFixed(1)}`);
+        }
+        lines.push(<polyline key={`lng${lng}`} points={pts.join(' ')} />);
     }
-    // Latitude lines
-    for (let lat = -60; lat <= 60; lat += 30) {
-        const y = ((90 - lat) / 180) * 450;
-        lines.push(<line key={`lat${lat}`} x1={0} y1={y} x2={800} y2={y} />);
+    // Latitude lines (curved in Natural Earth I)
+    for (let lat = -60; lat <= 80; lat += 30) {
+        const pts = [];
+        for (let lng2 = -180; lng2 <= 180; lng2 += 4) {
+            const p = proj(lat, lng2);
+            pts.push(`${p.x.toFixed(1)},${p.y.toFixed(1)}`);
+        }
+        lines.push(<polyline key={`lat${lat}`} points={pts.join(' ')} />);
     }
     return (
         <g stroke={MAP_COLORS.graticule} strokeWidth="0.5" fill="none" style={{ pointerEvents: 'none' }}>
@@ -74,10 +91,10 @@ function Graticule() {
 }
 
 // Category legend
-function Legend({ visible, onToggle }) {
+function Legend({ visible, onToggle, className }) {
     const cats = Object.entries(CATEGORY_CONFIG);
     return (
-        <div className="absolute top-2 right-2 z-10">
+        <div className={className || "absolute top-2 right-2 z-10"}>
             <button
                 onClick={onToggle}
                 className="w-6 h-6 rounded-full flex items-center justify-center transition-all duration-200"
@@ -121,36 +138,23 @@ function Legend({ visible, onToggle }) {
     );
 }
 
-// Touch/mouse pan-zoom handler
+// Touch/mouse pinch-zoom handler
+// At scale=1, native scroll handles panning. Only applies CSS transform when zoomed.
 function usePanZoom() {
-    const [transform, setTransform] = useState({ x: 0, y: 0, scale: 1 });
+    const [scale, setScale] = useState(1);
+    const [panOffset, setPanOffset] = useState({ x: 0, y: 0 });
     const gestureRef = useRef(null);
-    const containerRef = useRef(null);
-
-    const clampTransform = useCallback((x, y, scale) => {
-        const s = Math.min(Math.max(scale, 1), 4);
-        if (s === 1) return { x: 0, y: 0, scale: 1 };
-        // Clamp pan so map edges stay within the container
-        const maxX = ((s - 1) / 2) * 100; // percentage-based
-        const maxY = ((s - 1) / 2) * 100;
-        return {
-            x: Math.min(Math.max(x, -maxX), maxX),
-            y: Math.min(Math.max(y, -maxY), maxY),
-            scale: s,
-        };
-    }, []);
+    const mapContainerRef = useRef(null);
 
     const onTouchStart = useCallback((e) => {
         if (e.touches.length === 2) {
             const t = e.touches;
             const dist = Math.hypot(t[1].clientX - t[0].clientX, t[1].clientY - t[0].clientY);
-            const midX = (t[0].clientX + t[1].clientX) / 2;
-            const midY = (t[0].clientY + t[1].clientY) / 2;
-            gestureRef.current = { type: 'pinch', startDist: dist, startScale: transform.scale, startX: transform.x, startY: transform.y, midX, midY };
-        } else if (e.touches.length === 1 && transform.scale > 1) {
-            gestureRef.current = { type: 'pan', startTouchX: e.touches[0].clientX, startTouchY: e.touches[0].clientY, startX: transform.x, startY: transform.y };
+            gestureRef.current = { type: 'pinch', startDist: dist, startScale: scale, startPan: { ...panOffset } };
+        } else if (e.touches.length === 1 && scale > 1) {
+            gestureRef.current = { type: 'pan', startTouchX: e.touches[0].clientX, startTouchY: e.touches[0].clientY, startPan: { ...panOffset } };
         }
-    }, [transform]);
+    }, [scale, panOffset]);
 
     const onTouchMove = useCallback((e) => {
         if (!gestureRef.current) return;
@@ -160,30 +164,214 @@ function usePanZoom() {
             e.preventDefault();
             const t = e.touches;
             const dist = Math.hypot(t[1].clientX - t[0].clientX, t[1].clientY - t[0].clientY);
-            const newScale = g.startScale * (dist / g.startDist);
-            setTransform(clampTransform(g.startX, g.startY, newScale));
+            const newScale = Math.min(Math.max(g.startScale * (dist / g.startDist), 1), 4);
+            setScale(newScale);
+            if (newScale === 1) setPanOffset({ x: 0, y: 0 });
         } else if (g.type === 'pan' && e.touches.length === 1) {
             e.preventDefault();
-            const rect = containerRef.current?.getBoundingClientRect();
-            if (!rect) return;
+            const el = mapContainerRef.current;
+            if (!el) return;
+            const rect = el.getBoundingClientRect();
             const dx = ((e.touches[0].clientX - g.startTouchX) / rect.width) * 100;
             const dy = ((e.touches[0].clientY - g.startTouchY) / rect.height) * 100;
-            setTransform(clampTransform(g.startX + dx, g.startY + dy, transform.scale));
+            const maxPan = ((scale - 1) / 2) * 100;
+            setPanOffset({
+                x: Math.min(Math.max(g.startPan.x + dx, -maxPan), maxPan),
+                y: Math.min(Math.max(g.startPan.y + dy, -maxPan), maxPan),
+            });
         }
-    }, [transform.scale, clampTransform]);
+    }, [scale]);
 
     const onTouchEnd = useCallback(() => {
         gestureRef.current = null;
     }, []);
 
     const resetZoom = useCallback(() => {
-        setTransform({ x: 0, y: 0, scale: 1 });
+        setScale(1);
+        setPanOffset({ x: 0, y: 0 });
     }, []);
 
-    const cssTransform = `translate(${transform.x}%, ${transform.y}%) scale(${transform.scale})`;
-    const isZoomed = transform.scale > 1;
+    const isZoomed = scale > 1;
+    const cssTransform = isZoomed
+        ? `translate(${panOffset.x}%, ${panOffset.y}%) scale(${scale})`
+        : 'none';
 
-    return { containerRef, cssTransform, isZoomed, onTouchStart, onTouchMove, onTouchEnd, resetZoom };
+    return { mapContainerRef, cssTransform, isZoomed, onTouchStart, onTouchMove, onTouchEnd, resetZoom };
+}
+
+// The SVG map content — shared between normal and fullscreen modes
+function MapSVG({ visibleEvents, pins, learnedIds, selectedRegion, selectedPin, selectedEventId, selectedClusterXY, handlePinClick, handleMapBgClick, svgStyle, svgClassName, viewBox }) {
+    const highlightedContinent = selectedRegion ? regionToContinent(selectedRegion) : null;
+
+    return (
+        <svg viewBox={viewBox || "0 0 800 500"} className={svgClassName} style={svgStyle}
+             onClick={handleMapBgClick}>
+            {/* Ocean background */}
+            <rect width="800" height="500" fill={MAP_COLORS.ocean} />
+
+            {/* Graticule grid */}
+            <Graticule />
+
+            {/* Continent paths */}
+            {Object.entries(MAP_REGIONS).map(([continentName, data]) => {
+                const isHighlighted = highlightedContinent === continentName;
+                const hasEvents = visibleEvents.some(e => regionToContinent(e.location.region) === continentName);
+                return (
+                    <g key={continentName} style={{ cursor: 'default' }}>
+                        {data.paths.map((d, i) => (
+                            <path key={i} d={d}
+                                fill={isHighlighted ? MAP_COLORS.landActive : MAP_COLORS.land}
+                                stroke={isHighlighted ? MAP_COLORS.borderActive : MAP_COLORS.border}
+                                strokeWidth={isHighlighted ? 1.5 : 0.5}
+                                opacity={hasEvents || !selectedRegion ? 1 : 0.35}
+                                style={{ transition: 'fill 0.2s, stroke 0.2s, opacity 0.2s' }}
+                            />
+                        ))}
+                        <text x={data.labelPos.x} y={data.labelPos.y}
+                            textAnchor="middle" fill={isHighlighted ? MAP_COLORS.labelActive : MAP_COLORS.label}
+                            fontSize="11" fontWeight="600" opacity={0.6}
+                            style={{ pointerEvents: 'none', transition: 'fill 0.2s' }}>
+                            {continentName}
+                        </text>
+                    </g>
+                );
+            })}
+
+            {/* Selected pin highlight ring */}
+            {selectedPin && (
+                <g style={{ pointerEvents: 'none' }}>
+                    {selectedEventId && (() => {
+                        const pin = pins.find(p => !p.cluster && p.event?.id === selectedEventId);
+                        if (!pin) return null;
+                        return <circle cx={pin.x} cy={pin.y} r={12} fill="none" stroke={CATEGORY_CONFIG[pin.event.category]?.color || '#8B4157'} strokeWidth="2" opacity="0.4" className="map-pin-pulse" />;
+                    })()}
+                    {selectedClusterXY && (() => {
+                        const pin = pins.find(p => p.cluster && `${p.x},${p.y}` === selectedClusterXY);
+                        if (!pin) return null;
+                        return <circle cx={pin.x} cy={pin.y} r={16} fill="none" stroke={CATEGORY_CONFIG[pin.category]?.color || '#8B4157'} strokeWidth="2" opacity="0.4" className="map-pin-pulse" />;
+                    })()}
+                </g>
+            )}
+
+            {/* Event pins */}
+            {pins.map((pin, i) => {
+                const isLearned = pin.cluster ? pin.learned : learnedIds.has(pin.event?.id);
+                const catColor = pin.cluster
+                    ? (CATEGORY_CONFIG[pin.category]?.color || '#8B4157')
+                    : (CATEGORY_CONFIG[pin.event?.category]?.color || '#999');
+                const pinColor = isLearned ? catColor : MAP_COLORS.pinMuted;
+                const r = pin.cluster ? 10 : 6;
+
+                return (
+                    <g key={i} onClick={(e) => handlePinClick(pin, e)} style={{ cursor: 'pointer' }}>
+                        <circle cx={pin.x} cy={pin.y} r={18} fill="transparent" />
+                        <circle cx={pin.x} cy={pin.y + 1} r={r} fill="rgba(0,0,0,0.12)" />
+                        <circle cx={pin.x} cy={pin.y} r={r}
+                            fill={pinColor}
+                            stroke={MAP_COLORS.pinStroke} strokeWidth={1.5}
+                            opacity={isLearned ? 1 : 0.45}
+                        />
+                        {pin.cluster && (
+                            <text x={pin.x} y={pin.y + 1} textAnchor="middle" dominantBaseline="middle"
+                                fill="white" fontSize="9" fontWeight="bold"
+                                style={{ pointerEvents: 'none' }}>
+                                {pin.count}
+                            </text>
+                        )}
+                    </g>
+                );
+            })}
+        </svg>
+    );
+}
+
+// Event detail popup card
+function EventPopup({ event, learnedIds, eventMastery, onClose }) {
+    if (!event) return null;
+    return (
+        <div className="mt-3 animate-fade-in">
+            <Card style={{ borderLeft: `3px solid ${isDiHEvent(event) ? '#E6A817' : (CATEGORY_CONFIG[event.category]?.color || '#999')}` }}>
+                <div className="flex items-center justify-between mb-1">
+                    <div className="flex items-center gap-2">
+                        <CategoryTag category={event.category} />
+                        <ImportanceTag importance={event.importance} />
+                    </div>
+                    <button onClick={onClose}
+                        className="w-6 h-6 flex items-center justify-center rounded-full text-xs"
+                        style={{ color: 'var(--color-ink-muted)' }}>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+                        </svg>
+                    </button>
+                </div>
+                <h4 className="text-base font-bold mb-1" style={{ fontFamily: 'var(--font-serif)' }}>
+                    {event.title}
+                </h4>
+                <p className="text-xs mb-1" style={{ color: 'var(--color-burgundy)' }}>
+                    {event.date}
+                </p>
+                {learnedIds.has(event.id) && event.description && (
+                    <ExpandableText lines={2} className="text-xs leading-relaxed mb-2" style={{ color: 'var(--color-ink-secondary)' }}>
+                        {event.description}
+                    </ExpandableText>
+                )}
+                <div className="flex items-center gap-2 text-xs" style={{ color: 'var(--color-ink-muted)' }}>
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" /><circle cx="12" cy="10" r="3" />
+                    </svg>
+                    {event.location.place}
+                </div>
+                {eventMastery[event.id] && (
+                    <div className="mt-2">
+                        <MasteryDots mastery={eventMastery[event.id]} />
+                    </div>
+                )}
+            </Card>
+        </div>
+    );
+}
+
+// Cluster list popup
+function ClusterPopup({ events, learnedIds, onSelectEvent, onClose }) {
+    if (!events) return null;
+    return (
+        <div className="mt-3 animate-fade-in">
+            <Card>
+                <div className="flex items-center justify-between mb-2">
+                    <p className="text-[11px] uppercase tracking-wider font-semibold" style={{ color: 'var(--color-ink-faint)' }}>
+                        {events.length} events at this location
+                    </p>
+                    <button onClick={onClose}
+                        className="w-6 h-6 flex items-center justify-center rounded-full text-xs"
+                        style={{ color: 'var(--color-ink-muted)' }}>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+                        </svg>
+                    </button>
+                </div>
+                {events.map(evt => {
+                    const isLearned = learnedIds.has(evt.id);
+                    return (
+                        <div key={evt.id}
+                            className="flex items-center gap-2 py-2 cursor-pointer active:opacity-70"
+                            style={{ borderTop: '1px solid rgba(var(--color-ink-rgb), 0.06)' }}
+                            onClick={() => onSelectEvent(evt)}>
+                            <div className="w-2.5 h-2.5 rounded-full flex-shrink-0"
+                                style={{ backgroundColor: isLearned ? (CATEGORY_CONFIG[evt.category]?.color || '#999') : MAP_COLORS.pinMuted }} />
+                            <div className="min-w-0">
+                                <p className="text-sm font-medium truncate" style={{ color: isLearned ? 'var(--color-ink)' : 'var(--color-ink-faint)' }}>
+                                    {isLearned ? evt.title : 'Undiscovered event'}
+                                </p>
+                                {isLearned && (
+                                    <p className="text-[11px]" style={{ color: 'var(--color-ink-muted)' }}>{evt.date}</p>
+                                )}
+                            </div>
+                        </div>
+                    );
+                })}
+            </Card>
+        </div>
+    );
 }
 
 
@@ -191,12 +379,15 @@ export default function MapView({ events, learnedIds, hideUnknown, eventMastery,
     const [selectedPin, setSelectedPin] = useState(null);
     const [clusterExpanded, setClusterExpanded] = useState(false);
     const [legendVisible, setLegendVisible] = useState(false);
-    const { containerRef, cssTransform, isZoomed, onTouchStart, onTouchMove, onTouchEnd, resetZoom } = usePanZoom();
+    const [isFullscreen, setIsFullscreen] = useState(false);
+    const fullscreenScrollRef = useRef(null);
+    const hasScrolledRef = useRef(false);
+    const { mapContainerRef, cssTransform, isZoomed, onTouchStart, onTouchMove, onTouchEnd, resetZoom } = usePanZoom();
 
     const visibleEvents = useMemo(() => {
         let evts = events;
         if (selectedRegion) {
-            evts = evts.filter(e => normalizeRegion(e.location.region) === selectedRegion);
+            evts = evts.filter(e => e.location.region === selectedRegion);
         }
         if (hideUnknown) {
             evts = evts.filter(e => learnedIds.has(e.id));
@@ -206,17 +397,6 @@ export default function MapView({ events, learnedIds, hideUnknown, eventMastery,
 
     const pins = useMemo(() => clusterPins(visibleEvents, learnedIds), [visibleEvents, learnedIds]);
 
-    const regionCounts = useMemo(() => {
-        const counts = {};
-        for (const r of REGION_NAMES) counts[r] = 0;
-        for (const e of events) {
-            const norm = normalizeRegion(e.location.region);
-            if (counts[norm] !== undefined) counts[norm]++;
-        }
-        return counts;
-    }, [events]);
-
-    // Track which pin is selected for highlight
     const selectedEventId = selectedPin?.event?.id;
     const selectedClusterXY = selectedPin?.events ? `${selectedPin.x},${selectedPin.y}` : null;
 
@@ -237,31 +417,124 @@ export default function MapView({ events, learnedIds, hideUnknown, eventMastery,
         setLegendVisible(false);
     };
 
+    // Center fullscreen scroll on Europe/Middle East on first open
+    useEffect(() => {
+        if (isFullscreen) {
+            hasScrolledRef.current = false;
+        }
+    }, [isFullscreen]);
+
+    useEffect(() => {
+        if (isFullscreen && fullscreenScrollRef.current && !hasScrolledRef.current) {
+            requestAnimationFrame(() => {
+                const container = fullscreenScrollRef.current;
+                if (!container) return;
+                const mapWidth = container.scrollWidth;
+                const mapHeight = container.scrollHeight;
+                // Center on Europe/Middle East area (~42% across, ~22% down)
+                container.scrollLeft = Math.max(0, mapWidth * 0.42 - container.clientWidth / 2);
+                container.scrollTop = Math.max(0, mapHeight * 0.22 - container.clientHeight / 2);
+                hasScrolledRef.current = true;
+            });
+        }
+    }, [isFullscreen]);
+
     const selectedEvent = selectedPin?.event;
     const clusterEvents = selectedPin?.events;
 
+    const sharedSvgProps = {
+        visibleEvents, pins, learnedIds, selectedRegion,
+        selectedPin, selectedEventId, selectedClusterXY,
+        handlePinClick, handleMapBgClick,
+    };
+
+    // ─── Fullscreen overlay ───
+    if (isFullscreen) {
+        return (
+            <div className="fixed inset-0 z-[999] flex flex-col animate-fade-in"
+                 style={{ backgroundColor: 'var(--color-parchment)' }}>
+                {/* Fullscreen map — oversized and scrollable */}
+                <div
+                    ref={fullscreenScrollRef}
+                    className="flex-1 overflow-auto relative"
+                    style={{ WebkitOverflowScrolling: 'touch' }}
+                >
+                    {/* Close + controls overlay — floats on top of the map */}
+                    <div className="sticky top-0 left-0 right-0 z-20 flex items-center justify-between px-3 pt-3 pb-1"
+                         style={{ pointerEvents: 'none' }}>
+                        <button
+                            onClick={() => setIsFullscreen(false)}
+                            className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full text-[11px] font-semibold"
+                            style={{
+                                pointerEvents: 'auto',
+                                backgroundColor: 'rgba(var(--color-parchment-rgb, 250, 246, 240), 0.85)',
+                                color: 'var(--color-ink-muted)',
+                                backdropFilter: 'blur(4px)',
+                            }}>
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+                                <path d="M4 14h6v6" /><path d="M20 10h-6V4" /><path d="M14 10l7-7" /><path d="M3 21l7-7" />
+                            </svg>
+                            Close
+                        </button>
+                        <div className="flex items-center gap-2" style={{ pointerEvents: 'auto' }}>
+                            {isZoomed && (
+                                <button
+                                    onClick={resetZoom}
+                                    className="px-2.5 py-1.5 rounded-full text-[11px] font-semibold"
+                                    style={{
+                                        backgroundColor: 'rgba(var(--color-parchment-rgb, 250, 246, 240), 0.85)',
+                                        color: 'var(--color-ink-muted)',
+                                        backdropFilter: 'blur(4px)',
+                                    }}>
+                                    Reset zoom
+                                </button>
+                            )}
+                            <Legend visible={legendVisible} onToggle={() => setLegendVisible(v => !v)} className="relative z-10" />
+                        </div>
+                    </div>
+
+                    <div
+                        ref={mapContainerRef}
+                        onTouchStart={onTouchStart}
+                        onTouchMove={onTouchMove}
+                        onTouchEnd={onTouchEnd}
+                        style={{
+                            width: '280%',
+                            marginTop: '-44px', // pull map up behind the sticky controls
+                            transform: cssTransform,
+                            transformOrigin: 'center center',
+                            transition: isZoomed ? 'none' : 'transform 0.3s ease-out',
+                            touchAction: isZoomed ? 'none' : 'pan-x pan-y',
+                        }}
+                    >
+                        <MapSVG {...sharedSvgProps}
+                            viewBox="0 0 800 500"
+                            svgClassName="w-full"
+                            svgStyle={{ display: 'block' }} />
+                    </div>
+                </div>
+
+                {/* Fullscreen popups */}
+                <div className="flex-shrink-0 px-3 pb-3" style={{ maxHeight: '40vh', overflowY: 'auto' }}>
+                    {selectedEvent && (
+                        <EventPopup event={selectedEvent} learnedIds={learnedIds} eventMastery={eventMastery}
+                            onClose={() => setSelectedPin(null)} />
+                    )}
+                    {clusterEvents && clusterExpanded && (
+                        <ClusterPopup events={clusterEvents} learnedIds={learnedIds}
+                            onSelectEvent={(evt) => { setSelectedPin({ event: evt }); setClusterExpanded(false); }}
+                            onClose={() => { setSelectedPin(null); setClusterExpanded(false); }} />
+                    )}
+                </div>
+            </div>
+        );
+    }
+
+    // ─── Normal (inline) mode ───
     return (
         <div className="relative">
-            {/* Region chips */}
-            <div className="flex gap-1.5 flex-wrap mb-3">
-                {REGION_NAMES.map(region => {
-                    const isActive = selectedRegion === region;
-                    return (
-                        <button key={region}
-                            onClick={() => { onRegionSelect(isActive ? null : region); setSelectedPin(null); }}
-                            className="px-2.5 py-1 rounded-full text-[11px] font-semibold transition-all duration-200"
-                            style={{
-                                backgroundColor: isActive ? 'var(--color-burgundy)' : 'rgba(var(--color-ink-rgb), 0.04)',
-                                color: isActive ? 'white' : 'var(--color-ink-muted)',
-                            }}>
-                            {region} ({regionCounts[region]})
-                        </button>
-                    );
-                })}
-            </div>
-
-            {/* SVG Map with pan/zoom */}
-            <div className="relative rounded-xl overflow-hidden" style={{ boxShadow: 'var(--shadow-card)' }}>
+            {/* Horizontally scrollable map container */}
+            <div className="relative rounded-xl overflow-hidden" style={{ boxShadow: 'var(--shadow-card)', backgroundColor: 'var(--color-map-ocean, #D6CFC4)' }}>
                 {/* Legend toggle */}
                 <Legend visible={legendVisible} onToggle={() => setLegendVisible(v => !v)} />
 
@@ -282,182 +555,54 @@ export default function MapView({ events, learnedIds, hideUnknown, eventMastery,
                     </button>
                 )}
 
-                <div
-                    ref={containerRef}
-                    onTouchStart={onTouchStart}
-                    onTouchMove={onTouchMove}
-                    onTouchEnd={onTouchEnd}
+                {/* Fullscreen expand button */}
+                <button
+                    onClick={() => { setIsFullscreen(true); resetZoom(); }}
+                    className="absolute bottom-2 right-2 z-10 w-7 h-7 rounded-full flex items-center justify-center"
                     style={{
-                        transform: cssTransform,
-                        transformOrigin: 'center center',
-                        transition: isZoomed ? 'none' : 'transform 0.3s ease-out',
-                        touchAction: isZoomed ? 'none' : 'pan-y',
+                        backgroundColor: 'rgba(var(--color-ink-rgb), 0.06)',
+                        color: 'var(--color-ink-muted)',
                     }}
+                    title="Full screen"
                 >
-                    <svg viewBox="0 0 800 450" className="w-full" style={{ display: 'block' }}
-                         onClick={handleMapBgClick}>
-                        {/* Ocean background */}
-                        <rect width="800" height="450" fill={MAP_COLORS.ocean} />
-
-                        {/* Graticule grid */}
-                        <Graticule />
-
-                        {/* Continent paths */}
-                        {Object.entries(MAP_REGIONS).map(([regionName, data]) => {
-                            const isActive = selectedRegion === regionName;
-                            const hasEvents = visibleEvents.some(e => normalizeRegion(e.location.region) === regionName);
-                            return (
-                                <g key={regionName}
-                                   onClick={(e) => { e.stopPropagation(); onRegionSelect(isActive ? null : regionName); setSelectedPin(null); }}
-                                   style={{ cursor: 'pointer' }}>
-                                    {data.paths.map((d, i) => (
-                                        <path key={i} d={d}
-                                            fill={isActive ? MAP_COLORS.landActive : MAP_COLORS.land}
-                                            stroke={isActive ? MAP_COLORS.borderActive : MAP_COLORS.border}
-                                            strokeWidth={isActive ? 1.5 : 0.5}
-                                            opacity={hasEvents || !selectedRegion ? 1 : 0.35}
-                                            style={{ transition: 'fill 0.2s, stroke 0.2s, opacity 0.2s' }}
-                                        />
-                                    ))}
-                                    <text x={data.labelPos.x} y={data.labelPos.y}
-                                        textAnchor="middle" fill={isActive ? MAP_COLORS.labelActive : MAP_COLORS.label}
-                                        fontSize="11" fontWeight="600" opacity={0.6}
-                                        style={{ pointerEvents: 'none', transition: 'fill 0.2s' }}>
-                                        {regionName}
-                                    </text>
-                                </g>
-                            );
-                        })}
-
-                        {/* Selected pin highlight ring (rendered behind pins) */}
-                        {selectedPin && (
-                            <g style={{ pointerEvents: 'none' }}>
-                                {selectedEventId && (() => {
-                                    const pin = pins.find(p => !p.cluster && p.event?.id === selectedEventId);
-                                    if (!pin) return null;
-                                    return <circle cx={pin.x} cy={pin.y} r={12} fill="none" stroke={CATEGORY_CONFIG[pin.event.category]?.color || '#8B4157'} strokeWidth="2" opacity="0.4" className="map-pin-pulse" />;
-                                })()}
-                                {selectedClusterXY && (() => {
-                                    const pin = pins.find(p => p.cluster && `${p.x},${p.y}` === selectedClusterXY);
-                                    if (!pin) return null;
-                                    return <circle cx={pin.x} cy={pin.y} r={16} fill="none" stroke={CATEGORY_CONFIG[pin.category]?.color || '#8B4157'} strokeWidth="2" opacity="0.4" className="map-pin-pulse" />;
-                                })()}
-                            </g>
-                        )}
-
-                        {/* Event pins */}
-                        {pins.map((pin, i) => {
-                            const isLearned = pin.cluster ? pin.learned : learnedIds.has(pin.event?.id);
-                            const catColor = pin.cluster
-                                ? (CATEGORY_CONFIG[pin.category]?.color || '#8B4157')
-                                : (CATEGORY_CONFIG[pin.event?.category]?.color || '#999');
-                            const pinColor = isLearned ? catColor : MAP_COLORS.pinMuted;
-                            const r = pin.cluster ? 10 : 6;
-
-                            return (
-                                <g key={i} onClick={(e) => handlePinClick(pin, e)} style={{ cursor: 'pointer' }}>
-                                    {/* Invisible larger hit area */}
-                                    <circle cx={pin.x} cy={pin.y} r={18} fill="transparent" />
-                                    {/* Drop shadow */}
-                                    <circle cx={pin.x} cy={pin.y + 1} r={r} fill="rgba(0,0,0,0.12)" />
-                                    {/* Visible pin */}
-                                    <circle cx={pin.x} cy={pin.y} r={r}
-                                        fill={pinColor}
-                                        stroke={MAP_COLORS.pinStroke} strokeWidth={1.5}
-                                        opacity={isLearned ? 1 : 0.45}
-                                    />
-                                    {pin.cluster && (
-                                        <text x={pin.x} y={pin.y + 1} textAnchor="middle" dominantBaseline="middle"
-                                            fill="white" fontSize="9" fontWeight="bold"
-                                            style={{ pointerEvents: 'none' }}>
-                                            {pin.count}
-                                        </text>
-                                    )}
-                                </g>
-                            );
-                        })}
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+                        <path d="M15 3h6v6" /><path d="M9 21H3v-6" /><path d="M21 3l-7 7" /><path d="M3 21l7-7" />
                     </svg>
+                </button>
+
+                {/* Scrollable map area — wider than container for bigger display */}
+                <div style={{ overflowX: 'auto', overflowY: 'hidden', WebkitOverflowScrolling: 'touch' }}>
+                    <div
+                        ref={mapContainerRef}
+                        onTouchStart={onTouchStart}
+                        onTouchMove={onTouchMove}
+                        onTouchEnd={onTouchEnd}
+                        style={{
+                            width: '200%',
+                            overflow: 'hidden',
+                            transform: cssTransform,
+                            transformOrigin: 'center center',
+                            transition: isZoomed ? 'none' : 'transform 0.3s ease-out',
+                            touchAction: isZoomed ? 'none' : 'pan-x pan-y',
+                        }}
+                    >
+                        <MapSVG {...sharedSvgProps}
+                            viewBox="0 0 800 500"
+                            svgClassName="w-full"
+                            svgStyle={{ display: 'block' }} />
+                    </div>
                 </div>
             </div>
 
             {/* Bottom popup: single event */}
-            {selectedEvent && (
-                <div className="mt-3 animate-fade-in">
-                    <Card style={{ borderLeft: `3px solid ${isDiHEvent(selectedEvent) ? '#E6A817' : (CATEGORY_CONFIG[selectedEvent.category]?.color || '#999')}` }}>
-                        <div className="flex items-center justify-between mb-1">
-                            <CategoryTag category={selectedEvent.category} />
-                            <button onClick={() => setSelectedPin(null)}
-                                className="w-6 h-6 flex items-center justify-center rounded-full text-xs"
-                                style={{ color: 'var(--color-ink-muted)' }}>
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                    <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
-                                </svg>
-                            </button>
-                        </div>
-                        <h4 className="text-base font-bold mb-1" style={{ fontFamily: 'var(--font-serif)' }}>
-                            {selectedEvent.title}
-                        </h4>
-                        <p className="text-xs mb-1" style={{ color: 'var(--color-burgundy)' }}>
-                            {selectedEvent.date}
-                        </p>
-                        {learnedIds.has(selectedEvent.id) && selectedEvent.description && (
-                            <ExpandableText lines={2} className="text-xs leading-relaxed mb-2" style={{ color: 'var(--color-ink-secondary)' }}>
-                                {selectedEvent.description}
-                            </ExpandableText>
-                        )}
-                        <div className="flex items-center gap-2 text-xs" style={{ color: 'var(--color-ink-muted)' }}>
-                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" /><circle cx="12" cy="10" r="3" />
-                            </svg>
-                            {selectedEvent.location.place}
-                        </div>
-                        {eventMastery[selectedEvent.id] && (
-                            <div className="mt-2">
-                                <MasteryDots mastery={eventMastery[selectedEvent.id]} />
-                            </div>
-                        )}
-                    </Card>
-                </div>
-            )}
+            <EventPopup event={selectedEvent} learnedIds={learnedIds} eventMastery={eventMastery}
+                onClose={() => setSelectedPin(null)} />
 
             {/* Bottom popup: cluster list */}
-            {clusterEvents && clusterExpanded && (
-                <div className="mt-3 animate-fade-in">
-                    <Card>
-                        <div className="flex items-center justify-between mb-2">
-                            <p className="text-[11px] uppercase tracking-wider font-semibold" style={{ color: 'var(--color-ink-faint)' }}>
-                                {clusterEvents.length} events at this location
-                            </p>
-                            <button onClick={() => { setSelectedPin(null); setClusterExpanded(false); }}
-                                className="w-6 h-6 flex items-center justify-center rounded-full text-xs"
-                                style={{ color: 'var(--color-ink-muted)' }}>
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                    <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
-                                </svg>
-                            </button>
-                        </div>
-                        {clusterEvents.map(evt => {
-                            const isLearned = learnedIds.has(evt.id);
-                            return (
-                                <div key={evt.id}
-                                    className="flex items-center gap-2 py-2 cursor-pointer active:opacity-70"
-                                    style={{ borderTop: '1px solid rgba(var(--color-ink-rgb), 0.06)' }}
-                                    onClick={() => { setSelectedPin({ event: evt }); setClusterExpanded(false); }}>
-                                    <div className="w-2.5 h-2.5 rounded-full flex-shrink-0"
-                                        style={{ backgroundColor: isLearned ? (CATEGORY_CONFIG[evt.category]?.color || '#999') : MAP_COLORS.pinMuted }} />
-                                    <div className="min-w-0">
-                                        <p className="text-sm font-medium truncate" style={{ color: isLearned ? 'var(--color-ink)' : 'var(--color-ink-faint)' }}>
-                                            {isLearned ? evt.title : 'Undiscovered event'}
-                                        </p>
-                                        {isLearned && (
-                                            <p className="text-[11px]" style={{ color: 'var(--color-ink-muted)' }}>{evt.date}</p>
-                                        )}
-                                    </div>
-                                </div>
-                            );
-                        })}
-                    </Card>
-                </div>
+            {clusterExpanded && (
+                <ClusterPopup events={clusterEvents} learnedIds={learnedIds}
+                    onSelectEvent={(evt) => { setSelectedPin({ event: evt }); setClusterExpanded(false); }}
+                    onClose={() => { setSelectedPin(null); setClusterExpanded(false); }} />
             )}
 
             {/* Empty state */}

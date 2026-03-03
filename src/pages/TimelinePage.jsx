@@ -1,8 +1,9 @@
 import { useState, useMemo, useCallback, useRef, useEffect } from 'react';
 import { useApp } from '../context/AppContext';
-import { ALL_EVENTS, CORE_EVENT_COUNT, CATEGORY_CONFIG, ERA_RANGES, ERA_BOUNDARY_EVENTS, getEraForYear, getEventById, isDiHEvent } from '../data/events';
-import { Card, CategoryTag, DiHBadge, MasteryDots, Divider, ExpandableText, EventConnections, TabSelector } from '../components/shared';
+import { ALL_EVENTS, CORE_EVENT_COUNT, CATEGORY_CONFIG, IMPORTANCE_CONFIG, IMPORTANCE_ORDER, ERA_RANGES, ERA_BOUNDARY_EVENTS, getEraForYear, getEventById, isDiHEvent } from '../data/events';
+import { Card, CategoryTag, ImportanceTag, DiHBadge, MasteryDots, Divider, ExpandableText, EventConnections, TabSelector } from '../components/shared';
 import MapView from '../components/MapView';
+import { SUB_REGIONS } from '../data/mapPaths';
 import Mascot from '../components/Mascot';
 
 // SVG era icons — replace emoji to avoid rendering issues on Android
@@ -22,13 +23,13 @@ const EraIcon = ({ type, size = 24 }) => {
 
 export default function TimelinePage() {
     const { state } = useApp();
-    const [selectedEra, setSelectedEra] = useState(() => localStorage.getItem('chronos-tl-era') || 'all');
+    const [selectedImportance, setSelectedImportance] = useState(() => localStorage.getItem('chronos-tl-importance') || 'all');
     const [selectedCategory, setSelectedCategory] = useState(() => localStorage.getItem('chronos-tl-cat') || 'all');
     const [hideUnknown, setHideUnknown] = useState(() => localStorage.getItem('chronos-tl-hide') === 'true');
     const [expandedId, setExpandedId] = useState(null);
     const [expandedEraId, setExpandedEraId] = useState(null);
     const [viewMode, setViewMode] = useState(() => localStorage.getItem('chronos-tl-view') || 'list');
-    const [selectedRegion, setSelectedRegion] = useState(null);
+    const [selectedRegion, setSelectedRegion] = useState(() => localStorage.getItem('chronos-tl-region') || null);
     const expandedRef = useCallback(node => {
         if (node) {
             setTimeout(() => node.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 50);
@@ -49,21 +50,41 @@ export default function TimelinePage() {
     const filteredEvents = useMemo(() => {
         return sortedEvents.filter(event => {
             if (selectedCategory === 'daily') return isDiHEvent(event);
-            if (selectedEra !== 'all') {
-                const era = ERA_RANGES.find(e => e.id === selectedEra);
-                if (era && (event.year < era.start || event.year >= era.end)) return false;
-            }
+            if (selectedImportance !== 'all' && event.importance !== selectedImportance) return false;
             if (selectedCategory !== 'all' && event.category !== selectedCategory) return false;
             return true;
         });
-    }, [sortedEvents, selectedEra, selectedCategory]);
+    }, [sortedEvents, selectedImportance, selectedCategory]);
+
+    // Apply region filter for list view (MapView handles its own filtering)
+    const listFilteredEvents = useMemo(() => {
+        if (!selectedRegion) return filteredEvents;
+        return filteredEvents.filter(e => e.location.region === selectedRegion);
+    }, [filteredEvents, selectedRegion]);
+
+    // Sub-regions that have events (for dropdown options)
+    const regionsWithEvents = useMemo(() => {
+        const counts = {};
+        for (const e of sortedEvents) {
+            const r = e.location.region;
+            counts[r] = (counts[r] || 0) + 1;
+        }
+        return SUB_REGIONS.filter(r => counts[r] > 0);
+    }, [sortedEvents]);
+
     const lesson0Complete = !!state.completedLessons['lesson-0'];
 
     // Persist filter choices
-    const updateEra = (v) => { setSelectedEra(v); localStorage.setItem('chronos-tl-era', v); setSelectedRegion(null); };
-    const updateCategory = (v) => { setSelectedCategory(v); localStorage.setItem('chronos-tl-cat', v); setSelectedRegion(null); };
+    const updateImportance = (v) => { setSelectedImportance(v); localStorage.setItem('chronos-tl-importance', v); };
+    const updateCategory = (v) => { setSelectedCategory(v); localStorage.setItem('chronos-tl-cat', v); };
     const toggleHideUnknown = () => { setHideUnknown(h => { const next = !h; localStorage.setItem('chronos-tl-hide', String(next)); return next; }); };
-    const updateViewMode = (v) => { setViewMode(v); localStorage.setItem('chronos-tl-view', v); setSelectedRegion(null); };
+    const updateViewMode = (v) => { setViewMode(v); localStorage.setItem('chronos-tl-view', v); };
+    const updateRegion = (v) => {
+        const val = (!v || v === 'all') ? null : v;
+        setSelectedRegion(val);
+        if (val) localStorage.setItem('chronos-tl-region', val);
+        else localStorage.removeItem('chronos-tl-region');
+    };
 
     const eraDetails = {
         prehistory: { iconType: 'prehistory', title: 'Prehistory', subtitle: 'c. 7 million years ago – c. 3200 BCE', description: 'The longest chapter in human history — from the first split with our ape ancestors through mastering fire, developing language, migrating across the globe, and eventually settling into farming communities.', color: '#0D9488' },
@@ -91,7 +112,7 @@ export default function TimelinePage() {
                     Timeline
                 </h1>
                 <p className="text-sm mt-1" style={{ color: 'var(--color-ink-muted)' }}>
-                    {[...learnedIds].filter(id => !id.startsWith('dih-')).length} of {CORE_EVENT_COUNT} events{acquiredDiHIds.size > 0 ? ` · ${acquiredDiHIds.size} bonus` : ''}
+                    Discovered {[...learnedIds].filter(id => !id.startsWith('dih-')).length} out of {CORE_EVENT_COUNT} events{acquiredDiHIds.size > 0 ? ` · ${acquiredDiHIds.size} bonus` : ''}
                 </p>
             </div>
 
@@ -104,14 +125,16 @@ export default function TimelinePage() {
                 />
             </div>
 
-            {/* Compact filter row */}
-            <div className="flex items-center gap-2 mb-6">
+            {/* Compact filter row — scrollable on narrow screens */}
+            <div className="flex items-center gap-2 mb-6 overflow-x-auto no-scrollbar">
                 <FilterDropdown
-                    value={selectedEra}
-                    onChange={updateEra}
+                    value={selectedImportance}
+                    onChange={updateImportance}
                     options={[
-                        { value: 'all', label: 'All Eras' },
-                        ...ERA_RANGES.map(era => ({ value: era.id, label: era.label })),
+                        { value: 'all', label: 'All' },
+                        ...IMPORTANCE_ORDER.map(key => ({
+                            value: key, label: IMPORTANCE_CONFIG[key].label, dotColor: IMPORTANCE_CONFIG[key].color,
+                        })),
                     ]}
                 />
                 <FilterDropdown
@@ -123,6 +146,14 @@ export default function TimelinePage() {
                             value: key, label: config.label, dotColor: config.color,
                         })),
                         ...(acquiredDiHIds.size > 0 ? [{ value: 'daily', label: 'Day in History', dotColor: '#E6A817' }] : []),
+                    ]}
+                />
+                <FilterDropdown
+                    value={selectedRegion || 'all'}
+                    onChange={updateRegion}
+                    options={[
+                        { value: 'all', label: 'Loca' },
+                        ...regionsWithEvents.map(r => ({ value: r, label: r })),
                     ]}
                 />
                 <button
@@ -160,9 +191,9 @@ export default function TimelinePage() {
                     hideUnknown={hideUnknown}
                     eventMastery={state.eventMastery}
                     selectedRegion={selectedRegion}
-                    onRegionSelect={setSelectedRegion}
+                    onRegionSelect={updateRegion}
                 />
-            ) : filteredEvents.length === 0 ? (
+            ) : listFilteredEvents.length === 0 ? (
                 <div className="text-center py-16 animate-fade-in">
                     <Mascot mood="thinking" size={60} />
                     <p className="text-sm mt-3" style={{ color: 'var(--color-ink-muted)', fontFamily: 'var(--font-serif)' }}>
@@ -174,12 +205,12 @@ export default function TimelinePage() {
                     {/* Timeline line */}
                     <div className="absolute left-7 top-0 bottom-0 w-0.5 rounded-full" style={{ backgroundColor: 'var(--color-bronze-light)', opacity: 0.4 }} />
 
-                    {filteredEvents.map((event, index) => {
+                    {listFilteredEvents.map((event, index) => {
                         const isLearned = learnedIds.has(event.id);
                         const mastery = state.eventMastery[event.id];
                         const isExpanded = expandedId === event.id;
                         const era = getEraForYear(event.year);
-                        const prevEvent = filteredEvents[index - 1];
+                        const prevEvent = listFilteredEvents[index - 1];
                         const showEraLabel = !prevEvent || getEraForYear(prevEvent.year).id !== era?.id;
                         const catConfig = CATEGORY_CONFIG[event.category];
 
@@ -221,20 +252,17 @@ export default function TimelinePage() {
                                                     {isEraExpanded && detail && (
                                                         <div className="mt-3 animate-fade-in" onClick={e => e.stopPropagation()}>
                                                             <Card style={{ borderLeft: `3px solid ${detail.color}` }}>
-                                                                <div className="text-center mb-3">
-                                                                    <EraIcon type={detail.iconType} size={40} />
-                                                                </div>
-                                                                <h3 className="text-lg font-bold text-center mb-1" style={{ fontFamily: 'var(--font-serif)', color: 'var(--color-ink)' }}>
+                                                                <h3 className="text-base font-bold text-center" style={{ fontFamily: 'var(--font-serif)', color: 'var(--color-ink)' }}>
                                                                     {detail.title}
                                                                 </h3>
-                                                                <p className="text-xs font-semibold text-center mb-3" style={{ color: detail.color }}>
+                                                                <p className="text-xs font-semibold text-center mb-2" style={{ color: detail.color }}>
                                                                     {detail.subtitle}
                                                                 </p>
                                                                 <Divider />
-                                                                <p className="text-sm leading-relaxed mt-3" style={{ color: 'var(--color-ink-secondary)' }}>
+                                                                <p className="text-sm leading-relaxed mt-2" style={{ color: 'var(--color-ink-secondary)' }}>
                                                                     {detail.description}
                                                                 </p>
-                                                                <div className="mt-3 pt-3" style={{ borderTop: '1px solid rgba(var(--color-ink-rgb), 0.06)' }}>
+                                                                <div className="mt-2 pt-2" style={{ borderTop: '1px solid rgba(var(--color-ink-rgb), 0.06)' }}>
                                                                     <p className="text-[11px] uppercase tracking-wider font-semibold mb-2" style={{ color: 'var(--color-ink-faint)' }}>
                                                                         Key Transitions
                                                                     </p>
@@ -329,8 +357,9 @@ export default function TimelinePage() {
                                                 <div ref={expandedRef} className="mt-4 animate-fade-in">
                                                     <Card style={{ borderLeft: `3px solid ${isDiHEvent(event) ? '#E6A817' : (catConfig?.color || '#999')}` }}>
                                                         <div className="flex items-center justify-between mb-3">
-                                                            <div className="flex items-center gap-2">
+                                                            <div className="flex items-center gap-2 flex-wrap">
                                                                 <CategoryTag category={event.category} />
+                                                                <ImportanceTag importance={event.importance} />
                                                                 {isDiHEvent(event) && <DiHBadge />}
                                                             </div>
                                                             <span className="text-sm font-semibold" style={{ color: 'var(--color-burgundy)' }}>
@@ -413,7 +442,7 @@ function FilterDropdown({ value, onChange, options }) {
     const isDefault = value === 'all';
 
     return (
-        <div className="relative" ref={ref}>
+        <div className="relative flex-shrink-0" ref={ref}>
             <button
                 onClick={() => setOpen(o => !o)}
                 className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full text-[11px] font-semibold whitespace-nowrap transition-all duration-200 cursor-pointer"

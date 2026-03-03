@@ -20,16 +20,16 @@
     <path
         android:fillColor="#C8A882"
         android:pathData="M9.7,18.2 Q12,15.3 14.3,18.2 Z" />
-    <!-- Play shadow -->
+    <!-- Play shadow - sand brown, offset for depth -->
     <path
-        android:fillColor="#3D1A25"
-        android:fillAlpha="0.45"
-        android:pathData="M12.8,4.5 L12.8,12.9 L19.9,8.7 Z" />
-    <!-- White play triangle -->
+        android:fillColor="#C8A882"
+        android:fillAlpha="0.7"
+        android:pathData="M15.0,6.0 L15.0,12.0 L20.0,9.0 Z" />
+    <!-- White play triangle with dark brown outline -->
     <path
         android:fillColor="#FFFFFF"
-        android:strokeColor="#6E3344"
-        android:strokeWidth="0.9"
+        android:strokeColor="#7A5C38"
+        android:strokeWidth="0.7"
         android:strokeLineJoin="round"
-        android:pathData="M12.2,3.9 L12.2,12.5 L19.1,8.2 Z" />
+        android:pathData="M14.4,5.4 L14.4,11.4 L19.2,8.4 Z" />
 </vector>

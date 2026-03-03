@@ -15,8 +15,8 @@
 
         <ViewFlipper
             android:id="@+id/flame_flipper"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
+            android:layout_width="26dp"
+            android:layout_height="26dp"
             android:autoStart="true"
             android:flipInterval="1100">
 
@@ -40,8 +40,8 @@
 
         <ImageView
             android:id="@+id/check_tick"
-            android:layout_width="14dp"
-            android:layout_height="14dp"
+            android:layout_width="12dp"
+            android:layout_height="12dp"
             android:layout_gravity="bottom|end"
             android:src="@drawable/widget_check_tick"
             android:visibility="gone"

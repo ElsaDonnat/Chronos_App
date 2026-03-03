@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, forwardRef } from 'react';
-import { CATEGORY_CONFIG, getRelatedEvents } from '../data/events';
+import { CATEGORY_CONFIG, IMPORTANCE_CONFIG, getRelatedEvents } from '../data/events';
 
 /** Truncates text to `lines` lines with a "Read more / Less" toggle. */
 export function ExpandableText({ children, lines = 3, className = '', style = {} }) {
@@ -54,6 +54,19 @@ export function CategoryTag({ category }) {
     return (
         <span
             className="inline-flex items-center px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-wider rounded-md"
+            style={{ color: config.color, backgroundColor: config.bg }}
+        >
+            {config.label}
+        </span>
+    );
+}
+
+export function ImportanceTag({ importance }) {
+    const config = IMPORTANCE_CONFIG[importance];
+    if (!config) return null;
+    return (
+        <span
+            className="inline-flex items-center px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider rounded-md flex-shrink-0"
             style={{ color: config.color, backgroundColor: config.bg }}
         >
             {config.label}
@@ -162,6 +175,21 @@ export const Button = forwardRef(function Button({ children, onClick, variant = 
         }
     };
 
+    // Enlarge → arrows inside button text by 20%
+    const enlargeArrows = (node) => {
+        if (typeof node === 'string') {
+            if (!node.includes('\u2192')) return node;
+            return node.split(/(\u2192)/g).map((part, i) =>
+                part === '\u2192' ? <span key={i} style={{ fontSize: '1.2em', lineHeight: 1 }}>{'\u2192'}</span> : part
+            );
+        }
+        return node;
+    };
+
+    const processedChildren = Array.isArray(children)
+        ? children.map((child, i) => typeof child === 'string' ? <span key={i}>{enlargeArrows(child)}</span> : child)
+        : enlargeArrows(children);
+
     return (
         <button
             ref={ref}
@@ -174,7 +202,7 @@ export const Button = forwardRef(function Button({ children, onClick, variant = 
                 opacity: disabled ? 0.5 : 1,
             }}
         >
-            {children}
+            {processedChildren}
         </button>
     );
 });
@@ -265,7 +293,7 @@ export function ControversyNote({ note }) {
                     style={{ backgroundColor: 'rgba(139, 65, 87, 0.1)', color: 'var(--color-burgundy)' }}>
                     ?
                 </span>
-                {expanded ? 'Hide scholarly note' : 'Scholarly note on this answer'}
+                {expanded ? 'Hide scholarly note' : 'See scholarly note'}
             </button>
             {expanded && (
                 <div className="mt-2 px-3 py-2.5 rounded-lg text-xs leading-relaxed animate-fade-in"
@@ -280,6 +308,58 @@ export function ControversyNote({ note }) {
             )}
         </div>
     );
+}
+
+/**
+ * Animate a "+XP" badge from a source element to the TopBar star icon.
+ * Uses raw DOM + Web Animations API so it survives React unmounts.
+ * Returns a promise that resolves when the animation finishes.
+ */
+export function flyXPToStar(sourceEl, amount) {
+    return new Promise(resolve => {
+        const target = document.getElementById('xp-star-target');
+        if (!sourceEl || !target) { resolve(); return; }
+
+        const sr = sourceEl.getBoundingClientRect();
+        const tr = target.getBoundingClientRect();
+
+        const startX = sr.left + sr.width / 2;
+        const startY = sr.top + sr.height / 2;
+        const dx = (tr.left + tr.width / 2) - startX;
+        const dy = (tr.top + tr.height / 2) - startY;
+
+        const flyer = document.createElement('div');
+        flyer.innerHTML = `<span style="display:inline-flex;align-items:center;gap:3px;background:var(--color-parchment);border:2px solid var(--color-bronze);border-radius:20px;padding:4px 10px;font-size:14px;font-weight:700;color:var(--color-burgundy);box-shadow:0 4px 12px rgba(0,0,0,0.15);font-family:var(--font-serif);">\u2605 +${amount}</span>`;
+        Object.assign(flyer.style, {
+            position: 'fixed',
+            left: `${startX}px`,
+            top: `${startY}px`,
+            transform: 'translate(-50%, -50%)',
+            zIndex: '9999',
+            pointerEvents: 'none',
+        });
+        document.body.appendChild(flyer);
+
+        const anim = flyer.animate([
+            { transform: 'translate(-50%, -50%) scale(1.15)', opacity: 1, offset: 0 },
+            { transform: `translate(calc(-50% + ${dx * 0.4}px), calc(-50% + ${dy * 0.65}px)) scale(0.85)`, opacity: 0.9, offset: 0.45 },
+            { transform: `translate(calc(-50% + ${dx}px), calc(-50% + ${dy}px)) scale(0.4)`, opacity: 0, offset: 1 },
+        ], {
+            duration: 650,
+            easing: 'cubic-bezier(0.4, 0, 0.2, 1)',
+            fill: 'forwards',
+        });
+
+        anim.onfinish = () => {
+            flyer.remove();
+            // Pulse the star on arrival
+            const star = target.querySelector('svg') || target;
+            star.classList.remove('animate-number-pop');
+            void star.offsetWidth;
+            star.classList.add('animate-number-pop');
+            resolve();
+        };
+    });
 }
 
 export function AnimatedCounter({ value, prefix = '', duration = 600, delay = 0, className = '', style = {} }) {
@@ -345,8 +425,8 @@ export function EventConnections({ eventId, seenEventIds, onEventClick, showAll 
                     onClick={onEventClick ? (e) => { e.stopPropagation(); onEventClick(conn.id); } : undefined}
                 >
                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none"
-                         stroke={CATEGORY_CONFIG[conn.category]?.color || '#999'}
-                         strokeWidth="2.5" strokeLinecap="round" className="flex-shrink-0 mt-0.5">
+                        stroke={CATEGORY_CONFIG[conn.category]?.color || '#999'}
+                        strokeWidth="2.5" strokeLinecap="round" className="flex-shrink-0 mt-0.5">
                         <polyline points="9 18 15 12 9 6" />
                     </svg>
                     <div>

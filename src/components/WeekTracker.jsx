@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import { useApp } from '../context/AppContext';
 import { getEventById, getEraForYear, ERA_RANGES } from '../data/events';
 import { shareText } from '../services/share';
+import StreakFlame, { FLAME_COUNT_COLORS } from './StreakFlame';
 
 const DAY_LABELS = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
 
@@ -15,17 +16,10 @@ function getStreakStatus(lastActiveDate, currentStreak) {
     return 'inactive';
 }
 
-const FLAME_COLORS = {
-    active:    { stroke: '#E05500', fill: '#FF8C00', innerFill: '#FFB833', fillOpacity: 0.85, countColor: '#E05500' },
-    'at-risk': { stroke: '#C8A000', fill: '#E8D44C', fillOpacity: 0.5, countColor: '#C8A000' },
-    inactive:  { stroke: 'var(--color-ink-faint)', fill: 'var(--color-ink-faint)', fillOpacity: 0.3, countColor: 'var(--color-ink-faint)' },
-};
-
 export default function WeekTracker({ onClose }) {
     const { state } = useApp();
 
     const streakStatus = getStreakStatus(state.lastActiveDate, state.currentStreak);
-    const flameColors = FLAME_COLORS[streakStatus];
 
     // Compute week start (Monday)
     const weekStart = useMemo(() => {
@@ -126,14 +120,8 @@ export default function WeekTracker({ onClose }) {
                 <div className="px-5 pt-5 pb-3 text-center"
                     style={{ background: 'linear-gradient(to bottom, rgba(139, 65, 87, 0.06), transparent)' }}>
                     <div className="flex items-center justify-center gap-3 mb-2">
-                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" strokeLinecap="round" strokeLinejoin="round"
-                            className={streakStatus !== 'inactive' ? `streak-flame--${streakStatus}` : undefined}>
-                            <path d="M12 2c0 4-4 6-4 10a4 4 0 0 0 8 0c0-4-4-6-4-10z"
-                                stroke={flameColors.stroke} strokeWidth="1.5" fill={flameColors.fill} fillOpacity={flameColors.fillOpacity} />
-                            <path d="M12 22c-1.5 0-3-1-3-3 0-2 3-3 3-5 0 2 3 3 3 5 0 2-1.5 3-3 3z"
-                                fill={flameColors.innerFill || flameColors.fill} stroke="none" opacity="0.6" />
-                        </svg>
-                        <span className="text-3xl font-bold" style={{ color: flameColors.countColor }}>
+                        <StreakFlame status={streakStatus} size={32} />
+                        <span className="text-3xl font-bold" style={{ color: FLAME_COUNT_COLORS[streakStatus] }}>
                             {state.currentStreak}
                         </span>
                     </div>

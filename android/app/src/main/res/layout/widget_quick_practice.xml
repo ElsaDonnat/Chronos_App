@@ -21,29 +21,38 @@
 
     <ImageView
         android:id="@+id/practice_play_button"
-        android:layout_width="80dp"
-        android:layout_height="80dp"
+        android:layout_width="62dp"
+        android:layout_height="62dp"
         android:src="@drawable/widget_hourglass_play"
         android:scaleType="fitCenter"
-        android:layout_marginTop="4dp"
+        android:layout_marginTop="2dp"
         android:contentDescription="@null" />
 
     <TextView
         android:id="@+id/practice_label"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Quick Practice"
+        android:text="Quick Practice ✨"
         android:textSize="12sp"
         android:textStyle="bold"
         android:textColor="#1C1917"
-        android:layout_marginTop="4dp" />
+        android:layout_marginTop="2dp" />
+
+    <TextView
+        android:id="@+id/practice_reward_xp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Earn up to 60 XP"
+        android:textSize="11sp"
+        android:textColor="#8B4157"
+        android:layout_marginTop="1dp" />
 
     <LinearLayout
         android:id="@+id/practice_stats_row"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:layout_marginTop="4dp">
+        android:layout_marginTop="2dp">
 
         <TextView
             android:id="@+id/practice_streak"

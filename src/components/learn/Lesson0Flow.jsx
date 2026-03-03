@@ -2,7 +2,7 @@ import { useState, useMemo, useRef, useEffect } from 'react';
 import { useApp } from '../../context/AppContext';
 import { getEventById, ERA_BOUNDARY_EVENTS } from '../../data/events';
 import { SCORE_COLORS, getScoreLabel, shuffle } from '../../data/quiz';
-import { Card, Button, ProgressBar, Divider, ExpandableText, ControversyNote } from '../shared';
+import { Card, Button, ProgressBar, Divider, ExpandableText, ControversyNote, flyXPToStar } from '../shared';
 import Mascot from '../Mascot';
 import * as feedback from '../../services/feedback';
 
@@ -61,7 +61,9 @@ const EraIcon = ({ type, size = 36 }) => {
             </svg>
         ),
     };
-    return icons[type] || null;
+    const icon = icons[type];
+    if (!icon) return null;
+    return <span style={{ display: 'inline-block', lineHeight: 0 }}>{icon}</span>;
 };
 
 // ─── PHASES ────────────────────────────────────────────
@@ -95,13 +97,13 @@ const PERIODS = [
             title: 'The Medieval World',
             subtitle: '476 \– c. 1500 CE',
             keywords: 'Islam, feudalism, Mongols.',
-            description: 'Far from the "Dark Ages" of popular myth, this was an era of transformation. Islam rose and spread from Arabia to Iberia, the Byzantine Empire preserved Roman learning for a millennium, feudalism structured Western Europe, the Mongol Empire connected East and West, the Crusades reshaped Mediterranean trade, and Europe\’s first universities were founded. The era\’s arc runs from Rome\’s fall to the reconnection of the world.',
+            description: 'Far from the "Dark Ages" of popular myth, the Middle Ages were an era of transformation. Islam rose and spread from Arabia to Iberia, the Byzantine Empire preserved Roman learning for a millennium, feudalism structured Western Europe, the Mongol Empire connected East and West, the Crusades reshaped Mediterranean trade, and Europe\’s first universities were founded. The era\’s arc runs from Rome\’s fall to the reconnection of the world.',
             color: '#A0522D', iconType: 'medieval',
         },
         earlymodern: {
             title: 'The Early Modern Period',
             subtitle: 'c. 1500 \– 1789',
-            keywords: 'Exploration, Reformation, science.',
+            keywords: 'Exploration, Reformation, Enlightenment.',
             description: 'European exploration and colonization linked every continent for the first time. The Renaissance revived classical learning, the Reformation shattered religious unity, the Scientific Revolution overturned ancient certainties, and the Enlightenment challenged the divine right of kings. The Atlantic slave trade forcibly connected three continents. The arc is from a fragmented world to an interconnected one, ending when Enlightenment ideals erupted into revolution.',
             color: '#65774A', iconType: 'earlymodern',
         },
@@ -228,17 +230,20 @@ function generateQuizQuestions() {
         });
 
         // Q2: "What period?" — given date range, pick correct period name
-        const nameOptions = shuffle(PERIODS
-            .map(p => ({ id: p.id, label: p.title })));
-        questions.push({
-            type: 'event',
-            periodId: period.id,
-            prompt: period.subtitle,
-            promptIconType: null,
-            correctAnswer: period.title,
-            options: nameOptions.map(o => o.label),
-            correctDisplay: period.title,
-        });
+        // Only for medieval and earlymodern to keep the quiz concise
+        if (period.id === 'medieval' || period.id === 'earlymodern') {
+            const nameOptions = shuffle(PERIODS
+                .map(p => ({ id: p.id, label: p.title })));
+            questions.push({
+                type: 'event',
+                periodId: period.id,
+                prompt: period.subtitle,
+                promptIconType: null,
+                correctAnswer: period.title,
+                options: nameOptions.map(o => o.label),
+                correctDisplay: period.title,
+            });
+        }
     }
 
     // Q11: Matching — match all 5 eras to their real date ranges
@@ -386,7 +391,7 @@ export default function Lesson0Flow({ lesson, onComplete }) {
                             </p>
                             <Divider />
                             <ExpandableText lines={3} className="text-sm leading-relaxed mt-4" style={{ color: 'var(--color-ink-secondary)' }}>
-                                <strong style={{ color: 'var(--color-ink)' }}>{period.keywords}</strong>{' '}{period.description}
+                                <strong style={{ color: 'var(--color-ink)' }}>{period.keywords}</strong><span className="keyword-sep" aria-hidden="true" />{period.description}
                             </ExpandableText>
 
                             {/* Boundary events */}
@@ -856,8 +861,8 @@ export default function Lesson0Flow({ lesson, onComplete }) {
                     <Divider />
 
                     {/* XP Reward */}
-                    <div className="flex items-center justify-center gap-2 mt-3">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--color-bronze)" strokeWidth="2">
+                    <div id="xp-earned-display" className="flex items-center justify-center gap-2 mt-3 animate-xp-pop" style={{ animationDelay: '300ms' }}>
+                        <svg className="animate-xp-glow" style={{ animationDelay: '500ms' }} width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--color-bronze)" strokeWidth="2">
                             <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" fill="var(--color-bronze-light)" />
                         </svg>
                         <div className="text-left">
@@ -873,8 +878,10 @@ export default function Lesson0Flow({ lesson, onComplete }) {
                         </p>
                         <div className="flex justify-center gap-3">
                             {PERIODS.map(p => (
-                                <div key={p.id} className="text-center">
-                                    <EraIcon type={p.iconType} size={24} />
+                                <div key={p.id} className="text-center" style={{ width: '56px' }}>
+                                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '28px' }}>
+                                        <EraIcon type={p.iconType} size={24} />
+                                    </div>
                                     <p className="text-[9px] font-semibold mt-0.5" style={{ color: p.color }}>{p.title.replace('The ', '')}</p>
                                 </div>
                             ))}
@@ -882,9 +889,36 @@ export default function Lesson0Flow({ lesson, onComplete }) {
                     </div>
                 </Card>
 
+                {/* What's next in Chronos */}
+                <Card className="mt-4 text-left">
+                    <p className="text-[11px] uppercase tracking-wider font-semibold mb-3" style={{ color: 'var(--color-ink-faint)' }}>
+                        What's next in Chronos
+                    </p>
+                    <div className="flex gap-3 mb-3 items-start">
+                        <div className="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 text-[11px] font-bold"
+                            style={{ backgroundColor: 'var(--color-burgundy-soft)', color: 'var(--color-burgundy)' }}>1</div>
+                        <div>
+                            <p className="text-sm font-semibold" style={{ fontFamily: 'var(--font-serif)' }}>Level 1 — The Big Story</p>
+                            <p className="text-xs mt-0.5" style={{ color: 'var(--color-ink-muted)' }}>20 lessons · 60 events · Prehistory through the Modern World</p>
+                        </div>
+                    </div>
+                    <div className="flex gap-3 items-start">
+                        <div className="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 text-[11px] font-bold"
+                            style={{ backgroundColor: 'rgba(37, 99, 235, 0.12)', color: '#2563EB' }}>2</div>
+                        <div>
+                            <p className="text-sm font-semibold" style={{ fontFamily: 'var(--font-serif)' }}>Level 2 — Deep Dives</p>
+                            <p className="text-xs mt-0.5" style={{ color: 'var(--color-ink-muted)' }}>7 thematic chapters — Revolutions, AI, Freedom, Empires, Pandemics, Africa & Art</p>
+                        </div>
+                    </div>
+                </Card>
+
                 <div className="mt-6">
-                    <Button className="w-full" onClick={onComplete}>
-                        Continue
+                    <Button className="w-full" onClick={async () => {
+                        const el = document.getElementById('xp-earned-display');
+                        if (el) await flyXPToStar(el, xp);
+                        onComplete();
+                    }}>
+                        Start Learning
                     </Button>
                 </div>
 

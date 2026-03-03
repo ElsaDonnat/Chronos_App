@@ -15,13 +15,15 @@ import LessonIcon from '../components/LessonIcon';
 export default function LearnPage({ onSessionChange, registerBackHandler, onTabChange }) {
     const { state, dispatch } = useApp();
     const [activeLessonId, setActiveLessonId] = useState(null);
-    const [selectedCards, setSelectedCards] = useState(3);
-    const [selectedRecap, setSelectedRecap] = useState(2);
     const [showPlacement, setShowPlacement] = useState(null);
     const [showDailyQuiz, setShowDailyQuiz] = useState(false);
     const [expandedEra, setExpandedEra] = useState(null);
+    const [expandedChapter, setExpandedChapter] = useState(null);
     const [paceWarningLessonId, setPaceWarningLessonId] = useState(null);
     const [dailyCompletedExpanded, setDailyCompletedExpanded] = useState(false);
+    const [settingsTipDismissed, setSettingsTipDismissed] = useState(
+        () => !!localStorage.getItem('chronos-settings-tip-seen')
+    );
 
     // Level 2 unlocks after completing the Prologue (Lesson 0)
     const isLevel2Unlocked = !!state.completedLessons['lesson-0'];
@@ -189,27 +191,27 @@ export default function LearnPage({ onSessionChange, registerBackHandler, onTabC
         <div className="py-2 sm:py-6">
             {/* Level toggle pills — only show when Level 2 is unlocked */}
             {isLevel2Unlocked && (
-            <div className="flex items-center justify-center gap-1.5 mb-4">
-                {[1, 2].map(level => {
-                    const isActive = activeLevel === level;
-                    return (
-                        <button key={level} onClick={() => switchLevel(level)}
-                            className="transition-all cursor-pointer"
-                            style={{
-                                padding: '5px 18px',
-                                borderRadius: '20px',
-                                fontSize: '13px',
-                                fontWeight: isActive ? 700 : 500,
-                                fontFamily: 'var(--font-serif)',
-                                backgroundColor: isActive ? 'var(--color-burgundy)' : 'transparent',
-                                color: isActive ? 'white' : 'var(--color-ink-secondary)',
-                                border: isActive ? '1.5px solid var(--color-burgundy)' : '1.5px solid rgba(var(--color-ink-rgb), 0.12)',
-                            }}>
-                            Level {level}
-                        </button>
-                    );
-                })}
-            </div>
+                <div className="flex items-center justify-center gap-1.5 mb-4">
+                    {[1, 2].map(level => {
+                        const isActive = activeLevel === level;
+                        return (
+                            <button key={level} onClick={() => switchLevel(level)}
+                                className="transition-all cursor-pointer"
+                                style={{
+                                    padding: '5px 18px',
+                                    borderRadius: '20px',
+                                    fontSize: '13px',
+                                    fontWeight: isActive ? 700 : 500,
+                                    fontFamily: 'var(--font-serif)',
+                                    backgroundColor: isActive ? 'var(--color-burgundy)' : 'transparent',
+                                    color: isActive ? 'white' : 'var(--color-ink-secondary)',
+                                    border: isActive ? '1.5px solid var(--color-burgundy)' : '1.5px solid rgba(var(--color-ink-rgb), 0.12)',
+                                }}>
+                                Level {level}
+                            </button>
+                        );
+                    })}
+                </div>
             )}
 
             {/* Level 2 unlock banner — shown once after completing the Prologue */}
@@ -240,669 +242,650 @@ export default function LearnPage({ onSessionChange, registerBackHandler, onTabC
 
             <div onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd}>
 
-            {activeLevel === 1 ? (
-            <div key="level1" className={`slide-from-${slideDirection}`}>
-            <div className="text-center mb-4">
-                <h1 className="learn-page-title font-bold" style={{ fontFamily: 'var(--font-serif)', color: 'var(--color-ink)' }}>
-                    The Story of Humanity
-                </h1>
-                <p className="learn-page-subtitle mt-0.5" style={{ color: 'var(--color-ink-muted)' }}>
-                    60 events across 20 lessons
-                </p>
-            </div>
-
-            {/* Daily Quiz card — 3 states: not started / retry / completed */}
-            {dailyData && !isDailyStarted && !isDailyCompleted && (
-                <Card
-                    onClick={() => setShowDailyQuiz(true)}
-                    className="mb-4 animate-fade-in daily-quiz-card"
-                    style={{
-                        borderLeft: '3px solid #E6A817',
-                        backgroundColor: 'rgba(230, 168, 23, 0.04)',
-                    }}
-                >
-                    <div className="flex items-start gap-3">
-                        <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
-                            style={{ backgroundColor: 'rgba(230,168,23,0.12)' }}>
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#B8860B" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
-                                <line x1="16" y1="2" x2="16" y2="6" />
-                                <line x1="8" y1="2" x2="8" y2="6" />
-                                <line x1="3" y1="10" x2="21" y2="10" />
-                            </svg>
-                        </div>
-                        <div className="flex-1 min-w-0">
-                            <div className="flex items-center gap-2 mb-0.5">
-                                <h3 className="text-sm font-bold" style={{ fontFamily: 'var(--font-serif)' }}>
-                                    This Day in History
-                                </h3>
-                                <span className="daily-quiz-bonus-pill-sm">{'2\× XP'}</span>
-                            </div>
-                            <p className="text-xs" style={{ color: 'var(--color-ink-muted)' }}>
-                                {dailyData.dateLabel} {'—'} {dailyData.eventIds.map(id => getEventById(id)?.year).filter(Boolean).join(' · ')}
+                {activeLevel === 1 ? (
+                    <div key="level1" className={`slide-from-${slideDirection}`}>
+                        <div className="text-center mb-4">
+                            <h1 className="learn-page-title font-bold" style={{ fontFamily: 'var(--font-serif)', color: 'var(--color-ink)' }}>
+                                The Story of Humanity
+                            </h1>
+                            <p className="learn-page-subtitle mt-0.5" style={{ color: 'var(--color-ink-muted)' }}>
+                                60 events across 20 lessons
                             </p>
                         </div>
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#B8860B" strokeWidth="2" className="flex-shrink-0 mt-1">
-                            <polyline points="9 18 15 12 9 6" />
-                        </svg>
-                    </div>
-                </Card>
-            )}
 
-            {/* Daily Quiz — started but not finished */}
-            {dailyData && isDailyStarted && (
-                <Card
-                    onClick={() => setShowDailyQuiz(true)}
-                    className="mb-4 animate-fade-in daily-quiz-card"
-                    style={{
-                        borderLeft: '3px solid #E6A817',
-                        backgroundColor: 'rgba(230, 168, 23, 0.06)',
-                    }}
-                >
-                    <div className="flex items-start gap-3">
-                        <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
-                            style={{ backgroundColor: 'rgba(230,168,23,0.15)' }}>
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#B8860B" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                <polygon points="5 3 19 12 5 21 5 3" />
-                            </svg>
-                        </div>
-                        <div className="flex-1 min-w-0">
-                            <h3 className="text-sm font-bold mb-0.5" style={{ fontFamily: 'var(--font-serif)' }}>
-                                Continue Today's Quiz
-                            </h3>
-                            <p className="text-xs" style={{ color: 'var(--color-ink-muted)' }}>
-                                {dailyData.dateLabel} {'—'} pick up where you left off
-                            </p>
-                        </div>
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#B8860B" strokeWidth="2" className="flex-shrink-0 mt-1">
-                            <polyline points="9 18 15 12 9 6" />
-                        </svg>
-                    </div>
-                </Card>
-            )}
-
-            {/* Daily Quiz — completed: collapsed banner or expanded cards */}
-            {dailyData && isDailyCompleted && !dailyCompletedExpanded && (
-                <button
-                    onClick={() => setDailyCompletedExpanded(true)}
-                    className="w-full mb-4 animate-fade-in flex items-center gap-2 px-3 py-2 rounded-xl cursor-pointer"
-                    style={{
-                        backgroundColor: 'rgba(230, 168, 23, 0.10)',
-                        border: '1px solid rgba(230, 168, 23, 0.25)',
-                    }}
-                >
-                    <div className="w-6 h-6 rounded-md flex items-center justify-center flex-shrink-0"
-                        style={{ backgroundColor: 'rgba(5, 150, 105, 0.15)' }}>
-                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#059669" strokeWidth="3">
-                            <polyline points="20 6 9 17 4 12" />
-                        </svg>
-                    </div>
-                    <span className="text-xs font-semibold flex-1 text-left" style={{ color: '#8B6914' }}>
-                        Today's Quiz Complete
-                    </span>
-                    {state.dailyQuiz?.lastXPEarned > 0 && (
-                        <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full"
-                            style={{ backgroundColor: 'rgba(5, 150, 105, 0.1)', color: '#059669' }}>
-                            +{state.dailyQuiz.lastXPEarned} XP
-                        </span>
-                    )}
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#B8860B" strokeWidth="2" className="flex-shrink-0">
-                        <polyline points="6 9 12 15 18 9" />
-                    </svg>
-                </button>
-            )}
-            {dailyData && isDailyCompleted && dailyCompletedExpanded && (
-                <Card
-                    className="mb-4 animate-fade-in daily-quiz-card"
-                    style={{
-                        borderLeft: '3px solid #059669',
-                        backgroundColor: 'rgba(5, 150, 105, 0.04)',
-                    }}
-                >
-                    <button
-                        onClick={() => setDailyCompletedExpanded(false)}
-                        className="w-full flex items-center gap-2 mb-2 cursor-pointer"
-                    >
-                        <div className="w-6 h-6 rounded-md flex items-center justify-center flex-shrink-0"
-                            style={{ backgroundColor: 'rgba(5, 150, 105, 0.12)' }}>
-                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#059669" strokeWidth="3">
-                                <polyline points="20 6 9 17 4 12" />
-                            </svg>
-                        </div>
-                        <h3 className="text-sm font-bold flex-1 text-left" style={{ fontFamily: 'var(--font-serif)' }}>
-                            Today's Quiz {'\u2014'} Complete
-                        </h3>
-                        {state.dailyQuiz?.lastXPEarned > 0 && (
-                            <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full"
-                                style={{ backgroundColor: 'rgba(5, 150, 105, 0.1)', color: '#059669' }}>
-                                +{state.dailyQuiz.lastXPEarned} XP
-                            </span>
-                        )}
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--color-ink-faint)" strokeWidth="2" className="flex-shrink-0">
-                            <polyline points="18 15 12 9 6 15" />
-                        </svg>
-                    </button>
-                    <div className="space-y-1.5">
-                        {todayEvents.map(event => (
-                            <button
-                                key={event.id}
-                                className="w-full flex items-center gap-3 p-2 rounded-xl transition-colors"
-                                style={{ backgroundColor: 'rgba(230, 168, 23, 0.05)', cursor: 'pointer' }}
-                                onClick={() => {
-                                    window.CHRONOS_OPEN_EVENT = event.id;
-                                    onTabChange?.('timeline');
+                        {/* Daily Quiz card — 3 states: not started / retry / completed */}
+                        {dailyData && !isDailyStarted && !isDailyCompleted && (
+                            <Card
+                                onClick={() => setShowDailyQuiz(true)}
+                                className="mb-4 animate-fade-in daily-quiz-card"
+                                style={{
+                                    borderLeft: '3px solid #E6A817',
+                                    backgroundColor: 'rgba(230, 168, 23, 0.04)',
                                 }}
                             >
-                                <span className="text-xs font-bold flex-shrink-0" style={{ color: '#8B6914', fontFamily: 'var(--font-serif)', minWidth: '3rem' }}>
-                                    {event.year}
-                                </span>
-                                <span className="text-sm font-medium flex-1 text-left" style={{ color: 'var(--color-ink)' }}>
-                                    {event.title}
-                                </span>
-                                <DiHBadge />
-                            </button>
-                        ))}
-                    </div>
-                </Card>
-            )}
-
-            {/* Weekly insights teaser — opens WeekTracker modal */}
-            {showWeeklyInsights && (
-                <Card
-                    onClick={() => window.dispatchEvent(new Event('openWeekTracker'))}
-                    className="mb-4 animate-fade-in"
-                    style={{ borderLeft: '3px solid #8B6DB5', backgroundColor: 'rgba(140, 100, 180, 0.04)' }}
-                >
-                    <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
-                            style={{ backgroundColor: 'rgba(140, 100, 180, 0.12)' }}>
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#7C5BAD" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
-                            </svg>
-                        </div>
-                        <div className="flex-1 min-w-0">
-                            <h3 className="text-sm font-bold mb-0.5" style={{ fontFamily: 'var(--font-serif)' }}>
-                                This Week
-                            </h3>
-                            <p className="text-xs" style={{ color: 'var(--color-ink-muted)' }}>
-                                {weeklyInsights.sessions} {weeklyInsights.sessions === 1 ? 'session' : 'sessions'} {'\u00B7'} {weeklyInsights.weekQuestions} questions {'\u00B7'} {weeklyInsights.weekSeconds >= 60 ? `${Math.floor(weeklyInsights.weekSeconds / 60)}m` : `${weeklyInsights.weekSeconds}s`}
-                            </p>
-                        </div>
-                        <div className="flex items-center gap-2 flex-shrink-0">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#8B6DB5" strokeWidth="2">
-                                <polyline points="9 18 15 12 9 6" />
-                            </svg>
-                            <button onClick={(e) => {
-                                e.stopPropagation();
-                                setWeekInsightsDismissed(true);
-                                localStorage.setItem('chronos-weekly-dismissed', new Date().toISOString().split('T')[0]);
-                            }} className="p-1 -mr-1" style={{ color: 'var(--color-ink-faint)' }}>
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                    <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
-                                </svg>
-                            </button>
-                        </div>
-                    </div>
-                </Card>
-            )}
-
-            {/* Onboarding guide overlay for lesson 0 */}
-            {isOnboardingGuide && (
-                <div className="mb-4 animate-fade-in">
-                    <Card className="p-4" style={{ backgroundColor: 'rgba(139, 65, 87, 0.06)', border: '1px dashed var(--color-burgundy)' }}>
-                        <div className="flex items-center gap-3">
-                            <span className="text-xl">👇</span>
-                            <div className="flex-1">
-                                <p className="text-sm font-semibold" style={{ color: 'var(--color-burgundy)' }}>
-                                    Tap the Prologue below to start!
-                                </p>
-                                <p className="text-xs mt-0.5" style={{ color: 'var(--color-ink-muted)' }}>
-                                    It's a quick overview of the 5 eras of history.
-                                </p>
-                            </div>
-                        </div>
-                    </Card>
-                </div>
-            )}
-
-            <div className="space-y-3">
-                {LESSONS.map((lesson, index) => {
-                    const isUnlocked = index === 0 || state.completedLessons[LESSONS[index - 1].id];
-                    const isCompleted = state.completedLessons[lesson.id];
-                    const isLesson0 = !!lesson.isLesson0;
-                    const events = isLesson0 ? [] : getEventsByIds(lesson.eventIds);
-                    const masteryData = isLesson0 ? [] : lesson.eventIds.map(id => state.eventMastery[id]).filter(Boolean);
-                    const isSkipped = !isLesson0 && lesson.eventIds.every(id => (state.skippedEvents || []).includes(id));
-
-                    // Pulse lesson 0 during onboarding guide
-                    const pulseLesson0 = isOnboardingGuide && isLesson0;
-
-                    // Era skip-ahead divider after this lesson?
-                    const eraGroup = lessonEraEndMap[lesson.id];
-                    const showEraSkip = showSkipDividers && eraGroup
-                        && !state.placementQuizzes[eraGroup.id]?.passed;
-                    const eraUnlocked = showEraSkip ? isPlacementQuizUnlocked(eraGroup.id, state.placementQuizzes) : false;
-                    const isEraExpanded = showEraSkip ? expandedEra === eraGroup.id : false;
-
-                    return (
-                        <Fragment key={lesson.id}>
-                        <Card
-                            onClick={isUnlocked ? () => handleLessonClick(lesson.id) : undefined}
-                            className={`lesson-card-row animate-fade-in-up ${!isUnlocked ? 'relative overflow-hidden' : ''} ${pulseLesson0 ? 'onboarding-pulse' : ''}`}
-                            style={{
-                                animationDelay: `${index * 60}ms`,
-                                animationFillMode: 'backwards',
-                                backgroundColor: isCompleted ? 'rgba(5, 150, 105, 0.04)' : 'var(--color-card)',
-                            }}
-                        >
-                            {/* Locked lesson: faded icon background + lock badge */}
-                            {!isUnlocked && (
-                                <>
-                                    <span className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none select-none"
-                                        style={{ opacity: 0.06 }}>
-                                        <LessonIcon index={lesson.number} size={48} color="var(--color-ink)" />
-                                    </span>
-                                    <div className="absolute top-2 right-2">
-                                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--color-ink-muted)" strokeWidth="2.5" opacity="0.45">
-                                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
-                                            <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                                <div className="flex items-start gap-3">
+                                    <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
+                                        style={{ backgroundColor: 'rgba(230,168,23,0.12)' }}>
+                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#B8860B" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+                                            <line x1="16" y1="2" x2="16" y2="6" />
+                                            <line x1="8" y1="2" x2="8" y2="6" />
+                                            <line x1="3" y1="10" x2="21" y2="10" />
                                         </svg>
                                     </div>
-                                </>
-                            )}
-                            <div className="flex items-center gap-4">
-                                {/* Progress indicator */}
-                                <div className="flex-shrink-0">
-                                    <div className="relative">
-                                        <div className="w-11 h-11 rounded-full flex items-center justify-center" style={{
-                                            backgroundColor: !isUnlocked ? 'rgba(var(--color-ink-rgb), 0.06)' :
-                                                isCompleted ? 'rgba(5, 150, 105, 0.10)' : 'rgba(139, 65, 87, 0.04)',
-                                            border: !isUnlocked ? '1.5px solid rgba(var(--color-ink-rgb), 0.10)' :
-                                                isCompleted ? '2px solid rgba(5, 150, 105, 0.35)' : '2px solid var(--color-burgundy)',
-                                        }}>
-                                            <span style={{ opacity: isUnlocked ? 1 : 0.55 }}>
-                                                <LessonIcon index={lesson.number} size={20} color={isCompleted ? 'var(--color-success)' : 'var(--color-burgundy)'} />
-                                            </span>
+                                    <div className="flex-1 min-w-0">
+                                        <div className="flex items-center gap-2 mb-0.5">
+                                            <h3 className="text-sm font-bold" style={{ fontFamily: 'var(--font-serif)' }}>
+                                                This Day in History
+                                            </h3>
+                                            <span className="daily-quiz-bonus-pill-sm">{'2\× XP'}</span>
                                         </div>
-                                        {isUnlocked && isCompleted && (
-                                            <div className="absolute -bottom-0.5 -right-0.5 w-[18px] h-[18px] rounded-full flex items-center justify-center"
-                                                style={{ backgroundColor: 'var(--color-success)', boxShadow: '0 0 0 2px var(--color-card)' }}>
-                                                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3.5">
-                                                    <polyline points="20 6 9 17 4 12" />
-                                                </svg>
-                                            </div>
-                                        )}
-                                        {isUnlocked && !isCompleted && (
-                                            <div className="absolute -bottom-0.5 -right-0.5 rounded-full flex items-center justify-center px-1 py-px"
-                                                style={{ backgroundColor: 'var(--color-burgundy)', boxShadow: '0 0 0 2px var(--color-card)' }}>
-                                                <span className="text-[8px] font-bold uppercase text-white leading-none">New</span>
-                                            </div>
-                                        )}
+                                        <p className="text-xs" style={{ color: 'var(--color-ink-muted)' }}>
+                                            {dailyData.dateLabel} {'—'} {dailyData.eventIds.map(id => getEventById(id)?.year).filter(Boolean).join(' · ')}
+                                        </p>
                                     </div>
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#B8860B" strokeWidth="2" className="flex-shrink-0 mt-1">
+                                        <polyline points="9 18 15 12 9 6" />
+                                    </svg>
                                 </div>
-
-                                {/* Content */}
-                                <div className="flex-1 min-w-0">
-                                    <div className="flex items-center gap-2 mb-0.5">
-                                        <span className="text-[11px] font-medium uppercase tracking-wider" style={{ color: 'var(--color-ink-faint)' }}>
-                                            {isLesson0 ? 'Prologue' : `Lesson ${lesson.number}`}
-                                        </span>
-                                        {isSkipped && (
-                                            <span className="text-[9px] font-bold uppercase px-1.5 py-0.5 rounded"
-                                                style={{ backgroundColor: 'rgba(139, 65, 87, 0.08)', color: 'var(--color-burgundy)' }}>
-                                                Placed
-                                            </span>
-                                        )}
-                                        {masteryData.length > 0 && (
-                                            <div className="flex gap-0.5">
-                                                {lesson.eventIds.slice(0, 7).map(id => {
-                                                    const m = state.eventMastery[id];
-                                                    return (
-                                                        <div key={id} className="w-1.5 h-1.5 rounded-full" style={{
-                                                            backgroundColor: m ? (
-                                                                m.overallMastery >= 7 ? 'var(--color-success)' :
-                                                                    m.overallMastery >= 3 ? 'var(--color-warning)' : 'var(--color-error)'
-                                                            ) : 'var(--color-ink-faint)',
-                                                            opacity: m ? 1 : 0.2
-                                                        }} />
-                                                    );
-                                                })}
-                                            </div>
-                                        )}
-                                    </div>
-                                    <h3 className="text-base font-bold leading-tight" style={{ fontFamily: 'var(--font-serif)', color: isUnlocked ? 'var(--color-ink)' : 'var(--color-ink-faint)' }}>
-                                        {lesson.title}
-                                    </h3>
-                                    <p className="text-sm mt-0.5" style={{ color: isUnlocked ? 'var(--color-ink-muted)' : 'var(--color-ink-faint)' }}>
-                                        {lesson.subtitle}
-                                    </p>
-                                </div>
-
-                                {/* Right side: event count + arrow */}
-                                <div className="flex items-center gap-3 flex-shrink-0">
-                                    {isUnlocked && (
-                                        <>
-                                            <span className="text-xs hidden sm:block" style={{ color: 'var(--color-ink-faint)' }}>
-                                                {isLesson0 ? '5 eras' : `${events.length} events`}
-                                            </span>
-                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-ink-faint)" strokeWidth="2" className="flex-shrink-0">
-                                                <polyline points="9 18 15 12 9 6" />
-                                            </svg>
-                                        </>
-                                    )}
-                                </div>
-                            </div>
-                        </Card>
-                        {showEraSkip && (
-                            <div className="my-1">
-                                <button
-                                    onClick={() => setExpandedEra(isEraExpanded ? null : eraGroup.id)}
-                                    className="w-full flex items-center gap-3 group"
-                                    style={{ cursor: 'pointer' }}
-                                >
-                                    <div className="flex-1 h-px" style={{ backgroundColor: 'rgba(139, 65, 87, 0.15)' }} />
-                                    <div className="flex items-center gap-1.5 px-2 py-1 rounded-full transition-colors"
-                                        style={{ backgroundColor: isEraExpanded ? 'rgba(139, 65, 87, 0.08)' : 'transparent' }}>
-                                        <span className="text-sm">🎓</span>
-                                        <span className="text-[11px] font-semibold uppercase tracking-wider" style={{ color: 'var(--color-burgundy)' }}>
-                                            Skip {eraGroup.label.replace(/^The /, '')}
-                                        </span>
-                                    </div>
-                                    <div className="flex-1 h-px" style={{ backgroundColor: 'rgba(139, 65, 87, 0.15)' }} />
-                                </button>
-                                {isEraExpanded && (
-                                    <Card className="mt-2 p-4 animate-fade-in" style={{ borderLeft: '3px solid var(--color-burgundy)' }}>
-                                        <div className="flex items-center gap-3">
-                                            <div className="flex-1 min-w-0">
-                                                <h3 className="text-sm font-bold" style={{ fontFamily: 'var(--font-serif)' }}>
-                                                    {eraGroup.label}
-                                                </h3>
-                                                <p className="text-xs mt-0.5" style={{ color: 'var(--color-ink-muted)' }}>
-                                                    {eraGroup.questionCount} questions {'·'} {eraGroup.lessonIds.length} lessons
-                                                </p>
-                                            </div>
-                                            {eraUnlocked ? (
-                                                <Button onClick={() => setShowPlacement(eraGroup.id)} style={{ fontSize: '12px', padding: '6px 12px' }}>
-                                                    Take Quiz
-                                                </Button>
-                                            ) : (
-                                                <span className="text-[10px] font-medium px-2.5 py-1 rounded-full whitespace-nowrap"
-                                                    style={{ backgroundColor: 'rgba(var(--color-ink-rgb), 0.06)', color: 'var(--color-ink-muted)' }}>
-                                                    Pass previous era first
-                                                </span>
-                                            )}
-                                        </div>
-                                    </Card>
-                                )}
-                            </div>
+                            </Card>
                         )}
-                        </Fragment>
-                    );
-                })}
-            </div>
 
-            {/* First-launch lesson settings chooser */}
-            {Object.keys(state.completedLessons).length === 0 && state.cardsPerLesson === undefined && (() => {
-                const totalQ = selectedCards * (2 + selectedRecap);
-                const estMin = Math.max(1, Math.round(totalQ / 2));
-                return (
-                    <Card className="mt-6 p-5 animate-fade-in">
-                        <div className="text-center mb-3">
-                            <Mascot mood="happy" size={52} />
-                        </div>
-                        <h3 className="text-base font-bold text-center mb-1" style={{ fontFamily: 'var(--font-serif)', color: 'var(--color-ink)' }}>
-                            How much time do you have?
-                        </h3>
-                        <p className="text-xs text-center mb-4" style={{ color: 'var(--color-ink-muted)' }}>
-                            Customize your lesson length. You can change this later in settings.
-                        </p>
-
-                        {/* Cards per lesson */}
-                        <div className="text-xs font-semibold mb-2" style={{ color: 'var(--color-ink-secondary)' }}>Cards per Lesson</div>
-                        <div className="flex gap-2 mb-4">
-                            {[1, 2, 3].map(n => {
-                                const isActive = selectedCards === n;
-                                return (
-                                    <button
-                                        key={n}
-                                        onClick={() => setSelectedCards(n)}
-                                        className="flex-1 py-2.5 rounded-xl text-sm font-semibold transition-colors"
-                                        style={{
-                                            backgroundColor: isActive ? 'var(--color-burgundy)' : 'var(--color-card)',
-                                            color: isActive ? 'white' : 'var(--color-ink-secondary)',
-                                            border: isActive ? 'none' : '1px solid rgba(var(--color-ink-rgb), 0.08)',
-                                        }}
-                                    >
-                                        {n} {n === 1 ? 'card' : 'cards'}
-                                    </button>
-                                );
-                            })}
-                        </div>
-
-                        {/* Recap intensity */}
-                        <div className="text-xs font-semibold mb-2" style={{ color: 'var(--color-ink-secondary)' }}>Recap Intensity</div>
-                        <div className="flex gap-2 mb-1">
-                            {[
-                                { value: 0, label: 'Off' },
-                                { value: 1, label: 'Light' },
-                                { value: 2, label: 'Full' },
-                            ].map(({ value, label }) => {
-                                const isActive = selectedRecap === value;
-                                return (
-                                    <button
-                                        key={value}
-                                        onClick={() => setSelectedRecap(value)}
-                                        className="flex-1 py-2.5 rounded-xl text-sm font-semibold transition-colors"
-                                        style={{
-                                            backgroundColor: isActive ? 'var(--color-burgundy)' : 'var(--color-card)',
-                                            color: isActive ? 'white' : 'var(--color-ink-secondary)',
-                                            border: isActive ? 'none' : '1px solid rgba(var(--color-ink-rgb), 0.08)',
-                                        }}
-                                    >
-                                        {label}
-                                    </button>
-                                );
-                            })}
-                        </div>
-                        <div className="flex gap-2 mb-4">
-                            <span className="flex-1 text-center text-[11px]" style={{ color: 'var(--color-ink-faint)' }}>No recap</span>
-                            <span className="flex-1 text-center text-[11px]" style={{ color: 'var(--color-ink-faint)' }}>1 per card</span>
-                            <span className="flex-1 text-center text-[11px]" style={{ color: 'var(--color-ink-faint)' }}>2 per card</span>
-                        </div>
-
-                        {/* Summary + confirm */}
-                        <p className="text-xs text-center mb-4" style={{ color: 'var(--color-ink-secondary)' }}>
-                            {totalQ} questions per lesson · ~{estMin} min
-                        </p>
-                        <Button className="w-full" onClick={() => {
-                            dispatch({ type: 'SET_CARDS_PER_LESSON', value: selectedCards });
-                            dispatch({ type: 'SET_RECAP_PER_CARD', value: selectedRecap });
-                        }}>
-                            Start Learning
-                        </Button>
-                    </Card>
-                );
-            })()}
-
-            {/* Empty state mascot (shown after setting is chosen or for returning users with no completions) */}
-            {Object.keys(state.completedLessons).length === 0 && state.cardsPerLesson !== undefined && (
-                <div className="text-center mt-10 animate-fade-in">
-                    <Mascot mood="happy" size={60} />
-                    <p className="text-sm mt-2" style={{ color: 'var(--color-ink-muted)', fontFamily: 'var(--font-serif)' }}>
-                        Start your journey through history!
-                    </p>
-                </div>
-            )}
-
-            </div>
-            ) : (
-            <div key="level2" className={`slide-from-${slideDirection}`}>
-
-            <div className="text-center mb-6">
-                <h1 className="learn-page-title font-bold" style={{ fontFamily: 'var(--font-serif)', color: 'var(--color-ink)' }}>
-                    Deep Dives
-                </h1>
-                <p className="learn-page-subtitle mt-0.5" style={{ color: 'var(--color-ink-muted)' }}>
-                    Topic-based chapters you can start anytime
-                </p>
-            </div>
-
-            {LEVEL2_CHAPTERS.map(chapter => {
-                const chCompletedCount = chapter.lessons.filter(l => state.completedLessons[l.id]).length;
-                const chTotalCount = chapter.lessons.length;
-                const chEventCount = [...new Set(chapter.lessons.flatMap(l => l.eventIds))].length;
-
-                return (
-                    <div key={chapter.id} className="mb-8 animate-fade-in">
-                        {/* Chapter header card */}
-                        <Card className="mb-3 p-4" style={{
-                            borderLeft: `3px solid ${chapter.color}`,
-                            backgroundColor: `${chapter.color}08`,
-                        }}>
-                            <div className="flex items-center gap-3">
-                                <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
-                                    style={{ backgroundColor: `${chapter.color}15` }}>
-                                    <LessonIcon index={chapter.iconIndex || 6} size={20} color={chapter.color} />
+                        {/* Daily Quiz — started but not finished */}
+                        {dailyData && isDailyStarted && (
+                            <Card
+                                onClick={() => setShowDailyQuiz(true)}
+                                className="mb-4 animate-fade-in daily-quiz-card"
+                                style={{
+                                    borderLeft: '3px solid #E6A817',
+                                    backgroundColor: 'rgba(230, 168, 23, 0.06)',
+                                }}
+                            >
+                                <div className="flex items-start gap-3">
+                                    <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
+                                        style={{ backgroundColor: 'rgba(230,168,23,0.15)' }}>
+                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#B8860B" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                            <polygon points="5 3 19 12 5 21 5 3" />
+                                        </svg>
+                                    </div>
+                                    <div className="flex-1 min-w-0">
+                                        <h3 className="text-sm font-bold mb-0.5" style={{ fontFamily: 'var(--font-serif)' }}>
+                                            Continue Today's Quiz
+                                        </h3>
+                                        <p className="text-xs" style={{ color: 'var(--color-ink-muted)' }}>
+                                            {dailyData.dateLabel} {'—'} pick up where you left off
+                                        </p>
+                                    </div>
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#B8860B" strokeWidth="2" className="flex-shrink-0 mt-1">
+                                        <polyline points="9 18 15 12 9 6" />
+                                    </svg>
                                 </div>
-                                <div className="flex-1 min-w-0">
-                                    <h3 className="text-base font-bold leading-tight"
-                                        style={{ fontFamily: 'var(--font-serif)', color: 'var(--color-ink)' }}>
-                                        {chapter.title}
-                                    </h3>
-                                    <p className="text-xs mt-0.5" style={{ color: 'var(--color-ink-muted)' }}>
-                                        {chapter.subtitle} {'\u00B7'} {chEventCount} events
-                                    </p>
+                            </Card>
+                        )}
+
+                        {/* Daily Quiz — completed: collapsed banner or expanded cards */}
+                        {dailyData && isDailyCompleted && !dailyCompletedExpanded && (
+                            <button
+                                onClick={() => setDailyCompletedExpanded(true)}
+                                className="w-full mb-4 animate-fade-in flex items-center gap-2 px-3 py-2 rounded-xl cursor-pointer"
+                                style={{
+                                    backgroundColor: 'rgba(230, 168, 23, 0.10)',
+                                    border: '1px solid rgba(230, 168, 23, 0.25)',
+                                }}
+                            >
+                                <div className="w-6 h-6 rounded-md flex items-center justify-center flex-shrink-0"
+                                    style={{ backgroundColor: 'rgba(5, 150, 105, 0.15)' }}>
+                                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#059669" strokeWidth="3">
+                                        <polyline points="20 6 9 17 4 12" />
+                                    </svg>
                                 </div>
-                                {chCompletedCount > 0 && (
-                                    <span className="text-[10px] font-bold px-2 py-1 rounded-full"
-                                        style={{
-                                            backgroundColor: chCompletedCount === chTotalCount
-                                                ? 'rgba(5, 150, 105, 0.1)' : `${chapter.color}15`,
-                                            color: chCompletedCount === chTotalCount
-                                                ? 'var(--color-success)' : chapter.color,
-                                        }}>
-                                        {chCompletedCount}/{chTotalCount}
+                                <span className="text-xs font-semibold flex-1 text-left" style={{ color: '#8B6914' }}>
+                                    Today's Quiz Complete
+                                </span>
+                                {state.dailyQuiz?.lastXPEarned > 0 && (
+                                    <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full"
+                                        style={{ backgroundColor: 'rgba(5, 150, 105, 0.1)', color: '#059669' }}>
+                                        +{state.dailyQuiz.lastXPEarned} XP
                                     </span>
                                 )}
-                            </div>
-                        </Card>
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#B8860B" strokeWidth="2" className="flex-shrink-0">
+                                    <polyline points="6 9 12 15 18 9" />
+                                </svg>
+                            </button>
+                        )}
+                        {dailyData && isDailyCompleted && dailyCompletedExpanded && (
+                            <Card
+                                className="mb-4 animate-fade-in daily-quiz-card"
+                                style={{
+                                    borderLeft: '3px solid #059669',
+                                    backgroundColor: 'rgba(5, 150, 105, 0.04)',
+                                }}
+                            >
+                                <button
+                                    onClick={() => setDailyCompletedExpanded(false)}
+                                    className="w-full flex items-center gap-2 mb-2 cursor-pointer"
+                                >
+                                    <div className="w-6 h-6 rounded-md flex items-center justify-center flex-shrink-0"
+                                        style={{ backgroundColor: 'rgba(5, 150, 105, 0.12)' }}>
+                                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#059669" strokeWidth="3">
+                                            <polyline points="20 6 9 17 4 12" />
+                                        </svg>
+                                    </div>
+                                    <h3 className="text-sm font-bold flex-1 text-left" style={{ fontFamily: 'var(--font-serif)' }}>
+                                        Today's Quiz {'\u2014'} Complete
+                                    </h3>
+                                    {state.dailyQuiz?.lastXPEarned > 0 && (
+                                        <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full"
+                                            style={{ backgroundColor: 'rgba(5, 150, 105, 0.1)', color: '#059669' }}>
+                                            +{state.dailyQuiz.lastXPEarned} XP
+                                        </span>
+                                    )}
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--color-ink-faint)" strokeWidth="2" className="flex-shrink-0">
+                                        <polyline points="18 15 12 9 6 15" />
+                                    </svg>
+                                </button>
+                                <div className="space-y-1.5">
+                                    {todayEvents.map(event => (
+                                        <button
+                                            key={event.id}
+                                            className="w-full flex items-center gap-3 p-2 rounded-xl transition-colors"
+                                            style={{ backgroundColor: 'rgba(230, 168, 23, 0.05)', cursor: 'pointer' }}
+                                            onClick={() => {
+                                                window.CHRONOS_OPEN_EVENT = event.id;
+                                                onTabChange?.('timeline');
+                                            }}
+                                        >
+                                            <span className="text-xs font-bold flex-shrink-0" style={{ color: '#8B6914', fontFamily: 'var(--font-serif)', minWidth: '3rem' }}>
+                                                {event.year}
+                                            </span>
+                                            <span className="text-sm font-medium flex-1 text-left" style={{ color: 'var(--color-ink)' }}>
+                                                {event.title}
+                                            </span>
+                                            <DiHBadge />
+                                        </button>
+                                    ))}
+                                </div>
+                            </Card>
+                        )}
 
-                        {/* Lesson cards within chapter */}
-                        <div className="space-y-3 ml-3" style={{ borderLeft: `2px solid ${chapter.color}20` }}>
-                            {chapter.lessons.map((lesson, lIdx) => {
-                                const isUnlocked = lIdx === 0 || !!state.completedLessons[chapter.lessons[lIdx - 1].id];
-                                const isCompleted = !!state.completedLessons[lesson.id];
-                                const events = getEventsByIds(lesson.eventIds);
-                                const masteryData = lesson.eventIds.map(id => state.eventMastery[id]).filter(Boolean);
+                        {/* Weekly insights teaser — opens WeekTracker modal */}
+                        {showWeeklyInsights && (
+                            <Card
+                                onClick={() => window.dispatchEvent(new Event('openWeekTracker'))}
+                                className="mb-4 animate-fade-in"
+                                style={{ borderLeft: '3px solid #8B6DB5', backgroundColor: 'rgba(140, 100, 180, 0.04)' }}
+                            >
+                                <div className="flex items-center gap-3">
+                                    <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
+                                        style={{ backgroundColor: 'rgba(140, 100, 180, 0.12)' }}>
+                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#7C5BAD" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
+                                        </svg>
+                                    </div>
+                                    <div className="flex-1 min-w-0">
+                                        <h3 className="text-sm font-bold mb-0.5" style={{ fontFamily: 'var(--font-serif)' }}>
+                                            This Week
+                                        </h3>
+                                        <p className="text-xs" style={{ color: 'var(--color-ink-muted)' }}>
+                                            {weeklyInsights.sessions} {weeklyInsights.sessions === 1 ? 'session' : 'sessions'} {'\u00B7'} {weeklyInsights.weekQuestions} questions {'\u00B7'} {weeklyInsights.weekSeconds >= 60 ? `${Math.floor(weeklyInsights.weekSeconds / 60)}m` : `${weeklyInsights.weekSeconds}s`}
+                                        </p>
+                                    </div>
+                                    <div className="flex items-center gap-2 flex-shrink-0">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#8B6DB5" strokeWidth="2">
+                                            <polyline points="9 18 15 12 9 6" />
+                                        </svg>
+                                        <button onClick={(e) => {
+                                            e.stopPropagation();
+                                            setWeekInsightsDismissed(true);
+                                            localStorage.setItem('chronos-weekly-dismissed', new Date().toISOString().split('T')[0]);
+                                        }} className="p-1 -mr-1" style={{ color: 'var(--color-ink-faint)' }}>
+                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                                <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </div>
+                            </Card>
+                        )}
+
+                        {/* Onboarding guide overlay for lesson 0 */}
+                        {isOnboardingGuide && (
+                            <div className="mb-4 animate-fade-in">
+                                <Card className="p-4" style={{ backgroundColor: 'rgba(139, 65, 87, 0.06)', border: '1px dashed var(--color-burgundy)' }}>
+                                    <div className="flex items-center gap-3">
+                                        <span className="text-xl">👇</span>
+                                        <div className="flex-1">
+                                            <p className="text-sm font-semibold" style={{ color: 'var(--color-burgundy)' }}>
+                                                Tap the Prologue below to start!
+                                            </p>
+                                            <p className="text-xs mt-0.5" style={{ color: 'var(--color-ink-muted)' }}>
+                                                It's a quick overview of the 5 eras of history.
+                                            </p>
+                                        </div>
+                                    </div>
+                                </Card>
+                            </div>
+                        )}
+
+                        <div className="space-y-3">
+                            {LESSONS.map((lesson, index) => {
+                                const isUnlocked = index === 0 || state.completedLessons[LESSONS[index - 1].id];
+                                const isCompleted = state.completedLessons[lesson.id];
+                                const isLesson0 = !!lesson.isLesson0;
+                                const events = isLesson0 ? [] : getEventsByIds(lesson.eventIds);
+                                const masteryData = isLesson0 ? [] : lesson.eventIds.map(id => state.eventMastery[id]).filter(Boolean);
+                                const isSkipped = !isLesson0 && lesson.eventIds.every(id => (state.skippedEvents || []).includes(id));
+
+                                // Pulse lesson 0 during onboarding guide
+                                const pulseLesson0 = isOnboardingGuide && isLesson0;
+
+                                // Era skip-ahead divider after this lesson?
+                                const eraGroup = lessonEraEndMap[lesson.id];
+                                const showEraSkip = showSkipDividers && eraGroup
+                                    && !state.placementQuizzes[eraGroup.id]?.passed;
+                                const eraUnlocked = showEraSkip ? isPlacementQuizUnlocked(eraGroup.id, state.placementQuizzes) : false;
+                                const isEraExpanded = showEraSkip ? expandedEra === eraGroup.id : false;
 
                                 return (
-                                    <Card
-                                        key={lesson.id}
-                                        onClick={isUnlocked ? () => handleLessonClick(lesson.id) : undefined}
-                                        className={`lesson-card-row animate-fade-in-up ml-3 ${!isUnlocked ? 'relative overflow-hidden' : ''}`}
-                                        style={{
-                                            animationDelay: `${lIdx * 60}ms`,
-                                            animationFillMode: 'backwards',
-                                            backgroundColor: isCompleted ? 'rgba(5, 150, 105, 0.04)' : 'var(--color-card)',
-                                        }}
-                                    >
-                                        {!isUnlocked && (
-                                            <>
-                                                <span className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none select-none"
-                                                    style={{ opacity: 0.06 }}>
-                                                    <LessonIcon index={chapter.iconIndex || 6} size={48} color="var(--color-ink)" />
-                                                </span>
-                                                <div className="absolute top-2 right-2">
-                                                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--color-ink-muted)" strokeWidth="2.5" opacity="0.45">
-                                                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
-                                                        <path d="M7 11V7a5 5 0 0 1 10 0v4" />
-                                                    </svg>
+                                    <Fragment key={lesson.id}>
+                                        <Card
+                                            onClick={isUnlocked ? () => handleLessonClick(lesson.id) : undefined}
+                                            className={`lesson-card-row animate-fade-in-up ${!isUnlocked ? 'relative overflow-hidden' : ''} ${pulseLesson0 ? 'onboarding-pulse' : ''}`}
+                                            style={{
+                                                animationDelay: `${index * 60}ms`,
+                                                animationFillMode: 'backwards',
+                                                backgroundColor: isCompleted ? 'rgba(5, 150, 105, 0.04)' : 'var(--color-card)',
+                                            }}
+                                        >
+                                            {/* Locked lesson: faded icon background + lock badge */}
+                                            {!isUnlocked && (
+                                                <>
+                                                    <span className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none select-none"
+                                                        style={{ opacity: 0.06 }}>
+                                                        <LessonIcon index={lesson.number} size={48} color="var(--color-ink)" />
+                                                    </span>
+                                                    <div className="absolute top-2.5 right-2.5 z-10">
+                                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--color-ink-muted)" strokeWidth="2.5" opacity="0.55">
+                                                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                                                            <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                                                        </svg>
+                                                    </div>
+                                                </>
+                                            )}
+                                            <div className="flex items-center gap-4">
+                                                {/* Progress indicator */}
+                                                <div className="flex-shrink-0">
+                                                    <div className="relative">
+                                                        <div className="w-11 h-11 rounded-full flex items-center justify-center" style={{
+                                                            backgroundColor: !isUnlocked ? 'rgba(var(--color-ink-rgb), 0.06)' :
+                                                                isCompleted ? 'rgba(5, 150, 105, 0.10)' : 'rgba(139, 65, 87, 0.04)',
+                                                            border: !isUnlocked ? '1.5px solid rgba(var(--color-ink-rgb), 0.10)' :
+                                                                isCompleted ? '2px solid rgba(5, 150, 105, 0.35)' : '2px solid var(--color-burgundy)',
+                                                        }}>
+                                                            <span style={{ opacity: isUnlocked ? 1 : 0.55 }}>
+                                                                <LessonIcon index={lesson.number} size={20} color={isCompleted ? 'var(--color-success)' : 'var(--color-burgundy)'} />
+                                                            </span>
+                                                        </div>
+                                                        {isUnlocked && isCompleted && (
+                                                            <div className="absolute -bottom-0.5 -right-0.5 w-[18px] h-[18px] rounded-full flex items-center justify-center"
+                                                                style={{ backgroundColor: 'var(--color-success)', boxShadow: '0 0 0 2px var(--color-card)' }}>
+                                                                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3.5">
+                                                                    <polyline points="20 6 9 17 4 12" />
+                                                                </svg>
+                                                            </div>
+                                                        )}
+                                                        {isUnlocked && !isCompleted && (
+                                                            <div className="absolute -bottom-0.5 -right-0.5 rounded-full flex items-center justify-center px-1 py-px"
+                                                                style={{ backgroundColor: 'var(--color-burgundy)', boxShadow: '0 0 0 2px var(--color-card)' }}>
+                                                                <span className="text-[8px] font-bold uppercase text-white leading-none">New</span>
+                                                            </div>
+                                                        )}
+                                                    </div>
                                                 </div>
-                                            </>
-                                        )}
-                                        <div className="flex items-center gap-4">
-                                            <div className="flex-shrink-0">
-                                                <div className="relative">
-                                                    <div className="w-11 h-11 rounded-full flex items-center justify-center" style={{
-                                                        backgroundColor: !isUnlocked ? 'rgba(var(--color-ink-rgb), 0.06)' :
-                                                            isCompleted ? 'rgba(5, 150, 105, 0.10)' : `${chapter.color}08`,
-                                                        border: !isUnlocked ? '1.5px solid rgba(var(--color-ink-rgb), 0.10)' :
-                                                            isCompleted ? '2px solid rgba(5, 150, 105, 0.35)' : `2px solid ${chapter.color}`,
-                                                    }}>
-                                                        <span style={{ opacity: isUnlocked ? 1 : 0.55 }}>
-                                                            <LessonIcon index={chapter.iconIndex || 6} size={20} color={isCompleted ? 'var(--color-success)' : chapter.color} />
+
+                                                {/* Content */}
+                                                <div className="flex-1 min-w-0">
+                                                    <div className="flex items-center gap-2 mb-0.5">
+                                                        <span className="text-[11px] font-medium uppercase tracking-wider" style={{ color: 'var(--color-ink-faint)' }}>
+                                                            {isLesson0 ? 'Prologue' : `Lesson ${lesson.number}`}
+                                                        </span>
+                                                        {isSkipped && (
+                                                            <span className="text-[9px] font-bold uppercase px-1.5 py-0.5 rounded"
+                                                                style={{ backgroundColor: 'rgba(139, 65, 87, 0.08)', color: 'var(--color-burgundy)' }}>
+                                                                Placed
+                                                            </span>
+                                                        )}
+                                                        {masteryData.length > 0 && (
+                                                            <div className="flex gap-0.5">
+                                                                {lesson.eventIds.slice(0, 7).map(id => {
+                                                                    const m = state.eventMastery[id];
+                                                                    return (
+                                                                        <div key={id} className="w-1.5 h-1.5 rounded-full" style={{
+                                                                            backgroundColor: m ? (
+                                                                                m.overallMastery >= 7 ? 'var(--color-success)' :
+                                                                                    m.overallMastery >= 3 ? 'var(--color-warning)' : 'var(--color-error)'
+                                                                            ) : 'var(--color-ink-faint)',
+                                                                            opacity: m ? 1 : 0.2
+                                                                        }} />
+                                                                    );
+                                                                })}
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                    <h3 className="text-base font-bold leading-tight" style={{ fontFamily: 'var(--font-serif)', color: isUnlocked ? 'var(--color-ink)' : 'var(--color-ink-faint)' }}>
+                                                        {lesson.title}
+                                                    </h3>
+                                                    <p className="text-sm mt-0.5" style={{ color: isUnlocked ? 'var(--color-ink-muted)' : 'var(--color-ink-faint)' }}>
+                                                        {lesson.subtitle}
+                                                    </p>
+                                                </div>
+
+                                                {/* Right side: event count + arrow */}
+                                                <div className="flex items-center gap-3 flex-shrink-0">
+                                                    {isUnlocked && (
+                                                        <>
+                                                            <span className="text-xs hidden sm:block" style={{ color: 'var(--color-ink-faint)' }}>
+                                                                {isLesson0 ? '5 eras' : `${events.length} events`}
+                                                            </span>
+                                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-ink-faint)" strokeWidth="2" className="flex-shrink-0">
+                                                                <polyline points="9 18 15 12 9 6" />
+                                                            </svg>
+                                                        </>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        </Card>
+                                        {showEraSkip && (
+                                            <div className="my-1">
+                                                <button
+                                                    onClick={() => setExpandedEra(isEraExpanded ? null : eraGroup.id)}
+                                                    className="w-full flex items-center gap-3 group"
+                                                    style={{ cursor: 'pointer' }}
+                                                >
+                                                    <div className="flex-1 h-px" style={{ backgroundColor: 'rgba(139, 65, 87, 0.15)' }} />
+                                                    <div className="flex items-center gap-1.5 px-2 py-1 rounded-full transition-colors"
+                                                        style={{ backgroundColor: isEraExpanded ? 'rgba(139, 65, 87, 0.08)' : 'transparent' }}>
+                                                        <span className="text-sm">🎓</span>
+                                                        <span className="text-[11px] font-semibold uppercase tracking-wider" style={{ color: 'var(--color-burgundy)' }}>
+                                                            Skip {eraGroup.label.replace(/^The /, '')}
                                                         </span>
                                                     </div>
-                                                    {isUnlocked && isCompleted && (
-                                                        <div className="absolute -bottom-0.5 -right-0.5 w-[18px] h-[18px] rounded-full flex items-center justify-center"
-                                                            style={{ backgroundColor: 'var(--color-success)', boxShadow: '0 0 0 2px var(--color-card)' }}>
-                                                            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3.5">
-                                                                <polyline points="20 6 9 17 4 12" />
-                                                            </svg>
+                                                    <div className="flex-1 h-px" style={{ backgroundColor: 'rgba(139, 65, 87, 0.15)' }} />
+                                                </button>
+                                                {isEraExpanded && (
+                                                    <Card className="mt-2 p-4 animate-fade-in" style={{ borderLeft: '3px solid var(--color-burgundy)' }}>
+                                                        <div className="flex items-center gap-3">
+                                                            <div className="flex-1 min-w-0">
+                                                                <h3 className="text-sm font-bold" style={{ fontFamily: 'var(--font-serif)' }}>
+                                                                    {eraGroup.label}
+                                                                </h3>
+                                                                <p className="text-xs mt-0.5" style={{ color: 'var(--color-ink-muted)' }}>
+                                                                    {eraGroup.questionCount} questions {'·'} {eraGroup.lessonIds.length} lessons
+                                                                </p>
+                                                            </div>
+                                                            {eraUnlocked ? (
+                                                                <Button onClick={() => setShowPlacement(eraGroup.id)} style={{ fontSize: '12px', padding: '6px 12px' }}>
+                                                                    Take Quiz
+                                                                </Button>
+                                                            ) : (
+                                                                <span className="text-[10px] font-medium px-2.5 py-1 rounded-full whitespace-nowrap"
+                                                                    style={{ backgroundColor: 'rgba(var(--color-ink-rgb), 0.06)', color: 'var(--color-ink-muted)' }}>
+                                                                    Pass previous era first
+                                                                </span>
+                                                            )}
                                                         </div>
-                                                    )}
-                                                    {isUnlocked && !isCompleted && (
-                                                        <div className="absolute -bottom-0.5 -right-0.5 rounded-full flex items-center justify-center px-1 py-px"
-                                                            style={{ backgroundColor: chapter.color, boxShadow: '0 0 0 2px var(--color-card)' }}>
-                                                            <span className="text-[8px] font-bold uppercase text-white leading-none">New</span>
-                                                        </div>
-                                                    )}
-                                                </div>
-                                            </div>
-
-                                            <div className="flex-1 min-w-0">
-                                                <div className="flex items-center gap-2 mb-0.5">
-                                                    <span className="text-[11px] font-medium uppercase tracking-wider" style={{ color: 'var(--color-ink-faint)' }}>
-                                                        Lesson {lesson.number}
-                                                    </span>
-                                                    {masteryData.length > 0 && (
-                                                        <div className="flex gap-0.5">
-                                                            {lesson.eventIds.map(id => {
-                                                                const m = state.eventMastery[id];
-                                                                return (
-                                                                    <div key={id} className="w-1.5 h-1.5 rounded-full" style={{
-                                                                        backgroundColor: m ? (
-                                                                            m.overallMastery >= 7 ? 'var(--color-success)' :
-                                                                                m.overallMastery >= 3 ? 'var(--color-warning)' : 'var(--color-error)'
-                                                                        ) : 'var(--color-ink-faint)',
-                                                                        opacity: m ? 1 : 0.2
-                                                                    }} />
-                                                                );
-                                                            })}
-                                                        </div>
-                                                    )}
-                                                </div>
-                                                <h3 className="text-base font-bold leading-tight" style={{ fontFamily: 'var(--font-serif)', color: isUnlocked ? 'var(--color-ink)' : 'var(--color-ink-faint)' }}>
-                                                    {lesson.title}
-                                                </h3>
-                                                <p className="text-sm mt-0.5" style={{ color: isUnlocked ? 'var(--color-ink-muted)' : 'var(--color-ink-faint)' }}>
-                                                    {lesson.subtitle}
-                                                </p>
-                                            </div>
-
-                                            <div className="flex items-center gap-3 flex-shrink-0">
-                                                {isUnlocked && (
-                                                    <>
-                                                        <span className="text-xs hidden sm:block" style={{ color: 'var(--color-ink-faint)' }}>
-                                                            {events.length} events
-                                                        </span>
-                                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-ink-faint)" strokeWidth="2" className="flex-shrink-0">
-                                                            <polyline points="9 18 15 12 9 6" />
-                                                        </svg>
-                                                    </>
+                                                    </Card>
                                                 )}
                                             </div>
-                                        </div>
-                                    </Card>
+                                        )}
+                                    </Fragment>
                                 );
                             })}
                         </div>
-                    </div>
-                );
-            })}
 
-            </div>
-            )}
+                        {/* Tip: customize lesson length — shown once after completing Lesson 1 */}
+                        {state.completedLessons['lesson-1'] && !settingsTipDismissed && (
+                            <Card className="mt-6 animate-fade-in" style={{
+                                borderLeft: '3px solid var(--color-burgundy)',
+                                backgroundColor: 'var(--color-burgundy-soft)',
+                            }}>
+                                <div className="flex items-start gap-3">
+                                    <Mascot mood="happy" size={40} />
+                                    <div className="flex-1 min-w-0">
+                                        <h3 className="text-sm font-bold mb-0.5" style={{ fontFamily: 'var(--font-serif)', color: 'var(--color-ink)' }}>
+                                            Customize your lessons
+                                        </h3>
+                                        <p className="text-xs leading-relaxed" style={{ color: 'var(--color-ink-secondary)' }}>
+                                            Want shorter or longer lessons? You can adjust cards per lesson and recap intensity in Settings.
+                                        </p>
+                                        <button
+                                            className="text-xs font-semibold mt-2"
+                                            style={{ color: 'var(--color-burgundy)' }}
+                                            onClick={() => { setSettingsTipDismissed(true); localStorage.setItem('chronos-settings-tip-seen', '1'); dispatch({ type: 'TOGGLE_SETTINGS' }); }}
+                                        >
+                                            Open Settings
+                                        </button>
+                                    </div>
+                                    <button onClick={() => { setSettingsTipDismissed(true); localStorage.setItem('chronos-settings-tip-seen', '1'); }}
+                                        className="flex-shrink-0 p-1 rounded-full" style={{ color: 'var(--color-ink-muted)' }}>
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                                            <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+                                        </svg>
+                                    </button>
+                                </div>
+                            </Card>
+                        )}
+
+                    </div>
+                ) : (
+                    <div key="level2" className={`slide-from-${slideDirection}`}>
+
+                        <div className="text-center mb-6">
+                            <h1 className="learn-page-title font-bold" style={{ fontFamily: 'var(--font-serif)', color: 'var(--color-ink)' }}>
+                                Deep Dives
+                            </h1>
+                            <p className="learn-page-subtitle mt-0.5" style={{ color: 'var(--color-ink-muted)' }}>
+                                Topic-based chapters you can start anytime
+                            </p>
+                        </div>
+
+                        {LEVEL2_CHAPTERS.map((chapter, chIdx) => {
+                            const chCompletedCount = chapter.lessons.filter(l => state.completedLessons[l.id]).length;
+                            const chTotalCount = chapter.lessons.length;
+                            const chEventCount = [...new Set(chapter.lessons.flatMap(l => l.eventIds))].length;
+                            const chNumber = chIdx + 1;
+                            const isExpanded = expandedChapter === chapter.id;
+                            const chIsComplete = chCompletedCount === chTotalCount;
+                            const chInProgress = chCompletedCount > 0 && !chIsComplete;
+                            const chNotStarted = chCompletedCount === 0;
+
+                            return (
+                                <div key={chapter.id} className="mb-3.5 animate-fade-in">
+                                    {/* Chapter header card — clickable to expand/collapse */}
+                                    <Card className="cursor-pointer active:scale-[0.98] transition-transform" style={{
+                                        padding: '8px 12px',
+                                        borderLeft: `3px solid ${chIsComplete ? 'rgba(5, 150, 105, 0.5)' : chapter.color}`,
+                                        backgroundColor: chIsComplete ? 'rgba(5, 150, 105, 0.04)' : `${chapter.color}08`,
+                                    }}
+                                        onClick={() => setExpandedChapter(isExpanded ? null : chapter.id)}
+                                    >
+                                        <div className="flex items-center gap-3">
+                                            <div className="relative flex-shrink-0">
+                                                <div className="w-10 h-10 rounded-xl flex items-center justify-center"
+                                                    style={{
+                                                        backgroundColor: chIsComplete ? 'rgba(5, 150, 105, 0.10)' : `${chapter.color}15`,
+                                                        border: chIsComplete ? '2px solid rgba(5, 150, 105, 0.35)' : undefined,
+                                                    }}>
+                                                    <LessonIcon index={chapter.iconIndex || 6} size={20} color={chIsComplete ? 'var(--color-success)' : chapter.color} />
+                                                </div>
+                                                {chIsComplete && (
+                                                    <div className="absolute -bottom-1 -right-1 w-[18px] h-[18px] rounded-full flex items-center justify-center"
+                                                        style={{ backgroundColor: 'var(--color-success)', boxShadow: '0 0 0 2px var(--color-card)' }}>
+                                                        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3.5">
+                                                            <polyline points="20 6 9 17 4 12" />
+                                                        </svg>
+                                                    </div>
+                                                )}
+                                                {chNotStarted && (
+                                                    <div className="absolute -bottom-1 -right-1 rounded-full flex items-center justify-center px-1.5 py-0.5"
+                                                        style={{ backgroundColor: chapter.color, boxShadow: '0 0 0 2px var(--color-card)' }}>
+                                                        <span className="text-[8px] font-bold uppercase text-white leading-none">New</span>
+                                                    </div>
+                                                )}
+                                            </div>
+                                            <div className="flex-1 min-w-0">
+                                                <span className="text-[10px] font-bold uppercase tracking-wider" style={{ color: chIsComplete ? 'var(--color-success)' : chapter.color }}>
+                                                    Chapter {chNumber}
+                                                </span>
+                                                <h3 className="text-base font-bold leading-tight"
+                                                    style={{ fontFamily: 'var(--font-serif)', color: 'var(--color-ink)' }}>
+                                                    {chapter.title}
+                                                </h3>
+                                                <p className="text-xs mt-0.5" style={{ color: 'var(--color-ink-muted)' }}>
+                                                    {chapter.subtitle} {'\u00B7'} {chEventCount} events
+                                                </p>
+                                            </div>
+                                            <div className="flex items-center gap-2 flex-shrink-0">
+                                                {chInProgress && (
+                                                    <span className="text-[10px] font-bold px-2 py-1 rounded-full"
+                                                        style={{ backgroundColor: `${chapter.color}15`, color: chapter.color }}>
+                                                        {chCompletedCount}/{chTotalCount}
+                                                    </span>
+                                                )}
+                                                {chIsComplete && (
+                                                    <span className="text-[10px] font-bold px-2 py-1 rounded-full"
+                                                        style={{ backgroundColor: 'rgba(5, 150, 105, 0.1)', color: 'var(--color-success)' }}>
+                                                        Complete
+                                                    </span>
+                                                )}
+                                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                                                    stroke={chIsComplete ? 'var(--color-success)' : chapter.color} strokeWidth="2.5"
+                                                    className="flex-shrink-0 transition-transform duration-200"
+                                                    style={{ transform: isExpanded ? 'rotate(90deg)' : 'rotate(0deg)' }}>
+                                                    <polyline points="9 18 15 12 9 6" />
+                                                </svg>
+                                            </div>
+                                        </div>
+                                    </Card>
+
+                                    {/* Lesson cards within chapter — only shown when expanded */}
+                                    {isExpanded && (
+                                        <div className="space-y-3 ml-3 mt-3 animate-fade-in" style={{ borderLeft: `2px solid ${chapter.color}20` }}>
+                                            {chapter.lessons.map((lesson, lIdx) => {
+                                                const isUnlocked = lIdx === 0 || !!state.completedLessons[chapter.lessons[lIdx - 1].id];
+                                                const isCompleted = !!state.completedLessons[lesson.id];
+                                                const events = getEventsByIds(lesson.eventIds);
+                                                const masteryData = lesson.eventIds.map(id => state.eventMastery[id]).filter(Boolean);
+
+                                                return (
+                                                    <Card
+                                                        key={lesson.id}
+                                                        onClick={isUnlocked ? () => handleLessonClick(lesson.id) : undefined}
+                                                        className={`lesson-card-row animate-fade-in-up ml-3 ${!isUnlocked ? 'relative overflow-hidden' : ''}`}
+                                                        style={{
+                                                            animationDelay: `${lIdx * 60}ms`,
+                                                            animationFillMode: 'backwards',
+                                                            backgroundColor: isCompleted ? 'rgba(5, 150, 105, 0.04)' : 'var(--color-card)',
+                                                        }}
+                                                    >
+                                                        {!isUnlocked && (
+                                                            <>
+                                                                <span className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none select-none"
+                                                                    style={{ opacity: 0.06 }}>
+                                                                    <LessonIcon index={chapter.iconIndex || 6} size={48} color="var(--color-ink)" />
+                                                                </span>
+                                                                <div className="absolute top-2.5 right-2.5 z-10">
+                                                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--color-ink-muted)" strokeWidth="2.5" opacity="0.55">
+                                                                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                                                                        <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                                                                    </svg>
+                                                                </div>
+                                                            </>
+                                                        )}
+                                                        <div className="flex items-center gap-4">
+                                                            <div className="flex-shrink-0">
+                                                                <div className="relative">
+                                                                    <div className="w-11 h-11 rounded-full flex items-center justify-center" style={{
+                                                                        backgroundColor: !isUnlocked ? 'rgba(var(--color-ink-rgb), 0.06)' :
+                                                                            isCompleted ? 'rgba(5, 150, 105, 0.10)' : `${chapter.color}08`,
+                                                                        border: !isUnlocked ? '1.5px solid rgba(var(--color-ink-rgb), 0.10)' :
+                                                                            isCompleted ? '2px solid rgba(5, 150, 105, 0.35)' : `2px solid ${chapter.color}`,
+                                                                    }}>
+                                                                        <span style={{ opacity: isUnlocked ? 1 : 0.55 }}>
+                                                                            <LessonIcon index={chapter.iconIndex || 6} size={20} color={isCompleted ? 'var(--color-success)' : chapter.color} />
+                                                                        </span>
+                                                                    </div>
+                                                                    {isUnlocked && isCompleted && (
+                                                                        <div className="absolute -bottom-0.5 -right-0.5 w-[18px] h-[18px] rounded-full flex items-center justify-center"
+                                                                            style={{ backgroundColor: 'var(--color-success)', boxShadow: '0 0 0 2px var(--color-card)' }}>
+                                                                            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3.5">
+                                                                                <polyline points="20 6 9 17 4 12" />
+                                                                            </svg>
+                                                                        </div>
+                                                                    )}
+                                                                    {isUnlocked && !isCompleted && (
+                                                                        <div className="absolute -bottom-0.5 -right-0.5 rounded-full flex items-center justify-center px-1 py-px"
+                                                                            style={{ backgroundColor: chapter.color, boxShadow: '0 0 0 2px var(--color-card)' }}>
+                                                                            <span className="text-[8px] font-bold uppercase text-white leading-none">New</span>
+                                                                        </div>
+                                                                    )}
+                                                                </div>
+                                                            </div>
+
+                                                            <div className="flex-1 min-w-0">
+                                                                <div className="flex items-center gap-2 mb-0.5">
+                                                                    <span className="text-[11px] font-medium uppercase tracking-wider" style={{ color: 'var(--color-ink-faint)' }}>
+                                                                        Lesson {chNumber}.{lIdx + 1}
+                                                                    </span>
+                                                                    {masteryData.length > 0 && (
+                                                                        <div className="flex gap-0.5">
+                                                                            {lesson.eventIds.map(id => {
+                                                                                const m = state.eventMastery[id];
+                                                                                return (
+                                                                                    <div key={id} className="w-1.5 h-1.5 rounded-full" style={{
+                                                                                        backgroundColor: m ? (
+                                                                                            m.overallMastery >= 7 ? 'var(--color-success)' :
+                                                                                                m.overallMastery >= 3 ? 'var(--color-warning)' : 'var(--color-error)'
+                                                                                        ) : 'var(--color-ink-faint)',
+                                                                                        opacity: m ? 1 : 0.2
+                                                                                    }} />
+                                                                                );
+                                                                            })}
+                                                                        </div>
+                                                                    )}
+                                                                </div>
+                                                                <h3 className="text-base font-bold leading-tight" style={{ fontFamily: 'var(--font-serif)', color: isUnlocked ? 'var(--color-ink)' : 'var(--color-ink-faint)' }}>
+                                                                    {lesson.title}
+                                                                </h3>
+                                                                <p className="text-sm mt-0.5" style={{ color: isUnlocked ? 'var(--color-ink-muted)' : 'var(--color-ink-faint)' }}>
+                                                                    {lesson.subtitle}
+                                                                </p>
+                                                            </div>
+
+                                                            <div className="flex items-center gap-3 flex-shrink-0">
+                                                                {isUnlocked && (
+                                                                    <>
+                                                                        <span className="text-xs hidden sm:block" style={{ color: 'var(--color-ink-faint)' }}>
+                                                                            {events.length} events
+                                                                        </span>
+                                                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-ink-faint)" strokeWidth="2" className="flex-shrink-0">
+                                                                            <polyline points="9 18 15 12 9 6" />
+                                                                        </svg>
+                                                                    </>
+                                                                )}
+                                                            </div>
+                                                        </div>
+                                                    </Card>
+                                                );
+                                            })}
+                                        </div>
+                                    )}
+                                </div>
+                            );
+                        })}
+
+                    </div>
+                )}
 
             </div>{/* end swipe container */}
 

@@ -9,30 +9,45 @@
     android:padding="12dp"
     android:background="@drawable/widget_background">
 
-    <ViewFlipper
-        android:id="@+id/flame_flipper"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:autoStart="true"
-        android:flipInterval="1100">
+    <FrameLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <ViewFlipper
+            android:id="@+id/flame_flipper"
+            android:layout_width="38dp"
+            android:layout_height="38dp"
+            android:autoStart="true"
+            android:flipInterval="1100">
+
+            <ImageView
+                android:id="@+id/flame_frame_1"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="fitCenter"
+                android:src="@drawable/flame_active_1"
+                android:contentDescription="@null" />
+
+            <ImageView
+                android:id="@+id/flame_frame_2"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="fitCenter"
+                android:src="@drawable/flame_active_2"
+                android:contentDescription="@null" />
+
+        </ViewFlipper>
 
         <ImageView
-            android:id="@+id/flame_frame_1"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:scaleType="fitCenter"
-            android:src="@drawable/flame_active_1"
+            android:id="@+id/check_tick"
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:layout_gravity="bottom|end"
+            android:src="@drawable/widget_check_tick"
+            android:visibility="gone"
             android:contentDescription="@null" />
 
-        <ImageView
-            android:id="@+id/flame_frame_2"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:scaleType="fitCenter"
-            android:src="@drawable/flame_active_2"
-            android:contentDescription="@null" />
-
-    </ViewFlipper>
+    </FrameLayout>
 
     <LinearLayout
         android:layout_width="wrap_content"

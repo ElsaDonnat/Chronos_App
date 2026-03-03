@@ -5,17 +5,42 @@ Format follows [Keep a Changelog](https://keepachangelog.com/) and [Semantic Ver
 
 Use the latest version entry for Play Store "What's New" text.
 
+## [1.5.2] - 2026-03-03
+
+### Added
+- **Placement Quizzes in Settings** — new "Placement Quizzes" card in Settings with a "Take Quiz" button; shows how many eras have been skipped when at least one has been passed
+- **Prologue summary: Level overview** — Lesson 0 completion screen now shows a "What's next" card listing Level 1 (20 lessons, 60 events) and Level 2 (7 thematic chapters) so new users know what to expect
+- **Prologue summary: support row** — Buy Me a Coffee and Rate the App buttons appear at the bottom of the Lesson 0 summary screen
+
+### Changed
+- Placement quiz eras are now **all available at once** — no sequential unlocking required; users can pick any era they want to test
+- Onboarding flow simplified — removed the full-screen `placement_offer` and `post_lesson0` overlay screens; the Prologue summary now carries a brief note ("Already know some history? Placement quizzes are available in Settings — though we encourage completing each lesson first")
+- Added migration for users who had `post_lesson0` or `placement_offer` stored as their onboarding step (redirected to `complete`)
+
+---
+
 ## [1.5.1] - 2026-03-03
 
 ### Improved
+- Map: **Natural Earth I projection** replacing equirectangular — continents now have familiar, properly-shaped proportions (Greenland no longer squished, Europe/Scandinavia look correct). SVG paths regenerated from world-atlas 110m data via d3-geo
+- Map: fullscreen layout fixed — was appearing as a tiny horizontal strip on portrait phones. Now uses 280% oversized scrollable container filling ~84% of screen height, auto-centers on Europe/Middle East on open
+- Map: close button moved from lost-above-the-map position to a sticky translucent overlay floating on top of the map, always visible and accessible
 - Map: pinch-to-zoom and drag-to-pan — two-finger pinch zooms in up to 4x, one-finger drag pans when zoomed, reset button appears at top-left to snap back
 - Map: larger pins (6px single, 10px cluster) with 18px invisible hit area and subtle drop shadow for better mobile tap accuracy
 - Map: selected-pin highlight — tapped pin/cluster now shows a pulsing ring animation in the category color
 - Map: distinct ocean color (#D6CFC4) separates water from the parchment land masses
-- Map: faint graticule grid lines (every 30° lat/lng) reinforce the map feel and help orientation
+- Map: faint graticule grid lines (every 30° lat/lng) as projected polylines matching Natural Earth I curvature
 - Map: collapsible category legend (info button, top-right) showing all 5 category colors plus "Undiscovered" muted pin
 - Map: event popup now shows a truncated description (expandable "Read more") for learned events
 - Map: full dark mode support — all map colors (ocean, land, borders, pins, labels, graticule) defined as CSS custom properties with dark-mode overrides
+- Timeline: "Loca" region filter dropdown in the filter bar — filter events by sub-region in both list and map views, persisted to localStorage, syncs with map region chips
+
+### Changed
+- Regions: expanded from 5 broad regions (Africa, Asia, Americas, Europe, Middle East) to 11 historically meaningful sub-regions: Europe, Middle East, North Africa, West Africa, East Africa, Southern Africa, South Asia, East Asia, North America, Central America, South America
+- All 126 events reclassified with accurate sub-regions (e.g., "Africa" split into North/West/East/Southern Africa; "Asia" into South/East Asia; "Americas" into North/Central/South America)
+- Map region filter chips now show sub-regions instead of continents; selecting a sub-region highlights its parent continent on the SVG map
+- Location quiz questions now generate smarter distractors using the more granular sub-regions (same-sub-region options are harder, cross-region options are easier)
+- Region labels in lesson cards, practice results, and quiz feedback now display the specific sub-region (e.g., "East Africa" instead of "Africa")
 
 ---
 

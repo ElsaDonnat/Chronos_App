@@ -1,7 +1,7 @@
 import { Capacitor } from '@capacitor/core';
 import { WidgetBridgePlugin } from 'capacitor-widget-bridge';
 
-const WIDGET_GROUP = 'group.com.chronos.app.widgets';
+const WIDGET_GROUP = 'group.com.elsadonnat.chronos.widgets';
 
 /**
  * Register widget class names with the bridge plugin.
@@ -13,9 +13,9 @@ export async function initWidgets() {
   try {
     await WidgetBridgePlugin.setRegisteredWidgets({
       widgets: [
-        'com.chronos.app.StreakWidget',
-        'com.chronos.app.QuickPracticeWidget',
-        'com.chronos.app.ChronosWidget',
+        'com.elsadonnat.chronos.StreakWidget',
+        'com.elsadonnat.chronos.QuickPracticeWidget',
+        'com.elsadonnat.chronos.ChronosWidget',
       ],
     });
   } catch (e) {
@@ -61,6 +61,13 @@ export async function syncWidgetData(state) {
       group: WIDGET_GROUP,
       key: 'totalXP',
       value: String(state.totalXP || 0),
+    });
+
+    // Max XP from a quick practice session (3 events × 20 XP each)
+    await WidgetBridgePlugin.setItem({
+      group: WIDGET_GROUP,
+      key: 'practiceRewardXP',
+      value: '60',
     });
 
     await WidgetBridgePlugin.reloadAllTimelines();

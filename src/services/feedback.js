@@ -2,7 +2,7 @@
  * Sound effects (Web Audio API) and haptic feedback (@capacitor/haptics).
  *
  * Sounds are generated programmatically — no audio files needed.
- * All tones use sine waves at low gain for a clean, unobtrusive feel.
+ * Triangle waves with smooth envelopes for a warm, musical feel.
  *
  * Usage:
  *   import * as feedback from '../services/feedback';
@@ -40,14 +40,14 @@ function getAudioContext() {
 
 // ── Tone primitives ─────────────────────────────────────────────────
 
-function playTone(freq, duration, startDelay = 0, gain = 0.12) {
+function playTone(freq, duration, startDelay = 0, gain = 0.12, waveform = 'triangle') {
   if (!config.soundEnabled) return;
   try {
     const ac = getAudioContext();
     const osc = ac.createOscillator();
     const vol = ac.createGain();
 
-    osc.type = 'sine';
+    osc.type = waveform;
     osc.frequency.value = freq;
     vol.gain.value = 0;
 
@@ -55,11 +55,11 @@ function playTone(freq, duration, startDelay = 0, gain = 0.12) {
     vol.connect(ac.destination);
 
     const start = ac.currentTime + startDelay;
-    // Quick attack
+    // Smooth attack
     vol.gain.setValueAtTime(0, start);
-    vol.gain.linearRampToValueAtTime(gain, start + 0.015);
-    // Sustain then decay
-    vol.gain.setValueAtTime(gain, start + duration * 0.6);
+    vol.gain.linearRampToValueAtTime(gain, start + 0.02);
+    // Sustain then smooth decay
+    vol.gain.setValueAtTime(gain, start + duration * 0.5);
     vol.gain.exponentialRampToValueAtTime(0.001, start + duration);
 
     osc.start(start);
@@ -67,6 +67,12 @@ function playTone(freq, duration, startDelay = 0, gain = 0.12) {
   } catch { /* silent */
     // Silently fail — audio not critical
   }
+}
+
+/** Layer two slightly-detuned oscillators for a warm, rich timbre */
+function playWarmTone(freq, duration, startDelay = 0, gain = 0.12) {
+  playTone(freq, duration, startDelay, gain * 0.65, 'triangle');
+  playTone(freq * 1.003, duration * 1.1, startDelay, gain * 0.35, 'sine');
 }
 
 // ── Haptic primitives ───────────────────────────────────────────────
@@ -93,55 +99,57 @@ function hapticImpact(style) {
 
 // ── Public feedback functions ───────────────────────────────────────
 
-/** Green answer — ascending minor third (C5 → E♭5) */
+/** Green answer — warm ascending major third (G4 → B4) */
 export function correct() {
-  playTone(523.25, 0.10, 0, 0.12);       // C5
-  playTone(622.25, 0.12, 0.08, 0.10);    // E♭5
+  playWarmTone(392.00, 0.12, 0, 0.12);       // G4
+  playWarmTone(493.88, 0.15, 0.09, 0.11);    // B4
   hapticNotification(NotificationType.Success);
 }
 
-/** Yellow answer — single warm tone (D5) */
+/** Yellow answer — gentle warm tone (A4) */
 export function close() {
-  playTone(587.33, 0.10, 0, 0.09);       // D5
+  playTone(440.00, 0.14, 0, 0.09);           // A4
   hapticNotification(NotificationType.Warning);
 }
 
-/** Red answer — soft descending minor second (E5 → E♭5) */
+/** Red answer — soft descending minor second (G4 → F#4) */
 export function wrong() {
-  playTone(659.25, 0.10, 0, 0.08);       // E5
-  playTone(622.25, 0.14, 0.08, 0.06);    // E♭5
+  playTone(392.00, 0.12, 0, 0.07);           // G4
+  playTone(369.99, 0.16, 0.09, 0.05);        // F#4
   hapticNotification(NotificationType.Error);
 }
 
-/** Lesson or quiz complete — ascending arpeggio (C5 → E5 → G5) */
+/** Lesson or quiz complete — warm ascending arpeggio (C4 → E4 → G4 → C5) */
 export function complete() {
-  playTone(523.25, 0.14, 0, 0.10);       // C5
-  playTone(659.25, 0.14, 0.10, 0.10);    // E5
-  playTone(783.99, 0.18, 0.20, 0.10);    // G5
+  playWarmTone(261.63, 0.14, 0, 0.10);       // C4
+  playWarmTone(329.63, 0.14, 0.10, 0.10);    // E4
+  playWarmTone(392.00, 0.14, 0.20, 0.10);    // G4
+  playWarmTone(523.25, 0.22, 0.30, 0.10);    // C5
   hapticImpact(ImpactStyle.Medium);
 }
 
-/** Achievement unlocked — bright sparkle (E5 → G5 → B5 → E6) */
+/** Achievement unlocked — bright sparkle (C5 → E5 → G5 → C6) with shimmer */
 export function achievement() {
-  playTone(659.25, 0.12, 0, 0.10);       // E5
-  playTone(783.99, 0.12, 0.09, 0.10);    // G5
-  playTone(987.77, 0.12, 0.18, 0.10);    // B5
-  playTone(1318.51, 0.20, 0.27, 0.08);   // E6
+  playWarmTone(523.25, 0.12, 0, 0.10);       // C5
+  playWarmTone(659.25, 0.12, 0.08, 0.10);    // E5
+  playWarmTone(783.99, 0.12, 0.16, 0.10);    // G5
+  playWarmTone(1046.50, 0.25, 0.24, 0.09);   // C6
+  playTone(2093.00, 0.30, 0.24, 0.03, 'sine'); // C7 faint sparkle
   hapticImpact(ImpactStyle.Heavy);
 }
 
-/** Heart lost — descending diminished (B4 → F4) */
+/** Heart lost — descending tritone (B4 → F4) */
 export function heartLost() {
-  playTone(493.88, 0.15, 0, 0.10);       // B4
-  playTone(349.23, 0.20, 0.10, 0.08);    // F4
+  playTone(493.88, 0.18, 0, 0.09);           // B4
+  playTone(349.23, 0.22, 0.12, 0.07);        // F4
   hapticNotification(NotificationType.Error);
 }
 
-/** Game over — slow descending (G4 → E4 → C4) */
+/** Game over — slow descending A minor (E4 → C4 → A3) */
 export function gameOver() {
-  playTone(392.00, 0.18, 0, 0.08);       // G4
-  playTone(329.63, 0.18, 0.15, 0.08);    // E4
-  playTone(261.63, 0.25, 0.30, 0.06);    // C4
+  playWarmTone(329.63, 0.20, 0, 0.08);       // E4
+  playWarmTone(261.63, 0.20, 0.18, 0.07);    // C4
+  playWarmTone(220.00, 0.30, 0.36, 0.06);    // A3
   hapticImpact(ImpactStyle.Heavy);
 }
 

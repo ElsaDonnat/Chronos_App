@@ -19,8 +19,8 @@
 
         <ViewFlipper
             android:id="@+id/combo_flame_flipper"
-            android:layout_width="36dp"
-            android:layout_height="36dp"
+            android:layout_width="29dp"
+            android:layout_height="29dp"
             android:autoStart="true"
             android:flipInterval="1100">
 
