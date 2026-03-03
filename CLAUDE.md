@@ -109,6 +109,34 @@ Two home screen widgets (Streak + Quick Practice) use the `capacitor-widget-brid
 
 **Widget UI limitations:** Widgets use `RemoteViews`, which supports only a limited set of views (`LinearLayout`, `TextView`, `ImageView`, etc.). No custom fonts, no complex animations, no WebView.
 
+## Versioning (IMPORTANT — do this before every commit)
+
+The **single source of truth** for the app version is `"version"` in `package.json`. The Android `versionCode` is **automatically derived** from it in `android/app/build.gradle` using the formula: `major × 10000 + minor × 100 + patch`.
+
+| package.json version | Android versionCode |
+|----------------------|---------------------|
+| `"1.0.0"`            | 10000               |
+| `"1.5.2"`            | 10502               |
+| `"2.1.0"`            | 20100               |
+
+### Before every `git commit` + `git push`:
+
+1. **Bump the version** in `package.json` (use semver: patch for fixes, minor for features, major for breaking changes)
+2. **Update `CHANGELOG.md`** with the new version and what changed
+3. **Then commit and push**
+
+> [!CAUTION]
+> If you forget to bump the version, the Google Play Store will reject the AAB upload because the versionCode must be strictly higher than any previously uploaded version. The current published version derives from whatever `package.json` says — never hardcode versionCode in `build.gradle`.
+
+### After bumping version, rebuild for Android:
+
+```bash
+npm run build
+npx cap sync
+# Then generate AAB from Android Studio or:
+$env:JAVA_HOME = "C:\Program Files\Android\Android Studio\jbr"; cd android; .\gradlew.bat bundleRelease
+```
+
 ## Gotchas
 
 - **Unicode en-dashes in source files:** Many strings in this codebase use `\u2013` (en-dash `–`), not a regular hyphen-minus (`-`). When editing these strings with the Edit tool, you must use the exact `\u2013` character or the match will fail. If an edit fails on a string containing dashes, check the encoding with `node -e` first.

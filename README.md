@@ -40,6 +40,26 @@ npm run dev
 npm run build
 ```
 
+## Versioning
+
+The app version is managed in `package.json` (`"version": "X.Y.Z"`). The Android `versionCode` is **automatically derived** from it in `android/app/build.gradle` using: `major × 10000 + minor × 100 + patch`.
+
+**Before every commit & push to GitHub:**
+
+1. Bump the `"version"` in `package.json` (semver: patch/minor/major)
+2. Update `CHANGELOG.md` with the new version
+3. Commit and push
+
+To rebuild for Android after a version bump:
+
+```bash
+npm run build
+npx cap sync
+# Generate AAB via Android Studio or CLI
+```
+
+> ⚠️ Google Play will reject uploads if the versionCode hasn't increased. Always bump `package.json` version before building a new release.
+
 ## Design Philosophy
 
 Warm antiquity palette — aged parchment, terracotta, bronze. Clean museum-exhibit aesthetic with serif typography for headings. Mobile-first (440px max-width), centered on desktop.
