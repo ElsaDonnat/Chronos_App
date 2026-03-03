@@ -1,7 +1,7 @@
 import { useState, useMemo, useEffect, useRef } from 'react';
 import { useApp } from '../context/AppContext';
 import { ALL_EVENTS, getEventById, CATEGORY_CONFIG, isDiHEvent, getEraForYear } from '../data/events';
-import { LESSONS } from '../data/lessons';
+import { LESSONS, ALL_LEVEL2_LESSONS } from '../data/lessons';
 import { scoreDateAnswer, generateLocationOptions, generateWhatOptions, generateDescriptionOptions, generateDateMCQOptions, SCORE_COLORS, getScoreColor, getScoreLabel, shuffle } from '../data/quiz';
 import { calculateNextReview, getDueEvents, getCardStatus } from '../data/spacedRepetition';
 import { Card, Button, MasteryDots, ProgressBar, Divider, CategoryTag, DiHBadge, StarButton, TabSelector, ConfirmModal, ExpandableText, ControversyNote } from '../components/shared';
@@ -560,7 +560,7 @@ export default function PracticePage({ onSessionChange, registerBackHandler }) {
     // LESSON PICKER
     // ═══════════════════════════════════════════════════
     if (view === VIEW.LESSON_PICKER) {
-        const availableLessons = LESSONS.filter(l =>
+        const availableLessons = [...LESSONS, ...ALL_LEVEL2_LESSONS].filter(l =>
             !l.isLesson0 && l.eventIds.some(id => (state.seenEvents || []).includes(id))
         );
 
@@ -809,7 +809,7 @@ function HubView({ starredEvents, weakEvents, statusTiers, dueCount, state, disp
                 <div className="flex items-start gap-3">
                     <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
                         style={{ backgroundColor: 'rgba(101, 119, 74, 0.1)' }}>
-                        <span className="text-lg">{''}</span>
+                        <span className="text-lg">{'\u{1F4DA}'}</span>
                     </div>
                     <div className="flex-1 min-w-0">
                         <h3 className="text-sm font-bold" style={{ fontFamily: 'var(--font-serif)' }}>By Lesson</h3>

@@ -153,6 +153,53 @@ export const ACHIEVEMENTS = [
         check: (state) => (state.dailyQuiz?.totalCompleted || 0) >= 5,
         progress: (state) => ({ current: Math.min(state.dailyQuiz?.totalCompleted || 0, 5), target: 5 }),
     },
+
+    // ─── Challenge Mode ───
+    {
+        id: 'challenge-first',
+        title: 'Challenger',
+        description: 'Complete your first challenge game',
+        emoji: '\u26A1',
+        category: 'challenge',
+        check: (state) => ((state.challenge?.soloGamesPlayed || 0) + (state.challenge?.multiplayerGamesPlayed || 0)) >= 1,
+        progress: (state) => ({ current: Math.min((state.challenge?.soloGamesPlayed || 0) + (state.challenge?.multiplayerGamesPlayed || 0), 1), target: 1 }),
+    },
+    {
+        id: 'challenge-score-10',
+        title: 'On a Roll',
+        description: 'Score 10 in a single challenge game',
+        emoji: '\uD83C\uDFAF',
+        category: 'challenge',
+        check: (state) => (state.challenge?.soloHighScore || 0) >= 10,
+        progress: (state) => ({ current: Math.min(state.challenge?.soloHighScore || 0, 10), target: 10 }),
+    },
+    {
+        id: 'challenge-score-25',
+        title: 'Unstoppable Force',
+        description: 'Score 25 in a single challenge game',
+        emoji: '\uD83D\uDD25',
+        category: 'challenge',
+        check: (state) => (state.challenge?.soloHighScore || 0) >= 25,
+        progress: (state) => ({ current: Math.min(state.challenge?.soloHighScore || 0, 25), target: 25 }),
+    },
+    {
+        id: 'challenge-streak-5',
+        title: 'Flawless Five',
+        description: 'Get 5 correct in a row in a challenge',
+        emoji: '\u2728',
+        category: 'challenge',
+        check: (state) => (state.challenge?.soloBestStreak || 0) >= 5,
+        progress: (state) => ({ current: Math.min(state.challenge?.soloBestStreak || 0, 5), target: 5 }),
+    },
+    {
+        id: 'challenge-multiplayer',
+        title: 'Party Time',
+        description: 'Play a multiplayer challenge',
+        emoji: '\uD83C\uDF89',
+        category: 'challenge',
+        check: (state) => (state.challenge?.multiplayerGamesPlayed || 0) >= 1,
+        progress: (state) => ({ current: Math.min(state.challenge?.multiplayerGamesPlayed || 0, 1), target: 1 }),
+    },
 ];
 
 // ─── Bonus (Hidden) Achievements ───
@@ -255,10 +302,10 @@ export function useAchievementChecker() {
     const bonusRollKeys = useRef({}); // tracks last trigger key per bonus achievement
 
     // Destructure the specific fields we depend on for the lint rule
-    const { completedLessons, currentStreak, totalXP, seenEvents, starredEvents, eventMastery, dailyQuiz, achievements, studySessions } = state;
+    const { completedLessons, currentStreak, totalXP, seenEvents, starredEvents, eventMastery, dailyQuiz, achievements, studySessions, challenge } = state;
 
     useEffect(() => {
-        const currentState = { completedLessons, currentStreak, totalXP, seenEvents, starredEvents, eventMastery, dailyQuiz, achievements, studySessions };
+        const currentState = { completedLessons, currentStreak, totalXP, seenEvents, starredEvents, eventMastery, dailyQuiz, achievements, studySessions, challenge };
 
         if (!mounted.current) {
             // On mount: silently unlock all achievements that already qualify
@@ -300,5 +347,5 @@ export function useAchievementChecker() {
                 }
             }
         }
-    }, [completedLessons, currentStreak, totalXP, seenEvents, starredEvents, eventMastery, dailyQuiz, achievements, studySessions, dispatch]);
+    }, [completedLessons, currentStreak, totalXP, seenEvents, starredEvents, eventMastery, dailyQuiz, achievements, studySessions, challenge, dispatch]);
 }

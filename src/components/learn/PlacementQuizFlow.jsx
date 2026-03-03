@@ -7,13 +7,63 @@ import { Card, Button, ProgressBar } from '../shared';
 import Mascot from '../Mascot';
 import * as feedback from '../../services/feedback';
 
+// SVG era icons — replace emoji to avoid rendering issues on Android
+const EraIcon = ({ type, size = 20, color }) => {
+    const c = color || '#666';
+    const icons = {
+        prehistory: (
+            <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M5 10c0-1.5 1-2.5 2-3 .5-1.5-.5-3-2-3.5S2 4 2.5 5.5c-1 .5-1.5 2-.5 3s2.5 1 3 1.5z" fill={c} opacity="0.15" />
+                <path d="M19 14c0 1.5-1 2.5-2 3-.5 1.5.5 3 2 3.5s3-.5 2.5-2c1-.5 1.5-2 .5-3s-2.5-1-3-1.5z" fill={c} opacity="0.15" />
+                <line x1="7" y1="9" x2="17" y2="15" />
+            </svg>
+        ),
+        ancient: (
+            <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M3 21h18M5 21V7l7-4 7 4v14" fill={c} opacity="0.1" />
+                <line x1="9" y1="21" x2="9" y2="10" />
+                <line x1="15" y1="21" x2="15" y2="10" />
+                <path d="M5 7l7-4 7 4" />
+                <line x1="3" y1="21" x2="21" y2="21" />
+            </svg>
+        ),
+        medieval: (
+            <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M5 3l14 14M9.5 7.5L5 3M19 3L5 17" />
+                <path d="M14.5 7.5L19 3" />
+                <path d="M5 17l2 2 2-2" />
+                <path d="M19 17l-2 2-2-2" />
+            </svg>
+        ),
+        earlymodern: (
+            <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="12" cy="12" r="9" fill={c} opacity="0.08" />
+                <polygon points="16.24,7.76 14.12,14.12 7.76,16.24 9.88,9.88" fill={c} opacity="0.2" stroke={c} />
+                <line x1="12" y1="3" x2="12" y2="5" />
+                <line x1="12" y1="19" x2="12" y2="21" />
+                <line x1="3" y1="12" x2="5" y2="12" />
+                <line x1="19" y1="12" x2="21" y2="12" />
+            </svg>
+        ),
+        modern: (
+            <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="12" cy="12" r="9" fill={c} opacity="0.08" />
+                <ellipse cx="12" cy="12" rx="4" ry="9" />
+                <line x1="3" y1="12" x2="21" y2="12" />
+                <path d="M4.5 7.5h15M4.5 16.5h15" />
+            </svg>
+        ),
+    };
+    return icons[type] || null;
+};
+
 // Period icons/colors for era selection
 const ERA_STYLE = {
-    prehistory: { icon: '🦴', color: '#0D9488' },
-    ancient: { icon: '🏛️', color: '#6B5B73' },
-    medieval: { icon: '⚔️', color: '#A0522D' },
-    earlymodern: { icon: '🧭', color: '#65774A' },
-    modern: { icon: '🌍', color: '#8B4157' },
+    prehistory: { iconType: 'prehistory', color: '#0D9488' },
+    ancient: { iconType: 'ancient', color: '#6B5B73' },
+    medieval: { iconType: 'medieval', color: '#A0522D' },
+    earlymodern: { iconType: 'earlymodern', color: '#65774A' },
+    modern: { iconType: 'modern', color: '#8B4157' },
 };
 
 export default function PlacementQuizFlow({ onComplete, initialEra }) {
@@ -237,7 +287,7 @@ export default function PlacementQuizFlow({ onComplete, initialEra }) {
                                         ? <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--color-success)" strokeWidth="2.5">
                                             <polyline points="20 6 9 17 4 12" />
                                         </svg>
-                                        : <span className="text-lg">{style.icon}</span>
+                                        : <EraIcon type={style.iconType} size={20} color={style.color} />
                                     }
                                 </div>
                                 <div className="flex-1 min-w-0">

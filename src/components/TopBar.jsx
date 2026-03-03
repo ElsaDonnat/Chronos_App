@@ -6,6 +6,7 @@ const SECTION_NAMES = {
     learn: 'Chapter 1: The Story of Humanity',
     timeline: 'Timeline',
     practice: 'Practice',
+    challenge: 'Challenge',
 };
 
 function getStreakStatus(lastActiveDate, currentStreak) {
@@ -72,6 +73,8 @@ export default function TopBar({ activeTab }) {
                             <path d="M9.4 18.2 C9.4 15.6 10.5 13.8 12 12.7 C13.5 13.8 14.6 15.6 14.6 18.2 Z" fill="var(--color-parchment)" />
                             {/* Sand pile at bottom */}
                             <path d="M9.7 18.2 Q12 15.3 14.3 18.2 Z" fill="#C8A882" />
+                            {/* Play triangle in center */}
+                            <polygon points="10.5,10 10.5,14 14.5,12" fill="var(--color-parchment)" />
                         </svg>
                         Chronos
                     </h1>

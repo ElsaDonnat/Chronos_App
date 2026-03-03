@@ -424,7 +424,7 @@ const CORE_EVENTS = [
         category: "war",
         difficulty: 1,
         controversyNotes: {
-            date: "Some historians mark 1453 as the end of the Middle Ages, while others prefer 1492 (Columbus reaches the Americas) or 1517 (the Reformation). The medieval\–modern transition was too gradual for a single date, so this remains a matter of scholarly convention.",
+            date: "When exactly did the Middle Ages end? There is no single answer. 1453 (Fall of Constantinople) is favoured by historians who emphasise the end of the last Roman successor state and the flight of Greek scholars to Italy. 1492 (Columbus) is preferred by those who see European overseas expansion as the decisive break. 1517 (Luther\u2019s 95 Theses) marks the Reformation as the turning point. Some textbooks simply use \u2018c. 1500\u2019 as a convenient round number. Each date highlights a different force \u2014 Ottoman conquest, Atlantic exploration, or religious schism \u2014 and the reality is that these changes overlapped across decades, making any single date a scholarly convention rather than a hard boundary.",
         }
     },
     {
@@ -451,7 +451,8 @@ const CORE_EVENTS = [
         category: "war",
         difficulty: 1,
         controversyNotes: {
-            location: "Columbus never reached the mainland Americas in 1492. He landed on an island in the Bahamas \— probably San Salvador or Samana Cay (scholars disagree). He believed he had reached Asia until his death in 1506.",
+            date: "1492 is widely used as the start of the Early Modern period, but there is no consensus. Competing dates include 1453 (Fall of Constantinople, ending the last Roman successor state), 1517 (Luther\u2019s Reformation), or simply \u2018c. 1500\u2019 as a round number. Each date reflects a different view of what drove the transition \u2014 Ottoman expansion, religious upheaval, or European overseas contact. The truth is that periodization is a scholarly convenience, not a historical fact.",
+            location: "Columbus never reached the mainland Americas in 1492. He landed on an island in the Bahamas \u2014 probably San Salvador or Samana Cay (scholars disagree). He believed he had reached Asia until his death in 1506.",
         }
     },
     {
@@ -811,12 +812,388 @@ const CORE_EVENTS = [
         location: { lat: 50.8, lng: 5.7, region: "Europe", place: "Maastricht, Netherlands" },
         category: "politics",
         difficulty: 2
+    },
+
+    // ─── Level 2: Revolutions Chapter ───────────────────────────────────
+    {
+        id: "f61",
+        title: "The English Civil War",
+        date: "1642\u20131651 CE",
+        year: 1642,
+        yearEnd: 1651,
+        keywords: "Parliamentarians \u00B7 Regicide \u00B7 Constitutional monarchy",
+        description: "A series of civil wars between Parliamentarians and Royalists over the governance of England. King Charles I was tried and executed in 1649 \u2014 the first time a European monarch was formally killed by his own people, establishing the radical principle that rulers answer to the law, not the other way around.",
+        quizDescription: "Parliament fought the king, executing Charles I.",
+        location: { lat: 51.5, lng: -0.1, region: "Europe", place: "England" },
+        category: "revolution",
+        difficulty: 2
+    },
+    {
+        id: "f62",
+        title: "The Haitian Revolution",
+        date: "1791\u20131804 CE",
+        year: 1791,
+        yearEnd: 1804,
+        keywords: "Slave revolt \u00B7 Toussaint Louverture \u00B7 First Black republic",
+        description: "The only successful large-scale slave revolt in history. Enslaved Africans in the French colony of Saint-Domingue overthrew their masters, defeated Napoleon\u2019s expeditionary army, and established Haiti \u2014 the first free Black republic and the second independent nation in the Western Hemisphere after the United States.",
+        quizDescription: "Enslaved people overthrew French colonial rule in Haiti.",
+        location: { lat: 19.0, lng: -72.0, region: "Americas", place: "Saint-Domingue (Haiti)" },
+        category: "revolution",
+        difficulty: 2
+    },
+    {
+        id: "f63",
+        title: "Latin American Wars of Independence",
+        date: "1808\u20131833 CE",
+        year: 1808,
+        yearEnd: 1833,
+        keywords: "Bol\u00EDvar \u00B7 San Mart\u00EDn \u00B7 Colonial liberation",
+        description: "Inspired by the American and French Revolutions and triggered by Napoleon\u2019s invasion of Spain, liberation movements led by Sim\u00F3n Bol\u00EDvar, Jos\u00E9 de San Mart\u00EDn, and others freed most of Central and South America from Spanish and Portuguese colonial rule within a single generation.",
+        quizDescription: "Bol\u00EDvar and San Mart\u00EDn freed Latin America from colonial rule.",
+        location: { lat: -15, lng: -60, region: "Americas", place: "South America" },
+        category: "revolution",
+        difficulty: 2
+    },
+    {
+        id: "f64",
+        title: "World War I",
+        date: "1914\u20131918 CE",
+        year: 1914,
+        yearEnd: 1918,
+        keywords: "Trenches \u00B7 Total war \u00B7 Collapse of empires",
+        description: "The first global industrialized war, triggered by a web of alliances after the assassination of Archduke Franz Ferdinand. It killed over 16 million people, destroyed the Ottoman, Austro-Hungarian, Russian, and German empires, and its harsh aftermath sowed the seeds of an even deadlier second war.",
+        quizDescription: "A web of alliances plunged the world into industrial-scale war.",
+        location: { lat: 49.5, lng: 2.9, region: "Europe", place: "Europe (Western Front)" },
+        category: "war",
+        difficulty: 1
+    },
+    {
+        id: "f65",
+        title: "The Chinese Communist Revolution",
+        date: "1927\u20131949 CE",
+        year: 1927,
+        yearEnd: 1949,
+        keywords: "Mao Zedong \u00B7 Long March \u00B7 People\u2019s Republic",
+        description: "A decades-long struggle between Mao Zedong\u2019s Communist Party and Chiang Kai-shek\u2019s Nationalists, interrupted by the Japanese invasion. Mao\u2019s victory in 1949 established the People\u2019s Republic of China, bringing a quarter of humanity under communist rule and reshaping the global balance of power.",
+        quizDescription: "Mao\u2019s Communists defeated the Nationalists after decades of civil war.",
+        location: { lat: 39.9, lng: 116.4, region: "Asia", place: "China (Beijing)" },
+        category: "revolution",
+        difficulty: 2
+    },
+    {
+        id: "f66",
+        title: "The Iranian Revolution",
+        date: "1978\u20131979 CE",
+        year: 1978,
+        yearEnd: 1979,
+        keywords: "Ayatollah Khomeini \u00B7 Islamic Republic \u00B7 Anti-Western",
+        description: "Mass protests toppled the Western-backed Shah and established an Islamic Republic under Ayatollah Khomeini. It was the first modern revolution to install a theocratic government, transforming Iran from a Cold War ally of the West into a center of anti-Western Islamism that reshaped Middle Eastern politics.",
+        quizDescription: "Mass protests toppled the Shah and created an Islamic Republic.",
+        location: { lat: 35.7, lng: 51.4, region: "Middle East", place: "Tehran, Iran" },
+        category: "revolution",
+        difficulty: 2
+    },
+    {
+        id: "f67",
+        title: "The Arab Spring",
+        date: "2010\u20132012 CE",
+        year: 2010,
+        yearEnd: 2012,
+        keywords: "Social media \u00B7 Pro-democracy \u00B7 Regime change",
+        description: "A wave of anti-authoritarian protests swept across the Arab world, sparked by a street vendor\u2019s self-immolation in Tunisia. Social media amplified dissent at unprecedented speed. Some regimes fell (Tunisia, Egypt, Libya), while others descended into devastating civil wars (Syria, Yemen), reshaping the region.",
+        quizDescription: "Pro-democracy protests swept the Arab world, amplified by social media.",
+        location: { lat: 34.0, lng: 9.0, region: "Africa", place: "Tunisia (spreading region-wide)" },
+        category: "revolution",
+        difficulty: 2
     }
 ];
 
+// ─── EVENT CONNECTIONS (cause-and-effect) ────────────────────────────
+// Each key maps an event id to its related events with directional labels.
+// Attached to CORE_EVENTS below so every event has a `relatedEvents` field.
+const EVENT_CONNECTIONS = {
+    f1: [
+        { id: "f2", label: "Freed hands for tool use, eventually enabling fire control" },
+    ],
+    f2: [
+        { id: "f1", label: "Built on bipedalism from the Ancestral Split" },
+        { id: "f3", label: "Cooking fueled the brain growth behind Homo sapiens" },
+    ],
+    f3: [
+        { id: "f2", label: "Larger brains powered by the Cooking Revolution" },
+        { id: "f5", label: "Homo sapiens migrated out of Africa" },
+    ],
+    f4: [
+        { id: "f3", label: "Emerged from Homo sapiens' growing cognitive abilities" },
+        { id: "f5", label: "Language and planning enabled long-distance migration" },
+    ],
+    f5: [
+        { id: "f4", label: "Made possible by the language of Behavioral Modernity" },
+        { id: "f6", label: "Settled populations eventually adopted agriculture" },
+    ],
+    f6: [
+        { id: "f5", label: "Farming arose after humans settled worldwide" },
+        { id: "f7", label: "Surpluses enabled the first cities in Sumer" },
+        { id: "f8", label: "Nile agriculture made Egyptian unification possible" },
+    ],
+    f7: [
+        { id: "f6", label: "Cities arose from agricultural surpluses" },
+        { id: "f9", label: "Managing city economies required writing" },
+    ],
+    f8: [
+        { id: "f6", label: "Nile agriculture enabled unification" },
+    ],
+    f9: [
+        { id: "f7", label: "Sumerian city management demanded record-keeping" },
+        { id: "f10", label: "Writing enabled the first written legal codes" },
+    ],
+    f10: [
+        { id: "f9", label: "Built on the written language of cuneiform" },
+    ],
+    f13: [
+        { id: "f17", label: "The Republic's tensions led to Caesar's assassination" },
+    ],
+    f14: [
+        { id: "f15", label: "Philosophical ideas shaped Alexander's ambitions" },
+    ],
+    f15: [
+        { id: "f14", label: "Driven by Axial Age philosophical traditions" },
+    ],
+    f17: [
+        { id: "f13", label: "Grew from the Roman Republic's political tensions" },
+        { id: "f18", label: "Caesar's death cleared the way for Augustus" },
+    ],
+    f18: [
+        { id: "f17", label: "Augustus rose from the chaos after Caesar's death" },
+        { id: "f21", label: "Pax Romana eventually gave way to Rome's decline" },
+    ],
+    f19: [
+        { id: "f18", label: "Christianity emerged during the Pax Romana" },
+        { id: "f20", label: "Christianity grew until Constantine legalized it" },
+    ],
+    f20: [
+        { id: "f19", label: "Legalized Christianity after centuries of growth" },
+        { id: "f21", label: "Even state Christianity could not prevent Rome's fall" },
+    ],
+    f21: [
+        { id: "f18", label: "Centuries of decline after the Pax Romana" },
+        { id: "f20", label: "Rome fell despite adopting Christianity" },
+        { id: "f27", label: "Left a power vacuum Charlemagne would fill" },
+    ],
+    f22: [
+        { id: "f24", label: "Byzantine weakness opened the door for Islam's rise" },
+    ],
+    f24: [
+        { id: "f22", label: "Byzantine plague weakness aided Islam's expansion" },
+        { id: "f26", label: "Islam's expansion fueled the Golden Age of scholarship" },
+    ],
+    f26: [
+        { id: "f24", label: "Built on Islam's rapid expansion" },
+        { id: "f34", label: "Preserved ancient knowledge that later sparked the Renaissance" },
+    ],
+    f27: [
+        { id: "f21", label: "Filled the power vacuum left by Rome's fall" },
+    ],
+    f29: [
+        { id: "f30", label: "Mongol trade routes carried plague to Europe" },
+    ],
+    f30: [
+        { id: "f29", label: "Plague traveled west along Mongol trade routes" },
+        { id: "f34", label: "The plague's aftermath helped spark the Renaissance" },
+    ],
+    f31: [
+        { id: "f33", label: "Drove European powers to seek new western routes" },
+        { id: "f34", label: "Greek scholars fleeing to Italy fueled the Renaissance" },
+    ],
+    f32: [
+        { id: "f34", label: "Printing spread Renaissance ideas to a mass audience" },
+        { id: "f36", label: "The press made Luther's Reformation unstoppable" },
+    ],
+    f33: [
+        { id: "f31", label: "Constantinople's fall pushed exploration westward" },
+        { id: "f39", label: "Opened the path for the Atlantic slave trade" },
+        { id: "f35", label: "Inspired the quest to circumnavigate the globe" },
+    ],
+    f34: [
+        { id: "f30", label: "Post-plague upheaval helped spark cultural rebirth" },
+        { id: "f32", label: "The printing press spread Renaissance ideas widely" },
+        { id: "f38", label: "Renaissance curiosity fed the Scientific Revolution" },
+    ],
+    f35: [
+        { id: "f33", label: "Columbus's voyages inspired further exploration" },
+    ],
+    f36: [
+        { id: "f32", label: "The printing press made Luther's ideas unstoppable" },
+        { id: "f37", label: "Religious divisions erupted into the Thirty Years' War" },
+    ],
+    f37: [
+        { id: "f36", label: "Reformation divisions exploded into religious wars" },
+    ],
+    f38: [
+        { id: "f34", label: "Built on Renaissance curiosity and inquiry" },
+        { id: "f40", label: "Scientific thinking inspired Enlightenment philosophy" },
+    ],
+    f39: [
+        { id: "f33", label: "Columbus opened the path for the slave trade" },
+        { id: "f48", label: "The abolitionist movement fought to end slavery" },
+    ],
+    f40: [
+        { id: "f38", label: "Applied the Scientific Revolution's logic to society" },
+        { id: "f42", label: "Directly inspired the American Revolution" },
+        { id: "f43", label: "Enlightenment ideals fueled the French Revolution" },
+    ],
+    f41: [
+        { id: "f46", label: "Powered the Industrial Revolution's factories" },
+    ],
+    f42: [
+        { id: "f40", label: "Enlightenment ideals drove the revolution" },
+        { id: "f43", label: "American success inspired French revolutionaries" },
+    ],
+    f43: [
+        { id: "f42", label: "Inspired by the American Revolution's success" },
+        { id: "f40", label: "Fueled by Enlightenment ideals" },
+        { id: "f44", label: "Revolutionary chaos led to Napoleon's rise" },
+    ],
+    f44: [
+        { id: "f43", label: "Napoleon rose from the French Revolution's chaos" },
+        { id: "f45", label: "Napoleon's defeat led to the Congress of Vienna" },
+    ],
+    f45: [
+        { id: "f44", label: "Convened to restore order after Napoleon's defeat" },
+        { id: "f47", label: "Vienna's conservative order provoked democratic revolts" },
+    ],
+    f46: [
+        { id: "f41", label: "Watt's steam engine accelerated industrialization" },
+        { id: "f48", label: "Industrial economics shifted views on slavery" },
+        { id: "f49", label: "Industrial powers competed for African resources" },
+    ],
+    f47: [
+        { id: "f45", label: "Vienna's restored monarchies provoked these uprisings" },
+    ],
+    f48: [
+        { id: "f46", label: "Industrialization strengthened abolitionist movements" },
+        { id: "f39", label: "Fought to end the Atlantic slave trade" },
+    ],
+    f49: [
+        { id: "f46", label: "Industrial powers needed African raw materials" },
+        { id: "f56", label: "Colonial exploitation planted seeds of decolonization" },
+    ],
+    f50: [
+        { id: "f55", label: "Created the Soviet bloc, one pole of the Cold War" },
+    ],
+    f51: [
+        { id: "f52", label: "Harsh reparations contributed to the Great Depression" },
+    ],
+    f52: [
+        { id: "f51", label: "Worsened by Versailles's punitive economic terms" },
+        { id: "f53", label: "Economic collapse helped fuel World War II" },
+    ],
+    f53: [
+        { id: "f52", label: "Fueled by Depression-era instability" },
+        { id: "f54", label: "Led to the founding of the United Nations" },
+        { id: "f55", label: "Victory split the world into Cold War blocs" },
+    ],
+    f54: [
+        { id: "f53", label: "Founded in the aftermath of World War II" },
+    ],
+    f55: [
+        { id: "f53", label: "Arose from World War II's aftermath" },
+        { id: "f50", label: "Soviet communism formed the eastern bloc" },
+        { id: "f59", label: "Ended with the fall of the Berlin Wall" },
+    ],
+    f56: [
+        { id: "f53", label: "WWII exposed and weakened colonial empires" },
+        { id: "f49", label: "Colonial exploitation fueled independence movements" },
+    ],
+    f57: [
+        { id: "f55", label: "Cold War rivalry drove the Space Race" },
+    ],
+    f58: [
+        { id: "f55", label: "Cold War military research birthed the internet" },
+    ],
+    f59: [
+        { id: "f55", label: "The Cold War's end freed Eastern Europe" },
+        { id: "f60", label: "Enabled European reunification and the EU" },
+    ],
+    f60: [
+        { id: "f59", label: "Made possible by the fall of the Berlin Wall" },
+    ],
+};
+
+// ─── Level 2: Revolutions chapter connections ───────────────────────
+const LEVEL2_CONNECTIONS = {
+    // New events
+    f61: [
+        { id: "f42", label: "English constitutional ideas inspired American colonists" },
+        { id: "f43", label: "The execution of a king foreshadowed the French Revolution" },
+    ],
+    f62: [
+        { id: "f43", label: "Inspired by the French Revolution\u2019s declaration of rights" },
+        { id: "f48", label: "First successful slave revolution accelerated global abolition" },
+        { id: "f63", label: "Haiti\u2019s success emboldened Latin American independence movements" },
+    ],
+    f63: [
+        { id: "f42", label: "American independence provided a model for liberation" },
+        { id: "f44", label: "Napoleon\u2019s invasion of Spain weakened colonial control" },
+        { id: "f62", label: "Haiti showed that colonial liberation was possible" },
+    ],
+    f64: [
+        { id: "f50", label: "War exhaustion and famine in Russia triggered revolution" },
+        { id: "f51", label: "The war\u2019s end produced the Treaty of Versailles" },
+        { id: "f53", label: "Unresolved tensions and harsh reparations led to World War II" },
+        { id: "f65", label: "WWI\u2019s aftermath destabilized China, enabling revolution" },
+    ],
+    f65: [
+        { id: "f50", label: "The Bolshevik success provided the communist model" },
+        { id: "f64", label: "WWI and its aftermath radicalized Chinese politics" },
+        { id: "f55", label: "Communist China became a key player in the Cold War" },
+    ],
+    f66: [
+        { id: "f55", label: "Cold War meddling in Iran fueled anti-Western sentiment" },
+        { id: "f67", label: "Iran\u2019s revolution inspired Islamist movements across the region" },
+    ],
+    f67: [
+        { id: "f66", label: "Decades of authoritarian rule, partly shaped by Iran\u2019s example, bred discontent" },
+        { id: "f56", label: "Post-colonial authoritarian regimes sparked popular uprisings" },
+    ],
+    // Cross-connections: append to existing events
+    f42: [
+        { id: "f61", label: "Inspired by England\u2019s parliamentary revolution" },
+        { id: "f63", label: "American independence inspired Latin American liberators" },
+    ],
+    f43: [
+        { id: "f61", label: "Followed the precedent of England\u2019s regicide" },
+        { id: "f62", label: "French ideals of liberty inspired the Haitian Revolution" },
+        { id: "f63", label: "Revolutionary ideals spread to Latin America" },
+    ],
+    f47: [
+        { id: "f63", label: "Latin American independence joined the global revolutionary wave" },
+    ],
+    f50: [
+        { id: "f64", label: "World War I\u2019s collapse triggered the revolution" },
+        { id: "f65", label: "Provided the communist model for Mao\u2019s revolution" },
+    ],
+};
+
+// Merge Level 2 connections into the main connections object
+for (const [eventId, connections] of Object.entries(LEVEL2_CONNECTIONS)) {
+    if (EVENT_CONNECTIONS[eventId]) {
+        EVENT_CONNECTIONS[eventId].push(...connections);
+    } else {
+        EVENT_CONNECTIONS[eventId] = connections;
+    }
+}
+
+// Attach connections to each core event
+for (const event of CORE_EVENTS) {
+    if (EVENT_CONNECTIONS[event.id]) {
+        event.relatedEvents = EVENT_CONNECTIONS[event.id];
+    }
+}
+
 export const ALL_EVENTS = [...CORE_EVENTS, ...DAILY_QUIZ_EVENTS];
 
-export const CORE_EVENT_COUNT = CORE_EVENTS.length; // 60 — for display purposes
+export const CORE_EVENT_COUNT = CORE_EVENTS.length; // 67 (60 Level 1 + 7 Level 2)
 
 export function isDiHEvent(event) {
     return event?.source === 'daily';
@@ -828,6 +1205,19 @@ export function getEventById(id) {
 
 export function getEventsByIds(ids) {
     return ids.map(id => ALL_EVENTS.find(e => e.id === id)).filter(Boolean);
+}
+
+export function getRelatedEvents(eventId, seenEventIds) {
+    const event = getEventById(eventId);
+    if (!event?.relatedEvents) return [];
+    return event.relatedEvents
+        .map(rel => {
+            const target = getEventById(rel.id);
+            if (!target) return null;
+            if (seenEventIds && !seenEventIds.has(rel.id)) return null;
+            return { ...target, connectionLabel: rel.label };
+        })
+        .filter(Boolean);
 }
 
 export function formatYear(year, yearEnd) {

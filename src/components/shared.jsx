@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, forwardRef } from 'react';
-import { CATEGORY_CONFIG } from '../data/events';
+import { CATEGORY_CONFIG, getRelatedEvents } from '../data/events';
 
 /** Truncates text to `lines` lines with a "Read more / Less" toggle. */
 export function ExpandableText({ children, lines = 3, className = '', style = {} }) {
@@ -322,6 +322,45 @@ export function TabSelector({ tabs, activeTab, onChange }) {
                 >
                     {tab.label}
                 </button>
+            ))}
+        </div>
+    );
+}
+
+/** Shows cause-and-effect connections for an event. */
+export function EventConnections({ eventId, seenEventIds, onEventClick, showAll = false }) {
+    const connections = getRelatedEvents(eventId, showAll ? null : seenEventIds);
+    if (connections.length === 0) return null;
+
+    return (
+        <div className="mt-4 pt-3" style={{ borderTop: '1px solid rgba(28, 25, 23, 0.06)' }}>
+            <p className="text-[11px] uppercase tracking-wider font-semibold mb-2" style={{ color: 'var(--color-ink-faint)' }}>
+                Connected Events
+            </p>
+            {connections.map(conn => (
+                <div
+                    key={conn.id}
+                    className={`flex items-start gap-2 text-xs py-1.5 ${onEventClick ? 'cursor-pointer active:opacity-70' : ''}`}
+                    style={{ color: 'var(--color-ink-muted)' }}
+                    onClick={onEventClick ? (e) => { e.stopPropagation(); onEventClick(conn.id); } : undefined}
+                >
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none"
+                         stroke={CATEGORY_CONFIG[conn.category]?.color || '#999'}
+                         strokeWidth="2.5" strokeLinecap="round" className="flex-shrink-0 mt-0.5">
+                        <polyline points="9 18 15 12 9 6" />
+                    </svg>
+                    <div>
+                        <span className="font-medium" style={{ color: 'var(--color-ink)' }}>
+                            {conn.title}
+                        </span>
+                        <span className="ml-1" style={{ color: 'var(--color-ink-faint)' }}>
+                            ({conn.date})
+                        </span>
+                        <p className="text-[11px] leading-snug mt-0.5" style={{ color: 'var(--color-ink-muted)', fontStyle: 'italic' }}>
+                            {conn.connectionLabel}
+                        </p>
+                    </div>
+                </div>
             ))}
         </div>
     );

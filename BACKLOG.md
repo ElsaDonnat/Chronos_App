@@ -10,23 +10,15 @@
 
 ---
 
-## P3 — Event connections & cause-and-effect
-
-Add a `relatedEvents` field to events in events.js, linking them with brief causal descriptions (e.g., French Revolution → "Led to the Napoleonic Wars"). Show connections on event cards in the timeline and on learn cards as a small "Connected events" section. Helps users understand history as a narrative rather than isolated facts. Start with the most obvious connections among existing events.
-
-## P3 — Map view for events
-
-A visual map showing where events happened. Could be a simple SVG world map with region highlights, accessible as a toggle/tab on the Timeline page. Even a basic region-highlighted map per era would significantly aid spatial memory and make location quiz questions more intuitive. Tap a region to see events from that area.
-
-## P3 — Themed collections
-
-Cross-cutting study paths like "Women in History", "Scientific Breakthroughs", "Revolutions That Changed the World". Groups existing events by theme rather than chronology. Accessible from the Practice page hub as additional collection tiles. Adds replay value and a fresh perspective without needing new content.
-
 ## P4 — Dark mode
 
 Full dark theme using CSS custom properties alongside the existing @theme block. Toggle in Settings. Optionally respects system color-scheme preference. Swap parchment/ink colors while keeping category and mastery colors legible. Expected by many users, especially for evening study sessions.
 
-## P4 — Content expansion (more events & lessons)
+## P5 — Themed collections (remaining)
+
+Cross-cutting study paths like "Women in History", "Scientific Breakthroughs". Groups existing events by theme rather than chronology. Accessible from the Practice page hub as additional collection tiles. Lower priority now that Level 2 thematic chapters exist.
+
+## P5 — Content expansion (more events & lessons)
 
 Add more events per era, deeper non-Western history coverage, and new lessons beyond the current 21. Plan for thematic content packs or era-specific expansions. Priority: regions currently underrepresented (Asia, Africa, Americas pre-colonization). This is a long-term effort — the app framework supports it, but content creation takes time.
 
@@ -51,3 +43,6 @@ Add more events per era, deeper non-Western history coverage, and new lessons be
 - **P3 — Sound effects and haptic feedback** (2026-03-02): Web Audio API sine-wave tones (ascending minor third for correct, single warm tone for close, descending minor second for wrong, 3-note arpeggio for completion, 4-note sparkle for achievements) with native haptics via @capacitor/haptics. Module-level feedback service (`src/services/feedback.js`) configured from AppContext. Independent toggles in Settings for sound and haptics.
 - **P3 — Share a challenge** (2026-03-02): Text-based sharing via Web Share API (clipboard fallback on desktop). "Share Result" button on lesson summary, practice results, and daily quiz results. "Share Streak" button in streak modal (adaptive color per streak status). Messages include score, XP, streak, and Play Store link. Service in `src/services/share.js`.
 - **P3 — Weekly learning insights** (2026-03-02): "This Week" recap card on the Learn page showing sessions, questions answered, study time, strongest era, and weakest era (focus suggestion). Dismissible per week via localStorage. Only appears after 3+ events learned and at least 1 session that week. Calculated from existing state data (studySessions, seenEvents, eventMastery).
+- **P3 — Event connections & cause-and-effect** (2026-03-02): Added `relatedEvents` to 54 of 60 events with ~100 directional causal connections. `EVENT_CONNECTIONS` map in events.js with `getRelatedEvents()` helper. Reusable `EventConnections` component in shared.jsx matching "Before & After" visual pattern. Integrated into Timeline expanded cards (clickable, scrolls to target event) and LessonFlow learn cards (read-only context). Category-colored chevron arrows with italic causal labels.
+- **P3 — Themed collections: Revolutions That Changed the World** (2026-03-03): Level 2 chapter with 4 lessons and 7 new events (f61–f67) tracing revolutions from the English Civil War through the Arab Spring. Chain-of-causation structure linking each revolution to the next. Reuses 3 existing Level 1 events alongside new content.
+- **P3 — Map view for events** (2026-03-02): Custom inline SVG world map on the Timeline page. TabSelector toggle between Timeline (list) and Map views. 5 continent region paths with parchment styling. Category-colored event pins with grid-based clustering for overlapping locations. Region filter chips + tappable continents. Bottom popup Card for event details with CategoryTag/MasteryDots. Respects all existing filters (era, category, hideUnknown). View mode persisted to localStorage.

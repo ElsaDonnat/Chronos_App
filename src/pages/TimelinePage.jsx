@@ -1,8 +1,24 @@
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, useRef, useEffect } from 'react';
 import { useApp } from '../context/AppContext';
 import { ALL_EVENTS, CORE_EVENT_COUNT, CATEGORY_CONFIG, ERA_RANGES, ERA_BOUNDARY_EVENTS, getEraForYear, getEventById, isDiHEvent } from '../data/events';
-import { Card, CategoryTag, DiHBadge, MasteryDots, Divider, ExpandableText } from '../components/shared';
+import { Card, CategoryTag, DiHBadge, MasteryDots, Divider, ExpandableText, EventConnections, TabSelector } from '../components/shared';
+import MapView from '../components/MapView';
 import Mascot from '../components/Mascot';
+
+// SVG era icons — replace emoji to avoid rendering issues on Android
+const EraIcon = ({ type, size = 24 }) => {
+    const colors = { prehistory: '#0D9488', ancient: '#6B5B73', medieval: '#A0522D', earlymodern: '#65774A', modern: '#8B4157' };
+    const c = colors[type] || '#666';
+    const s = { width: size, height: size, viewBox: '0 0 24 24', fill: 'none', stroke: c, strokeWidth: '1.8', strokeLinecap: 'round', strokeLinejoin: 'round' };
+    const icons = {
+        prehistory: <svg {...s}><path d="M5 10c0-1.5 1-2.5 2-3 .5-1.5-.5-3-2-3.5S2 4 2.5 5.5c-1 .5-1.5 2-.5 3s2.5 1 3 1.5z" fill={c} opacity="0.15" /><path d="M19 14c0 1.5-1 2.5-2 3-.5 1.5.5 3 2 3.5s3-.5 2.5-2c1-.5 1.5-2 .5-3s-2.5-1-3-1.5z" fill={c} opacity="0.15" /><line x1="7" y1="9" x2="17" y2="15" /></svg>,
+        ancient: <svg {...s}><path d="M3 21h18M5 21V7l7-4 7 4v14" fill={c} opacity="0.1" /><line x1="9" y1="21" x2="9" y2="10" /><line x1="15" y1="21" x2="15" y2="10" /><path d="M5 7l7-4 7 4" /><line x1="3" y1="21" x2="21" y2="21" /></svg>,
+        medieval: <svg {...s}><path d="M5 3l14 14M9.5 7.5L5 3M19 3L5 17" /><path d="M14.5 7.5L19 3" /><path d="M5 17l2 2 2-2" /><path d="M19 17l-2 2-2-2" /></svg>,
+        earlymodern: <svg {...s}><circle cx="12" cy="12" r="9" fill={c} opacity="0.08" /><polygon points="16.24,7.76 14.12,14.12 7.76,16.24 9.88,9.88" fill={c} opacity="0.2" stroke={c} /><line x1="12" y1="3" x2="12" y2="5" /><line x1="12" y1="19" x2="12" y2="21" /><line x1="3" y1="12" x2="5" y2="12" /><line x1="19" y1="12" x2="21" y2="12" /></svg>,
+        modern: <svg {...s}><circle cx="12" cy="12" r="9" fill={c} opacity="0.08" /><ellipse cx="12" cy="12" rx="4" ry="9" /><line x1="3" y1="12" x2="21" y2="12" /><path d="M4.5 7.5h15M4.5 16.5h15" /></svg>,
+    };
+    return icons[type] || null;
+};
 
 export default function TimelinePage() {
     const { state } = useApp();
@@ -11,12 +27,8 @@ export default function TimelinePage() {
     const [hideUnknown, setHideUnknown] = useState(() => localStorage.getItem('chronos-tl-hide') === 'true');
     const [expandedId, setExpandedId] = useState(null);
     const [expandedEraId, setExpandedEraId] = useState(null);
-    const [filtersOpen, setFiltersOpen] = useState(() => {
-        const era = localStorage.getItem('chronos-tl-era') || 'all';
-        const cat = localStorage.getItem('chronos-tl-cat') || 'all';
-        const hide = localStorage.getItem('chronos-tl-hide') === 'true';
-        return era !== 'all' || cat !== 'all' || hide;
-    });
+    const [viewMode, setViewMode] = useState(() => localStorage.getItem('chronos-tl-view') || 'list');
+    const [selectedRegion, setSelectedRegion] = useState(null);
     const expandedRef = useCallback(node => {
         if (node) {
             setTimeout(() => node.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 50);
@@ -48,16 +60,17 @@ export default function TimelinePage() {
     const lesson0Complete = !!state.completedLessons['lesson-0'];
 
     // Persist filter choices
-    const updateEra = (v) => { setSelectedEra(v); localStorage.setItem('chronos-tl-era', v); };
-    const updateCategory = (v) => { setSelectedCategory(v); localStorage.setItem('chronos-tl-cat', v); };
+    const updateEra = (v) => { setSelectedEra(v); localStorage.setItem('chronos-tl-era', v); setSelectedRegion(null); };
+    const updateCategory = (v) => { setSelectedCategory(v); localStorage.setItem('chronos-tl-cat', v); setSelectedRegion(null); };
     const toggleHideUnknown = () => { setHideUnknown(h => { const next = !h; localStorage.setItem('chronos-tl-hide', String(next)); return next; }); };
+    const updateViewMode = (v) => { setViewMode(v); localStorage.setItem('chronos-tl-view', v); setSelectedRegion(null); };
 
     const eraDetails = {
-        prehistory: { icon: '🦴', title: 'Prehistory', subtitle: 'c. 7 million years ago – c. 3200 BCE', description: 'The longest chapter in human history — from the first split with our ape ancestors through mastering fire, developing language, migrating across the globe, and eventually settling into farming communities.', color: '#0D9488' },
-        ancient: { icon: '🏛️', title: 'The Ancient World', subtitle: 'c. 3200 BCE – 500 CE', description: 'Writing is invented, cities rise, empires clash. From Sumer to Rome, humanity builds the foundations of law, philosophy, religion, and governance.', color: '#6B5B73' },
-        medieval: { icon: '⚔️', title: 'The Medieval World', subtitle: '500 – 1500 CE', description: 'Empires fragment and reform. Faiths spread across continents, scholars preserve and advance knowledge, and horseback conquerors redraw the map of Eurasia.', color: '#A0522D' },
-        earlymodern: { icon: '🧭', title: 'The Early Modern Period', subtitle: '1500 – 1800 CE', description: 'Print breaks the monopoly on knowledge, ships connect every continent, and thinkers challenge the divine right of kings.', color: '#65774A' },
-        modern: { icon: '🌍', title: 'The Modern World', subtitle: '1800 – Present', description: 'Industry, ideology, and information transform human life at accelerating speed. Two world wars reshape the global order, and digital networks connect billions.', color: '#8B4157' },
+        prehistory: { iconType: 'prehistory', title: 'Prehistory', subtitle: 'c. 7 million years ago – c. 3200 BCE', description: 'The longest chapter in human history — from the first split with our ape ancestors through mastering fire, developing language, migrating across the globe, and eventually settling into farming communities.', color: '#0D9488' },
+        ancient: { iconType: 'ancient', title: 'The Ancient World', subtitle: 'c. 3200 BCE – 500 CE', description: 'Writing is invented, cities rise, empires clash. From Sumer to Rome, humanity builds the foundations of law, philosophy, religion, and governance.', color: '#6B5B73' },
+        medieval: { iconType: 'medieval', title: 'The Medieval World', subtitle: '500 – 1500 CE', description: 'Empires fragment and reform. Faiths spread across continents, scholars preserve and advance knowledge, and horseback conquerors redraw the map of Eurasia.', color: '#A0522D' },
+        earlymodern: { iconType: 'earlymodern', title: 'The Early Modern Period', subtitle: '1500 – 1800 CE', description: 'Print breaks the monopoly on knowledge, ships connect every continent, and thinkers challenge the divine right of kings.', color: '#65774A' },
+        modern: { iconType: 'modern', title: 'The Modern World', subtitle: '1800 – Present', description: 'Industry, ideology, and information transform human life at accelerating speed. Two world wars reshape the global order, and digital networks connect billions.', color: '#8B4157' },
     };
 
     const getEraColor = (eraId) => {
@@ -82,87 +95,74 @@ export default function TimelinePage() {
                 </p>
             </div>
 
-            {/* Filter section — collapsed button or expanded chips */}
-            {(() => {
-                const hasActiveFilter = selectedEra !== 'all' || selectedCategory !== 'all' || hideUnknown;
-                const showChips = filtersOpen || hasActiveFilter;
+            {/* View toggle */}
+            <div className="mb-4">
+                <TabSelector
+                    tabs={[{ id: 'list', label: 'Timeline' }, { id: 'map', label: 'Map' }]}
+                    activeTab={viewMode}
+                    onChange={updateViewMode}
+                />
+            </div>
 
-                return (
-                    <div className="mb-6">
-                        {!showChips ? (
-                            <button
-                                onClick={() => setFiltersOpen(true)}
-                                className="flex items-center gap-2 px-3.5 py-2 rounded-full text-xs font-semibold transition-all duration-200 cursor-pointer"
-                                style={{
-                                    backgroundColor: 'rgba(28, 25, 23, 0.04)',
-                                    color: 'var(--color-ink-muted)',
-                                    border: '1px solid rgba(28, 25, 23, 0.08)',
-                                }}
-                            >
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-                                    <line x1="4" y1="6" x2="20" y2="6" />
-                                    <line x1="7" y1="12" x2="17" y2="12" />
-                                    <line x1="10" y1="18" x2="14" y2="18" />
-                                </svg>
-                                Filter
-                            </button>
+            {/* Compact filter row */}
+            <div className="flex items-center gap-2 mb-6">
+                <FilterDropdown
+                    value={selectedEra}
+                    onChange={updateEra}
+                    options={[
+                        { value: 'all', label: 'All Eras' },
+                        ...ERA_RANGES.map(era => ({ value: era.id, label: era.label })),
+                    ]}
+                />
+                <FilterDropdown
+                    value={selectedCategory}
+                    onChange={updateCategory}
+                    options={[
+                        { value: 'all', label: 'All Types' },
+                        ...Object.entries(CATEGORY_CONFIG).map(([key, config]) => ({
+                            value: key, label: config.label, dotColor: config.color,
+                        })),
+                        ...(acquiredDiHIds.size > 0 ? [{ value: 'daily', label: 'Day in History', dotColor: '#E6A817' }] : []),
+                    ]}
+                />
+                <button
+                    onClick={toggleHideUnknown}
+                    className="flex items-center gap-1 px-2.5 py-1.5 rounded-full text-[11px] font-semibold whitespace-nowrap transition-all duration-200 cursor-pointer flex-shrink-0"
+                    style={{
+                        backgroundColor: hideUnknown ? 'var(--color-burgundy)' : 'rgba(28, 25, 23, 0.04)',
+                        color: hideUnknown ? 'white' : 'var(--color-ink-muted)',
+                        border: hideUnknown ? 'none' : '1px solid rgba(28, 25, 23, 0.08)',
+                    }}
+                    title={hideUnknown ? 'Showing only discovered' : 'Show all events'}
+                >
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                        {hideUnknown ? (
+                            <>
+                                <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94" />
+                                <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19" />
+                                <line x1="1" y1="1" x2="23" y2="23" />
+                            </>
                         ) : (
-                            <div className="space-y-2 animate-fade-in">
-                                <div className="flex items-center gap-2 mb-1">
-                                    <span className="text-[10px] uppercase tracking-widest font-semibold" style={{ color: 'var(--color-ink-faint)' }}>
-                                        Filters
-                                    </span>
-                                    {hasActiveFilter && (
-                                        <button
-                                            onClick={() => { updateEra('all'); updateCategory('all'); setHideUnknown(false); localStorage.setItem('chronos-tl-hide', 'false'); setFiltersOpen(false); }}
-                                            className="text-[10px] font-semibold px-2 py-0.5 rounded-full cursor-pointer"
-                                            style={{ color: 'var(--color-burgundy)', backgroundColor: 'rgba(139, 65, 87, 0.08)' }}
-                                        >
-                                            Clear
-                                        </button>
-                                    )}
-                                    {!hasActiveFilter && (
-                                        <button
-                                            onClick={() => setFiltersOpen(false)}
-                                            className="ml-auto p-1 cursor-pointer"
-                                            style={{ color: 'var(--color-ink-faint)' }}
-                                        >
-                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                                <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
-                                            </svg>
-                                        </button>
-                                    )}
-                                </div>
-                                <div className="flex gap-2 flex-wrap">
-                                    <FilterChip label="All Eras" active={selectedEra === 'all'} onClick={() => updateEra('all')} />
-                                    {ERA_RANGES.map(era => (
-                                        <FilterChip key={era.id} label={era.label} active={selectedEra === era.id}
-                                            onClick={() => updateEra(era.id)} />
-                                    ))}
-                                </div>
-                                <div className="flex gap-2 flex-wrap">
-                                    <FilterChip label="All Categories" active={selectedCategory === 'all'} onClick={() => updateCategory('all')} />
-                                    {Object.entries(CATEGORY_CONFIG).map(([key, config]) => (
-                                        <FilterChip key={key} label={config.label} active={selectedCategory === key}
-                                            onClick={() => updateCategory(key)}
-                                            dotColor={config.color} />
-                                    ))}
-                                    {acquiredDiHIds.size > 0 && (
-                                        <FilterChip label="Day in History" active={selectedCategory === 'daily'}
-                                            onClick={() => updateCategory('daily')}
-                                            dotColor="#E6A817" />
-                                    )}
-                                    <FilterChip label="Hide Unknown" active={hideUnknown} onClick={toggleHideUnknown}
-                                        bgColor="rgba(200, 168, 130, 0.15)" borderColor="rgba(200, 168, 130, 0.3)"
-                                        icon={<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94" /><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19" /><line x1="1" y1="1" x2="23" y2="23" /></svg>} />
-                                </div>
-                            </div>
+                            <>
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                                <circle cx="12" cy="12" r="3" />
+                            </>
                         )}
-                    </div>
-                );
-            })()}
+                    </svg>
+                    <span className="hidden min-[360px]:inline">{hideUnknown ? 'Hidden' : 'All'}</span>
+                </button>
+            </div>
 
-            {filteredEvents.length === 0 ? (
+            {viewMode === 'map' ? (
+                <MapView
+                    events={filteredEvents}
+                    learnedIds={learnedIds}
+                    hideUnknown={hideUnknown}
+                    eventMastery={state.eventMastery}
+                    selectedRegion={selectedRegion}
+                    onRegionSelect={setSelectedRegion}
+                />
+            ) : filteredEvents.length === 0 ? (
                 <div className="text-center py-16 animate-fade-in">
                     <Mascot mood="thinking" size={60} />
                     <p className="text-sm mt-3" style={{ color: 'var(--color-ink-muted)', fontFamily: 'var(--font-serif)' }}>
@@ -201,7 +201,7 @@ export default function TimelinePage() {
                                             {lesson0Complete ? (
                                                 <>
                                                     <div className="flex items-center gap-2">
-                                                        <span className="text-base">{detail?.icon || ''}</span>
+                                                        {detail?.iconType && <EraIcon type={detail.iconType} size={18} />}
                                                         <div className="flex-1">
                                                             <span className="text-xs uppercase tracking-widest font-bold" style={{ color: 'var(--color-ink-muted)' }}>
                                                                 {era.label}
@@ -222,7 +222,7 @@ export default function TimelinePage() {
                                                         <div className="mt-3 animate-fade-in" onClick={e => e.stopPropagation()}>
                                                             <Card style={{ borderLeft: `3px solid ${detail.color}` }}>
                                                                 <div className="text-center mb-3">
-                                                                    <span className="text-4xl">{detail.icon}</span>
+                                                                    <EraIcon type={detail.iconType} size={40} />
                                                                 </div>
                                                                 <h3 className="text-lg font-bold text-center mb-1" style={{ fontFamily: 'var(--font-serif)', color: 'var(--color-ink)' }}>
                                                                     {detail.title}
@@ -280,6 +280,7 @@ export default function TimelinePage() {
 
                                 {/* Hide unknown event cards but keep era headers */}
                                 {hideUnknown && !isLearned ? null : <div
+                                    data-event-id={event.id}
                                     className="timeline-event-card relative pl-16 py-3 animate-fade-in cursor-pointer rounded-lg transition-all duration-200"
                                     style={{ animationDelay: `${Math.min(index * 30, 500)}ms`, animationFillMode: 'backwards' }}
                                     onClick={() => isLearned && setExpandedId(isExpanded ? null : event.id)}
@@ -348,6 +349,17 @@ export default function TimelinePage() {
                                                             </svg>
                                                             {event.location.place}
                                                         </div>
+                                                        <EventConnections
+                                                            eventId={event.id}
+                                                            seenEventIds={learnedIds}
+                                                            onEventClick={(targetId) => {
+                                                                setExpandedId(targetId);
+                                                                setTimeout(() => {
+                                                                    const el = document.querySelector(`[data-event-id="${targetId}"]`);
+                                                                    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                                                }, 100);
+                                                            }}
+                                                        />
                                                     </Card>
                                                 </div>
                                             )}
@@ -384,22 +396,70 @@ export default function TimelinePage() {
     );
 }
 
-function FilterChip({ label, active, onClick, dotColor, icon, bgColor, borderColor }) {
+function FilterDropdown({ value, onChange, options }) {
+    const [open, setOpen] = useState(false);
+    const ref = useRef(null);
+
+    useEffect(() => {
+        if (!open) return;
+        const handleClickOutside = (e) => {
+            if (ref.current && !ref.current.contains(e.target)) setOpen(false);
+        };
+        document.addEventListener('pointerdown', handleClickOutside);
+        return () => document.removeEventListener('pointerdown', handleClickOutside);
+    }, [open]);
+
+    const selected = options.find(o => o.value === value) || options[0];
+    const isDefault = value === 'all';
+
     return (
-        <button
-            onClick={onClick}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all duration-200 cursor-pointer"
-            style={{
-                backgroundColor: active ? 'var(--color-burgundy)' : (bgColor || 'rgba(28, 25, 23, 0.04)'),
-                color: active ? 'white' : 'var(--color-ink-muted)',
-                border: active ? 'none' : `1px solid ${borderColor || 'rgba(28, 25, 23, 0.08)'}`,
-            }}
-        >
-            {icon && <span className="flex-shrink-0">{icon}</span>}
-            {dotColor && !active && !icon && (
-                <div className="w-2 h-2 rounded-full" style={{ backgroundColor: dotColor }} />
+        <div className="relative" ref={ref}>
+            <button
+                onClick={() => setOpen(o => !o)}
+                className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full text-[11px] font-semibold whitespace-nowrap transition-all duration-200 cursor-pointer"
+                style={{
+                    backgroundColor: isDefault ? 'rgba(28, 25, 23, 0.04)' : 'var(--color-burgundy)',
+                    color: isDefault ? 'var(--color-ink-muted)' : 'white',
+                    border: isDefault ? '1px solid rgba(28, 25, 23, 0.08)' : 'none',
+                }}
+            >
+                {selected.dotColor && isDefault && (
+                    <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: selected.dotColor }} />
+                )}
+                {selected.label}
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round"
+                    className="transition-transform duration-200" style={{ transform: open ? 'rotate(180deg)' : 'none' }}>
+                    <polyline points="6 9 12 15 18 9" />
+                </svg>
+            </button>
+            {open && (
+                <div
+                    className="absolute top-full left-0 mt-1 py-1 rounded-xl shadow-lg z-50 min-w-[140px] animate-fade-in"
+                    style={{ backgroundColor: 'var(--color-card)', border: '1px solid rgba(28, 25, 23, 0.1)' }}
+                >
+                    {options.map(opt => (
+                        <button
+                            key={opt.value}
+                            onClick={() => { onChange(opt.value); setOpen(false); }}
+                            className="flex items-center gap-2 w-full px-3 py-2 text-xs font-medium cursor-pointer transition-colors duration-100"
+                            style={{
+                                backgroundColor: opt.value === value ? 'rgba(139, 65, 87, 0.08)' : 'transparent',
+                                color: opt.value === value ? 'var(--color-burgundy)' : 'var(--color-ink-secondary)',
+                            }}
+                        >
+                            {opt.dotColor && (
+                                <div className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: opt.dotColor }} />
+                            )}
+                            {opt.label}
+                            {opt.value === value && (
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--color-burgundy)" strokeWidth="3" className="ml-auto flex-shrink-0">
+                                    <polyline points="20 6 9 17 4 12" />
+                                </svg>
+                            )}
+                        </button>
+                    ))}
+                </div>
             )}
-            {label}
-        </button>
+        </div>
     );
 }

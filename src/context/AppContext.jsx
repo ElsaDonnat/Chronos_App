@@ -3,6 +3,7 @@ import { getEraQuizGroup } from '../data/lessons';
 import { calculateInitialInterval } from '../data/spacedRepetition';
 import { initWidgets, syncWidgetData } from '../services/widgetBridge';
 import { configure as configureFeedback } from '../services/feedback';
+import { configure as configureAmbientMusic } from '../services/ambientMusic';
 
 const AppContext = createContext(null);
 
@@ -38,6 +39,8 @@ const defaultState = {
     // Sound & haptic feedback
     soundEnabled: true,
     hapticsEnabled: true,
+    musicEnabled: true,
+    musicPromptDismissed: false,
 
     // ─── Daily Quiz ───
     dailyQuiz: {
@@ -70,6 +73,16 @@ const defaultState = {
     // ─── Study Timer ───
     totalStudyTime: 0,       // cumulative seconds
     studySessions: [],       // [{ date, duration, type, questionsAnswered }] — last 50
+
+    // ─── Challenge Mode ───
+    challenge: {
+        soloHighScore: 0,
+        soloGamesPlayed: 0,
+        soloBestStreak: 0,
+        totalChallengeCorrect: 0,
+        multiplayerGamesPlayed: 0,
+        lastPlayedDate: null,
+    },
 };
 
 function migrateState(parsed) {
@@ -118,6 +131,14 @@ function migrateState(parsed) {
     // Migration: sound & haptics (default on for existing users)
     if (parsed.soundEnabled === undefined) merged.soundEnabled = true;
     if (parsed.hapticsEnabled === undefined) merged.hapticsEnabled = true;
+    if (parsed.musicEnabled === undefined) merged.musicEnabled = true;
+    if (parsed.musicPromptDismissed === undefined) merged.musicPromptDismissed = false;
+
+    // Migration: challenge mode
+    if (!parsed.challenge) merged.challenge = {
+        soloHighScore: 0, soloGamesPlayed: 0, soloBestStreak: 0,
+        totalChallengeCorrect: 0, multiplayerGamesPlayed: 0, lastPlayedDate: null,
+    };
 
     return merged;
 }
@@ -324,6 +345,14 @@ function reducer(state, action) {
             return { ...state, hapticsEnabled: !state.hapticsEnabled };
         }
 
+        case 'TOGGLE_MUSIC': {
+            return { ...state, musicEnabled: !state.musicEnabled };
+        }
+
+        case 'DISMISS_MUSIC_PROMPT': {
+            return { ...state, musicPromptDismissed: true };
+        }
+
         // ─── Onboarding ───
         case 'SET_ONBOARDING_STEP': {
             return { ...state, onboardingStep: action.step };
@@ -465,6 +494,29 @@ function reducer(state, action) {
             return { ...state, newAchievements: [] };
         }
 
+        // ─── Challenge Mode ───
+        case 'UPDATE_CHALLENGE_STATS': {
+            const ch = state.challenge || {};
+            const newHighScore = Math.max(ch.soloHighScore || 0, action.score || 0);
+            const newBestStreak = Math.max(ch.soloBestStreak || 0, action.bestStreak || 0);
+            return {
+                ...state,
+                challenge: {
+                    ...ch,
+                    soloHighScore: action.mode === 'solo' ? newHighScore : (ch.soloHighScore || 0),
+                    soloGamesPlayed: action.mode === 'solo'
+                        ? (ch.soloGamesPlayed || 0) + 1
+                        : (ch.soloGamesPlayed || 0),
+                    soloBestStreak: action.mode === 'solo' ? newBestStreak : (ch.soloBestStreak || 0),
+                    totalChallengeCorrect: (ch.totalChallengeCorrect || 0) + (action.correctCount || 0),
+                    multiplayerGamesPlayed: action.mode === 'multiplayer'
+                        ? (ch.multiplayerGamesPlayed || 0) + 1
+                        : (ch.multiplayerGamesPlayed || 0),
+                    lastPlayedDate: getTodayDate(),
+                },
+            };
+        }
+
         case 'RESET_PROGRESS': {
             // After reset, don't re-show onboarding — user already knows the app
             // Preserve total study time — it represents real effort
@@ -489,6 +541,7 @@ export function AppProvider({ children }) {
         }
         syncWidgetData(state);
         configureFeedback({ soundEnabled: state.soundEnabled, hapticsEnabled: state.hapticsEnabled });
+        configureAmbientMusic({ musicEnabled: state.musicEnabled });
     }, [state]);
 
     // Check streak on mount + init widgets

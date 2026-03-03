@@ -62,7 +62,7 @@ export default function OnboardingOverlay({ step, dispatch }) {
         return (
             <div className="onboarding-overlay animate-fade-in">
                 <div className="onboarding-card">
-                    <div className="text-3xl mb-2">🎓</div>
+                    <div className="mb-2"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--color-burgundy)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M12 3L2 9l10 6 10-6-10-6z" fill="var(--color-burgundy)" opacity="0.1" /><path d="M2 9l10 6 10-6" /><path d="M6 11.5v5c0 2 3 3.5 6 3.5s6-1.5 6-3.5v-5" /><line x1="22" y1="9" x2="22" y2="15" /></svg></div>
                     <h2 className="text-xl font-bold mb-2" style={{ fontFamily: 'var(--font-serif)', color: 'var(--color-ink)' }}>
                         Already know some history?
                     </h2>

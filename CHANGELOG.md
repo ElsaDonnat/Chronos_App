@@ -8,6 +8,8 @@ Use the latest version entry for Play Store "What's New" text.
 ## [1.5.0] - 2026-03-02
 
 ### Added
+- Map view for events — toggle between Timeline list and Map views via TabSelector on the Timeline page. Custom inline SVG world map with simplified continent outlines in parchment style. Category-colored pins with grid-based clustering for overlapping locations (e.g., Rome, Paris). Tappable regions and region filter chips. Bottom popup card showing event details with mastery dots. Respects all existing filters
+- Event connections & cause-and-effect — "Connected Events" section on Timeline expanded cards and lesson learn cards showing directional causal links between historical events (e.g., French Revolution → "Revolutionary chaos led to Napoleon's rise"). ~100 connections across 54 events. Clickable in Timeline to navigate to the connected event
 - Week Tracker modal — full-screen view with day-by-day activity row (Mon–Sun), session/question/time stats, streak display, and share button. Opens from TopBar streak or XP tap, and from the "This Week" teaser card on Learn page
 - "NEW" badge on lesson cards — unlocked-but-not-completed lessons show the lesson emoji in a burgundy-outlined circle with a small "New" pill at bottom-right
 - Green checkmark badge on completed lesson cards — small success-colored circle overlaid at bottom-right of the emoji icon

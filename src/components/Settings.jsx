@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { useApp } from '../context/AppContext';
 import { ALL_EVENTS } from '../data/events';
-import { LESSONS } from '../data/lessons';
+import { LESSONS, ALL_LEVEL2_LESSONS } from '../data/lessons';
 import { Card, Button, Divider, ConfirmModal } from './shared';
 import Mascot from './Mascot';
 import {
@@ -184,7 +184,7 @@ export default function Settings() {
                         <div className="text-xs mt-1" style={{ color: 'var(--color-ink-muted)' }}>Events Learned</div>
                     </Card>
                     <Card className="text-center p-4">
-                        <div className="text-2xl font-bold" style={{ color: 'var(--color-burgundy)' }}>{completedLessons}/{LESSONS.length}</div>
+                        <div className="text-2xl font-bold" style={{ color: 'var(--color-burgundy)' }}>{completedLessons}/{LESSONS.length + ALL_LEVEL2_LESSONS.length}</div>
                         <div className="text-xs mt-1" style={{ color: 'var(--color-ink-muted)' }}>Lessons Complete</div>
                     </Card>
                 </div>
@@ -415,6 +415,33 @@ export default function Settings() {
                                 className="absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white transition-transform"
                                 style={{
                                     transform: state.hapticsEnabled ? 'translateX(20px)' : 'translateX(0)',
+                                    boxShadow: '0 1px 3px rgba(0,0,0,0.2)',
+                                }}
+                            />
+                        </button>
+                    </div>
+                    <div className="flex items-center justify-between mt-3 pt-3" style={{ borderTop: '1px solid rgba(28, 25, 23, 0.06)' }}>
+                        <div className="flex items-center gap-2">
+                            <span style={{ fontSize: '16px' }}>&#x1F3B6;</span>
+                            <div>
+                                <span className="text-sm font-semibold" style={{ color: 'var(--color-ink-secondary)' }}>Ambient music</span>
+                                <div className="text-[11px]" style={{ color: 'var(--color-ink-muted)' }}>Relaxing antiquity soundscape</div>
+                            </div>
+                        </div>
+                        <button
+                            type="button"
+                            role="switch"
+                            aria-checked={state.musicEnabled}
+                            onClick={() => dispatch({ type: 'TOGGLE_MUSIC' })}
+                            className="relative w-11 h-6 rounded-full transition-colors"
+                            style={{
+                                backgroundColor: state.musicEnabled ? 'var(--color-burgundy)' : 'rgba(28, 25, 23, 0.15)',
+                            }}
+                        >
+                            <span
+                                className="absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white transition-transform"
+                                style={{
+                                    transform: state.musicEnabled ? 'translateX(20px)' : 'translateX(0)',
                                     boxShadow: '0 1px 3px rgba(0,0,0,0.2)',
                                 }}
                             />

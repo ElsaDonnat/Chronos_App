@@ -232,3 +232,62 @@ export const ERA_QUIZ_GROUPS = [
 export function getEraQuizGroup(eraId) {
     return ERA_QUIZ_GROUPS.find(g => g.id === eraId);
 }
+
+// ─── Level 2: Topic-based chapters ─────────────────────────────────
+// Each chapter is self-contained. Unlock is sequential WITHIN a chapter
+// but chapters are fully independent of Level 1.
+export const LEVEL2_CHAPTERS = [
+    {
+        id: 'ch-revolutions',
+        title: 'Revolutions That Changed the World',
+        subtitle: 'How one revolution sparked the next',
+        description: 'Trace the chain reaction of revolutions from 17th-century England to the Arab Spring.',
+        icon: 'revolution',
+        color: '#B45309',
+        lessons: [
+            {
+                id: 'rev-1',
+                number: 1,
+                title: 'The Birth of Revolution',
+                subtitle: 'From parliamentary war to continental upheaval',
+                mood: 'A king loses his head, and the world takes note\u2026',
+                chapterId: 'ch-revolutions',
+                periodId: null,
+                eventIds: ['f61', 'f42', 'f43'],
+            },
+            {
+                id: 'rev-2',
+                number: 2,
+                title: 'Revolution Goes Global',
+                subtitle: 'From the Caribbean to the barricades of Europe',
+                mood: 'The fire of liberty crosses oceans and ignites continents\u2026',
+                chapterId: 'ch-revolutions',
+                periodId: null,
+                eventIds: ['f62', 'f63', 'f47'],
+            },
+            {
+                id: 'rev-3',
+                number: 3,
+                title: 'The Great War & Its Children',
+                subtitle: 'Industrial warfare and ideological upheaval',
+                mood: 'A generation marches into the trenches, and empires fall\u2026',
+                chapterId: 'ch-revolutions',
+                periodId: null,
+                eventIds: ['f64', 'f50', 'f65'],
+            },
+            {
+                id: 'rev-4',
+                number: 4,
+                title: 'Revolution in Our Time',
+                subtitle: 'Modern upheavals and the unfinished story',
+                mood: 'The people rise again, armed with phones and fury\u2026',
+                chapterId: 'ch-revolutions',
+                periodId: null,
+                eventIds: ['f66', 'f67'],
+            },
+        ],
+    },
+];
+
+// Flat array of all Level 2 lessons (for PracticePage, Settings, lookup)
+export const ALL_LEVEL2_LESSONS = LEVEL2_CHAPTERS.flatMap(ch => ch.lessons);

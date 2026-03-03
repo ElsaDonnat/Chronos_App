@@ -2,7 +2,7 @@ import { useState, useMemo, useRef, useEffect } from 'react';
 import { useApp } from '../../context/AppContext';
 import { getEventById, ERA_BOUNDARY_EVENTS } from '../../data/events';
 import { SCORE_COLORS, getScoreLabel, shuffle } from '../../data/quiz';
-import { Card, Button, ProgressBar, Divider, ExpandableText } from '../shared';
+import { Card, Button, ProgressBar, Divider, ExpandableText, ControversyNote } from '../shared';
 import Mascot from '../Mascot';
 import * as feedback from '../../services/feedback';
 
@@ -14,6 +14,55 @@ const MATCH_COLORS = [
     '#D4739D', // pink
     '#6BAFAC', // soft teal (distinct from success green)
 ];
+
+// SVG era icons — replace emoji to avoid rendering issues on Android
+const EraIcon = ({ type, size = 36 }) => {
+    const icons = {
+        prehistory: ( // bone
+            <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="#0D9488" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M5 10c0-1.5 1-2.5 2-3 .5-1.5-.5-3-2-3.5S2 4 2.5 5.5c-1 .5-1.5 2-.5 3s2.5 1 3 1.5z" fill="#0D9488" opacity="0.15" />
+                <path d="M19 14c0 1.5-1 2.5-2 3-.5 1.5.5 3 2 3.5s3-.5 2.5-2c1-.5 1.5-2 .5-3s-2.5-1-3-1.5z" fill="#0D9488" opacity="0.15" />
+                <line x1="7" y1="9" x2="17" y2="15" />
+            </svg>
+        ),
+        ancient: ( // temple columns
+            <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="#6B5B73" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M3 21h18M5 21V7l7-4 7 4v14" fill="#6B5B73" opacity="0.1" />
+                <line x1="9" y1="21" x2="9" y2="10" />
+                <line x1="15" y1="21" x2="15" y2="10" />
+                <path d="M5 7l7-4 7 4" />
+                <line x1="3" y1="21" x2="21" y2="21" />
+            </svg>
+        ),
+        medieval: ( // crossed swords
+            <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="#A0522D" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M5 3l14 14M9.5 7.5L5 3M19 3L5 17" />
+                <path d="M14.5 7.5L19 3" />
+                <path d="M5 17l2 2 2-2" />
+                <path d="M19 17l-2 2-2-2" />
+            </svg>
+        ),
+        earlymodern: ( // compass
+            <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="#65774A" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="12" cy="12" r="9" fill="#65774A" opacity="0.08" />
+                <polygon points="16.24,7.76 14.12,14.12 7.76,16.24 9.88,9.88" fill="#65774A" opacity="0.2" stroke="#65774A" />
+                <line x1="12" y1="3" x2="12" y2="5" />
+                <line x1="12" y1="19" x2="12" y2="21" />
+                <line x1="3" y1="12" x2="5" y2="12" />
+                <line x1="19" y1="12" x2="21" y2="12" />
+            </svg>
+        ),
+        modern: ( // globe
+            <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="#8B4157" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="12" cy="12" r="9" fill="#8B4157" opacity="0.08" />
+                <ellipse cx="12" cy="12" rx="4" ry="9" />
+                <line x1="3" y1="12" x2="21" y2="12" />
+                <path d="M4.5 7.5h15M4.5 16.5h15" />
+            </svg>
+        ),
+    };
+    return icons[type] || null;
+};
 
 // ─── PHASES ────────────────────────────────────────────
 const PHASE = {
@@ -33,35 +82,35 @@ const PERIODS = [
             subtitle: 'c. 7\–6 million years ago \– c. 3200 BCE',
             keywords: 'Evolution, fire, farming.',
             description: 'Literally "before written records," prehistory spans 99% of the human story. It traces the arc from biological to cultural evolution: bipedalism, stone tools, the mastery of fire, the emergence of language and symbolic thought, the migration out of Africa to every continent, and finally the Neolithic transition from nomadic foraging to settled agriculture that made civilization possible.',
-            color: '#0D9488', icon: '🦴',
+            color: '#0D9488', iconType: 'prehistory',
         },
         ancient: {
             title: 'The Ancient World',
             subtitle: 'c. 3200 BCE \– 476 CE',
             keywords: 'Writing, cities, empires.',
             description: 'Defined by the invention of writing, the rise of cities, and the emergence of states and empires. Mesopotamia, Egypt, Greece, Rome, China, and India each developed distinct traditions of law, philosophy, science, and organized religion. The era\’s arc runs from the first civilizations in Sumer to the collapse of the largest \— the Western Roman Empire \— under the weight of economic decay and Germanic invasions.',
-            color: '#6B5B73', icon: '🏛️',
+            color: '#6B5B73', iconType: 'ancient',
         },
         medieval: {
             title: 'The Medieval World',
             subtitle: '476 \– c. 1500 CE',
             keywords: 'Islam, feudalism, Mongols.',
             description: 'Far from the "Dark Ages" of popular myth, this was an era of transformation. Islam rose and spread from Arabia to Iberia, the Byzantine Empire preserved Roman learning for a millennium, feudalism structured Western Europe, the Mongol Empire connected East and West, the Crusades reshaped Mediterranean trade, and Europe\’s first universities were founded. The era\’s arc runs from Rome\’s fall to the reconnection of the world.',
-            color: '#A0522D', icon: '⚔️',
+            color: '#A0522D', iconType: 'medieval',
         },
         earlymodern: {
             title: 'The Early Modern Period',
             subtitle: 'c. 1500 \– 1789',
             keywords: 'Exploration, Reformation, science.',
             description: 'European exploration and colonization linked every continent for the first time. The Renaissance revived classical learning, the Reformation shattered religious unity, the Scientific Revolution overturned ancient certainties, and the Enlightenment challenged the divine right of kings. The Atlantic slave trade forcibly connected three continents. The arc is from a fragmented world to an interconnected one, ending when Enlightenment ideals erupted into revolution.',
-            color: '#65774A', icon: '🧭',
+            color: '#65774A', iconType: 'earlymodern',
         },
         modern: {
             title: 'The Modern World',
             subtitle: '1789 \– Present',
             keywords: 'Industry, world wars, digital.',
             description: 'More change in two centuries than in the previous two millennia. Industrialization transformed how people worked and lived, nationalism redrew the map of Europe, two world wars killed tens of millions and dismantled colonial empires, the Cold War split the globe, decolonization reshaped the Global South, and the digital revolution connected billions. The defining theme is acceleration \— of technology, population, and the pace of change itself.',
-            color: '#8B4157', icon: '🌍',
+            color: '#8B4157', iconType: 'modern',
         },
     }[id];
     const boundary = ERA_BOUNDARY_EVENTS[id];
@@ -173,27 +222,27 @@ function generateQuizQuestions() {
             type: 'date',
             periodId: period.id,
             prompt: period.title,
-            promptIcon: period.icon,
+            promptIconType: period.iconType,
             correctAnswer: period.subtitle,
             options: dateOptions,
         });
 
         // Q2: "What period?" — given date range, pick correct period name
         const nameOptions = shuffle(PERIODS
-            .map(p => ({ id: p.id, label: p.title, icon: p.icon })));
+            .map(p => ({ id: p.id, label: p.title })));
         questions.push({
             type: 'event',
             periodId: period.id,
             prompt: period.subtitle,
-            promptIcon: null,
+            promptIconType: null,
             correctAnswer: period.title,
-            options: nameOptions.map(o => `${o.icon} ${o.label}`),
-            correctDisplay: `${period.icon} ${period.title}`,
+            options: nameOptions.map(o => o.label),
+            correctDisplay: period.title,
         });
     }
 
     // Q11: Matching — match all 5 eras to their real date ranges
-    const shuffledNames = shuffle(PERIODS.map(p => ({ id: p.id, label: `${p.icon} ${p.title}` })));
+    const shuffledNames = shuffle(PERIODS.map(p => ({ id: p.id, label: p.title })));
     const shuffledDates = shuffle(PERIODS.map(p => ({ id: p.id, label: p.subtitle })));
     questions.push({
         type: 'match',
@@ -327,7 +376,7 @@ export default function Lesson0Flow({ lesson, onComplete }) {
                     <div className="animate-slide-in-right">
                         <Card className="era-card-content" style={{ borderLeft: `4px solid ${period.color}`, overflow: 'hidden' }}>
                             <div className="text-center mb-2 sm:mb-4">
-                                <span className="era-card-icon">{period.icon}</span>
+                                <span className="era-card-icon"><EraIcon type={period.iconType} size={42} /></span>
                             </div>
                             <h2 className="era-card-title font-bold text-center mb-1" style={{ fontFamily: 'var(--font-serif)', color: 'var(--color-ink)' }}>
                                 {period.title}
@@ -352,6 +401,7 @@ export default function Lesson0Flow({ lesson, onComplete }) {
                                             <span className="font-semibold" style={{ color: 'var(--color-ink)' }}>Begins with: </span>
                                             <span style={{ color: 'var(--color-ink-secondary)' }}>{period.startEvent.title}</span>
                                             <span className="ml-1 font-medium" style={{ color: 'var(--color-burgundy)' }}>({period.startEvent.date})</span>
+                                            <ControversyNote note={period.startEvent.controversyNotes?.date} />
                                         </div>
                                     </div>
                                 )}
@@ -362,6 +412,7 @@ export default function Lesson0Flow({ lesson, onComplete }) {
                                             <span className="font-semibold" style={{ color: 'var(--color-ink)' }}>Ends with: </span>
                                             <span style={{ color: 'var(--color-ink-secondary)' }}>{period.endEvent.title}</span>
                                             <span className="ml-1 font-medium" style={{ color: 'var(--color-burgundy)' }}>({period.endEvent.date})</span>
+                                            <ControversyNote note={period.endEvent.controversyNotes?.date} />
                                         </div>
                                     </div>
                                 )}
@@ -688,8 +739,8 @@ export default function Lesson0Flow({ lesson, onComplete }) {
                             {q.type === 'date' ? 'When was this era?' : 'What period is this?'}
                         </p>
 
-                        {q.promptIcon && (
-                            <span className="text-3xl block mb-2">{q.promptIcon}</span>
+                        {q.promptIconType && (
+                            <span className="text-3xl block mb-2"><EraIcon type={q.promptIconType} size={36} /></span>
                         )}
                         <h3 className="text-lg font-bold mb-4" style={{ fontFamily: 'var(--font-serif)', color: q.type === 'date' ? 'var(--color-ink)' : 'var(--color-burgundy)' }}>
                             {q.prompt}
@@ -823,7 +874,7 @@ export default function Lesson0Flow({ lesson, onComplete }) {
                         <div className="flex justify-center gap-3">
                             {PERIODS.map(p => (
                                 <div key={p.id} className="text-center">
-                                    <span className="text-xl">{p.icon}</span>
+                                    <EraIcon type={p.iconType} size={24} />
                                     <p className="text-[9px] font-semibold mt-0.5" style={{ color: p.color }}>{p.title.replace('The ', '')}</p>
                                 </div>
                             ))}
@@ -866,7 +917,7 @@ export default function Lesson0Flow({ lesson, onComplete }) {
                                             {PERIODS.map(p => (
                                                 <div key={p.id} className="flex items-center gap-2 text-xs py-1 px-2 rounded-lg"
                                                     style={{ backgroundColor: 'rgba(28,25,23,0.03)' }}>
-                                                    <span>{p.icon}</span>
+                                                    <EraIcon type={p.iconType} size={16} />
                                                     <span className="font-semibold" style={{ color: 'var(--color-ink)' }}>{p.title}</span>
                                                     <span style={{ color: 'var(--color-ink-faint)' }}>→</span>
                                                     <span style={{ color: 'var(--color-ink-secondary)' }}>{p.subtitle}</span>
@@ -897,7 +948,7 @@ export default function Lesson0Flow({ lesson, onComplete }) {
                                             style={{ color: 'var(--color-ink-muted)', backgroundColor: 'rgba(28,25,23,0.05)' }}>✕</button>
                                     </div>
                                     <div className="text-center mb-4">
-                                        <span className="text-5xl">{period.icon}</span>
+                                        <EraIcon type={period.iconType} size={48} />
                                     </div>
                                     <div className={!isDateQ ? 'dot-highlight' : ''}
                                         style={!isDateQ ? { backgroundColor: hlBg, color: dotColor } : {}}>

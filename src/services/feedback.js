@@ -130,6 +130,21 @@ export function achievement() {
   hapticImpact(ImpactStyle.Heavy);
 }
 
+/** Heart lost — descending diminished (B4 → F4) */
+export function heartLost() {
+  playTone(493.88, 0.15, 0, 0.10);       // B4
+  playTone(349.23, 0.20, 0.10, 0.08);    // F4
+  hapticNotification(NotificationType.Error);
+}
+
+/** Game over — slow descending (G4 → E4 → C4) */
+export function gameOver() {
+  playTone(392.00, 0.18, 0, 0.08);       // G4
+  playTone(329.63, 0.18, 0.15, 0.08);    // E4
+  playTone(261.63, 0.25, 0.30, 0.06);    // C4
+  hapticImpact(ImpactStyle.Heavy);
+}
+
 /** Convenience: play feedback by score string */
 export function forScore(score) {
   if (score === 'green') correct();

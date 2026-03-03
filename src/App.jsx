@@ -7,6 +7,7 @@ import Sidebar, { MobileTabBar } from './components/layout/Sidebar';
 import LearnPage from './pages/LearnPage';
 import TimelinePage from './pages/TimelinePage';
 import PracticePage from './pages/PracticePage';
+import ChallengePage from './pages/ChallengePage';
 import Settings from './components/Settings';
 import WeekTracker from './components/WeekTracker';
 import NotificationOnboarding from './components/NotificationOnboarding';
@@ -19,8 +20,9 @@ import {
   rescheduleNotifications,
 } from './services/notifications';
 import * as feedback from './services/feedback';
+import * as ambientMusic from './services/ambientMusic';
 
-const TAB_KEYS = { '1': 'learn', '2': 'timeline', '3': 'practice' };
+const TAB_KEYS = { '1': 'learn', '2': 'timeline', '3': 'practice', '4': 'challenge' };
 const RATING_MILESTONE = 3; // Show rating prompt after completing 3 lessons
 const PLAY_STORE_URL = 'https://play.google.com/store/apps/details?id=com.chronos.app';
 
@@ -127,6 +129,15 @@ export default function App() {
     !shouldShowRating &&
     onboardingDone;
 
+  // Music prompt — show after 2nd lesson, once, when nothing else is showing
+  const shouldShowMusicPrompt =
+    completedCount >= 2 &&
+    !inSession &&
+    !state.musicPromptDismissed &&
+    !shouldShowRating &&
+    !shouldShowNotificationOnboarding &&
+    onboardingDone;
+
   // Determine if onboarding overlay should show
   const showOnboardingOverlay = state.onboardingStep
     && state.onboardingStep !== 'complete'
@@ -149,6 +160,19 @@ export default function App() {
     return () => window.removeEventListener('openWeekTracker', handleOpen);
   }, []);
 
+  // Pause/resume ambient music on tab visibility change
+  useEffect(() => {
+    const handleVisibility = () => {
+      if (document.hidden) {
+        ambientMusic.pause();
+      } else {
+        ambientMusic.resume();
+      }
+    };
+    document.addEventListener('visibilitychange', handleVisibility);
+    return () => document.removeEventListener('visibilitychange', handleVisibility);
+  }, []);
+
   // Init notification channel + reschedule on mount
   useEffect(() => {
     createNotificationChannel();
@@ -160,8 +184,13 @@ export default function App() {
   // Reschedule notifications on app resume
   useEffect(() => {
     const listener = CapApp.addListener('appStateChange', ({ isActive }) => {
-      if (isActive && state.notificationsEnabled) {
-        rescheduleNotifications(state, state.currentStreak);
+      if (isActive) {
+        ambientMusic.resume();
+        if (state.notificationsEnabled) {
+          rescheduleNotifications(state, state.currentStreak);
+        }
+      } else {
+        ambientMusic.pause();
       }
     });
     return () => { listener.then(l => l.remove()); };
@@ -178,6 +207,7 @@ export default function App() {
               {activeTab === 'learn' && <LearnPage onSessionChange={setInSession} registerBackHandler={registerBackHandler} onTabChange={setActiveTab} />}
               {activeTab === 'timeline' && <TimelinePage />}
               {activeTab === 'practice' && <PracticePage onSessionChange={setInSession} registerBackHandler={registerBackHandler} />}
+              {activeTab === 'challenge' && <ChallengePage onSessionChange={setInSession} registerBackHandler={registerBackHandler} />}
             </div>
           </div>
         </main>
@@ -214,6 +244,19 @@ export default function App() {
             }
           }}
           onSkip={() => dispatch({ type: 'DISMISS_NOTIFICATION_ONBOARDING' })}
+        />
+      )}
+      {shouldShowMusicPrompt && (
+        <ConfirmModal
+          title="Enjoying the Music?"
+          message="Chronos plays relaxing ambient music inspired by antiquity while you learn. Want to keep it on? You can change this anytime in Settings."
+          confirmLabel="Keep It On"
+          cancelLabel="Turn It Off"
+          onConfirm={() => dispatch({ type: 'DISMISS_MUSIC_PROMPT' })}
+          onCancel={() => {
+            dispatch({ type: 'TOGGLE_MUSIC' });
+            dispatch({ type: 'DISMISS_MUSIC_PROMPT' });
+          }}
         />
       )}
       {showWeekTracker && <WeekTracker onClose={() => setShowWeekTracker(false)} />}

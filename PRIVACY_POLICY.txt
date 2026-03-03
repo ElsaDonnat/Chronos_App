@@ -1,0 +1,87 @@
+Privacy Policy for Chronos
+
+Last updated: March 2, 2026
+
+1. Introduction
+
+Chronos ("the App") is a history-learning application developed as an independent project. This Privacy Policy explains how the App handles information when you use it. We are committed to protecting your privacy and being transparent about our data practices.
+
+2. Information We Collect
+
+We do not collect any personal information. Chronos does not require account creation, login, or any form of registration.
+
+All learning data — including lesson progress, quiz scores, streak counts, study time, achievements, and preferences — is stored exclusively on your device using local storage (localStorage and SharedPreferences). This data never leaves your device and is not transmitted to any server.
+
+3. Data Storage
+
+All App data is stored locally on your device:
+
+- Web/App storage (localStorage): Lesson completion, event mastery scores, XP, streak data, quiz history, achievements, study sessions, and user preferences.
+- Android SharedPreferences: Widget display data (streak count and XP) used solely to render home screen widgets.
+
+No data is stored on external servers, cloud services, or third-party infrastructure.
+
+4. Data We Do Not Collect
+
+To be explicit, Chronos does not collect, store, transmit, or process:
+
+- Personal identifying information (name, email, phone number, address)
+- Location data
+- Device identifiers or advertising IDs
+- Usage analytics or behavioral tracking data
+- Photos, media, or files
+- Contacts or calendar data
+- Financial or payment information
+- Health or fitness data
+- Browsing history or search queries
+
+5. Third-Party Services
+
+Chronos does not integrate any third-party analytics, advertising, crash reporting, or tracking services. The App does not contain ads of any kind.
+
+6. Network Permissions
+
+The App requests the INTERNET permission, which is required by the underlying WebView technology (Apache Capacitor) to load the application interface. No user data is transmitted over the network.
+
+7. Notifications and Alarms
+
+The App may request permission to send local notifications and schedule alarms to support streak reminders. These are processed entirely on-device. No notification data is sent to external servers.
+
+8. Sharing Features
+
+The App includes an optional "Share Progress" feature that uses your device's native share functionality (Web Share API / Android share sheet). This feature is entirely user-initiated, and shared content (a brief text summary of your streak and study statistics) is handled by whichever app you choose to share through. Chronos does not intercept, log, or store any information about your sharing activity.
+
+9. Children's Privacy
+
+Chronos does not knowingly collect personal information from anyone, including children under the age of 13. Since the App collects no personal data whatsoever, it is suitable for users of all ages. The educational content covers historical events and is intended for a general audience.
+
+10. Data Retention and Deletion
+
+Since all data is stored locally on your device:
+
+- Your data persists only as long as the App is installed on your device.
+- You can reset all progress at any time using the "Reset Progress" option within the App's settings.
+- Uninstalling the App permanently deletes all associated data.
+- No data backup or recovery is possible after deletion, as no data exists on external servers.
+
+11. Data Security
+
+Your data is protected by your device's built-in security measures (screen lock, encryption, etc.). Since no data is transmitted over the internet or stored externally, there is no risk of server-side data breaches.
+
+12. Changes to This Privacy Policy
+
+We may update this Privacy Policy from time to time. Any changes will be reflected by updating the "Last updated" date at the top of this document. Continued use of the App after changes constitutes acceptance of the updated policy.
+
+13. Your Rights
+
+Since Chronos does not collect or store any personal data on external servers, traditional data rights requests (access, correction, deletion, portability) are not applicable. You have full control over your data on your device at all times through the App's settings.
+
+14. Compliance
+
+This Privacy Policy is designed to comply with:
+- Google Play Developer Program Policies
+- General Data Protection Regulation (GDPR)
+- California Consumer Privacy Act (CCPA)
+- Children's Online Privacy Protection Act (COPPA)
+
+
