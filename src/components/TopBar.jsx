@@ -62,13 +62,11 @@ export default function TopBar({ activeTab }) {
                             {/* Hourglass silhouette - burgundy */}
                             <path d="M7 4 L17 4 C17.5 4 17.8 4.2 17.8 4.4 L17.8 4.4 C17.8 4.6 17.5 4.8 17 4.8 L16 4.8 C16 8 14.4 10.4 12 12 C14.4 13.6 16 16 16 19.2 L17 19.2 C17.5 19.2 17.8 19.4 17.8 19.6 L17.8 19.6 C17.8 19.8 17.5 20 17 20 L7 20 C6.5 20 6.2 19.8 6.2 19.6 L6.2 19.6 C6.2 19.4 6.5 19.2 7 19.2 L8 19.2 C8 16 9.6 13.6 12 12 C9.6 10.4 8 8 8 4.8 L7 4.8 C6.5 4.8 6.2 4.6 6.2 4.4 L6.2 4.4 C6.2 4.2 6.5 4 7 4 Z" fill="var(--color-burgundy)" />
                             {/* Glass interior top */}
-                            <path d="M9.4 5.8 C9.4 8.4 10.5 10.2 12 11.3 C13.5 10.2 14.6 8.4 14.6 5.8 Z" fill="var(--color-parchment)" />
+                            <path d="M9.4 5.8 C9.4 8.4 10.5 10.6 12 12 C13.5 10.6 14.6 8.4 14.6 5.8 Z" fill="var(--color-parchment)" />
                             {/* Glass interior bottom */}
-                            <path d="M9.4 18.2 C9.4 15.6 10.5 13.8 12 12.7 C13.5 13.8 14.6 15.6 14.6 18.2 Z" fill="var(--color-parchment)" />
+                            <path d="M9.4 18.2 C9.4 15.6 10.5 13.4 12 12 C13.5 13.4 14.6 15.6 14.6 18.2 Z" fill="var(--color-parchment)" />
                             {/* Sand pile at bottom */}
                             <path d="M9.7 18.2 Q12 15.3 14.3 18.2 Z" fill="#C8A882" />
-                            {/* Play triangle in center */}
-                            <polygon points="10.5,10 10.5,14 14.5,12" fill="var(--color-parchment)" />
                         </svg>
                         Chronos
                     </h1>

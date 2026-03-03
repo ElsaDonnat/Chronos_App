@@ -1226,7 +1226,7 @@ body {
 
 .onboarding-skip {
   display: block;
-  margin: 0 auto;
+  margin: 24px auto 0;
   font-size: 13px;
   color: var(--color-ink-faint);
   background: none;

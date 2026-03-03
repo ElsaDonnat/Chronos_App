@@ -5,6 +5,15 @@ Format follows [Keep a Changelog](https://keepachangelog.com/) and [Semantic Ver
 
 Use the latest version entry for Play Store "What's New" text.
 
+## [1.6.0] - 2026-03-03
+
+### Changed
+- **Hourglass logo refreshed** — interior glass lines now join cleanly at the waist (no visible gap or play-button artifact), and the play triangle overlay is removed from TopBar, splash screens, and all icon assets
+- **App icon updated** — full-bleed 512×512 Play Store icon with larger hourglass (10% bigger), proper full-bleed square format so Play Store applies its own rounded mask cleanly
+- **Ambient music volume halved** — background music plays at 50% of previous volume for a more subtle, unobtrusive listening experience
+
+---
+
 ## [1.5.2] - 2026-03-03
 
 ### Added

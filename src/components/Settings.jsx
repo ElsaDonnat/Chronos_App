@@ -206,18 +206,18 @@ export default function Settings() {
                 {masteryEntries.length > 0 && (
                     <Card className="mb-4 p-4">
                         <div className="text-sm font-semibold mb-2" style={{ color: 'var(--color-ink-secondary)' }}>Mastery Breakdown</div>
-                        <div className="flex items-center gap-4">
+                        <div className="flex items-center justify-around w-full">
                             <div className="flex flex-col items-center">
                                 <span className="text-xl font-bold" style={{ color: 'var(--color-success)' }}>{greenCount}</span>
-                                <span className="text-[11px]" style={{ color: 'var(--color-ink-muted)' }}>mastered</span>
+                                <span className="text-[11px]" style={{ color: 'var(--color-ink-muted)' }}>Mastered</span>
                             </div>
                             <div className="flex flex-col items-center">
                                 <span className="text-xl font-bold" style={{ color: 'var(--color-warning)' }}>{yellowCount}</span>
-                                <span className="text-[11px]" style={{ color: 'var(--color-ink-muted)' }}>learning</span>
+                                <span className="text-[11px]" style={{ color: 'var(--color-ink-muted)' }}>Learning</span>
                             </div>
                             <div className="flex flex-col items-center">
                                 <span className="text-xl font-bold" style={{ color: 'var(--color-error)' }}>{redCount}</span>
-                                <span className="text-[11px]" style={{ color: 'var(--color-ink-muted)' }}>needs work</span>
+                                <span className="text-[11px]" style={{ color: 'var(--color-ink-muted)' }}>Needs Work</span>
                             </div>
                         </div>
                     </Card>

@@ -24,7 +24,7 @@ export default function OnboardingOverlay({ step, dispatch }) {
                     <Button className="w-full" onClick={() => dispatch({ type: 'SET_ONBOARDING_STEP', step: 'guide_lesson0' })}>
                         Get Started
                     </Button>
-                    <button onClick={skip} className="onboarding-skip mt-6">
+                    <button onClick={skip} className="onboarding-skip">
                         Skip tutorial
                     </button>
                 </div>

@@ -91,10 +91,31 @@ export default function LearnPage({ onSessionChange, registerBackHandler, onTabC
     }
     const isDailyCompleted = state.dailyQuiz?.lastCompletedDate === today;
     const isDailyStarted = state.dailyQuiz?.lastAttemptedDate === today && !isDailyCompleted;
+    // Only show "This Day in History" after completing the third lesson
+    const showDaily = dailyData && !!state.completedLessons['lesson-3'];
     const todayEvents = useMemo(() =>
         isDailyCompleted ? dailyData.eventIds.map(id => getEventById(id)).filter(Boolean) : [],
         [isDailyCompleted, dailyData.eventIds]
     );
+
+    // Snapshot session count the first time daily quiz is marked complete today.
+    // If the user does anything else afterward, the completed banner disappears.
+    useEffect(() => {
+        if (isDailyCompleted) {
+            const key = `chronos-daily-snap-${today}`;
+            if (!localStorage.getItem(key)) {
+                // eslint-disable-next-line react-hooks/exhaustive-deps
+                localStorage.setItem(key, String((state.studySessions || []).length));
+            }
+        }
+    }, [isDailyCompleted, today]); // intentionally omits studySessions — we only want the snapshot at completion time
+
+    const hasActivitySinceDaily = useMemo(() => {
+        if (!isDailyCompleted) return false;
+        const snap = localStorage.getItem(`chronos-daily-snap-${today}`);
+        if (snap === null) return false;
+        return (state.studySessions || []).length > parseInt(snap, 10);
+    }, [isDailyCompleted, today, state.studySessions]);
 
     // ─── Weekly insights (shown every 3 days) ─────────
     const weekStart = useMemo(() => {
@@ -254,7 +275,7 @@ export default function LearnPage({ onSessionChange, registerBackHandler, onTabC
                         </div>
 
                         {/* Daily Quiz card — 3 states: not started / retry / completed */}
-                        {dailyData && !isDailyStarted && !isDailyCompleted && (
+                        {showDaily && !isDailyStarted && !isDailyCompleted && (
                             <Card
                                 onClick={() => setShowDailyQuiz(true)}
                                 className="mb-4 animate-fade-in daily-quiz-card"
@@ -292,7 +313,7 @@ export default function LearnPage({ onSessionChange, registerBackHandler, onTabC
                         )}
 
                         {/* Daily Quiz — started but not finished */}
-                        {dailyData && isDailyStarted && (
+                        {showDaily && isDailyStarted && (
                             <Card
                                 onClick={() => setShowDailyQuiz(true)}
                                 className="mb-4 animate-fade-in daily-quiz-card"
@@ -324,7 +345,7 @@ export default function LearnPage({ onSessionChange, registerBackHandler, onTabC
                         )}
 
                         {/* Daily Quiz — completed: collapsed banner or expanded cards */}
-                        {dailyData && isDailyCompleted && !dailyCompletedExpanded && (
+                        {showDaily && isDailyCompleted && !hasActivitySinceDaily && !dailyCompletedExpanded && (
                             <button
                                 onClick={() => setDailyCompletedExpanded(true)}
                                 className="w-full mb-4 animate-fade-in flex items-center gap-2 px-3 py-2 rounded-xl cursor-pointer"
@@ -353,7 +374,7 @@ export default function LearnPage({ onSessionChange, registerBackHandler, onTabC
                                 </svg>
                             </button>
                         )}
-                        {dailyData && isDailyCompleted && dailyCompletedExpanded && (
+                        {showDaily && isDailyCompleted && !hasActivitySinceDaily && dailyCompletedExpanded && (
                             <Card
                                 className="mb-4 animate-fade-in daily-quiz-card"
                                 style={{
@@ -504,8 +525,9 @@ export default function LearnPage({ onSessionChange, registerBackHandler, onTabC
                                                         style={{ opacity: 0.06 }}>
                                                         <LessonIcon index={lesson.number} size={48} color="var(--color-ink)" />
                                                     </span>
-                                                    <div className="absolute top-2.5 right-2.5 z-10">
-                                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--color-ink-muted)" strokeWidth="2.5" opacity="0.55">
+                                                    <div className="absolute top-2 right-2 z-10 w-5 h-5 rounded-full flex items-center justify-center"
+                                                        style={{ backgroundColor: 'rgba(var(--color-ink-rgb), 0.08)' }}>
+                                                        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="var(--color-ink-secondary)" strokeWidth="2.5">
                                                             <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
                                                             <path d="M7 11V7a5 5 0 0 1 10 0v4" />
                                                         </svg>
@@ -794,8 +816,9 @@ export default function LearnPage({ onSessionChange, registerBackHandler, onTabC
                                                                     style={{ opacity: 0.06 }}>
                                                                     <LessonIcon index={chapter.iconIndex || 6} size={48} color="var(--color-ink)" />
                                                                 </span>
-                                                                <div className="absolute top-2.5 right-2.5 z-10">
-                                                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--color-ink-muted)" strokeWidth="2.5" opacity="0.55">
+                                                                <div className="absolute top-2 right-2 z-10 w-5 h-5 rounded-full flex items-center justify-center"
+                                                                    style={{ backgroundColor: 'rgba(var(--color-ink-rgb), 0.08)' }}>
+                                                                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="var(--color-ink-secondary)" strokeWidth="2.5">
                                                                         <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
                                                                         <path d="M7 11V7a5 5 0 0 1 10 0v4" />
                                                                     </svg>

@@ -850,9 +850,9 @@ export default function LessonFlow({ lesson, onComplete }) {
             <div className="lesson-flow-container animate-fade-in">
                 <div className="flex-1 min-h-0 overflow-y-auto">
                     <div className="text-center py-4 relative">
-                        {/* Faint lesson icon behind mascot */}
-                        <div className="absolute inset-x-0 top-0 flex justify-center pointer-events-none select-none" style={{ opacity: 0.04 }}>
-                            <LessonIcon index={lessonIconIndex} size={140} color="var(--color-ink)" />
+                        {/* Faint lesson icon behind title */}
+                        <div className="absolute inset-x-0 flex justify-center pointer-events-none select-none" style={{ opacity: 0.06, top: '88px' }}>
+                            <LessonIcon index={lessonIconIndex} size={120} color="var(--color-ink)" />
                         </div>
                         <Mascot mood={allPassed ? 'celebrating' : 'thinking'} size={80} />
                         <h2 className="text-2xl font-bold mt-4 mb-1" style={{ fontFamily: 'var(--font-serif)' }}>
@@ -910,7 +910,7 @@ export default function LessonFlow({ lesson, onComplete }) {
                                 </div>
                                 <div className="w-px h-10" style={{ backgroundColor: 'rgba(var(--color-ink-rgb), 0.08)' }} />
                                 <div className="flex items-center gap-2 animate-scale-in" style={{ animationDelay: '600ms' }}>
-                                    <span className={`text-2xl ${streak > 1 ? 'animate-streak-bounce' : ''}`} style={{ animationDelay: '900ms', animationFillMode: 'backwards' }}>\�\�</span>
+                                    <span className={`text-2xl ${streak > 1 ? 'animate-streak-bounce' : ''}`} style={{ animationDelay: '900ms', animationFillMode: 'backwards' }}>🔥</span>
                                     <div className="text-left">
                                         <AnimatedCounter value={streak} duration={400} delay={800} className="text-xl font-bold leading-none" style={{ color: 'var(--color-burgundy)' }} />
                                         <div className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: 'var(--color-ink-faint)' }}>Day streak</div>

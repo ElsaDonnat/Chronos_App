@@ -15,7 +15,7 @@ const TRACK_URL = '/bensound-silentwaves.mp3';
 const FADE_IN_SEC = 3;
 const FADE_OUT_SEC = 2;
 const CROSSFADE_SEC = 6; // overlap between ending and restarting
-const VOLUME = 0.13;
+const VOLUME = 0.065;
 
 let config = { musicEnabled: false };
 let ac = null;
