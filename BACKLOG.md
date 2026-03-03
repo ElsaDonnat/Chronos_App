@@ -35,6 +35,10 @@ Four batches of map improvements shipped. Map now uses **Natural Earth I project
 - **Dynamic cluster recalculation** — `CLUSTER_GRID = 25` is fixed. Clusters should re-compute at different zoom levels so pins spread as you zoom in.
 - **Mini-map in fullscreen** — small overview rectangle showing which portion of the world map is currently in the viewport.
 
+## P2 — Star events from lesson summary result cards
+
+After completing a lesson, the summary screen lets users tap each result dot to view the event card (correct/incorrect). Currently there is no way to star (favourite) an event from this view. Add a star/bookmark button to the event detail card shown in this post-lesson result modal, so users can immediately save events they found interesting or want to revisit — without having to navigate to the Timeline.
+
 ## P5 — Themed collections (remaining)
 
 Cross-cutting study paths like "Women in History", "Scientific Breakthroughs". Groups existing events by theme rather than chronology. Accessible from the Practice page hub as additional collection tiles. Lower priority now that Level 2 thematic chapters exist.
