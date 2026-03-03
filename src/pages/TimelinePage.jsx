@@ -129,9 +129,9 @@ export default function TimelinePage() {
                     onClick={toggleHideUnknown}
                     className="flex items-center gap-1 px-2.5 py-1.5 rounded-full text-[11px] font-semibold whitespace-nowrap transition-all duration-200 cursor-pointer flex-shrink-0"
                     style={{
-                        backgroundColor: hideUnknown ? 'var(--color-burgundy)' : 'rgba(28, 25, 23, 0.04)',
+                        backgroundColor: hideUnknown ? 'var(--color-burgundy)' : 'rgba(var(--color-ink-rgb), 0.04)',
                         color: hideUnknown ? 'white' : 'var(--color-ink-muted)',
-                        border: hideUnknown ? 'none' : '1px solid rgba(28, 25, 23, 0.08)',
+                        border: hideUnknown ? 'none' : '1px solid rgba(var(--color-ink-rgb), 0.08)',
                     }}
                     title={hideUnknown ? 'Showing only discovered' : 'Show all events'}
                 >
@@ -234,7 +234,7 @@ export default function TimelinePage() {
                                                                 <p className="text-sm leading-relaxed mt-3" style={{ color: 'var(--color-ink-secondary)' }}>
                                                                     {detail.description}
                                                                 </p>
-                                                                <div className="mt-3 pt-3" style={{ borderTop: '1px solid rgba(28, 25, 23, 0.06)' }}>
+                                                                <div className="mt-3 pt-3" style={{ borderTop: '1px solid rgba(var(--color-ink-rgb), 0.06)' }}>
                                                                     <p className="text-[11px] uppercase tracking-wider font-semibold mb-2" style={{ color: 'var(--color-ink-faint)' }}>
                                                                         Key Transitions
                                                                     </p>
@@ -297,7 +297,7 @@ export default function TimelinePage() {
                                             </div>
                                         ) : (
                                             <div className="w-[18px] h-[18px] rounded-full flex items-center justify-center"
-                                                style={{ backgroundColor: 'rgba(28, 25, 23, 0.08)' }}>
+                                                style={{ backgroundColor: 'rgba(var(--color-ink-rgb), 0.08)' }}>
                                                 <span className="text-[8px] font-bold" style={{ color: 'var(--color-ink-faint)' }}>?</span>
                                             </div>
                                         )}
@@ -418,9 +418,9 @@ function FilterDropdown({ value, onChange, options }) {
                 onClick={() => setOpen(o => !o)}
                 className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full text-[11px] font-semibold whitespace-nowrap transition-all duration-200 cursor-pointer"
                 style={{
-                    backgroundColor: isDefault ? 'rgba(28, 25, 23, 0.04)' : 'var(--color-burgundy)',
+                    backgroundColor: isDefault ? 'rgba(var(--color-ink-rgb), 0.04)' : 'var(--color-burgundy)',
                     color: isDefault ? 'var(--color-ink-muted)' : 'white',
-                    border: isDefault ? '1px solid rgba(28, 25, 23, 0.08)' : 'none',
+                    border: isDefault ? '1px solid rgba(var(--color-ink-rgb), 0.08)' : 'none',
                 }}
             >
                 {selected.dotColor && isDefault && (
@@ -435,7 +435,7 @@ function FilterDropdown({ value, onChange, options }) {
             {open && (
                 <div
                     className="absolute top-full left-0 mt-1 py-1 rounded-xl shadow-lg z-50 min-w-[140px] animate-fade-in"
-                    style={{ backgroundColor: 'var(--color-card)', border: '1px solid rgba(28, 25, 23, 0.1)' }}
+                    style={{ backgroundColor: 'var(--color-card)', border: '1px solid rgba(var(--color-ink-rgb), 0.1)' }}
                 >
                     {options.map(opt => (
                         <button

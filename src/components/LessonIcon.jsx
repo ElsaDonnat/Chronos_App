@@ -1,0 +1,49 @@
+// SVG lesson icons — replace emoji to avoid rendering issues on Android
+export default function LessonIcon({ index, size = 20, color = 'var(--color-ink)' }) {
+    const s = { width: size, height: size, viewBox: '0 0 24 24', fill: 'none', stroke: color, strokeWidth: '1.8', strokeLinecap: 'round', strokeLinejoin: 'round' };
+    const icons = [
+        // 0: globe (era overview)
+        <svg key={0} {...s}><circle cx="12" cy="12" r="9" /><ellipse cx="12" cy="12" rx="4" ry="9" /><line x1="3" y1="12" x2="21" y2="12" /><path d="M4.5 7.5h15" /><path d="M4.5 16.5h15" /></svg>,
+        // 1: footprint
+        <svg key={1} {...s}><path d="M12 3c-1 0-2 1.5-2 4s1 4 2 5c1-1 2-2.5 2-5s-1-4-2-4z" fill={color} opacity="0.15" /><ellipse cx="9" cy="16" rx="1.5" ry="2" transform="rotate(-10 9 16)" /><ellipse cx="15" cy="16" rx="1.5" ry="2" transform="rotate(10 15 16)" /><ellipse cx="12" cy="20" rx="3" ry="1.5" /></svg>,
+        // 2: brain
+        <svg key={2} {...s}><path d="M12 2C9 2 7 4 7 6c-2 0-3 2-3 4s1 3 2 3.5C6 15 7.5 17 9.5 18c1 .5 1.5 2 1.5 4h2c0-2 .5-3.5 1.5-4 2-1 3.5-3 3.5-4.5 1-.5 2-1.5 2-3.5s-1-4-3-4c0-2-2-4-5-4z" fill={color} opacity="0.12" /><path d="M12 2C9 2 7 4 7 6c-2 0-3 2-3 4s1 3 2 3.5C6 15 7.5 17 9.5 18c1 .5 1.5 2 1.5 4" /><path d="M12 2c3 0 5 2 5 4 2 0 3 2 3 4s-1 3-2 3.5c0 1.5-1.5 3.5-3.5 4.5-1 .5-1.5 2-1.5 4" /><path d="M12 6v16" strokeDasharray="2 2" opacity="0.4" /></svg>,
+        // 3: wheat
+        <svg key={3} {...s}><line x1="12" y1="22" x2="12" y2="8" /><path d="M8 8c2 0 4 2 4 4" /><path d="M16 8c-2 0-4 2-4 4" /><path d="M7 4c2 1 4 3 5 5" /><path d="M17 4c-2 1-4 3-5 5" /><path d="M9 12c1.5 0 3 1.5 3 3" /><path d="M15 12c-1.5 0-3 1.5-3 3" /></svg>,
+        // 4: scroll
+        <svg key={4} {...s}><path d="M8 3H6a2 2 0 0 0-2 2v1a2 2 0 0 0 2 2h2" /><path d="M16 3h2a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V5" fill={color} opacity="0.08" /><path d="M16 3h2a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2" /><path d="M6 19a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2" /><line x1="10" y1="9" x2="16" y2="9" /><line x1="10" y1="12" x2="16" y2="12" /><line x1="10" y1="15" x2="14" y2="15" /></svg>,
+        // 5: scales of justice
+        <svg key={5} {...s}><line x1="12" y1="3" x2="12" y2="21" /><line x1="8" y1="21" x2="16" y2="21" /><line x1="5" y1="7" x2="19" y2="7" /><path d="M5 7l-2 6h6L5 7z" fill={color} opacity="0.15" /><path d="M19 7l-2 6h6l-2-6z" fill={color} opacity="0.15" /></svg>,
+        // 6: crossed swords
+        <svg key={6} {...s}><path d="M5 3l14 14" /><path d="M9.5 7.5L5 3" /><path d="M19 3L5 17" /><path d="M14.5 7.5L19 3" /><path d="M5 17l2 2 2-2" /><path d="M19 17l-2 2-2-2" /></svg>,
+        // 7: temple columns
+        <svg key={7} {...s}><path d="M3 21h18" /><path d="M5 21V7l7-4 7 4v14" fill={color} opacity="0.08" /><line x1="9" y1="21" x2="9" y2="10" /><line x1="15" y1="21" x2="15" y2="10" /><path d="M5 7l7-4 7 4" /><line x1="3" y1="21" x2="21" y2="21" /></svg>,
+        // 8: camel
+        <svg key={8} {...s}><path d="M4 18l2-8c.5-2 2-3 3-3h1c1 0 1.5 1 2 2l1 2c.5 1 1 2 2 2h2c1 0 2-1 2.5-2l1.5-3" /><line x1="4" y1="18" x2="4" y2="21" /><line x1="8" y1="18" x2="8" y2="21" /><line x1="16" y1="14" x2="16" y2="21" /><line x1="20" y1="12" x2="20" y2="21" /><circle cx="20" cy="7" r="1.5" /></svg>,
+        // 9: mosque dome
+        <svg key={9} {...s}><path d="M4 21h16" /><path d="M6 21V12" /><path d="M18 21V12" /><path d="M6 12c0-4 3-7 6-8 3 1 6 4 6 8" fill={color} opacity="0.08" /><path d="M6 12c0-4 3-7 6-8 3 1 6 4 6 8" /><line x1="12" y1="2" x2="12" y2="4" /><circle cx="12" cy="1.5" r="0.8" fill={color} stroke="none" /></svg>,
+        // 10: castle
+        <svg key={10} {...s}><rect x="4" y="10" width="16" height="11" rx="1" fill={color} opacity="0.12" /><path d="M4 21h16V10H4z" /><path d="M4 10V6h3v4" /><path d="M10 10V6h4v4" /><path d="M17 10V6h3v4" /><rect x="10" y="16" width="4" height="5" /></svg>,
+        // 11: dagger
+        <svg key={11} {...s}><line x1="12" y1="2" x2="12" y2="16" /><line x1="8" y1="7" x2="16" y2="7" /><path d="M10 16l2 6 2-6" fill={color} opacity="0.15" /></svg>,
+        // 12: skull (plague)
+        <svg key={12} {...s}><path d="M12 3C7.5 3 4 6.5 4 10.5c0 3 2 5.5 4 6.5v2h8v-2c2-1 4-3.5 4-6.5C20 6.5 16.5 3 12 3z" fill={color} opacity="0.12" /><path d="M12 3C7.5 3 4 6.5 4 10.5c0 3 2 5.5 4 6.5v2h8v-2c2-1 4-3.5 4-6.5C20 6.5 16.5 3 12 3z" /><circle cx="9" cy="10" r="2" fill={color} opacity="0.2" /><circle cx="15" cy="10" r="2" fill={color} opacity="0.2" /><path d="M10 16v2" /><path d="M12 16v2" /><path d="M14 16v2" /></svg>,
+        // 13: palette
+        <svg key={13} {...s}><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c1 0 2-.8 2-2 0-.5-.2-1-.5-1.3-.3-.3-.5-.8-.5-1.3 0-1.1.9-2 2-2h2.5c3 0 5.5-2.5 5.5-5.5C23 6 18 2 12 2z" fill={color} opacity="0.08" /><circle cx="8" cy="8" r="1.5" fill={color} opacity="0.5" stroke="none" /><circle cx="14" cy="7" r="1.5" fill={color} opacity="0.4" stroke="none" /><circle cx="17" cy="11" r="1.5" fill={color} opacity="0.3" stroke="none" /><circle cx="7" cy="13" r="1.5" fill={color} opacity="0.35" stroke="none" /></svg>,
+        // 14: ship
+        <svg key={14} {...s}><path d="M3 18l2-4h14l2 4" fill={color} opacity="0.08" /><path d="M3 18l2-4h14l2 4" /><line x1="12" y1="14" x2="12" y2="5" /><path d="M12 5l6 4H12z" fill={color} opacity="0.15" /><path d="M12 5l6 4H12" /><path d="M2 21c2-1 4-1 5 0s3 1 5 0 3-1 5 0 3 1 5 0" /></svg>,
+        // 15: telescope
+        <svg key={15} {...s}><path d="M21 4l-9 9" /><circle cx="12" cy="13" r="2" /><line x1="12" y1="15" x2="8" y2="22" /><line x1="12" y1="15" x2="16" y2="22" /><path d="M18 2l4 4-2 2-4-4z" fill={color} opacity="0.15" /></svg>,
+        // 16: lightning bolt
+        <svg key={16} {...s}><polygon points="13,2 3,14 12,14 11,22 21,10 12,10" fill={color} opacity="0.1" /><polygon points="13,2 3,14 12,14 11,22 21,10 12,10" /></svg>,
+        // 17: factory
+        <svg key={17} {...s}><rect x="2" y="12" width="20" height="9" rx="1" fill={color} opacity="0.10" /><path d="M2 21h20V12H2z" /><path d="M6 12V4l5 4V4l5 4V4l4 3v5" /><rect x="6" y="16" width="3" height="3" /><rect x="12" y="16" width="3" height="3" /></svg>,
+        // 18: bomb
+        <svg key={18} {...s}><circle cx="11" cy="14" r="7" fill={color} opacity="0.10" /><circle cx="11" cy="14" r="7" /><path d="M14 7l2-2" /><path d="M15 4l2 1" /><path d="M17 3l1 2" /><line x1="14" y1="7" x2="11" y2="10" /></svg>,
+        // 19: radioactive
+        <svg key={19} {...s}><circle cx="12" cy="12" r="2" fill={color} opacity="0.3" /><path d="M12 2a10 10 0 0 1 8.66 5l-5 2.87A4 4 0 0 0 12 8z" fill={color} opacity="0.12" stroke={color} /><path d="M20.66 7A10 10 0 0 1 12 22l0-5.74A4 4 0 0 0 15.64 14z" fill={color} opacity="0.12" stroke={color} /><path d="M12 22a10 10 0 0 1-8.66-15l5 2.87A4 4 0 0 0 8.36 14z" fill={color} opacity="0.12" stroke={color} /></svg>,
+        // 20: connected globe (modern world)
+        <svg key={20} {...s}><circle cx="12" cy="12" r="9" /><circle cx="12" cy="12" r="4" fill={color} opacity="0.10" /><circle cx="12" cy="6" r="1.5" fill={color} opacity="0.15" /><circle cx="6.5" cy="15" r="1.5" fill={color} opacity="0.15" /><circle cx="17.5" cy="15" r="1.5" fill={color} opacity="0.15" /><line x1="12" y1="8" x2="12" y2="7.5" /><line x1="10.5" y1="14" x2="8" y2="15" /><line x1="13.5" y1="14" x2="16" y2="15" /></svg>,
+    ];
+    return icons[index] || <svg {...s}><rect x="4" y="4" width="16" height="16" rx="2" /><line x1="8" y1="10" x2="16" y2="10" /><line x1="8" y1="14" x2="14" y2="14" /></svg>;
+}

@@ -101,7 +101,7 @@ export default function Settings() {
     if (showPrivacy) {
         return (
             <div className="fixed inset-0 z-[60] flex items-center justify-center" onClick={() => setShowPrivacy(false)}>
-                <div className="absolute inset-0" style={{ backgroundColor: 'rgba(28, 25, 23, 0.4)', backdropFilter: 'blur(4px)' }} />
+                <div className="absolute inset-0" style={{ backgroundColor: 'rgba(var(--color-ink-rgb), 0.4)', backdropFilter: 'blur(4px)' }} />
                 <div
                     className="relative w-full max-w-lg rounded-2xl p-6 mx-4 animate-fade-in-up"
                     style={{ backgroundColor: 'var(--color-parchment)', maxHeight: '80vh', overflowY: 'auto', boxShadow: 'var(--shadow-elevated)' }}
@@ -145,7 +145,7 @@ export default function Settings() {
 
     return (
         <div className="fixed inset-0 z-[60] flex items-center justify-center" onClick={() => dispatch({ type: 'TOGGLE_SETTINGS' })}>
-            <div className="absolute inset-0" style={{ backgroundColor: 'rgba(28, 25, 23, 0.4)', backdropFilter: 'blur(4px)' }} />
+            <div className="absolute inset-0" style={{ backgroundColor: 'rgba(var(--color-ink-rgb), 0.4)', backdropFilter: 'blur(4px)' }} />
             <div
                 className="relative w-full max-w-lg rounded-2xl p-6 mx-4 animate-fade-in-up"
                 style={{ backgroundColor: 'var(--color-parchment)', maxHeight: '80vh', overflowY: 'auto', boxShadow: 'var(--shadow-elevated)' }}
@@ -244,7 +244,7 @@ export default function Settings() {
                                             style={{
                                                 backgroundColor: isActive ? 'var(--color-burgundy)' : 'var(--color-card)',
                                                 color: isActive ? 'white' : 'var(--color-ink-secondary)',
-                                                border: isActive ? 'none' : '1px solid rgba(28, 25, 23, 0.08)',
+                                                border: isActive ? 'none' : '1px solid rgba(var(--color-ink-rgb), 0.08)',
                                             }}
                                         >
                                             {n} {n === 1 ? 'card' : 'cards'}
@@ -270,7 +270,7 @@ export default function Settings() {
                                             style={{
                                                 backgroundColor: isActive ? 'var(--color-burgundy)' : 'var(--color-card)',
                                                 color: isActive ? 'white' : 'var(--color-ink-secondary)',
-                                                border: isActive ? 'none' : '1px solid rgba(28, 25, 23, 0.08)',
+                                                border: isActive ? 'none' : '1px solid rgba(var(--color-ink-rgb), 0.08)',
                                             }}
                                         >
                                             {label}
@@ -310,7 +310,7 @@ export default function Settings() {
                             }}
                             className="relative w-11 h-6 rounded-full transition-colors"
                             style={{
-                                backgroundColor: state.notificationsEnabled ? 'var(--color-burgundy)' : 'rgba(28, 25, 23, 0.15)',
+                                backgroundColor: state.notificationsEnabled ? 'var(--color-burgundy)' : 'rgba(var(--color-ink-rgb), 0.15)',
                             }}
                         >
                             <span
@@ -339,7 +339,7 @@ export default function Settings() {
                                     style={{
                                         backgroundColor: 'var(--color-parchment)',
                                         color: 'var(--color-ink)',
-                                        border: '1px solid rgba(28, 25, 23, 0.08)',
+                                        border: '1px solid rgba(var(--color-ink-rgb), 0.08)',
                                     }}
                                 />
                             </div>
@@ -354,7 +354,7 @@ export default function Settings() {
                                     onClick={() => dispatch({ type: 'SET_STREAK_REMINDERS', value: !state.streakRemindersEnabled })}
                                     className="relative w-11 h-6 rounded-full transition-colors"
                                     style={{
-                                        backgroundColor: state.streakRemindersEnabled ? 'var(--color-burgundy)' : 'rgba(28, 25, 23, 0.15)',
+                                        backgroundColor: state.streakRemindersEnabled ? 'var(--color-burgundy)' : 'rgba(var(--color-ink-rgb), 0.15)',
                                     }}
                                 >
                                     <span
@@ -368,6 +368,39 @@ export default function Settings() {
                             </div>
                         </div>
                     )}
+                </Card>
+
+                {/* Appearance / Theme */}
+                <Card className="mb-3 p-4">
+                    <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--color-ink-muted)' }}>
+                                <circle cx="12" cy="12" r="5" /><line x1="12" y1="1" x2="12" y2="3" /><line x1="12" y1="21" x2="12" y2="23" /><line x1="4.22" y1="4.22" x2="5.64" y2="5.64" /><line x1="18.36" y1="18.36" x2="19.78" y2="19.78" /><line x1="1" y1="12" x2="3" y2="12" /><line x1="21" y1="12" x2="23" y2="12" /><line x1="4.22" y1="19.78" x2="5.64" y2="18.36" /><line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+                            </svg>
+                            <span className="text-sm font-semibold" style={{ color: 'var(--color-ink-secondary)' }}>Appearance</span>
+                        </div>
+                        <div className="flex rounded-lg overflow-hidden" style={{ border: '1px solid rgba(var(--color-ink-rgb), 0.1)' }}>
+                            {[
+                                { value: 'light', label: 'Light' },
+                                { value: 'dark', label: 'Dark' },
+                                { value: 'system', label: 'Auto' },
+                            ].map(opt => (
+                                <button
+                                    key={opt.value}
+                                    onClick={() => dispatch({ type: 'SET_THEME', mode: opt.value })}
+                                    className="px-3 py-1.5 text-xs font-semibold transition-colors"
+                                    style={{
+                                        backgroundColor: state.themeMode === opt.value ? 'var(--color-burgundy)' : 'transparent',
+                                        color: state.themeMode === opt.value ? '#fff' : 'var(--color-ink-muted)',
+                                        border: 'none',
+                                        cursor: 'pointer',
+                                    }}
+                                >
+                                    {opt.label}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
                 </Card>
 
                 {/* Sound & Haptics */}
@@ -384,7 +417,7 @@ export default function Settings() {
                             onClick={() => dispatch({ type: 'TOGGLE_SOUND' })}
                             className="relative w-11 h-6 rounded-full transition-colors"
                             style={{
-                                backgroundColor: state.soundEnabled ? 'var(--color-burgundy)' : 'rgba(28, 25, 23, 0.15)',
+                                backgroundColor: state.soundEnabled ? 'var(--color-burgundy)' : 'rgba(var(--color-ink-rgb), 0.15)',
                             }}
                         >
                             <span
@@ -408,7 +441,7 @@ export default function Settings() {
                             onClick={() => dispatch({ type: 'TOGGLE_HAPTICS' })}
                             className="relative w-11 h-6 rounded-full transition-colors"
                             style={{
-                                backgroundColor: state.hapticsEnabled ? 'var(--color-burgundy)' : 'rgba(28, 25, 23, 0.15)',
+                                backgroundColor: state.hapticsEnabled ? 'var(--color-burgundy)' : 'rgba(var(--color-ink-rgb), 0.15)',
                             }}
                         >
                             <span
@@ -420,7 +453,7 @@ export default function Settings() {
                             />
                         </button>
                     </div>
-                    <div className="flex items-center justify-between mt-3 pt-3" style={{ borderTop: '1px solid rgba(28, 25, 23, 0.06)' }}>
+                    <div className="flex items-center justify-between mt-3 pt-3" style={{ borderTop: '1px solid rgba(var(--color-ink-rgb), 0.06)' }}>
                         <div className="flex items-center gap-2">
                             <span style={{ fontSize: '16px' }}>&#x1F3B6;</span>
                             <div>
@@ -435,7 +468,7 @@ export default function Settings() {
                             onClick={() => dispatch({ type: 'TOGGLE_MUSIC' })}
                             className="relative w-11 h-6 rounded-full transition-colors"
                             style={{
-                                backgroundColor: state.musicEnabled ? 'var(--color-burgundy)' : 'rgba(28, 25, 23, 0.15)',
+                                backgroundColor: state.musicEnabled ? 'var(--color-burgundy)' : 'rgba(var(--color-ink-rgb), 0.15)',
                             }}
                         >
                             <span

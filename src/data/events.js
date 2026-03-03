@@ -14,7 +14,7 @@ const CORE_EVENTS = [
         category: "science",
         difficulty: 1,
         controversyNotes: {
-            date: "The human\–chimpanzee split is estimated at 4\–13 million years ago depending on the method. Molecular clocks, fossil evidence, and genetic analyses give different results, and the divergence was likely gradual rather than a single event.",
+            date: "The human\–chimpanzee split is estimated at roughly 5\–10 million years ago, though methods disagree. Molecular clocks, fossil evidence, and genetic analyses give different results, and the divergence was likely gradual rather than a single event.",
         }
     },
     {
@@ -30,7 +30,7 @@ const CORE_EVENTS = [
         category: "science",
         difficulty: 1,
         controversyNotes: {
-            date: "When humans first controlled fire is hotly debated. Claims range from 1.5 million years ago (Wonderwerk Cave, South Africa) to 400,000 years ago. Distinguishing deliberate fire use from natural fires in the archaeological record remains extremely difficult.",
+            date: "When humans first controlled fire is hotly debated. The earliest secure evidence comes from Wonderwerk Cave, South Africa, at roughly 1 million years ago, though contested claims from other sites go back further. Distinguishing deliberate fire use from natural fires in the archaeological record remains extremely difficult.",
         }
     },
     {
@@ -130,7 +130,7 @@ const CORE_EVENTS = [
         category: "culture",
         difficulty: 1,
         controversyNotes: {
-            date: "Whether Sumerian cuneiform or Egyptian hieroglyphs came first is debated. Proto-writing systems like Vinča symbols may predate both. The boundary between 'record-keeping tokens' and 'true writing' is also disputed among scholars.",
+            date: "Whether Sumerian cuneiform or Egyptian hieroglyphs came first is debated. Earlier mark systems like Vin\u010Da symbols exist, but most scholars classify them as ownership or ritual marks rather than true writing. The boundary between 'record-keeping tokens' and 'true writing' is itself disputed.",
         }
     },
     {
@@ -172,7 +172,7 @@ const CORE_EVENTS = [
         category: "culture",
         difficulty: 1,
         controversyNotes: {
-            date: "776 BCE is the traditional date based on ancient Greek records, but archaeological evidence suggests athletic competitions at Olympia may have begun earlier. The date marks the first recorded victor, not necessarily the first games.",
+            date: "776 BCE is the traditional date based on ancient Greek victor lists, but archaeological evidence suggests organized games at Olympia may not have become significant until around 700 BCE. The date marks the first recorded victor (Coroebus of Elis), not a firm archaeological benchmark.",
         }
     },
     {
@@ -265,7 +265,7 @@ const CORE_EVENTS = [
         category: "culture",
         difficulty: 1,
         controversyNotes: {
-            date: "Jesus's birth year is debated: Matthew places it before Herod's death (4 BCE), while Luke's census reference suggests 6 CE. The crucifixion date ranges from 30 to 36 CE. The traditional 'AD 1' calculation by Dionysius Exiguus is now known to be off by several years.",
+            date: "Jesus\u2019s birth year is debated: Matthew places it before Herod\u2019s death (4 BCE), while Luke\u2019s census reference suggests 6 CE. Most scholars date the crucifixion to 30 or 33 CE. The traditional \u2018AD 1\u2019 calculation by Dionysius Exiguus is now known to be off by several years.",
         }
     },
     {
@@ -905,6 +905,792 @@ const CORE_EVENTS = [
         location: { lat: 34.0, lng: 9.0, region: "Africa", place: "Tunisia (spreading region-wide)" },
         category: "revolution",
         difficulty: 2
+    },
+
+    // --- Level 2: Road to AI Chapter ---
+    {
+        id: "f68",
+        title: "Babbage & Lovelace\u2019s Analytical Engine",
+        date: "1837\u20131843 CE",
+        year: 1837,
+        yearEnd: 1843,
+        keywords: "Mechanical computer \u00B7 First algorithm \u00B7 Programmable machine",
+        description: "Charles Babbage designed the Analytical Engine \u2014 the first general-purpose mechanical computer, with memory, a processor, and the ability to be programmed with punched cards. Ada Lovelace wrote what is considered the first computer algorithm in her 1843 notes, and prophetically envisioned that such machines could go beyond pure mathematics.",
+        quizDescription: "Babbage designed the first general-purpose computer; Lovelace wrote its first algorithm.",
+        location: { lat: 51.5, lng: -0.1, region: "Europe", place: "London, England" },
+        category: "science",
+        difficulty: 2
+    },
+    {
+        id: "f69",
+        title: "Boolean Algebra & Formal Logic",
+        date: "1847\u20131854 CE",
+        year: 1847,
+        yearEnd: 1854,
+        keywords: "George Boole \u00B7 Binary logic \u00B7 True/false reasoning",
+        description: "George Boole reduced the rules of logical reasoning to a simple algebra of 1s and 0s. His 1854 work \u2018The Laws of Thought\u2019 showed that all of logic could be expressed as mathematical operations \u2014 an insight that would become the foundation of every digital circuit and computer program a century later.",
+        quizDescription: "Boole reduced logic to an algebra of 1s and 0s, the basis of digital computing.",
+        location: { lat: 51.9, lng: -8.5, region: "Europe", place: "Cork, Ireland" },
+        category: "science",
+        difficulty: 2
+    },
+    {
+        id: "f70",
+        title: "Turing & the Universal Machine",
+        date: "1936\u20131950 CE",
+        year: 1936,
+        yearEnd: 1950,
+        keywords: "Computability \u00B7 Turing Test \u00B7 Theoretical computer science",
+        description: "Alan Turing\u2019s 1936 paper proved that a single machine could compute anything computable by following simple rules on a strip of tape \u2014 the theoretical blueprint for all modern computers. During WWII he cracked the Enigma code at Bletchley Park. In 1950, he proposed the \u2018Turing Test\u2019 for machine intelligence, asking: if a computer\u2019s responses are indistinguishable from a human\u2019s, can we deny it thinks?",
+        quizDescription: "Turing proved a single machine could compute anything computable.",
+        location: { lat: 51.75, lng: -1.26, region: "Europe", place: "Cambridge & Manchester, England" },
+        category: "science",
+        difficulty: 2
+    },
+    {
+        id: "f71",
+        title: "ENIAC & the First Electronic Computers",
+        date: "1945\u20131946 CE",
+        year: 1945,
+        yearEnd: 1946,
+        keywords: "Vacuum tubes \u00B7 Electronic computation \u00B7 Military origins",
+        description: "ENIAC (Electronic Numerical Integrator and Computer), built at the University of Pennsylvania, was the first general-purpose electronic computer. Filling an entire room with 18,000 vacuum tubes, it could perform calculations thousands of times faster than any human \u2014 a military tool that proved electronic computing was possible.",
+        quizDescription: "ENIAC proved electronic computing was possible with 18,000 vacuum tubes.",
+        location: { lat: 39.95, lng: -75.19, region: "Americas", place: "Philadelphia, Pennsylvania" },
+        category: "science",
+        difficulty: 1,
+        controversyNotes: {
+            what: "Whether ENIAC was truly the \u2018first\u2019 electronic computer is debated. Britain\u2019s Colossus (1943\u201344) was earlier but special-purpose and classified. The Atanasoff\u2013Berry Computer (1942) performed electronic computation but was not programmable. ENIAC\u2019s claim rests on being the first general-purpose, fully electronic, and programmable machine.",
+        }
+    },
+    {
+        id: "f72",
+        title: "The Transistor & Integrated Circuit",
+        date: "1947\u20131958 CE",
+        year: 1947,
+        yearEnd: 1958,
+        keywords: "Semiconductor \u00B7 Miniaturization \u00B7 Silicon chip",
+        description: "Bell Labs invented the transistor in 1947, replacing fragile vacuum tubes with tiny, reliable switches. Jack Kilby and Robert Noyce then independently created the integrated circuit in 1958, cramming multiple transistors onto a single chip. This launched the relentless miniaturization that would make computers millions of times more powerful within decades.",
+        quizDescription: "The transistor and integrated circuit launched relentless computing miniaturization.",
+        location: { lat: 40.68, lng: -74.4, region: "Americas", place: "Murray Hill, New Jersey" },
+        category: "science",
+        difficulty: 2
+    },
+    {
+        id: "f73",
+        title: "The Dartmouth Conference \u2014 AI Is Born",
+        date: "1956 CE",
+        year: 1956,
+        keywords: "John McCarthy \u00B7 Artificial intelligence coined \u00B7 Symbolic reasoning",
+        description: "A small summer workshop at Dartmouth College, organized by John McCarthy, Marvin Minsky, and others, coined the term \u2018artificial intelligence\u2019 and set the field\u2019s ambitious agenda: to make machines that could reason, learn, and use language. The optimism was enormous \u2014 researchers predicted human-level AI within a generation.",
+        quizDescription: "A 1956 workshop coined \u2018artificial intelligence\u2019 and launched the field.",
+        location: { lat: 43.7, lng: -72.29, region: "Americas", place: "Hanover, New Hampshire" },
+        category: "science",
+        difficulty: 1
+    },
+    {
+        id: "f74",
+        title: "Expert Systems & the AI Winters",
+        date: "1974\u20131993 CE",
+        year: 1974,
+        yearEnd: 1993,
+        keywords: "Lighthill Report \u00B7 Hype cycle \u00B7 Funding collapse",
+        description: "After initial hype, AI hit two brutal \u2018winters.\u2019 The first (1974\u20131980) came when early AI failed to handle real-world complexity. A brief revival through rule-based \u2018expert systems\u2019 in the 1980s ended in a second winter (1987\u20131993) when those systems proved brittle and expensive. Each time, funding and confidence collapsed.",
+        quizDescription: "Overpromising led to two brutal AI funding collapses.",
+        location: { lat: 38.9, lng: -77.04, region: "Americas", place: "Global (US, UK, Japan)" },
+        category: "science",
+        difficulty: 2
+    },
+    {
+        id: "f75",
+        title: "Deep Blue Defeats Kasparov",
+        date: "1997 CE",
+        year: 1997,
+        keywords: "IBM \u00B7 Chess \u00B7 Brute-force search",
+        description: "IBM\u2019s Deep Blue supercomputer defeated reigning world chess champion Garry Kasparov in a six-game match \u2014 the first time a machine beat a world champion under standard rules. Though it relied on brute-force calculation rather than true \u2018understanding,\u2019 it was a watershed moment that showed machines could outperform humans in complex intellectual tasks.",
+        quizDescription: "IBM\u2019s Deep Blue beat the world chess champion.",
+        location: { lat: 40.76, lng: -73.97, region: "Americas", place: "New York City, USA" },
+        category: "science",
+        difficulty: 1
+    },
+    {
+        id: "f76",
+        title: "The Deep Learning Breakthrough",
+        date: "2012 CE",
+        year: 2012,
+        keywords: "AlexNet \u00B7 Neural networks \u00B7 GPU training",
+        description: "A neural network called AlexNet, trained on GPUs, crushed the competition in the ImageNet image recognition challenge, reducing error rates dramatically. This proved that deep neural networks \u2014 loosely inspired by the brain \u2014 could learn patterns from massive data, reigniting AI research and investment after decades of skepticism.",
+        quizDescription: "AlexNet proved deep neural networks could learn from massive data.",
+        location: { lat: 43.47, lng: -80.52, region: "Americas", place: "Toronto, Canada" },
+        category: "science",
+        difficulty: 2
+    },
+    {
+        id: "f77",
+        title: "Large Language Models & the AI Explosion",
+        date: "2017\u20132023 CE",
+        year: 2017,
+        yearEnd: 2023,
+        keywords: "Transformer \u00B7 GPT \u00B7 ChatGPT \u00B7 Generative AI",
+        description: "Google\u2019s 2017 \u2018Attention Is All You Need\u2019 paper introduced the Transformer architecture, enabling models to process language with unprecedented power. This led to GPT, BERT, and eventually ChatGPT (2022), which stunned the world by holding coherent conversations, writing code, and passing professional exams \u2014 making AI a daily reality for billions.",
+        quizDescription: "Transformers and ChatGPT made AI a daily reality for billions.",
+        location: { lat: 37.4, lng: -122.1, region: "Americas", place: "San Francisco Bay Area, USA" },
+        category: "science",
+        difficulty: 2
+    },
+
+    // --- Level 2: Fight for Freedom Chapter ---
+    {
+        id: "f78",
+        title: "The Abolitionist Movement",
+        date: "1787\u20131833 CE",
+        year: 1787,
+        yearEnd: 1833,
+        keywords: "William Wilberforce \u00B7 Moral crusade \u00B7 Parliament",
+        description: "A groundswell of moral outrage, led by activists like William Wilberforce and Olaudah Equiano, forced Britain to abolish the slave trade (1807) and then slavery itself (1833). It was the first mass human-rights campaign in history \u2014 ordinary citizens signed petitions, boycotted sugar, and pressured Parliament to end a hugely profitable system.",
+        quizDescription: "Britain\u2019s mass moral campaign abolished the slave trade and then slavery.",
+        location: { lat: 51.5, lng: -0.1, region: "Europe", place: "London, England" },
+        category: "politics",
+        difficulty: 2
+    },
+    {
+        id: "f79",
+        title: "The Underground Railroad & Frederick Douglass",
+        date: "1830s\u20131860s CE",
+        year: 1830,
+        yearEnd: 1865,
+        keywords: "Harriet Tubman \u00B7 Escaped slaves \u00B7 Abolition",
+        description: "A secret network of safe houses and brave guides helped thousands of enslaved people escape to freedom in the northern US and Canada. Frederick Douglass, who escaped slavery himself, became the movement\u2019s most powerful voice \u2014 his autobiography and speeches shattered white assumptions about Black intellect and made abolition impossible to ignore.",
+        quizDescription: "Secret networks and Douglass\u2019s voice helped enslaved people escape and galvanized abolition.",
+        location: { lat: 39.3, lng: -76.6, region: "Americas", place: "Eastern United States" },
+        category: "politics",
+        difficulty: 2
+    },
+    {
+        id: "f80",
+        title: "The Suffragette Movement",
+        date: "1848\u20131920 CE",
+        year: 1848,
+        yearEnd: 1920,
+        keywords: "Women\u2019s suffrage \u00B7 Seneca Falls \u00B7 Emmeline Pankhurst",
+        description: "The Seneca Falls Convention (1848) launched the organized fight for women\u2019s right to vote. In Britain, the Suffragettes used hunger strikes, protests, and civil disobedience. New Zealand became the first country to grant women\u2019s suffrage in 1893; the US followed in 1920. The movement proved that rights considered \u2018natural\u2019 had to be fought for by those excluded.",
+        quizDescription: "Decades of protest won women the right to vote, starting with New Zealand in 1893.",
+        location: { lat: 42.9, lng: -76.8, region: "Americas", place: "Seneca Falls, New York / London" },
+        category: "politics",
+        difficulty: 2
+    },
+    {
+        id: "f81",
+        title: "Indian Independence & Gandhi",
+        date: "1920\u20131947 CE",
+        year: 1920,
+        yearEnd: 1947,
+        keywords: "Non-violence \u00B7 Salt March \u00B7 Partition",
+        description: "Mahatma Gandhi\u2019s strategy of non-violent resistance \u2014 mass boycotts, civil disobedience, and the iconic Salt March (1930) \u2014 united millions against British colonial rule. India gained independence in 1947, though at the terrible cost of Partition, which split the subcontinent into India and Pakistan and caused over a million deaths.",
+        quizDescription: "Gandhi\u2019s non-violent resistance won India\u2019s independence from Britain.",
+        location: { lat: 28.6, lng: 77.2, region: "Asia", place: "India (subcontinent-wide)" },
+        category: "politics",
+        difficulty: 1
+    },
+    {
+        id: "f82",
+        title: "The US Civil Rights Movement",
+        date: "1954\u20131968 CE",
+        year: 1954,
+        yearEnd: 1968,
+        keywords: "Martin Luther King Jr. \u00B7 Segregation \u00B7 Nonviolent protest",
+        description: "From the Supreme Court\u2019s Brown v. Board ruling (1954) to the Civil Rights Act (1964) and the assassination of Martin Luther King Jr. (1968). Through sit-ins, marches, and Freedom Rides, Black Americans and their allies dismantled legal segregation \u2014 proving that Gandhi\u2019s non-violent methods could transform even the most entrenched racial hierarchy.",
+        quizDescription: "Sit-ins, marches, and legislation dismantled legal segregation in America.",
+        location: { lat: 33.5, lng: -86.8, region: "Americas", place: "Southern United States" },
+        category: "politics",
+        difficulty: 1
+    },
+    {
+        id: "f83",
+        title: "Apartheid & Mandela",
+        date: "1948\u20131994 CE",
+        year: 1948,
+        yearEnd: 1994,
+        keywords: "Racial segregation \u00B7 Robben Island \u00B7 Rainbow Nation",
+        description: "South Africa\u2019s apartheid system enforced racial segregation with brutal efficiency for nearly five decades. Nelson Mandela spent 27 years in prison \u2014 18 of them on Robben Island \u2014 before his release in 1990. International sanctions, internal resistance, and Mandela\u2019s extraordinary capacity for reconciliation led to the first free elections in 1994 and the birth of the \u2018Rainbow Nation.\u2019",
+        quizDescription: "Mandela\u2019s 27-year imprisonment and reconciliation ended apartheid in South Africa.",
+        location: { lat: -33.9, lng: 18.4, region: "Africa", place: "South Africa" },
+        category: "politics",
+        difficulty: 2
+    },
+    {
+        id: "f84",
+        title: "Stonewall & LGBTQ+ Rights",
+        date: "1969 CE",
+        year: 1969,
+        keywords: "Gay liberation \u00B7 Pride \u00B7 Marsha P. Johnson",
+        description: "On June 28, 1969, patrons of the Stonewall Inn in New York City fought back against a police raid, sparking days of protests. The uprising \u2014 in which figures like Marsha P. Johnson and Storm\u00e9 DeLarverie played key roles \u2014 launched the modern LGBTQ+ rights movement. Within a year, the first Pride marches were held. It proved that civil rights logic could expand to include sexual and gender identity.",
+        quizDescription: "The Stonewall uprising launched the modern LGBTQ+ rights movement.",
+        location: { lat: 40.73, lng: -74.0, region: "Americas", place: "New York City, USA" },
+        category: "politics",
+        difficulty: 2
+    },
+    {
+        id: "f85",
+        title: "Tiananmen Square Protests",
+        date: "1989 CE",
+        year: 1989,
+        keywords: "Pro-democracy \u00B7 Tank Man \u00B7 Censorship",
+        description: "In the spring of 1989, over a million Chinese students and workers occupied Beijing\u2019s Tiananmen Square demanding democratic reforms. On June 4, the government sent in tanks and troops, killing hundreds to thousands. The iconic \u2018Tank Man\u2019 image became a global symbol of individual courage against authoritarian power \u2014 and of the limits of peaceful protest when a state chooses violence.",
+        quizDescription: "Pro-democracy protests in Beijing were crushed by the military on June 4, 1989.",
+        location: { lat: 39.9, lng: 116.4, region: "Asia", place: "Beijing, China" },
+        category: "politics",
+        difficulty: 1
+    },
+    {
+        id: "f86",
+        title: "The Rwandan Genocide & \u2018Never Again\u2019",
+        date: "1994 CE",
+        year: 1994,
+        keywords: "Hutu \u00B7 Tutsi \u00B7 International failure",
+        description: "In just 100 days, Hutu extremists murdered approximately 800,000 Tutsi and moderate Hutu in Rwanda \u2014 while the world watched and did nothing. Colonial Belgium had deepened ethnic divisions; post-colonial politics weaponized them. The genocide exposed the hollow promise of \u2018Never Again\u2019 and led to the doctrine of \u2018Responsibility to Protect,\u2019 reshaping how the world thinks about intervention.",
+        quizDescription: "800,000 were murdered in 100 days while the world failed to intervene.",
+        location: { lat: -1.9, lng: 29.9, region: "Africa", place: "Rwanda" },
+        category: "war",
+        difficulty: 2
+    },
+    {
+        id: "f87",
+        title: "Digital Activism & Global Protests",
+        date: "2010s\u20132020s CE",
+        year: 2010,
+        yearEnd: 2020,
+        keywords: "Hashtag movements \u00B7 #MeToo \u00B7 Black Lives Matter",
+        description: "Social media transformed protest. The Arab Spring (2011), #MeToo (2017), Black Lives Matter, and climate strikes all used hashtags, livestreams, and viral videos to organize millions across borders in days. Digital tools democratized activism \u2014 anyone with a phone could document injustice and rally support \u2014 but also exposed new vulnerabilities: surveillance, misinformation, and algorithmic suppression.",
+        quizDescription: "Social media transformed protest with #MeToo, BLM, and climate strikes.",
+        location: { lat: 38.9, lng: -77.0, region: "Americas", place: "Global (US-centered online)" },
+        category: "politics",
+        difficulty: 2
+    },
+
+    // --- Level 2: Empires Rise & Fall Chapter ---
+    {
+        id: "f88",
+        title: "The Achaemenid Persian Empire",
+        date: "550\u2013330 BCE",
+        year: -550,
+        yearEnd: -330,
+        keywords: "Cyrus the Great \u00B7 Royal Road \u00B7 Tolerance",
+        description: "Cyrus the Great conquered Mesopotamia and Central Asia; his son Cambyses II added Egypt, forging the largest empire the world had ever seen. The Persians governed through tolerance \u2014 respecting local customs, religions, and languages. Their Royal Road postal system and standardized coinage created a template for every empire that followed.",
+        quizDescription: "Cyrus the Great built history\u2019s largest empire through conquest and tolerance.",
+        location: { lat: 30.0, lng: 52.5, region: "Middle East", place: "Persepolis, Persia (modern Iran)" },
+        category: "politics",
+        difficulty: 2
+    },
+    {
+        id: "f89",
+        title: "The Maurya Empire & Ashoka",
+        date: "322\u2013185 BCE",
+        year: -322,
+        yearEnd: -185,
+        keywords: "Ashoka \u00B7 Non-violence \u00B7 Indian unification",
+        description: "Chandragupta Maurya unified most of the Indian subcontinent for the first time. His grandson Ashoka, horrified by the carnage of his own conquest of Kalinga, renounced violence and embraced Buddhism. He erected stone pillars proclaiming religious tolerance and compassion \u2014 making the Maurya Empire the first state to be governed by an explicit moral philosophy.",
+        quizDescription: "Ashoka renounced violence and governed India by Buddhist moral philosophy.",
+        location: { lat: 25.6, lng: 85.1, region: "Asia", place: "Pataliputra, India" },
+        category: "politics",
+        difficulty: 2
+    },
+    {
+        id: "f90",
+        title: "The Han Dynasty",
+        date: "206 BCE \u2013 220 CE",
+        year: -206,
+        yearEnd: 220,
+        keywords: "Silk Road \u00B7 Civil service \u00B7 Paper invention",
+        description: "The Han Dynasty consolidated China\u2019s vast territory, established a Confucian-based civil service, and opened the Silk Road, linking East Asia to Rome for the first time. They invented paper, advanced iron-casting, and created a bureaucratic model so successful that \u2018Han\u2019 remains the ethnic identity of China\u2019s majority population today.",
+        quizDescription: "The Han opened the Silk Road and built a civil service model that endures today.",
+        location: { lat: 34.3, lng: 108.9, region: "Asia", place: "Chang\u2019an (Xi\u2019an), China" },
+        category: "politics",
+        difficulty: 2
+    },
+    {
+        id: "f91",
+        title: "The Gupta Golden Age",
+        date: "320\u2013550 CE",
+        year: 320,
+        yearEnd: 550,
+        keywords: "Zero \u00B7 Sanskrit literature \u00B7 Hindu renaissance",
+        description: "Under the Gupta Dynasty, India experienced a flowering of art, science, and philosophy. Mathematicians invented the concept of zero and the decimal system that the world uses today. Kalidasa wrote masterpieces of Sanskrit literature, and Hindu temple architecture reached new heights \u2014 making this era India\u2019s classical golden age.",
+        quizDescription: "Gupta India invented zero, the decimal system, and experienced a cultural golden age.",
+        location: { lat: 25.3, lng: 83.0, region: "Asia", place: "Northern India" },
+        category: "culture",
+        difficulty: 2
+    },
+    {
+        id: "f92",
+        title: "The Ottoman Empire\u2019s Rise",
+        date: "1299\u20131566 CE",
+        year: 1299,
+        yearEnd: 1566,
+        keywords: "Constantinople \u00B7 Suleiman the Magnificent \u00B7 Three continents",
+        description: "From a small Anatolian state, the Ottomans conquered Constantinople in 1453, ending the Byzantine Empire. Under Suleiman the Magnificent, the empire spanned three continents, from the Balkans to North Africa to the Arabian Peninsula. Ottoman administration blended Islamic law with pragmatic tolerance of religious minorities \u2014 a multi-ethnic superpower that lasted over 600 years.",
+        quizDescription: "The Ottomans conquered Constantinople and built a three-continent superpower.",
+        location: { lat: 41.0, lng: 29.0, region: "Middle East", place: "Constantinople (Istanbul)" },
+        category: "politics",
+        difficulty: 2
+    },
+    {
+        id: "f93",
+        title: "The Ming Dynasty & the Treasure Fleets",
+        date: "1368\u20131644 CE",
+        year: 1368,
+        yearEnd: 1644,
+        keywords: "Zheng He \u00B7 Forbidden City \u00B7 Great Wall rebuilt",
+        description: "After driving out the Mongols, the Ming Dynasty rebuilt China into the world\u2019s most advanced civilization. Admiral Zheng He commanded enormous treasure fleets that reached Africa decades before Columbus crossed the Atlantic. But China then turned inward, dismantling its fleet \u2014 one of history\u2019s great \u2018what ifs\u2019 that left the Age of Exploration to Europe.",
+        quizDescription: "Ming China sent treasure fleets to Africa, then turned inward \u2014 leaving exploration to Europe.",
+        location: { lat: 39.9, lng: 116.4, region: "Asia", place: "Beijing, China" },
+        category: "politics",
+        difficulty: 2
+    },
+    {
+        id: "f94",
+        title: "The British Empire at Its Peak",
+        date: "1815\u20131914 CE",
+        year: 1815,
+        yearEnd: 1914,
+        keywords: "Pax Britannica \u00B7 Quarter of the globe \u00B7 Industrial might",
+        description: "After Napoleon\u2019s defeat, Britain came to rule a quarter of the world\u2019s land and people. Industrial supremacy, the Royal Navy, and the telegraph created the first truly global empire. It spread railways, law, and the English language \u2014 but also extraction, famine, and racial hierarchies that scarred colonies for generations.",
+        quizDescription: "Britain ruled a quarter of the world, spreading industry and exploitation alike.",
+        location: { lat: 51.5, lng: -0.1, region: "Europe", place: "London (global reach)" },
+        category: "politics",
+        difficulty: 1
+    },
+    {
+        id: "f95",
+        title: "The Fall of the Ottoman Empire",
+        date: "1908\u20131922 CE",
+        year: 1908,
+        yearEnd: 1922,
+        keywords: "Young Turks \u00B7 WWI defeat \u00B7 Atat\u00FCrk",
+        description: "Centuries of slow decline accelerated when the Ottomans entered World War I on the losing side. The empire collapsed into revolution, genocide of Armenians, and foreign occupation. Mustafa Kemal Atat\u00FCrk forged modern Turkey from the wreckage \u2014 but the borders drawn by European powers across the Middle East created conflicts that rage to this day.",
+        quizDescription: "WWI destroyed the Ottoman Empire; European-drawn borders reshaped the Middle East.",
+        location: { lat: 39.9, lng: 32.9, region: "Middle East", place: "Ankara / Istanbul, Turkey" },
+        category: "politics",
+        difficulty: 2
+    },
+    {
+        id: "f96",
+        title: "The Mughal Empire",
+        date: "1526\u20131857 CE",
+        year: 1526,
+        yearEnd: 1857,
+        keywords: "Taj Mahal \u00B7 Akbar\u2019s tolerance \u00B7 Hindu-Muslim synthesis",
+        description: "Babur, a descendant of both Genghis Khan and Timur, conquered northern India and founded the Mughal Dynasty. Emperor Akbar created a remarkably tolerant multi-religious state. The Mughals built the Taj Mahal and blended Persian, Indian, and Islamic cultures \u2014 but internal decline and British exploitation eventually ended the dynasty during the 1857 revolt.",
+        quizDescription: "The Mughals built the Taj Mahal and blended Persian, Indian, and Islamic cultures.",
+        location: { lat: 27.2, lng: 78.0, region: "Asia", place: "Agra / Delhi, India" },
+        category: "culture",
+        difficulty: 2
+    },
+
+    // --- Level 2: Plagues & Pandemics Chapter ---
+    {
+        id: "f97",
+        title: "The Antonine Plague",
+        date: "165\u2013180 CE",
+        year: 165,
+        yearEnd: 180,
+        keywords: "Marcus Aurelius \u00B7 Smallpox \u00B7 Roman decline",
+        description: "Soldiers returning from Rome\u2019s eastern campaigns brought back a devastating plague \u2014 likely smallpox \u2014 that killed an estimated 5\u201310 million people across the empire. It struck during the reign of the philosopher-emperor Marcus Aurelius, weakened Rome\u2019s military, and is now seen as one of the first dominoes in Rome\u2019s centuries-long decline.",
+        quizDescription: "A plague killed 5\u201310 million Romans and began the empire\u2019s long decline.",
+        location: { lat: 41.9, lng: 12.5, region: "Europe", place: "Roman Empire (empire-wide)" },
+        category: "science",
+        difficulty: 2,
+        controversyNotes: {
+            what: "The disease is usually identified as smallpox, but measles has also been proposed. Ancient descriptions are too vague for a definitive diagnosis. Death toll estimates range from 5 to 10 million, but all figures are extrapolations from fragmentary ancient sources.",
+        }
+    },
+    {
+        id: "f98",
+        title: "Smallpox & the Fall of the Aztec Empire",
+        date: "1519\u20131521 CE",
+        year: 1519,
+        yearEnd: 1521,
+        keywords: "Cort\u00E9s \u00B7 Tenochtitl\u00E1n \u00B7 Biological warfare",
+        description: "When Hern\u00E1n Cort\u00E9s arrived in Mexico with 500 soldiers, smallpox arrived with him. The disease \u2014 to which Indigenous peoples had no immunity \u2014 killed an estimated 5\u20138 million Aztecs, far more than any battle. The great city of Tenochtitl\u00E1n fell not to Spanish swords but to an invisible enemy, setting the pattern for colonial conquest across the Americas.",
+        quizDescription: "Smallpox killed millions of Aztecs and destroyed their empire more than Spanish swords.",
+        location: { lat: 19.4, lng: -99.1, region: "Americas", place: "Tenochtitl\u00E1n (Mexico City)" },
+        category: "science",
+        difficulty: 2,
+        controversyNotes: {
+            what: "Death toll estimates vary enormously \u2014 from 5 million to over 20 million across the broader post-contact population collapse. The 5\u20138 million figure here covers the initial 1520 epidemic in Central Mexico. Other diseases (measles, typhus, influenza) also contributed, and scholars debate which was most devastating.",
+        }
+    },
+    {
+        id: "f99",
+        title: "The Great Plague of London",
+        date: "1665\u20131666 CE",
+        year: 1665,
+        yearEnd: 1666,
+        keywords: "Bubonic plague \u00B7 Quarantine \u00B7 Great Fire",
+        description: "The last major bubonic plague outbreak in England killed roughly 100,000 Londoners \u2014 a quarter of the city\u2019s population. Bodies piled in mass graves, the rich fled, and crude quarantine measures were enforced with red crosses on doors. The epidemic was already fading when the Great Fire of 1666 struck, though the fire\u2019s destruction of crowded housing may have reduced future outbreaks.",
+        quizDescription: "Bubonic plague killed a quarter of London\u2019s population.",
+        location: { lat: 51.5, lng: -0.1, region: "Europe", place: "London, England" },
+        category: "science",
+        difficulty: 2
+    },
+    {
+        id: "f100",
+        title: "Edward Jenner & Vaccination",
+        date: "1796 CE",
+        year: 1796,
+        keywords: "Cowpox \u00B7 Smallpox prevention \u00B7 Immunology",
+        description: "Country doctor Edward Jenner noticed that milkmaids who caught cowpox never got smallpox. He tested his theory by inoculating a boy with cowpox pus, then exposing him to smallpox \u2014 the boy was immune. This single experiment launched the science of immunology and would eventually lead to the complete eradication of smallpox, saving more lives than any other medical innovation in history.",
+        quizDescription: "Jenner\u2019s cowpox experiment launched vaccination and would eventually eradicate smallpox.",
+        location: { lat: 51.7, lng: -2.2, region: "Europe", place: "Berkeley, Gloucestershire, England" },
+        category: "science",
+        difficulty: 1
+    },
+    {
+        id: "f101",
+        title: "Cholera & the Birth of Epidemiology",
+        date: "1854 CE",
+        year: 1854,
+        keywords: "John Snow \u00B7 Broad Street pump \u00B7 Germ theory",
+        description: "During a cholera outbreak in London\u2019s Soho, physician John Snow mapped the cases and traced the source to a single contaminated water pump on Broad Street. His detective work \u2014 and the famous removal of the pump handle \u2014 helped end the outbreak and founded the field of epidemiology. His work proved that disease spread through contaminated water, not \u2018bad air,\u2019 revolutionizing public health.",
+        quizDescription: "John Snow traced cholera to a water pump and invented epidemiology.",
+        location: { lat: 51.5, lng: -0.14, region: "Europe", place: "Soho, London, England" },
+        category: "science",
+        difficulty: 2
+    },
+    {
+        id: "f102",
+        title: "The Spanish Flu",
+        date: "1918\u20131920 CE",
+        year: 1918,
+        yearEnd: 1920,
+        keywords: "H1N1 \u00B7 50 million dead \u00B7 Wartime censorship",
+        description: "The deadliest pandemic in modern history infected a third of the world\u2019s population and killed an estimated 50\u2013100 million people \u2014 more than World War I itself. Wartime censorship suppressed news of the virus in combatant nations; neutral Spain reported freely, giving the pandemic its misleading name. It struck the young and healthy hardest, devastating an already war-ravaged generation.",
+        quizDescription: "History\u2019s deadliest modern pandemic killed 50\u2013100 million people worldwide.",
+        location: { lat: 39.0, lng: -95.0, region: "Americas", place: "Global (named after Spain)" },
+        category: "science",
+        difficulty: 1,
+        controversyNotes: {
+            location: "Despite its name, the Spanish Flu almost certainly did not originate in Spain. Leading theories place the origin at Camp Funston, Kansas (US), or at military camps in France or Britain. Spain was simply the first country to report it openly because it was neutral in WWI and had no wartime censorship.",
+        }
+    },
+    {
+        id: "f103",
+        title: "Alexander Fleming & Penicillin",
+        date: "1928 CE",
+        year: 1928,
+        keywords: "Antibiotics \u00B7 Accidental discovery \u00B7 Bacterial infection",
+        description: "Alexander Fleming returned from holiday to find mold growing on a bacterial culture \u2014 and the bacteria around the mold had died. This accidental discovery of penicillin launched the age of antibiotics, turning previously fatal infections into minor inconveniences. Mass production during WWII saved millions of soldiers\u2019 lives and transformed medicine forever.",
+        quizDescription: "Fleming\u2019s accidental mold discovery launched antibiotics and transformed medicine.",
+        location: { lat: 51.5, lng: -0.17, region: "Europe", place: "St Mary\u2019s Hospital, London" },
+        category: "science",
+        difficulty: 1
+    },
+    {
+        id: "f104",
+        title: "The Eradication of Smallpox",
+        date: "1967\u20131980 CE",
+        year: 1967,
+        yearEnd: 1980,
+        keywords: "WHO campaign \u00B7 Ring vaccination \u00B7 Disease elimination",
+        description: "The World Health Organization launched an intensified campaign to eliminate smallpox \u2014 a disease that had killed hundreds of millions throughout history. Using \u2018ring vaccination\u2019 (targeting contacts of infected people), teams tracked the virus to its last hiding places. In 1980, the WHO declared smallpox officially eradicated \u2014 the first and still only human disease to be completely eliminated.",
+        quizDescription: "A WHO campaign made smallpox the first and only human disease ever eradicated.",
+        location: { lat: 46.2, lng: 6.1, region: "Europe", place: "Global (WHO, Geneva)" },
+        category: "science",
+        difficulty: 2
+    },
+    {
+        id: "f105",
+        title: "The HIV/AIDS Pandemic",
+        date: "1981\u2013present CE",
+        year: 1981,
+        keywords: "Stigma \u00B7 Antiretroviral therapy \u00B7 40 million dead",
+        description: "First identified in 1981, HIV/AIDS became the defining plague of a generation, killing over 40 million people \u2014 disproportionately in sub-Saharan Africa. Early responses were crippled by stigma and political neglect. The development of antiretroviral therapy (1996) turned a death sentence into a manageable condition, but the pandemic exposed how inequality determines who lives and who dies.",
+        quizDescription: "HIV/AIDS killed 40 million; stigma delayed the response for years.",
+        location: { lat: -1.3, lng: 36.8, region: "Africa", place: "Global (epicenter: sub-Saharan Africa)" },
+        category: "science",
+        difficulty: 2
+    },
+    {
+        id: "f106",
+        title: "COVID-19 & mRNA Vaccines",
+        date: "2019\u20132023 CE",
+        year: 2019,
+        yearEnd: 2023,
+        keywords: "SARS-CoV-2 \u00B7 Lockdowns \u00B7 Vaccine revolution",
+        description: "A novel coronavirus emerged in Wuhan, China, and spread worldwide within weeks, killing over 7 million people and locking billions indoors. The crisis also produced a scientific miracle: mRNA vaccines were developed, tested, and deployed in under a year \u2014 a process that normally takes a decade. The pandemic reshaped work, education, and trust in institutions, and proved that ancient plagues still threaten modern civilization.",
+        quizDescription: "COVID-19 killed millions; mRNA vaccines were developed in record time.",
+        location: { lat: 30.6, lng: 114.3, region: "Asia", place: "Wuhan, China (spreading globally)" },
+        category: "science",
+        difficulty: 1
+    },
+
+    // --- Level 2: Kingdoms of Africa Chapter ---
+    {
+        id: "f107",
+        title: "Kingdom of Kush & Mero\u00EB",
+        date: "c. 1070 BCE \u2013 350 CE",
+        year: -1070,
+        yearEnd: 350,
+        keywords: "Nubia \u00B7 Iron smelting \u00B7 Pyramids of Mero\u00EB",
+        description: "South of Egypt, the Kingdom of Kush built a civilization that rivaled its northern neighbor. Kush conquered Egypt itself in the 8th century BCE, ruling as the 25th Dynasty. Its later capital at Mero\u00EB became an iron-smelting powerhouse \u2014 one of the earliest in Africa \u2014 and built more pyramids than Egypt ever did. Kush proved that Africa\u2019s story did not begin and end with the pharaohs.",
+        quizDescription: "Kush conquered Egypt and built more pyramids than the pharaohs.",
+        location: { lat: 16.9, lng: 33.7, region: "Africa", place: "Mero\u00EB, Sudan" },
+        category: "politics",
+        difficulty: 2
+    },
+    {
+        id: "f108",
+        title: "Aksumite Empire & Ethiopian Christianity",
+        date: "c. 100\u2013940 CE",
+        year: 100,
+        yearEnd: 940,
+        keywords: "Aksum \u00B7 Obelisks \u00B7 Ezana \u00B7 Ark of the Covenant",
+        description: "The Aksumite Empire in modern-day Ethiopia and Eritrea was one of the ancient world\u2019s great trading powers, minting its own coins and trading with Rome, India, and Arabia. In the 4th century, King Ezana converted to Christianity, making Aksum one of the first states to adopt the faith \u2014 decades before Rome made it official. The towering stone obelisks of Aksum still stand as monuments to African engineering.",
+        quizDescription: "Aksum adopted Christianity before Rome and traded across three continents.",
+        location: { lat: 14.1, lng: 38.7, region: "Africa", place: "Aksum, Ethiopia" },
+        category: "culture",
+        difficulty: 2
+    },
+    {
+        id: "f109",
+        title: "Ghana Empire & Trans-Saharan Gold Trade",
+        date: "c. 300\u20131200 CE",
+        year: 300,
+        yearEnd: 1200,
+        keywords: "Wagadu \u00B7 Gold \u00B7 Salt trade \u00B7 Koumbi Saleh",
+        description: "The Ghana Empire (also called Wagadu) controlled the trans-Saharan gold-salt trade, taxing every ounce that crossed its territory. Arab geographers called its ruler \u2018the richest king on the face of the earth.\u2019 Ghana\u2019s capital at Koumbi Saleh was a cosmopolitan city where Muslim merchants and traditional African rulers coexisted. Its wealth and trade networks laid the foundation for the even greater empires that followed.",
+        quizDescription: "Ghana controlled the gold-salt trade and was called the richest kingdom on earth.",
+        location: { lat: 15.8, lng: -7.9, region: "Africa", place: "Koumbi Saleh, Mauritania" },
+        category: "politics",
+        difficulty: 2
+    },
+    {
+        id: "f110",
+        title: "Mali Empire & Mansa Musa",
+        date: "c. 1235\u20131400 CE",
+        year: 1235,
+        yearEnd: 1400,
+        keywords: "Mansa Musa \u00B7 Timbuktu \u00B7 Hajj \u00B7 Gold",
+        description: "The Mali Empire absorbed Ghana\u2019s territory and became the largest empire in West African history. Its most famous ruler, Mansa Musa, made a pilgrimage to Mecca in 1324, distributing so much gold along the way that he crashed the Egyptian economy for a decade. He built the great mosques of Timbuktu and Djenn\u00E9, turning Mali into a center of Islamic learning. By some measures, Mansa Musa was the richest person who ever lived.",
+        quizDescription: "Mansa Musa\u2019s gold crashed Egypt\u2019s economy; he may be history\u2019s richest person.",
+        location: { lat: 16.8, lng: -3.0, region: "Africa", place: "Niani / Timbuktu, Mali" },
+        category: "politics",
+        difficulty: 2,
+        controversyNotes: {
+            what: "The claim that Mansa Musa was \u2018the richest person who ever lived\u2019 is popular but impossible to verify \u2014 pre-modern wealth cannot be meaningfully compared across eras and economies. The Egyptian gold-price crash is well attested by Arab chroniclers, but \u2018a decade\u2019 is a rough estimate. His wealth was undeniably extraordinary by any measure.",
+        }
+    },
+    {
+        id: "f111",
+        title: "Great Zimbabwe",
+        date: "c. 1100\u20131450 CE",
+        year: 1100,
+        yearEnd: 1450,
+        keywords: "Stone walls \u00B7 Shona \u00B7 Gold trade \u00B7 Southern Africa",
+        description: "In southern Africa, the Shona people built Great Zimbabwe \u2014 a massive stone city whose walls rise 11 meters high, constructed without mortar. At its peak, it housed 18,000 people and controlled the gold trade between the African interior and the Swahili coast. European colonizers refused to believe Africans built it, inventing myths about Phoenician or biblical origins. The ruins stand as proof of indigenous African architectural brilliance.",
+        quizDescription: "Great Zimbabwe\u2019s mortar-free stone walls housed 18,000 people and controlled the gold trade.",
+        location: { lat: -20.3, lng: 30.9, region: "Africa", place: "Great Zimbabwe, Zimbabwe" },
+        category: "culture",
+        difficulty: 3
+    },
+    {
+        id: "f112",
+        title: "Songhai Empire & Timbuktu\u2019s Golden Age",
+        date: "c. 1464\u20131591 CE",
+        year: 1464,
+        yearEnd: 1591,
+        keywords: "Sunni Ali \u00B7 Askia Muhammad \u00B7 University of Sankore",
+        description: "The Songhai Empire conquered Mali and became the largest empire in African history, stretching across modern-day Mali, Niger, Nigeria, and Senegal. Under Askia Muhammad, Timbuktu became one of the world\u2019s great intellectual centers \u2014 the University of Sankore housed 25,000 students and hundreds of thousands of manuscripts. The empire fell in 1591 when Moroccan invaders with gunpowder defeated Songhai\u2019s cavalry.",
+        quizDescription: "Songhai made Timbuktu a world-class university city with 25,000 students.",
+        location: { lat: 16.8, lng: 0.0, region: "Africa", place: "Gao / Timbuktu, Mali" },
+        category: "culture",
+        difficulty: 2,
+        controversyNotes: {
+            what: "The figure of 25,000 students at Sankore comes from 16th-century accounts and is difficult to verify. Sankore was also not a \u2018university\u2019 in the modern sense \u2014 it was a network of mosque-based schools with independent scholars. That Timbuktu was a major center of Islamic learning, however, is well established.",
+        }
+    },
+    {
+        id: "f113",
+        title: "Kingdom of Benin & Its Bronzes",
+        date: "c. 1440\u20131897 CE",
+        year: 1440,
+        yearEnd: 1897,
+        keywords: "Benin Bronzes \u00B7 Oba \u00B7 Edo people \u00B7 Lost-wax casting",
+        description: "The Kingdom of Benin (in modern Nigeria) produced some of history\u2019s most sophisticated metal art using lost-wax casting techniques that astonished Europeans. The Benin Bronzes \u2014 thousands of plaques, sculptures, and heads \u2014 recorded royal history and ritual life with stunning realism. When the British sacked Benin City in 1897, they looted these treasures, scattering them across Western museums. Today, the Bronzes are at the center of the world\u2019s largest repatriation debate.",
+        quizDescription: "Benin\u2019s lost-wax bronzes astonished Europe; their return is now a global debate.",
+        location: { lat: 6.3, lng: 5.6, region: "Africa", place: "Benin City, Nigeria" },
+        category: "culture",
+        difficulty: 2
+    },
+    {
+        id: "f114",
+        title: "Zulu Kingdom & Shaka",
+        date: "c. 1816\u20131828 CE",
+        year: 1816,
+        yearEnd: 1828,
+        keywords: "Shaka Zulu \u00B7 Mfecane \u00B7 Military revolution",
+        description: "Shaka kaSenzangakhona transformed a small Zulu clan into the most powerful military force in southern Africa. He revolutionized warfare with the short stabbing spear (iklwa), the cowhide shield, and disciplined regiment tactics. The resulting upheaval \u2014 the Mfecane \u2014 reshaped the entire region, displacing millions and creating new kingdoms. Shaka\u2019s military innovations made the Zulu a force that would later fight the British Empire to a standstill at Isandlwana.",
+        quizDescription: "Shaka\u2019s military revolution made the Zulu the dominant force in southern Africa.",
+        location: { lat: -28.5, lng: 31.0, region: "Africa", place: "KwaZulu-Natal, South Africa" },
+        category: "war",
+        difficulty: 2
+    },
+    {
+        id: "f115",
+        title: "Battle of Adwa: Ethiopia Defeats Colonialism",
+        date: "1896 CE",
+        year: 1896,
+        keywords: "Menelik II \u00B7 Italian invasion \u00B7 African sovereignty",
+        description: "When Italy tried to colonize Ethiopia, Emperor Menelik II mobilized 100,000 troops and decisively defeated the Italian army at the Battle of Adwa. It was the most significant African victory over a European colonial power and ensured Ethiopia remained the only African nation (besides Liberia) never colonized. Adwa became a symbol of Black resistance worldwide, inspiring pan-African movements and proving that European military superiority was not inevitable.",
+        quizDescription: "Ethiopia defeated Italy at Adwa, remaining the only uncolonized African nation.",
+        location: { lat: 14.2, lng: 38.9, region: "Africa", place: "Adwa, Ethiopia" },
+        category: "war",
+        difficulty: 2,
+        controversyNotes: {
+            what: "The claim that Ethiopia was \u2018never colonized\u2019 is complicated by Italy\u2019s occupation from 1936 to 1941 under Mussolini. Most scholars distinguish this brief military occupation from formal colonization (Ethiopia retained its institutions and was liberated within five years), but the point is debated.",
+        }
+    },
+    {
+        id: "f116",
+        title: "African Independence Wave",
+        date: "1957\u20131968 CE",
+        year: 1957,
+        yearEnd: 1968,
+        keywords: "Kwame Nkrumah \u00B7 Decolonization \u00B7 Pan-Africanism",
+        description: "In 1957, Ghana became the first sub-Saharan African nation to gain independence, led by Kwame Nkrumah. His success triggered a cascade: by 1968, most of Africa was free. The year 1960 alone \u2014 \u2018The Year of Africa\u2019 \u2014 saw 17 nations gain independence. These new nations faced enormous challenges: artificial colonial borders, Cold War interference, and economic exploitation. But the achievement was historic \u2014 an entire continent reclaimed its sovereignty within a single generation.",
+        quizDescription: "Ghana\u2019s 1957 independence triggered a wave that freed most of Africa by 1968.",
+        location: { lat: 5.6, lng: -0.2, region: "Africa", place: "Accra, Ghana" },
+        category: "politics",
+        difficulty: 2
+    },
+
+    // --- Level 2: Art That Changed the World Chapter ---
+    {
+        id: "f117",
+        title: "Homer & the Birth of Epic Poetry",
+        date: "c. 750 BCE",
+        year: -750,
+        keywords: "Iliad \u00B7 Odyssey \u00B7 Oral tradition \u00B7 Greek literature",
+        description: "A blind poet \u2014 or perhaps a tradition of poets \u2014 composed the Iliad and the Odyssey, the founding works of Western literature. These epics gave the Greeks their shared identity, their moral vocabulary, and their understanding of heroism, fate, and the gods. Every subsequent Western writer, from Virgil to James Joyce, has written in Homer\u2019s shadow. The Odyssey invented the idea of the journey as a metaphor for life itself.",
+        quizDescription: "Homer\u2019s Iliad and Odyssey became the foundation of Western literature.",
+        location: { lat: 38.4, lng: 27.1, region: "Europe", place: "Ionia, Greece" },
+        category: "culture",
+        difficulty: 2
+    },
+    {
+        id: "f118",
+        title: "The Islamic Golden Age of Art & Science",
+        date: "c. 786\u20131258 CE",
+        year: 786,
+        yearEnd: 1258,
+        keywords: "House of Wisdom \u00B7 Algebra \u00B7 Arabesque \u00B7 Calligraphy",
+        description: "Under the Abbasid caliphs, Baghdad\u2019s House of Wisdom became the intellectual center of the world. Scholars translated Greek, Persian, and Indian texts, preserving knowledge that Europe had lost. Al-Khwarizmi invented algebra, Ibn Sina wrote the medical canon used for 600 years, and Islamic artists developed the arabesque \u2014 transforming geometric patterns into a spiritual art form. Without this golden age, the European Renaissance would have had nothing to rediscover.",
+        quizDescription: "Baghdad\u2019s scholars preserved ancient knowledge and invented algebra.",
+        location: { lat: 33.3, lng: 44.4, region: "Middle East", place: "Baghdad, Iraq" },
+        category: "culture",
+        difficulty: 2
+    },
+    {
+        id: "f119",
+        title: "Renaissance Masters: Leonardo & Michelangelo",
+        date: "c. 1480\u20131520 CE",
+        year: 1480,
+        yearEnd: 1520,
+        keywords: "Mona Lisa \u00B7 Sistine Chapel \u00B7 Perspective \u00B7 Humanism",
+        description: "In Florence and Rome, Leonardo da Vinci and Michelangelo Buonarroti redefined what art could be. Leonardo\u2019s Mona Lisa captured the inner life of a human being for the first time; Michelangelo\u2019s Sistine Chapel ceiling turned a room into a universe. They pioneered anatomy, perspective, and the idea that the artist was not a craftsman but a genius. Their rivalry pushed both to heights that still define the word \u2018masterpiece.\u2019",
+        quizDescription: "Leonardo and Michelangelo redefined art with the Mona Lisa and the Sistine Chapel.",
+        location: { lat: 43.8, lng: 11.3, region: "Europe", place: "Florence & Rome, Italy" },
+        category: "culture",
+        difficulty: 1
+    },
+    {
+        id: "f120",
+        title: "Shakespeare & the Birth of Modern Theater",
+        date: "c. 1590\u20131613 CE",
+        year: 1590,
+        yearEnd: 1613,
+        keywords: "Globe Theatre \u00B7 Hamlet \u00B7 Sonnets \u00B7 English language",
+        description: "William Shakespeare wrote 37 plays that explored the full range of human experience \u2014 jealousy, ambition, love, madness, and mortality \u2014 with a psychological depth no writer had achieved before. He invented over 1,700 English words still used today and created characters so vivid they feel like real people four centuries later. The Globe Theatre democratized art: groundlings and lords watched the same plays, side by side.",
+        quizDescription: "Shakespeare invented 1,700 English words and explored the full range of human psychology.",
+        location: { lat: 51.5, lng: -0.1, region: "Europe", place: "London, England" },
+        category: "culture",
+        difficulty: 1
+    },
+    {
+        id: "f121",
+        title: "Beethoven & the Romantic Revolution",
+        date: "c. 1800\u20131827 CE",
+        year: 1800,
+        yearEnd: 1827,
+        keywords: "Symphony No. 9 \u00B7 Deafness \u00B7 Romanticism \u00B7 Individual expression",
+        description: "Ludwig van Beethoven shattered the elegant rules of classical music and replaced them with raw emotional power. His Third Symphony (\u2018Eroica\u2019) was originally dedicated to Napoleon; when Napoleon crowned himself emperor, Beethoven furiously scratched out the dedication. Going progressively deaf, he composed his greatest works \u2014 including the Ninth Symphony\u2019s \u2018Ode to Joy\u2019 \u2014 from memory and inner hearing alone. He proved that art could be an act of personal revolution.",
+        quizDescription: "Beethoven composed his greatest symphonies while going deaf.",
+        location: { lat: 48.2, lng: 16.4, region: "Europe", place: "Vienna, Austria" },
+        category: "culture",
+        difficulty: 2
+    },
+    {
+        id: "f122",
+        title: "Impressionism & the Modern Eye",
+        date: "1874 CE",
+        year: 1874,
+        keywords: "Monet \u00B7 Light \u00B7 Salon des Refus\u00E9s \u00B7 Plein air",
+        description: "In 1874, Claude Monet exhibited \u2018Impression, Sunrise\u2019 \u2014 and critics used the title as an insult. The Impressionists (Monet, Renoir, Degas, Cassatt) abandoned the studio for outdoor painting, capturing how light actually looked rather than how tradition said it should look. They were rejected by the official Salon, so they created their own exhibitions \u2014 inventing the idea of the independent art show. Impressionism taught the world that seeing itself is a creative act.",
+        quizDescription: "Monet and the Impressionists painted light as it really looked, not as tradition demanded.",
+        location: { lat: 48.9, lng: 2.3, region: "Europe", place: "Paris, France" },
+        category: "culture",
+        difficulty: 2
+    },
+    {
+        id: "f123",
+        title: "Jazz & the Harlem Renaissance",
+        date: "c. 1920\u20131935 CE",
+        year: 1920,
+        yearEnd: 1935,
+        keywords: "Louis Armstrong \u00B7 Langston Hughes \u00B7 Duke Ellington \u00B7 Cultural pride",
+        description: "In the 1920s, Harlem became the capital of Black American culture. Jazz \u2014 born from blues, spirituals, and ragtime \u2014 became America\u2019s greatest cultural export, with Louis Armstrong and Duke Ellington redefining what music could be. Writers like Langston Hughes and Zora Neale Hurston celebrated Black identity and challenged racism through art. The Harlem Renaissance proved that marginalized communities don\u2019t just survive oppression \u2014 they create civilizations within it.",
+        quizDescription: "Jazz and Black literature transformed American culture from Harlem.",
+        location: { lat: 40.8, lng: -73.9, region: "Americas", place: "New York & New Orleans, USA" },
+        category: "culture",
+        difficulty: 2
+    },
+    {
+        id: "f124",
+        title: "Cinema\u2019s Golden Age",
+        date: "c. 1927\u20131960 CE",
+        year: 1927,
+        yearEnd: 1960,
+        keywords: "Talkies \u00B7 Hollywood \u00B7 Chaplin \u00B7 Hitchcock \u00B7 Mass entertainment",
+        description: "The arrival of synchronized sound in 1927 (\u2018The Jazz Singer\u2019) transformed cinema from a novelty into the dominant art form of the 20th century. Hollywood\u2019s studio system produced Chaplin\u2019s social commentary, Disney\u2019s animation, Hitchcock\u2019s suspense, and Casablanca\u2019s romance. Cinema shaped how billions of people understood love, war, heroism, and villainy. For the first time in history, a single story could reach every human being on the planet simultaneously.",
+        quizDescription: "Sound films made cinema the 20th century\u2019s dominant art form.",
+        location: { lat: 34.1, lng: -118.3, region: "Americas", place: "Hollywood, USA" },
+        category: "culture",
+        difficulty: 2
+    },
+    {
+        id: "f125",
+        title: "Picasso & Modern Art",
+        date: "c. 1907\u20131937 CE",
+        year: 1907,
+        yearEnd: 1937,
+        keywords: "Cubism \u00B7 Guernica \u00B7 Abstraction \u00B7 African art influence",
+        description: "Pablo Picasso\u2019s \u2018Les Demoiselles d\u2019Avignon\u2019 (1907) shattered 500 years of Renaissance perspective, partly inspired by African masks. With Georges Braque, he invented Cubism \u2014 showing multiple viewpoints simultaneously. His masterpiece Guernica (1937) turned the bombing of a Spanish town into the most powerful anti-war painting ever made. Picasso proved that art didn\u2019t need to look like reality to tell the truth about it.",
+        quizDescription: "Picasso invented Cubism and painted Guernica, history\u2019s greatest anti-war artwork.",
+        location: { lat: 48.9, lng: 2.3, region: "Europe", place: "Paris, France" },
+        category: "culture",
+        difficulty: 2
+    },
+    {
+        id: "f126",
+        title: "The Digital Creative Revolution",
+        date: "2005\u2013present",
+        year: 2005,
+        keywords: "YouTube \u00B7 Smartphones \u00B7 Democratization \u00B7 Streaming",
+        description: "The launch of YouTube (2005), the iPhone (2007), and streaming platforms transformed every human being into a potential creator. For the first time in history, you didn\u2019t need a publisher, gallery, studio, or record label to reach millions. TikTok dances, indie games, self-published novels, and bedroom-produced albums proved that creativity no longer requires gatekeepers. The tools of art became as universal as the urge to create.",
+        quizDescription: "YouTube, smartphones, and streaming turned everyone into a potential creator.",
+        location: { lat: 37.4, lng: -122.1, region: "Americas", place: "Global" },
+        category: "culture",
+        difficulty: 1
     }
 ];
 
@@ -1184,6 +1970,442 @@ for (const [eventId, connections] of Object.entries(LEVEL2_CONNECTIONS)) {
     }
 }
 
+// --- Level 2: Road to AI chapter connections ---
+const LEVEL2_AI_CONNECTIONS = {
+    f68: [
+        { id: "f38", label: "The Scientific Revolution\u2019s empiricism inspired Babbage\u2019s mechanical thinking" },
+        { id: "f69", label: "Lovelace\u2019s vision of programmable machines anticipated Boolean logic\u2019s role" },
+    ],
+    f69: [
+        { id: "f68", label: "Boole formalized the logic that Babbage\u2019s machines would need" },
+        { id: "f70", label: "Boolean algebra became the mathematical foundation for Turing\u2019s work" },
+    ],
+    f70: [
+        { id: "f69", label: "Turing built on Boolean logic to define computation" },
+        { id: "f71", label: "Turing\u2019s theoretical blueprint was realized in electronic computers" },
+        { id: "f73", label: "The Turing Test framed the central question of artificial intelligence" },
+    ],
+    f71: [
+        { id: "f70", label: "ENIAC proved Turing\u2019s theoretical machine could be built" },
+        { id: "f72", label: "Vacuum-tube limitations drove the invention of the transistor" },
+    ],
+    f72: [
+        { id: "f71", label: "The transistor replaced ENIAC\u2019s fragile vacuum tubes" },
+        { id: "f58", label: "Integrated circuits powered the digital revolution" },
+        { id: "f73", label: "Affordable computing made AI research practical" },
+    ],
+    f73: [
+        { id: "f70", label: "Built on Turing\u2019s question: can machines think?" },
+        { id: "f72", label: "Cheap transistors made AI experimentation possible" },
+        { id: "f74", label: "Dartmouth\u2019s grand promises set the stage for disappointment" },
+    ],
+    f74: [
+        { id: "f73", label: "Overpromising at Dartmouth led to backlash when AI fell short" },
+        { id: "f75", label: "Despite the winters, specialized AI like Deep Blue showed promise" },
+    ],
+    f75: [
+        { id: "f74", label: "Deep Blue emerged as AI recovered from its second winter" },
+        { id: "f76", label: "Kasparov\u2019s defeat renewed public interest in machine intelligence" },
+    ],
+    f76: [
+        { id: "f75", label: "Deep Blue showed brute force; deep learning showed genuine pattern recognition" },
+        { id: "f77", label: "The deep learning revolution led directly to large language models" },
+    ],
+    f77: [
+        { id: "f76", label: "Built on the deep learning techniques proven in 2012" },
+        { id: "f58", label: "The internet provided the massive training data LLMs needed" },
+    ],
+    // Cross-connections: append to existing events
+    f38: [
+        { id: "f68", label: "Scientific empiricism inspired the dream of thinking machines" },
+    ],
+    f58: [
+        { id: "f76", label: "The internet provided the massive datasets deep learning required" },
+        { id: "f77", label: "The internet provided the data that trained modern AI" },
+    ],
+};
+
+for (const [eventId, connections] of Object.entries(LEVEL2_AI_CONNECTIONS)) {
+    if (EVENT_CONNECTIONS[eventId]) {
+        EVENT_CONNECTIONS[eventId].push(...connections);
+    } else {
+        EVENT_CONNECTIONS[eventId] = connections;
+    }
+}
+
+// --- Level 2: Fight for Freedom chapter connections ---
+const LEVEL2_FREEDOM_CONNECTIONS = {
+    f78: [
+        { id: "f40", label: "Enlightenment ideals of individual rights fueled the moral case against slavery" },
+        { id: "f39", label: "Directly opposed the Atlantic slave trade at its peak" },
+        { id: "f48", label: "Britain\u2019s abolitionist success launched global abolition" },
+        { id: "f79", label: "Inspired American abolitionists and the Underground Railroad" },
+    ],
+    f79: [
+        { id: "f78", label: "British abolitionists inspired American resistance to slavery" },
+        { id: "f42", label: "Enslaved people claimed the American Revolution\u2019s promise of freedom" },
+        { id: "f48", label: "Douglass\u2019s voice helped push America toward abolition" },
+        { id: "f82", label: "The long tradition of Black resistance laid groundwork for Civil Rights" },
+    ],
+    f80: [
+        { id: "f40", label: "Enlightenment ideals of equality were extended to demand women\u2019s rights" },
+        { id: "f43", label: "The Women\u2019s March on Versailles was an early spark for feminist action" },
+        { id: "f82", label: "Suffrage tactics of marches and civil disobedience inspired Civil Rights" },
+    ],
+    f81: [
+        { id: "f49", label: "Colonial exploitation of India fueled the independence movement" },
+        { id: "f56", label: "Gandhi\u2019s non-violent methods became the blueprint for decolonization worldwide" },
+        { id: "f82", label: "Gandhi\u2019s non-violence directly inspired Martin Luther King Jr." },
+    ],
+    f82: [
+        { id: "f79", label: "Continued the centuries-long struggle for Black freedom" },
+        { id: "f81", label: "King adopted Gandhi\u2019s non-violent resistance strategy" },
+        { id: "f48", label: "Abolition ended legal slavery, but segregation persisted for a century" },
+        { id: "f83", label: "American and South African movements inspired each other" },
+        { id: "f84", label: "Civil rights tactics and rhetoric inspired the LGBTQ+ movement" },
+    ],
+    f83: [
+        { id: "f49", label: "The Scramble for Africa created the racial hierarchies apartheid formalized" },
+        { id: "f56", label: "South Africa resisted decolonization longer than any African state" },
+        { id: "f82", label: "Mandela studied King; both movements strengthened each other" },
+        { id: "f59", label: "Apartheid\u2019s fall was part of the wave of liberation in the early 1990s" },
+    ],
+    f84: [
+        { id: "f82", label: "Civil rights logic expanded to include sexual and gender identity" },
+        { id: "f87", label: "LGBTQ+ activism pioneered the identity-based movements of the digital age" },
+    ],
+    f85: [
+        { id: "f65", label: "Students protested the communist state Mao\u2019s revolution had created" },
+        { id: "f59", label: "Same year as the Berlin Wall\u2019s fall \u2014 same spirit, opposite outcome" },
+        { id: "f55", label: "Cold War dynamics shaped China\u2019s response to democratic demands" },
+        { id: "f87", label: "Tiananmen\u2019s global broadcast foreshadowed the power of digital witness" },
+    ],
+    f86: [
+        { id: "f49", label: "Belgium\u2019s colonial partition deepened the Hutu\u2013Tutsi divide" },
+        { id: "f56", label: "Post-colonial politics weaponized ethnic identities left by colonizers" },
+        { id: "f54", label: "Exposed the UN\u2019s failure to uphold \u2018Never Again\u2019" },
+    ],
+    f87: [
+        { id: "f58", label: "The internet provided the infrastructure for digital activism" },
+        { id: "f67", label: "The Arab Spring was the first mass social-media protest movement" },
+        { id: "f82", label: "Black Lives Matter continued the Civil Rights Movement in a digital age" },
+        { id: "f81", label: "Non-violent mass action went global through digital coordination" },
+    ],
+    // Cross-connections: append to existing events
+    f40: [
+        { id: "f78", label: "Enlightenment rights philosophy powered the abolitionist crusade" },
+    ],
+    f39: [
+        { id: "f78", label: "The abolitionist movement rose to oppose the slave trade" },
+        { id: "f79", label: "Enslaved people built secret networks to resist from within" },
+    ],
+    f48: [
+        { id: "f78", label: "British abolitionists led the first wave of global abolition" },
+        { id: "f79", label: "Douglass and the Underground Railroad pushed America toward abolition" },
+    ],
+    f49: [
+        { id: "f83", label: "The Scramble for Africa created the racial order apartheid enforced" },
+        { id: "f86", label: "Colonial borders and ethnic manipulation led to the Rwandan genocide" },
+    ],
+    f42: [
+        { id: "f79", label: "Enslaved Americans claimed the Revolution\u2019s promise of liberty" },
+    ],
+};
+
+for (const [eventId, connections] of Object.entries(LEVEL2_FREEDOM_CONNECTIONS)) {
+    if (EVENT_CONNECTIONS[eventId]) {
+        EVENT_CONNECTIONS[eventId].push(...connections);
+    } else {
+        EVENT_CONNECTIONS[eventId] = connections;
+    }
+}
+
+// --- Level 2: Empires Rise & Fall chapter connections ---
+const LEVEL2_EMPIRES_CONNECTIONS = {
+    f88: [
+        { id: "f15", label: "Alexander conquered the Persian Empire, spreading Greek culture east" },
+        { id: "f89", label: "Persian administrative methods influenced the Maurya Empire" },
+    ],
+    f89: [
+        { id: "f88", label: "Maurya governance borrowed from Persian imperial administration" },
+        { id: "f14", label: "Ashoka\u2019s philosophy drew from the Axial Age\u2019s moral traditions" },
+        { id: "f91", label: "Maurya decline eventually gave way to the Gupta golden age" },
+    ],
+    f90: [
+        { id: "f18", label: "The Han and Roman empires traded along the Silk Road without meeting" },
+        { id: "f25", label: "The Tang Dynasty rebuilt and expanded what the Han began" },
+        { id: "f91", label: "Han China and Gupta India traded ideas along the Silk Road" },
+    ],
+    f91: [
+        { id: "f89", label: "Centuries after the Maurya, India experienced its classical golden age" },
+        { id: "f90", label: "Gupta scholars exchanged knowledge with Han China via the Silk Road" },
+        { id: "f26", label: "Indian mathematics, including zero, flowed into the Islamic Golden Age" },
+    ],
+    f92: [
+        { id: "f31", label: "The Ottomans conquered Constantinople, ending the Byzantine Empire" },
+        { id: "f29", label: "The Ottomans filled the power vacuum left by the Mongol collapse" },
+        { id: "f95", label: "Six centuries of Ottoman power ended in World War I" },
+        { id: "f96", label: "The Ottomans and Mughals competed for influence across the Islamic world" },
+    ],
+    f93: [
+        { id: "f29", label: "The Ming rose by driving out the Mongols" },
+        { id: "f33", label: "China\u2019s withdrawal from the seas left exploration to European powers" },
+        { id: "f92", label: "Ming and Ottoman empires were contemporaries dominating East and West" },
+    ],
+    f94: [
+        { id: "f46", label: "Industrial Revolution gave Britain the economic engine for global empire" },
+        { id: "f49", label: "British imperial ambition drove the Scramble for Africa" },
+        { id: "f56", label: "British Empire\u2019s overreach planted the seeds of decolonization" },
+        { id: "f96", label: "Britain dismantled the Mughal Empire to colonize India" },
+    ],
+    f95: [
+        { id: "f92", label: "Six centuries of Ottoman power collapsed in the 20th century" },
+        { id: "f64", label: "Entering WWI on the losing side sealed the empire\u2019s fate" },
+        { id: "f56", label: "European-drawn borders in former Ottoman lands sparked decades of conflict" },
+    ],
+    f96: [
+        { id: "f29", label: "Babur descended from both Genghis Khan and Timur" },
+        { id: "f92", label: "Mughals and Ottomans were the twin pillars of Islamic imperial power" },
+        { id: "f94", label: "British exploitation ended the Mughal Dynasty" },
+        { id: "f81", label: "Mughal decline and British rule set the stage for Indian independence" },
+    ],
+    // Cross-connections: append to existing events
+    f15: [
+        { id: "f88", label: "Alexander destroyed the Persian Empire and spread Greek culture east" },
+    ],
+    f18: [
+        { id: "f90", label: "Rome and Han China were contemporaries linked by the Silk Road" },
+    ],
+    f29: [
+        { id: "f92", label: "Mongol collapse left a power vacuum the Ottomans filled" },
+        { id: "f93", label: "China drove out the Mongols and established the Ming Dynasty" },
+    ],
+    f31: [
+        { id: "f92", label: "The Ottoman conquest ended the last remnant of the Roman Empire" },
+    ],
+    f46: [
+        { id: "f94", label: "Industrial power fueled British global dominance" },
+    ],
+};
+
+for (const [eventId, connections] of Object.entries(LEVEL2_EMPIRES_CONNECTIONS)) {
+    if (EVENT_CONNECTIONS[eventId]) {
+        EVENT_CONNECTIONS[eventId].push(...connections);
+    } else {
+        EVENT_CONNECTIONS[eventId] = connections;
+    }
+}
+
+// --- Level 2: Plagues & Pandemics chapter connections ---
+const LEVEL2_PLAGUES_CONNECTIONS = {
+    f97: [
+        { id: "f18", label: "The plague struck at the height of the Pax Romana" },
+        { id: "f21", label: "Military weakness from the plague contributed to Rome\u2019s eventual fall" },
+        { id: "f22", label: "The Antonine Plague foreshadowed the even deadlier Plague of Justinian" },
+    ],
+    f98: [
+        { id: "f33", label: "European contact with the Americas brought devastating disease" },
+        { id: "f39", label: "Indigenous population collapse opened the way for the slave trade" },
+    ],
+    f99: [
+        { id: "f30", label: "London\u2019s Great Plague was the Black Death\u2019s final European echo" },
+        { id: "f100", label: "Plague\u2019s recurring horror drove the search for prevention" },
+    ],
+    f100: [
+        { id: "f99", label: "Centuries of plague created urgency for a preventive cure" },
+        { id: "f38", label: "Jenner applied the Scientific Revolution\u2019s empirical method to medicine" },
+        { id: "f104", label: "Jenner\u2019s vaccine was the first step toward smallpox\u2019s total eradication" },
+    ],
+    f101: [
+        { id: "f100", label: "Jenner proved prevention was possible; Snow proved tracking was possible" },
+        { id: "f46", label: "Industrial cities\u2019 crowding and filth made cholera epidemics inevitable" },
+        { id: "f102", label: "Snow\u2019s methods would be desperately needed against the Spanish Flu" },
+    ],
+    f102: [
+        { id: "f101", label: "Epidemiology was still too young to contain a global pandemic" },
+        { id: "f64", label: "WWI troop movements and censorship helped the virus spread" },
+        { id: "f103", label: "The flu\u2019s devastation drove urgency for antibiotics and better medicine" },
+    ],
+    f103: [
+        { id: "f102", label: "The Spanish Flu showed how vulnerable humanity remained to infection" },
+        { id: "f100", label: "Jenner prevented disease; Fleming cured it \u2014 two pillars of modern medicine" },
+        { id: "f104", label: "Antibiotics and vaccines together made disease eradication conceivable" },
+    ],
+    f104: [
+        { id: "f100", label: "Jenner\u2019s 1796 experiment set the stage for total eradication 184 years later" },
+        { id: "f103", label: "Antibiotics and vaccines together gave humanity tools to eliminate diseases" },
+        { id: "f105", label: "Smallpox\u2019s eradication raised hopes that HIV could be conquered too" },
+    ],
+    f105: [
+        { id: "f104", label: "After eradicating smallpox, the world thought plagues were over \u2014 then HIV emerged" },
+        { id: "f106", label: "Lessons from HIV\u2019s slow response shaped the COVID-19 response" },
+    ],
+    f106: [
+        { id: "f105", label: "HIV showed the cost of delayed response; COVID tested if we\u2019d learned" },
+        { id: "f102", label: "COVID-19 echoed the Spanish Flu \u2014 a century later, similar patterns" },
+        { id: "f100", label: "mRNA vaccines fulfilled Jenner\u2019s vision at unprecedented speed" },
+    ],
+    // Cross-connections: append to existing events
+    f22: [
+        { id: "f97", label: "The Plague of Justinian was the deadlier successor to the Antonine Plague" },
+    ],
+    f30: [
+        { id: "f99", label: "The Black Death returned as London\u2019s Great Plague three centuries later" },
+    ],
+    f33: [
+        { id: "f98", label: "European arrival in the Americas unleashed devastating epidemics" },
+    ],
+    f64: [
+        { id: "f102", label: "WWI troop movements and censorship helped spread the Spanish Flu" },
+    ],
+};
+
+for (const [eventId, connections] of Object.entries(LEVEL2_PLAGUES_CONNECTIONS)) {
+    if (EVENT_CONNECTIONS[eventId]) {
+        EVENT_CONNECTIONS[eventId].push(...connections);
+    } else {
+        EVENT_CONNECTIONS[eventId] = connections;
+    }
+}
+
+// --- Level 2: Kingdoms of Africa chapter connections ---
+const LEVEL2_AFRICA_CONNECTIONS = {
+    f107: [
+        { id: "f108", label: "As Kush declined, Aksum rose to dominate the Horn of Africa" },
+        { id: "f8", label: "Kush inherited and rivaled Egyptian civilization" },
+    ],
+    f108: [
+        { id: "f107", label: "Aksum rose as Kush\u2019s power faded in the upper Nile" },
+        { id: "f109", label: "Trans-Saharan trade routes connected East and West Africa" },
+        { id: "f19", label: "Aksum adopted Christianity, joining Rome\u2019s religious revolution" },
+    ],
+    f109: [
+        { id: "f108", label: "Trade networks linked Ghana to Aksum across the continent" },
+        { id: "f110", label: "Mali absorbed Ghana\u2019s territory and trade networks" },
+    ],
+    f110: [
+        { id: "f109", label: "Mali conquered Ghana and inherited its gold trade" },
+        { id: "f112", label: "Songhai conquered Mali and inherited Timbuktu" },
+        { id: "f118", label: "Mansa Musa\u2019s pilgrimage connected Mali to the Islamic world\u2019s golden age" },
+    ],
+    f111: [
+        { id: "f113", label: "Great Zimbabwe and Benin were parallel stone and bronze civilizations" },
+        { id: "f109", label: "Both Ghana and Zimbabwe grew wealthy from controlling gold trade" },
+    ],
+    f112: [
+        { id: "f110", label: "Songhai built on Mali\u2019s foundations and surpassed it" },
+        { id: "f113", label: "Contemporary West African kingdoms with distinct art traditions" },
+        { id: "f118", label: "Timbuktu\u2019s scholars connected to the broader Islamic intellectual world" },
+    ],
+    f113: [
+        { id: "f111", label: "Benin and Zimbabwe represent Africa\u2019s parallel artistic achievements" },
+        { id: "f112", label: "Benin and Songhai were contemporary West African powers" },
+        { id: "f125", label: "African masks directly inspired Picasso\u2019s Cubist revolution" },
+    ],
+    f114: [
+        { id: "f115", label: "African military resistance to European encroachment" },
+        { id: "f49", label: "The Zulu wars coincided with Europe\u2019s Scramble for Africa" },
+    ],
+    f115: [
+        { id: "f114", label: "Ethiopia\u2019s victory continued Africa\u2019s tradition of military resistance" },
+        { id: "f116", label: "Adwa proved African sovereignty was possible and inspired independence movements" },
+        { id: "f49", label: "Ethiopia was the great exception to the Scramble for Africa" },
+    ],
+    f116: [
+        { id: "f115", label: "Adwa\u2019s legacy inspired the independence generation" },
+        { id: "f56", label: "Part of the broader global decolonization wave" },
+        { id: "f83", label: "South Africa was the last holdout of colonial-era racial rule" },
+    ],
+    // Cross-connections: append to existing events
+    f8: [
+        { id: "f107", label: "Egyptian civilization influenced and was rivaled by Kush to the south" },
+    ],
+    f49: [
+        { id: "f115", label: "Ethiopia alone defeated European colonizers at Adwa" },
+    ],
+    f56: [
+        { id: "f116", label: "African independence was decolonization\u2019s largest chapter" },
+    ],
+};
+
+for (const [eventId, connections] of Object.entries(LEVEL2_AFRICA_CONNECTIONS)) {
+    if (EVENT_CONNECTIONS[eventId]) {
+        EVENT_CONNECTIONS[eventId].push(...connections);
+    } else {
+        EVENT_CONNECTIONS[eventId] = connections;
+    }
+}
+
+// --- Level 2: Art That Changed the World chapter connections ---
+const LEVEL2_ART_CONNECTIONS = {
+    f117: [
+        { id: "f119", label: "Homer inspired Renaissance humanism and the return to classical ideals" },
+        { id: "f120", label: "Shakespeare drew heavily on classical storytelling traditions" },
+    ],
+    f118: [
+        { id: "f119", label: "Islamic preservation of classical texts fueled the Renaissance" },
+        { id: "f110", label: "The Islamic Golden Age connected to Mali\u2019s centers of learning" },
+        { id: "f26", label: "The Golden Age built on the foundations of early Islamic civilization" },
+    ],
+    f119: [
+        { id: "f117", label: "Renaissance artists rediscovered Homer and classical Greek ideals" },
+        { id: "f118", label: "Islamic scholars preserved the classical texts that inspired the Renaissance" },
+        { id: "f122", label: "Impressionists rebelled against the Renaissance rules of perspective" },
+        { id: "f34", label: "The Renaissance coincided with the era of the Black Death\u2019s aftermath" },
+    ],
+    f120: [
+        { id: "f117", label: "Shakespeare\u2019s storytelling descended from Homer\u2019s epic tradition" },
+        { id: "f124", label: "Theater\u2019s storytelling tradition evolved into cinema" },
+        { id: "f119", label: "Shakespeare was a contemporary of the late Renaissance masters" },
+    ],
+    f121: [
+        { id: "f123", label: "Romantic individualism paved the way for jazz\u2019s personal expression" },
+        { id: "f47", label: "Beethoven\u2019s revolution in music paralleled the French Revolution in politics" },
+    ],
+    f122: [
+        { id: "f119", label: "Impressionists rejected 400 years of Renaissance perspective rules" },
+        { id: "f125", label: "Picasso pushed past Impressionism into total abstraction" },
+    ],
+    f123: [
+        { id: "f121", label: "Jazz extended Romanticism\u2019s emphasis on individual expression" },
+        { id: "f124", label: "Jazz soundtracks defined early cinema; Harlem fed Hollywood" },
+        { id: "f82", label: "The Harlem Renaissance laid cultural groundwork for the Civil Rights Movement" },
+    ],
+    f124: [
+        { id: "f120", label: "Cinema inherited theater\u2019s storytelling craft" },
+        { id: "f123", label: "Jazz and Harlem Renaissance culture fed Hollywood\u2019s golden age" },
+        { id: "f126", label: "Cinema was democratized by digital tools and streaming" },
+    ],
+    f125: [
+        { id: "f122", label: "Picasso built on and then shattered Impressionist innovations" },
+        { id: "f113", label: "African masks directly inspired Picasso\u2019s breakthrough work" },
+        { id: "f126", label: "Modern art\u2019s \u2018anyone can create\u2019 philosophy meets digital tools" },
+    ],
+    f126: [
+        { id: "f124", label: "Digital tools democratized the filmmaking cinema invented" },
+        { id: "f125", label: "Modern art\u2019s democratizing impulse reached its logical conclusion" },
+        { id: "f58", label: "The Digital Revolution provided the infrastructure for creative democratization" },
+    ],
+    // Cross-connections: append to existing events
+    f34: [
+        { id: "f119", label: "The aftermath of the Black Death helped fuel the Renaissance\u2019s creative explosion" },
+    ],
+    f47: [
+        { id: "f121", label: "Beethoven\u2019s musical revolution paralleled the political revolutions of his era" },
+    ],
+    f82: [
+        { id: "f123", label: "The Harlem Renaissance\u2019s cultural pride laid groundwork for Civil Rights" },
+    ],
+};
+
+for (const [eventId, connections] of Object.entries(LEVEL2_ART_CONNECTIONS)) {
+    if (EVENT_CONNECTIONS[eventId]) {
+        EVENT_CONNECTIONS[eventId].push(...connections);
+    } else {
+        EVENT_CONNECTIONS[eventId] = connections;
+    }
+}
+
 // Attach connections to each core event
 for (const event of CORE_EVENTS) {
     if (EVENT_CONNECTIONS[event.id]) {
@@ -1193,7 +2415,14 @@ for (const event of CORE_EVENTS) {
 
 export const ALL_EVENTS = [...CORE_EVENTS, ...DAILY_QUIZ_EVENTS];
 
-export const CORE_EVENT_COUNT = CORE_EVENTS.length; // 67 (60 Level 1 + 7 Level 2)
+export const CORE_EVENT_COUNT = CORE_EVENTS.length; // 126 (60 Level 1 + 66 Level 2)
+
+/** Level 1 events are f1–f60; Level 2 events are f61+. */
+export function isLevel2Event(event) {
+    if (!event?.id) return false;
+    const num = parseInt(event.id.replace('f', ''), 10);
+    return num > 60;
+}
 
 export function isDiHEvent(event) {
     return event?.source === 'daily';

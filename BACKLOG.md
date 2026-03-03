@@ -10,13 +10,29 @@
 
 ---
 
-## P4 — Dark mode
+## P3 — Map view improvements (remaining)
 
-Full dark theme using CSS custom properties alongside the existing @theme block. Toggle in Settings. Optionally respects system color-scheme preference. Swap parchment/ink colors while keeping category and mastery colors legible. Expected by many users, especially for evening study sessions.
+First batch of map improvements shipped (v1.5.1): pinch-to-zoom, larger pins, selected-pin pulse, ocean color, graticule, dark mode, legend, event descriptions. Remaining items:
+
+### Usability
+- **Cluster UX is shallow** — tapping a cluster shows a flat list; there's no way to "zoom into" the cluster area to see individual pins spread out. Consider a spider/spiderfy expansion or auto-zoom on cluster tap.
+- **Region labels overlap pins** — the static region name labels sit at fixed positions and can overlap event pins. Consider hiding them when zoomed in or making them semi-transparent when pins are nearby.
+
+### Features
+- **No connections on map** — events have cause-and-effect connections (EVENT_CONNECTIONS) but the map doesn't visualize them. Drawing faint arcs or lines between connected events would be a powerful visualization.
+- **No era coloring** — pins only show category color. An option to color by era instead would give a temporal view of geographic spread.
+- **No animation/timeline scrubber** — a slider that lets you "scrub through time" and see pins appear/disappear chronologically would be the killer feature for a history map.
+- **No search** — can't search for a specific event on the map. A search bar that highlights/centers the matching pin would be useful.
+- **Missing South America/Oceania detail** — the Americas path is one giant blob. Events in South America or Australia would benefit from more granular continent outlines.
+
+### Technical
+- **Projection accuracy** — equirectangular projection distorts high latitudes significantly. For a learning app this is fine, but Mercator or Natural Earth projection would look more familiar.
+- **Cluster grid size is fixed** — `CLUSTER_GRID = 25` works for the full map but if zoom is added, clusters should re-compute at different zoom levels.
 
 ## P5 — Themed collections (remaining)
 
 Cross-cutting study paths like "Women in History", "Scientific Breakthroughs". Groups existing events by theme rather than chronology. Accessible from the Practice page hub as additional collection tiles. Lower priority now that Level 2 thematic chapters exist.
+
 
 ## P5 — Content expansion (more events & lessons)
 
@@ -46,3 +62,8 @@ Add more events per era, deeper non-Western history coverage, and new lessons be
 - **P3 — Event connections & cause-and-effect** (2026-03-02): Added `relatedEvents` to 54 of 60 events with ~100 directional causal connections. `EVENT_CONNECTIONS` map in events.js with `getRelatedEvents()` helper. Reusable `EventConnections` component in shared.jsx matching "Before & After" visual pattern. Integrated into Timeline expanded cards (clickable, scrolls to target event) and LessonFlow learn cards (read-only context). Category-colored chevron arrows with italic causal labels.
 - **P3 — Themed collections: Revolutions That Changed the World** (2026-03-03): Level 2 chapter with 4 lessons and 7 new events (f61–f67) tracing revolutions from the English Civil War through the Arab Spring. Chain-of-causation structure linking each revolution to the next. Reuses 3 existing Level 1 events alongside new content.
 - **P3 — Map view for events** (2026-03-02): Custom inline SVG world map on the Timeline page. TabSelector toggle between Timeline (list) and Map views. 5 continent region paths with parchment styling. Category-colored event pins with grid-based clustering for overlapping locations. Region filter chips + tappable continents. Bottom popup Card for event details with CategoryTag/MasteryDots. Respects all existing filters (era, category, hideUnknown). View mode persisted to localStorage.
+- **P3 — Level 2 Chapter: The Road to Artificial Intelligence** (2026-03-03): 4-lesson chapter with 10 new events (f68\u2013f77) tracing the path from the Scientific Revolution to ChatGPT. Babbage & Lovelace, Boolean logic, Turing, ENIAC, transistors, Dartmouth Conference, AI Winters, Deep Blue, deep learning, and LLMs. Reuses f38 (Scientific Revolution) and f58 (Digital Revolution). Blue theme, brain icon. Configurable chapter icons via `iconIndex` field.
+- **P3 — Level 2 Chapter: The Fight for Freedom** (2026-03-03): 4-lesson chapter with 10 new events (f78–f87) tracing liberation movements from abolition to digital activism. Abolitionist Movement, Underground Railroad, Suffragettes, Gandhi, Civil Rights, Apartheid & Mandela, Stonewall, Tiananmen, Rwandan Genocide, and digital activism. Reuses f39 (Atlantic Slave Trade) and f56 (Decolonization). Emerald green theme, scales icon. Rich cause-and-effect connections to existing events.
+- **P4 — Level 2 Chapter: Empires Rise & Fall** (2026-03-03): 4-lesson chapter with 9 new events (f88–f96) tracing empires from Persia to decolonization. Achaemenid Persia, Maurya & Ashoka, Han Dynasty, Gupta Golden Age, Ottoman Empire, Ming Dynasty, Mughal Empire, British Empire, Fall of the Ottomans. Reuses f15 (Alexander), f18 (Pax Romana), f56 (Decolonization). Purple theme, temple columns icon. Strong non-Western coverage.
+- **P4 — Level 2 Chapter: Plagues & Pandemics** (2026-03-03): 4-lesson chapter with 10 new events (f97–f106) tracing disease from ancient Rome to COVID-19. Antonine Plague, Smallpox & Aztecs, Great Plague of London, Jenner & vaccination, cholera & epidemiology, Spanish Flu, penicillin, smallpox eradication, HIV/AIDS, COVID-19 & mRNA. Reuses f22 (Plague of Justinian) and f30 (Black Death). Dark crimson theme, skull icon.
+- **P4 — Dark mode** (2026-03-03): Full dark theme via `html[data-theme="dark"]` CSS variable overrides. Warm dark palette (parchment #1A1816, card #23201D, ink #E8E4DF). 3-mode toggle in Settings (Light/Dark/Auto) with system `prefers-color-scheme` support. Added `--color-ink-rgb`/`--color-parchment-rgb` variables and replaced ~93 hardcoded rgba values across CSS and 11 JSX files. Meta theme-color updates dynamically.

@@ -5,6 +5,8 @@ import { scoreDateAnswer, generateLocationOptions, generateWhatOptions, generate
 import { calculateNextReview } from '../../data/spacedRepetition';
 import { Card, Button, ProgressBar, CategoryTag, Divider, StarButton, ConfirmModal, ExpandableText, ControversyNote, AnimatedCounter, EventConnections } from '../shared';
 import Mascot from '../Mascot';
+import LessonIcon from '../LessonIcon';
+import { LEVEL2_CHAPTERS } from '../../data/lessons';
 import * as feedback from '../../services/feedback';
 import { shareText, buildLessonShareText } from '../../services/share';
 
@@ -115,6 +117,15 @@ export default function LessonFlow({ lesson, onComplete }) {
     const cardsPerLesson = state.cardsPerLesson || 3;
     const recapPerCard = state.recapPerCard ?? 2;
     const events = useMemo(() => getEventsByIds(lesson.eventIds).slice(0, cardsPerLesson), [lesson, cardsPerLesson]);
+
+    // Icon index: lesson.number for Level 1, chapter.iconIndex for Level 2
+    const lessonIconIndex = useMemo(() => {
+        if (lesson.chapterId) {
+            const ch = LEVEL2_CHAPTERS.find(c => c.id === lesson.chapterId);
+            return ch?.iconIndex ?? 6;
+        }
+        return lesson.number;
+    }, [lesson]);
 
     const [phase, setPhase] = useState(PHASE.INTRO);
     const [cardIndex, setCardIndex] = useState(0);         // 0–2, current card in learn phase
@@ -318,7 +329,11 @@ export default function LessonFlow({ lesson, onComplete }) {
                     </button>
                 </div>
                 <div className="flex-1 min-h-0 overflow-y-auto">
-                    <div className="text-center py-4">
+                    <div className="text-center py-4 relative">
+                        {/* Faint lesson icon background */}
+                        <div className="pointer-events-none select-none flex justify-center mb-3" style={{ opacity: 0.07 }}>
+                            <LessonIcon index={lessonIconIndex} size={96} color="var(--color-ink)" />
+                        </div>
                         <span className="text-xs font-semibold uppercase tracking-widest block mb-2" style={{ color: 'var(--color-ink-faint)' }}>
                             Lesson {lesson.number}
                         </span>
@@ -420,7 +435,7 @@ export default function LessonFlow({ lesson, onComplete }) {
                                 const startEvt = boundary.startEventId ? getEventById(boundary.startEventId) : null;
                                 const endEvt = boundary.endEventId ? getEventById(boundary.endEventId) : null;
                                 return (
-                                    <div className="mt-4 pt-3" style={{ borderTop: '1px solid rgba(28, 25, 23, 0.06)' }}>
+                                    <div className="mt-4 pt-3" style={{ borderTop: '1px solid rgba(var(--color-ink-rgb), 0.06)' }}>
                                         <p className="text-[11px] uppercase tracking-wider font-semibold mb-2" style={{ color: 'var(--color-ink-faint)' }}>
                                             Key Transitions
                                         </p>
@@ -568,7 +583,7 @@ export default function LessonFlow({ lesson, onComplete }) {
                             </div>
 
                             {nearbyEvents.length > 0 && (
-                                <div className="mt-4 pt-3" style={{ borderTop: '1px solid rgba(28, 25, 23, 0.06)' }}>
+                                <div className="mt-4 pt-3" style={{ borderTop: '1px solid rgba(var(--color-ink-rgb), 0.06)' }}>
                                     <p className="text-[11px] uppercase tracking-wider font-semibold mb-2" style={{ color: 'var(--color-ink-faint)' }}>
                                         Before & After
                                     </p>
@@ -822,7 +837,11 @@ export default function LessonFlow({ lesson, onComplete }) {
         return (
             <div className="lesson-flow-container animate-fade-in">
                 <div className="flex-1 min-h-0 overflow-y-auto">
-                    <div className="text-center py-4">
+                    <div className="text-center py-4 relative">
+                        {/* Faint lesson icon behind mascot */}
+                        <div className="absolute inset-x-0 top-0 flex justify-center pointer-events-none select-none" style={{ opacity: 0.04 }}>
+                            <LessonIcon index={lessonIconIndex} size={140} color="var(--color-ink)" />
+                        </div>
                         <Mascot mood={allPassed ? 'celebrating' : 'thinking'} size={80} />
                         <h2 className="text-2xl font-bold mt-4 mb-1" style={{ fontFamily: 'var(--font-serif)' }}>
                             {allPassed ? 'Lesson Complete!' : 'Keep Practicing'}
@@ -877,7 +896,7 @@ export default function LessonFlow({ lesson, onComplete }) {
                                         <div className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: 'var(--color-ink-faint)' }}>XP earned</div>
                                     </div>
                                 </div>
-                                <div className="w-px h-10" style={{ backgroundColor: 'rgba(28, 25, 23, 0.08)' }} />
+                                <div className="w-px h-10" style={{ backgroundColor: 'rgba(var(--color-ink-rgb), 0.08)' }} />
                                 <div className="flex items-center gap-2 animate-scale-in" style={{ animationDelay: '600ms' }}>
                                     <span className={`text-2xl ${streak > 1 ? 'animate-streak-bounce' : ''}`} style={{ animationDelay: '900ms', animationFillMode: 'backwards' }}>\�\�</span>
                                     <div className="text-left">
@@ -941,7 +960,7 @@ export default function LessonFlow({ lesson, onComplete }) {
                                         </span>
                                         <button onClick={() => setSelectedDot(null)}
                                             className="w-7 h-7 rounded-full flex items-center justify-center text-sm"
-                                            style={{ color: 'var(--color-ink-muted)', backgroundColor: 'rgba(28,25,23,0.05)' }}>✕</button>
+                                            style={{ color: 'var(--color-ink-muted)', backgroundColor: 'rgba(var(--color-ink-rgb), 0.05)' }}>✕</button>
                                     </div>
                                     <div className="flex items-center justify-between">
                                         <CategoryTag category={evt.category} />
@@ -1302,11 +1321,11 @@ function DateInputQuestion({ event, onAnswer, onNext, onBack, onSkip }) {
                                     onChange={e => setDateInput(e.target.value)}
                                     placeholder="e.g. 1453"
                                     className="flex-1 px-4 py-3 rounded-xl border-2 text-sm font-medium outline-none transition-colors"
-                                    style={{ borderColor: 'rgba(28,25,23,0.1)', backgroundColor: 'var(--color-card)', color: 'var(--color-ink)' }}
+                                    style={{ borderColor: 'rgba(var(--color-ink-rgb), 0.1)', backgroundColor: 'var(--color-card)', color: 'var(--color-ink)' }}
                                     onFocus={e => e.target.style.borderColor = 'var(--color-burgundy)'}
-                                    onBlur={e => e.target.style.borderColor = 'rgba(28,25,23,0.1)'}
+                                    onBlur={e => e.target.style.borderColor = 'rgba(var(--color-ink-rgb), 0.1)'}
                                 />
-                                <div className="flex rounded-xl border-2 overflow-hidden" style={{ borderColor: 'rgba(28,25,23,0.1)' }}>
+                                <div className="flex rounded-xl border-2 overflow-hidden" style={{ borderColor: 'rgba(var(--color-ink-rgb), 0.1)' }}>
                                     {['BCE', 'CE'].map(e => (
                                         <button key={e} onClick={() => setEra(e)}
                                             className="px-3 py-2 text-xs font-bold transition-colors"

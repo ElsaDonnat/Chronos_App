@@ -368,7 +368,7 @@ function PlacementQuestion({ question, onAnswer, onNext }) {
         : {};
 
     const feedback = answered && score && (
-        <div className="mt-3 pt-3" style={{ borderTop: '1px solid rgba(28,25,23,0.06)' }}>
+        <div className="mt-3 pt-3" style={{ borderTop: '1px solid rgba(var(--color-ink-rgb), 0.06)' }}>
             <p className="text-sm font-semibold" style={{ color: getScoreColor(score).border }}>
                 {getScoreLabel(score)}
             </p>

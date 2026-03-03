@@ -5,6 +5,20 @@ Format follows [Keep a Changelog](https://keepachangelog.com/) and [Semantic Ver
 
 Use the latest version entry for Play Store "What's New" text.
 
+## [1.5.1] - 2026-03-03
+
+### Improved
+- Map: pinch-to-zoom and drag-to-pan — two-finger pinch zooms in up to 4x, one-finger drag pans when zoomed, reset button appears at top-left to snap back
+- Map: larger pins (6px single, 10px cluster) with 18px invisible hit area and subtle drop shadow for better mobile tap accuracy
+- Map: selected-pin highlight — tapped pin/cluster now shows a pulsing ring animation in the category color
+- Map: distinct ocean color (#D6CFC4) separates water from the parchment land masses
+- Map: faint graticule grid lines (every 30° lat/lng) reinforce the map feel and help orientation
+- Map: collapsible category legend (info button, top-right) showing all 5 category colors plus "Undiscovered" muted pin
+- Map: event popup now shows a truncated description (expandable "Read more") for learned events
+- Map: full dark mode support — all map colors (ocean, land, borders, pins, labels, graticule) defined as CSS custom properties with dark-mode overrides
+
+---
+
 ## [1.5.0] - 2026-03-02
 
 ### Added

@@ -390,7 +390,7 @@ export default function Lesson0Flow({ lesson, onComplete }) {
                             </ExpandableText>
 
                             {/* Boundary events */}
-                            <div className="mt-4 pt-3" style={{ borderTop: '1px solid rgba(28, 25, 23, 0.06)' }}>
+                            <div className="mt-4 pt-3" style={{ borderTop: '1px solid rgba(var(--color-ink-rgb), 0.06)' }}>
                                 <p className="text-[11px] uppercase tracking-wider font-semibold mb-2" style={{ color: 'var(--color-ink-faint)' }}>
                                     Key Transitions
                                 </p>
@@ -580,7 +580,7 @@ export default function Lesson0Flow({ lesson, onComplete }) {
                                         const isActive = matchSelected === n.id;
                                         const color = nameColorMap[n.id];
                                         let bg = 'var(--color-card)';
-                                        let border = 'rgba(28, 25, 23, 0.08)';
+                                        let border = 'rgba(var(--color-ink-rgb), 0.08)';
                                         let borderStyle = 'solid';
                                         if (matchChecked && isPaired) {
                                             const isCorrect = matchPairs[n.id] === n.id;
@@ -626,7 +626,7 @@ export default function Lesson0Flow({ lesson, onComplete }) {
                                         const isPaired = !!pairedByName;
                                         const color = dateColorMap[d.id];
                                         let bg = 'var(--color-card)';
-                                        let border = 'rgba(28, 25, 23, 0.08)';
+                                        let border = 'rgba(var(--color-ink-rgb), 0.08)';
                                         let borderStyle = 'solid';
                                         if (matchChecked && isPaired) {
                                             const isCorrect = pairedByName === d.id;
@@ -867,7 +867,7 @@ export default function Lesson0Flow({ lesson, onComplete }) {
                     </div>
 
                     {/* Era preview */}
-                    <div className="mt-4 pt-3" style={{ borderTop: '1px solid rgba(28, 25, 23, 0.06)' }}>
+                    <div className="mt-4 pt-3" style={{ borderTop: '1px solid rgba(var(--color-ink-rgb), 0.06)' }}>
                         <p className="text-[11px] uppercase tracking-wider font-semibold mb-2" style={{ color: 'var(--color-ink-faint)' }}>
                             Eras Unlocked
                         </p>
@@ -908,7 +908,7 @@ export default function Lesson0Flow({ lesson, onComplete }) {
                                             </span>
                                             <button onClick={() => setSelectedDot(null)}
                                                 className="w-7 h-7 rounded-full flex items-center justify-center text-sm"
-                                                style={{ color: 'var(--color-ink-muted)', backgroundColor: 'rgba(28,25,23,0.05)' }}>✕</button>
+                                                style={{ color: 'var(--color-ink-muted)', backgroundColor: 'rgba(var(--color-ink-rgb), 0.05)' }}>✕</button>
                                         </div>
                                         <p className="text-sm font-semibold mb-3" style={{ fontFamily: 'var(--font-serif)', color: 'var(--color-ink)' }}>
                                             Match each era to its dates
@@ -916,7 +916,7 @@ export default function Lesson0Flow({ lesson, onComplete }) {
                                         <div className="space-y-1.5">
                                             {PERIODS.map(p => (
                                                 <div key={p.id} className="flex items-center gap-2 text-xs py-1 px-2 rounded-lg"
-                                                    style={{ backgroundColor: 'rgba(28,25,23,0.03)' }}>
+                                                    style={{ backgroundColor: 'rgba(var(--color-ink-rgb), 0.03)' }}>
                                                     <EraIcon type={p.iconType} size={16} />
                                                     <span className="font-semibold" style={{ color: 'var(--color-ink)' }}>{p.title}</span>
                                                     <span style={{ color: 'var(--color-ink-faint)' }}>→</span>
@@ -945,7 +945,7 @@ export default function Lesson0Flow({ lesson, onComplete }) {
                                         </span>
                                         <button onClick={() => setSelectedDot(null)}
                                             className="w-7 h-7 rounded-full flex items-center justify-center text-sm"
-                                            style={{ color: 'var(--color-ink-muted)', backgroundColor: 'rgba(28,25,23,0.05)' }}>✕</button>
+                                            style={{ color: 'var(--color-ink-muted)', backgroundColor: 'rgba(var(--color-ink-rgb), 0.05)' }}>✕</button>
                                     </div>
                                     <div className="text-center mb-4">
                                         <EraIcon type={period.iconType} size={48} />

@@ -616,7 +616,7 @@ export default function PracticePage({ onSessionChange, registerBackHandler }) {
                                         <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0
                                             ${isSelected ? '' : ''}`}
                                             style={{
-                                                backgroundColor: isSelected ? 'var(--color-burgundy)' : 'rgba(28,25,23,0.06)',
+                                                backgroundColor: isSelected ? 'var(--color-burgundy)' : 'rgba(var(--color-ink-rgb), 0.06)',
                                                 color: isSelected ? 'white' : 'var(--color-ink-muted)',
                                             }}>
                                             {isSelected ? '\✓' : lesson.number}
@@ -830,7 +830,7 @@ function HubView({ starredEvents, weakEvents, statusTiers, dueCount, state, disp
                     Card Status
                 </h3>
                 <div className="grid grid-cols-4 gap-2">
-                    <div className="text-center p-2.5 rounded-xl" style={{ backgroundColor: 'rgba(28, 25, 23, 0.04)' }}>
+                    <div className="text-center p-2.5 rounded-xl" style={{ backgroundColor: 'rgba(var(--color-ink-rgb), 0.04)' }}>
                         <div className="text-lg font-bold" style={{ color: 'var(--color-ink-muted)' }}>{statusTiers.new.length}</div>
                         <div className="text-[9px] font-semibold" style={{ color: 'var(--color-ink-muted)' }}>New</div>
                     </div>
@@ -894,7 +894,7 @@ function CollectionView({ statusTiers, collectionSort, setCollectionSort, expand
             key: 'new',
             label: 'New',
             color: 'var(--color-ink-muted)',
-            bg: 'rgba(28, 25, 23, 0.04)',
+            bg: 'rgba(var(--color-ink-rgb), 0.04)',
             items: statusTiers.new,
             practiceLabel: 'Practice these',
         },
@@ -1038,7 +1038,7 @@ function CollectionView({ statusTiers, collectionSort, setCollectionSort, expand
                                                         </svg>
                                                         {event.location.place}
                                                     </div>
-                                                    <div className="flex items-center gap-4 mt-3 pt-3" style={{ borderTop: '1px solid rgba(28,25,23,0.06)' }}>
+                                                    <div className="flex items-center gap-4 mt-3 pt-3" style={{ borderTop: '1px solid rgba(var(--color-ink-rgb), 0.06)' }}>
                                                         <div className="text-[10px]">
                                                             <span style={{ color: 'var(--color-ink-faint)' }}>Reviewed: </span>
                                                             <span className="font-bold">{timesReviewed}×</span>
@@ -1151,7 +1151,7 @@ function PracticeMatchQuestion({ question, onAnswer, onNext, onBack }) {
                             const isActive = matchSelected === n.id;
                             const color = nameColorMap[n.id];
                             let bg = 'var(--color-card)';
-                            let border = 'rgba(28, 25, 23, 0.08)';
+                            let border = 'rgba(var(--color-ink-rgb), 0.08)';
                             let borderStyle = 'solid';
                             if (matchChecked && isPaired) {
                                 const isCorrect = matchPairs[n.id] === n.id;
@@ -1188,7 +1188,7 @@ function PracticeMatchQuestion({ question, onAnswer, onNext, onBack }) {
                             const isPaired = !!pairedByName;
                             const color = dateColorMap[d.id];
                             let bg = 'var(--color-card)';
-                            let border = 'rgba(28, 25, 23, 0.08)';
+                            let border = 'rgba(var(--color-ink-rgb), 0.08)';
                             let borderStyle = 'solid';
                             if (matchChecked && isPaired) {
                                 const isCorrect = pairedByName === d.id;
@@ -1227,7 +1227,7 @@ function PracticeMatchQuestion({ question, onAnswer, onNext, onBack }) {
                 )}
 
                 {matchChecked && (
-                    <div className="mt-3 pt-3" style={{ borderTop: '1px solid rgba(28,25,23,0.06)' }}>
+                    <div className="mt-3 pt-3" style={{ borderTop: '1px solid rgba(var(--color-ink-rgb), 0.06)' }}>
                         <p className="text-sm font-semibold" style={{ color: SCORE_COLORS[matchScore].border }}>
                             {matchScore === 'green' ? 'Perfect match!' : matchScore === 'yellow' ? 'Close — some pairs were off' : 'Several pairs were wrong'}
                         </p>
@@ -1285,7 +1285,7 @@ function PracticeQuestion({ question, isStarred, onToggleStar, onAnswer, onNext,
     const renderFeedback = () => {
         if (!answered || !score) return null;
         return (
-            <div className="mt-3 pt-3" style={{ borderTop: '1px solid rgba(28,25,23,0.06)' }}>
+            <div className="mt-3 pt-3" style={{ borderTop: '1px solid rgba(var(--color-ink-rgb), 0.06)' }}>
                 <div className="flex items-center justify-between">
                     <p className="text-sm font-semibold" style={{
                         color: getScoreColor(score).border
@@ -1404,8 +1404,8 @@ function PracticeQuestion({ question, isStarred, onToggleStar, onAnswer, onNext,
                                     <input type="number" value={dateInput} onChange={e => setDateInput(e.target.value)}
                                         placeholder="e.g. 1453"
                                         className="flex-1 px-4 py-3 rounded-xl border-2 text-sm font-medium outline-none"
-                                        style={{ borderColor: 'rgba(28, 25, 23, 0.1)', backgroundColor: 'var(--color-card)', color: 'var(--color-ink)' }} />
-                                    <div className="flex rounded-xl border-2 overflow-hidden" style={{ borderColor: 'rgba(28, 25, 23, 0.1)' }}>
+                                        style={{ borderColor: 'rgba(var(--color-ink-rgb), 0.1)', backgroundColor: 'var(--color-card)', color: 'var(--color-ink)' }} />
+                                    <div className="flex rounded-xl border-2 overflow-hidden" style={{ borderColor: 'rgba(var(--color-ink-rgb), 0.1)' }}>
                                         {['BCE', 'CE'].map(e => (
                                             <button key={e} onClick={() => setEra(e)} className="px-3 py-2 text-xs font-bold"
                                                 style={{ backgroundColor: era === e ? 'var(--color-burgundy)' : 'transparent', color: era === e ? 'white' : 'var(--color-ink-muted)' }}>

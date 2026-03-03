@@ -22,7 +22,7 @@ export default function NotificationOnboarding({ onEnable, onSkip }) {
 
     return (
         <div className="fixed inset-0 z-[70] flex items-center justify-center" onClick={onSkip}>
-            <div className="absolute inset-0" style={{ backgroundColor: 'rgba(28, 25, 23, 0.4)', backdropFilter: 'blur(4px)' }} />
+            <div className="absolute inset-0" style={{ backgroundColor: 'rgba(var(--color-ink-rgb), 0.4)', backdropFilter: 'blur(4px)' }} />
             <div
                 className="relative w-full max-w-sm rounded-2xl p-6 mx-4 animate-fade-in-up"
                 style={{ backgroundColor: 'var(--color-parchment)', boxShadow: 'var(--shadow-elevated)' }}
@@ -61,7 +61,7 @@ export default function NotificationOnboarding({ onEnable, onSkip }) {
                         style={{
                             backgroundColor: 'var(--color-card)',
                             color: 'var(--color-ink)',
-                            border: '1px solid rgba(28, 25, 23, 0.08)',
+                            border: '1px solid rgba(var(--color-ink-rgb), 0.08)',
                         }}
                     />
                 </div>
@@ -78,7 +78,7 @@ export default function NotificationOnboarding({ onEnable, onSkip }) {
                         onClick={() => setStreakEnabled(!streakEnabled)}
                         className="relative w-11 h-6 rounded-full transition-colors"
                         style={{
-                            backgroundColor: streakEnabled ? 'var(--color-burgundy)' : 'rgba(28, 25, 23, 0.15)',
+                            backgroundColor: streakEnabled ? 'var(--color-burgundy)' : 'rgba(var(--color-ink-rgb), 0.15)',
                         }}
                     >
                         <span

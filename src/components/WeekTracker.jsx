@@ -18,7 +18,7 @@ function getStreakStatus(lastActiveDate, currentStreak) {
 const FLAME_COLORS = {
     active:    { stroke: '#E05500', fill: '#FF8C00', innerFill: '#FFB833', fillOpacity: 0.85, countColor: '#E05500' },
     'at-risk': { stroke: '#C8A000', fill: '#E8D44C', fillOpacity: 0.5, countColor: '#C8A000' },
-    inactive:  { stroke: '#A8A29E', fill: '#D6D3D1', fillOpacity: 0.3, countColor: '#A8A29E' },
+    inactive:  { stroke: 'var(--color-ink-faint)', fill: 'var(--color-ink-faint)', fillOpacity: 0.3, countColor: 'var(--color-ink-faint)' },
 };
 
 export default function WeekTracker({ onClose }) {
@@ -116,7 +116,7 @@ export default function WeekTracker({ onClose }) {
 
     return (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-5"
-            style={{ backgroundColor: 'rgba(28, 25, 23, 0.5)', backdropFilter: 'blur(4px)' }}
+            style={{ backgroundColor: 'rgba(var(--color-ink-rgb), 0.5)', backdropFilter: 'blur(4px)' }}
             onClick={onClose}>
             <div className="w-full max-w-sm rounded-2xl overflow-hidden animate-fade-in"
                 style={{ backgroundColor: 'var(--color-card)', boxShadow: 'var(--shadow-elevated)' }}
@@ -157,17 +157,17 @@ export default function WeekTracker({ onClose }) {
                                         {day.label}
                                     </span>
                                     <div className="w-8 h-8 rounded-full flex items-center justify-center" style={{
-                                        backgroundColor: day.isFuture ? 'rgba(28, 25, 23, 0.03)' :
+                                        backgroundColor: day.isFuture ? 'rgba(var(--color-ink-rgb), 0.03)' :
                                             hasActivity ? (
                                                 intensity === 'high' ? 'rgba(5, 150, 105, 0.2)' :
                                                 intensity === 'med' ? 'rgba(5, 150, 105, 0.12)' :
                                                 'rgba(5, 150, 105, 0.07)'
-                                            ) : 'rgba(28, 25, 23, 0.04)',
+                                            ) : 'rgba(var(--color-ink-rgb), 0.04)',
                                         border: day.isToday ? '2px solid var(--color-burgundy)' :
                                             hasActivity ? '2px solid rgba(5, 150, 105, 0.3)' : '2px solid transparent',
                                     }}>
                                         {hasActivity ? (
-                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#059669" strokeWidth="3">
+                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--color-success)" strokeWidth="3">
                                                 <polyline points="20 6 9 17 4 12" />
                                             </svg>
                                         ) : day.isFuture ? null : (
@@ -286,7 +286,7 @@ export default function WeekTracker({ onClose }) {
                     )}
                     <button
                         className="w-full py-2.5 rounded-xl text-sm font-semibold cursor-pointer"
-                        style={{ color: 'var(--color-ink-muted)', backgroundColor: 'rgba(28, 25, 23, 0.04)' }}
+                        style={{ color: 'var(--color-ink-muted)', backgroundColor: 'rgba(var(--color-ink-rgb), 0.04)' }}
                         onClick={onClose}
                     >
                         Got it

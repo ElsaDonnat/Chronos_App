@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { useApp } from '../context/AppContext';
+import { CORE_EVENT_COUNT } from './events';
 
 export const ACHIEVEMENTS = [
     // ─── Learning ───
@@ -111,11 +112,11 @@ export const ACHIEVEMENTS = [
     {
         id: 'discover-all',
         title: 'Cartographer',
-        description: 'Discover all 60 events',
+        description: `Discover all ${CORE_EVENT_COUNT} events`,
         emoji: '\uD83C\uDF0D',
         category: 'discovery',
-        check: (state) => (state.seenEvents || []).length >= 60,
-        progress: (state) => ({ current: Math.min((state.seenEvents || []).length, 60), target: 60 }),
+        check: (state) => (state.seenEvents || []).length >= CORE_EVENT_COUNT,
+        progress: (state) => ({ current: Math.min((state.seenEvents || []).length, CORE_EVENT_COUNT), target: CORE_EVENT_COUNT }),
     },
 
     // ─── Collection ───

@@ -36,6 +36,8 @@ const defaultState = {
     // cardsPerLesson: undefined (not set here — LessonFlow falls back to 3)
     // Whether the favorites tip has been shown
     hasSeenFavoriteTip: false,
+    // Appearance
+    themeMode: 'light', // 'light' | 'dark' | 'system'
     // Sound & haptic feedback
     soundEnabled: true,
     hapticsEnabled: true,
@@ -127,6 +129,9 @@ function migrateState(parsed) {
     // Migration: study timer
     if (parsed.totalStudyTime === undefined) merged.totalStudyTime = 0;
     if (!parsed.studySessions) merged.studySessions = [];
+
+    // Migration: theme
+    if (parsed.themeMode === undefined) merged.themeMode = 'light';
 
     // Migration: sound & haptics (default on for existing users)
     if (parsed.soundEnabled === undefined) merged.soundEnabled = true;
@@ -349,6 +354,10 @@ function reducer(state, action) {
             return { ...state, musicEnabled: !state.musicEnabled };
         }
 
+        case 'SET_THEME': {
+            return { ...state, themeMode: action.mode };
+        }
+
         case 'DISMISS_MUSIC_PROMPT': {
             return { ...state, musicPromptDismissed: true };
         }
@@ -552,6 +561,24 @@ export function AppProvider({ children }) {
             initWidgets();
         }
     }, []);
+
+    // ─── Theme: apply data-theme attribute + meta theme-color ───
+    useEffect(() => {
+        const mq = window.matchMedia('(prefers-color-scheme: dark)');
+        const apply = () => {
+            const resolved = state.themeMode === 'system'
+                ? (mq.matches ? 'dark' : 'light')
+                : state.themeMode;
+            document.documentElement.dataset.theme = resolved;
+            const meta = document.querySelector('meta[name="theme-color"]');
+            if (meta) meta.setAttribute('content', resolved === 'dark' ? '#1A1816' : '#FAF6F0');
+        };
+        apply();
+        if (state.themeMode === 'system') {
+            mq.addEventListener('change', apply);
+            return () => mq.removeEventListener('change', apply);
+        }
+    }, [state.themeMode]);
 
     return (
         <AppContext.Provider value={{ state, dispatch }}>

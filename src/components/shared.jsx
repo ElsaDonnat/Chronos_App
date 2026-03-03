@@ -119,11 +119,11 @@ export function MasteryDots({ mastery, size = 'sm' }) {
 export function Divider() {
     return (
         <div className="flex items-center justify-center my-6">
-            <div className="flex-1 h-px" style={{ backgroundColor: 'rgba(28, 25, 23, 0.08)' }} />
+            <div className="flex-1 h-px" style={{ backgroundColor: 'rgba(var(--color-ink-rgb), 0.08)' }} />
             <div className="mx-3">
                 <div className="w-1.5 h-1.5 rotate-45" style={{ backgroundColor: 'var(--color-bronze-light)' }} />
             </div>
-            <div className="flex-1 h-px" style={{ backgroundColor: 'rgba(28, 25, 23, 0.08)' }} />
+            <div className="flex-1 h-px" style={{ backgroundColor: 'rgba(var(--color-ink-rgb), 0.08)' }} />
         </div>
     );
 }
@@ -131,7 +131,7 @@ export function Divider() {
 export function ProgressBar({ value, max, color }) {
     const pct = Math.min((value / max) * 100, 100);
     return (
-        <div className="w-full h-1.5 rounded-full overflow-hidden" style={{ backgroundColor: 'rgba(28, 25, 23, 0.06)' }}>
+        <div className="w-full h-1.5 rounded-full overflow-hidden" style={{ backgroundColor: 'rgba(var(--color-ink-rgb), 0.06)' }}>
             <div
                 className="h-full rounded-full transition-all duration-500 ease-out"
                 style={{
@@ -221,7 +221,7 @@ export function ConfirmModal({ title, message, confirmLabel = 'Yes', cancelLabel
     }, []);
 
     return (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-6" style={{ backgroundColor: 'rgba(28, 25, 23, 0.4)', backdropFilter: 'blur(4px)' }} onClick={onCancel}>
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-6" style={{ backgroundColor: 'rgba(var(--color-ink-rgb), 0.4)', backdropFilter: 'blur(4px)' }} onClick={onCancel}>
             <div role="dialog" aria-modal="true" aria-labelledby={titleId.current} className="w-full max-w-sm rounded-2xl p-6 animate-fade-in" style={{ backgroundColor: 'var(--color-card)', boxShadow: '0 20px 60px rgba(0,0,0,0.2)' }} onClick={e => e.stopPropagation()}>
                 <h3 id={titleId.current} className="text-lg font-bold mb-2" style={{ fontFamily: 'var(--font-serif)', color: 'var(--color-ink)' }}>
                     {title}
@@ -308,7 +308,7 @@ export function AnimatedCounter({ value, prefix = '', duration = 600, delay = 0,
 
 export function TabSelector({ tabs, activeTab, onChange }) {
     return (
-        <div className="flex rounded-xl p-1" style={{ backgroundColor: 'rgba(28, 25, 23, 0.05)' }}>
+        <div className="flex rounded-xl p-1" style={{ backgroundColor: 'rgba(var(--color-ink-rgb), 0.05)' }}>
             {tabs.map(tab => (
                 <button
                     key={tab.id}
@@ -333,7 +333,7 @@ export function EventConnections({ eventId, seenEventIds, onEventClick, showAll 
     if (connections.length === 0) return null;
 
     return (
-        <div className="mt-4 pt-3" style={{ borderTop: '1px solid rgba(28, 25, 23, 0.06)' }}>
+        <div className="mt-4 pt-3" style={{ borderTop: '1px solid rgba(var(--color-ink-rgb), 0.06)' }}>
             <p className="text-[11px] uppercase tracking-wider font-semibold mb-2" style={{ color: 'var(--color-ink-faint)' }}>
                 Connected Events
             </p>

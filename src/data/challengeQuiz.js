@@ -1,22 +1,27 @@
 /**
  * Challenge mode question generation — 6 creative question types.
  * All questions are binary (correct/incorrect), no yellow scoring.
+ *
+ * 35 questions across 6 tiers. From question 3 onward, roughly 1-in-3
+ * questions draw from Level 2 events. Never more than 3 in a row from
+ * the same level.
  */
 
-import { ALL_EVENTS, CATEGORY_CONFIG, ERA_RANGES, getEraForYear } from './events';
+import { ALL_EVENTS, CATEGORY_CONFIG, ERA_RANGES, getEraForYear, isLevel2Event } from './events';
 import { shuffle, generateDateMCQOptions, generateLocationOptions } from './quiz';
 
 // ─── Tier system ─────────────────────────────────────────────
 
 export const CHALLENGE_TIERS = [
     { id: 'beginner',  label: 'Beginner',  icon: '\uD83C\uDF31', color: '#059669', questions: 5, flavor: 'Let\u2019s see what you know\u2026' },
-    { id: 'amateur',   label: 'Amateur',   icon: '\uD83D\uDCD6', color: '#2563EB', questions: 5, flavor: 'Getting warmer\u2026' },
-    { id: 'advanced',  label: 'Advanced',  icon: '\uD83C\uDF93', color: '#7C3AED', questions: 5, flavor: 'The real test begins.' },
-    { id: 'historian', label: 'Historian', icon: '\uD83C\uDFDB\uFE0F', color: '#B45309', questions: 5, flavor: 'Only scholars make it this far.' },
-    { id: 'god',       label: 'God',       icon: '\u26A1',       color: '#DC2626', questions: 1, flavor: 'The ultimate challenge.' },
+    { id: 'amateur',   label: 'Amateur',   icon: '\uD83D\uDCD6', color: '#2563EB', questions: 7, flavor: 'Getting warmer\u2026' },
+    { id: 'advanced',  label: 'Advanced',  icon: '\uD83C\uDF93', color: '#7C3AED', questions: 8, flavor: 'The real test begins.' },
+    { id: 'historian', label: 'Historian', icon: '\uD83C\uDFDB\uFE0F', color: '#B45309', questions: 8, flavor: 'Only scholars make it this far.' },
+    { id: 'expert',    label: 'Expert',    icon: '\uD83D\uDD2E', color: '#9333EA', questions: 5, flavor: 'Beyond the textbooks.' },
+    { id: 'god',       label: 'God',       icon: '\u26A1',       color: '#DC2626', questions: 2, flavor: 'The ultimate challenge.' },
 ];
 
-export const TOTAL_CHALLENGE_QUESTIONS = CHALLENGE_TIERS.reduce((s, t) => s + t.questions, 0); // 21
+export const TOTAL_CHALLENGE_QUESTIONS = CHALLENGE_TIERS.reduce((s, t) => s + t.questions, 0); // 35
 
 export function getTierForQuestion(questionIndex) {
     let cumulative = 0;
@@ -46,6 +51,7 @@ const TIER_TYPES = {
     amateur:   ['hardMCQ', 'trueOrFalse', 'eraDetective', 'categorySort'],
     advanced:  ['hardMCQ', 'whichCameFirst', 'oddOneOut', 'trueOrFalse'],
     historian: ['whichCameFirst', 'oddOneOut', 'hardMCQ', 'trueOrFalse'],
+    expert:    ['whichCameFirst', 'oddOneOut', 'hardMCQ', 'trueOrFalse'],
 };
 
 function pickTypeForTier(tierId) {
@@ -64,7 +70,8 @@ function filterPoolForTier(pool, tierId) {
             return mid.length >= 8 ? mid : pool;
         }
         case 'advanced':
-        case 'historian': {
+        case 'historian':
+        case 'expert': {
             const hard = pool.filter(e => (e.difficulty || 1) >= 2);
             return hard.length >= 8 ? hard : pool;
         }
@@ -72,19 +79,46 @@ function filterPoolForTier(pool, tierId) {
     }
 }
 
+// ─── Level mixing: decide whether a question should use Level 2 ─
+
+/**
+ * From question 3 onward, ~1 in 3 questions should come from Level 2.
+ * Never allow more than 3 consecutive questions from the same level.
+ * `recentLevels` is an array of the last few question levels (1 or 2).
+ */
+function shouldUseLevel2(questionIndex, recentLevels) {
+    // First 2 questions are always Level 1
+    if (questionIndex < 2) return false;
+
+    // Enforce the "never 3 in a row" rule
+    const last3 = recentLevels.slice(-3);
+    if (last3.length >= 3 && last3.every(l => l === 1)) return true;   // force L2
+    if (last3.length >= 3 && last3.every(l => l === 2)) return false;  // force L1
+
+    // ~33% chance of Level 2
+    return Math.random() < 0.33;
+}
+
 // ─── Event selection ─────────────────────────────────────────
 
 /** Build a pool of events for the challenge, prioritizing unseen. */
 export function buildChallengePool(seenEventIds = []) {
     const seenSet = new Set(seenEventIds);
-    const unseen = ALL_EVENTS.filter(e => !seenSet.has(e.id));
-    const seen = ALL_EVENTS.filter(e => seenSet.has(e.id));
+    const coreEvents = ALL_EVENTS.filter(e => !e.source); // exclude daily quiz events
+    const unseen = coreEvents.filter(e => !seenSet.has(e.id));
+    const seen = coreEvents.filter(e => seenSet.has(e.id));
 
     // 70% unseen, 30% seen (if available)
-    const unseenCount = Math.min(unseen.length, Math.max(20, Math.round(ALL_EVENTS.length * 0.7)));
-    const seenCount = Math.min(seen.length, ALL_EVENTS.length - unseenCount);
+    const unseenCount = Math.min(unseen.length, Math.max(30, Math.round(coreEvents.length * 0.7)));
+    const seenCount = Math.min(seen.length, coreEvents.length - unseenCount);
 
-    return shuffle([...shuffle(unseen).slice(0, unseenCount), ...shuffle(seen).slice(0, seenCount)]);
+    const pool = shuffle([...shuffle(unseen).slice(0, unseenCount), ...shuffle(seen).slice(0, seenCount)]);
+
+    return {
+        level1: pool.filter(e => !isLevel2Event(e)),
+        level2: pool.filter(e => isLevel2Event(e)),
+        all: pool,
+    };
 }
 
 // ─── Question type weights by difficulty ramp ────────────────
@@ -95,7 +129,7 @@ const HARD_TYPES = ['whichCameFirst', 'oddOneOut', 'trueOrFalse'];
 /** Pick a question type weighted by how far into the game we are. */
 function pickQuestionType(questionIndex) {
     // Early game: 70% easy, 30% hard. Late game: 30% easy, 70% hard
-    const hardWeight = Math.min(0.7, 0.3 + questionIndex * 0.04);
+    const hardWeight = Math.min(0.7, 0.3 + questionIndex * 0.02);
     const pool = Math.random() < hardWeight ? HARD_TYPES : EASY_TYPES;
     return pool[Math.floor(Math.random() * pool.length)];
 }
@@ -107,17 +141,19 @@ function pickQuestionType(questionIndex) {
  * Returns null if the pool is exhausted (should not normally happen).
  */
 export function generateChallengeQuestion(pool, questionIndex, usedEventIds = new Set()) {
+    // Legacy multiplayer path: pool is a flat array
+    const flatPool = Array.isArray(pool) ? pool : pool.all;
     const type = pickQuestionType(questionIndex);
     // Attempt the chosen type, fall back to others if it fails
     const types = [type, ...shuffle([...EASY_TYPES, ...HARD_TYPES].filter(t => t !== type))];
 
     for (const t of types) {
-        const q = generateByType(t, pool, usedEventIds);
+        const q = generateByType(t, flatPool, usedEventIds);
         if (q) return q;
     }
 
     // Ultimate fallback: simple hard MCQ on any event
-    const event = pool.find(e => !usedEventIds.has(e.id)) || pool[0];
+    const event = flatPool.find(e => !usedEventIds.has(e.id)) || flatPool[0];
     return generateHardMCQ(event);
 }
 
@@ -413,35 +449,56 @@ function generateCategorySort(event) {
 /**
  * Generate a challenge question using the tier system.
  * Beginner → easy types + easy events, God → chronological ordering.
+ * From question 3 onward, mixes Level 2 events in (~1/3 ratio).
+ * Never more than 3 consecutive questions from the same level.
  */
-export function generateTieredChallengeQuestion(pool, questionIndex, usedEventIds = new Set()) {
+export function generateTieredChallengeQuestion(pool, questionIndex, usedEventIds = new Set(), recentLevels = []) {
     const { tier } = getTierProgress(questionIndex);
 
-    // God tier: chronological ordering
+    // Determine which pool to use based on level mixing
+    const poolObj = Array.isArray(pool) ? { level1: pool, level2: [], all: pool } : pool;
+    const useL2 = shouldUseLevel2(questionIndex, recentLevels);
+
+    // God tier: chronological ordering (uses full pool)
     if (tier.id === 'god') {
-        const q = generateChronologicalOrder(pool, usedEventIds);
-        if (q) { q.tier = tier; return q; }
+        const q = generateChronologicalOrder(poolObj.all, usedEventIds);
+        if (q) { q.tier = tier; q.level = 0; return q; }
         // Fallback to hardest MCQ
-        const event = pickUnused(pool, usedEventIds) || pool[0];
+        const event = pickUnused(poolObj.all, usedEventIds) || poolObj.all[0];
         const fallback = generateHardMCQ(event);
         fallback.tier = tier;
+        fallback.level = isLevel2Event(event) ? 2 : 1;
         return fallback;
+    }
+
+    // Pick the level-specific subpool, with fallback
+    let levelPool;
+    if (useL2 && poolObj.level2.length >= 4) {
+        levelPool = poolObj.level2;
+    } else {
+        levelPool = poolObj.level1.length >= 4 ? poolObj.level1 : poolObj.all;
     }
 
     const type = pickTypeForTier(tier.id);
     const allTypes = TIER_TYPES[tier.id] || EASY_TYPES;
     const types = [type, ...shuffle(allTypes.filter(t => t !== type))];
-    const tierPool = filterPoolForTier(pool, tier.id);
-    const effectivePool = tierPool.length >= 8 ? tierPool : pool;
+    const tierPool = filterPoolForTier(levelPool, tier.id);
+    const effectivePool = tierPool.length >= 8 ? tierPool : levelPool.length >= 4 ? levelPool : poolObj.all;
 
     for (const t of types) {
         const q = generateByType(t, effectivePool, usedEventIds);
-        if (q) { q.tier = tier; return q; }
+        if (q) {
+            q.tier = tier;
+            q.level = isLevel2Event(q.event) ? 2 : 1;
+            return q;
+        }
     }
 
-    const event = pickUnused(pool, usedEventIds) || pool[0];
+    // Fallback
+    const event = pickUnused(poolObj.all, usedEventIds) || poolObj.all[0];
     const q = generateHardMCQ(event);
     q.tier = tier;
+    q.level = isLevel2Event(event) ? 2 : 1;
     return q;
 }
 

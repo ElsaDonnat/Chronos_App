@@ -50,7 +50,7 @@ export default function AchievementsModal({ onClose }) {
                     </div>
 
                     {/* Progress bar */}
-                    <div className="mt-3 w-full h-2 rounded-full overflow-hidden" style={{ backgroundColor: 'rgba(28,25,23,0.06)' }}>
+                    <div className="mt-3 w-full h-2 rounded-full overflow-hidden" style={{ backgroundColor: 'rgba(var(--color-ink-rgb), 0.06)' }}>
                         <div
                             className="h-full rounded-full transition-all duration-700 ease-out"
                             style={{
