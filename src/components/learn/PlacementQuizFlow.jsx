@@ -423,7 +423,7 @@ function PlacementQuestion({ question, onAnswer, onNext }) {
                     <p className="text-xs uppercase tracking-wider font-semibold mb-2" style={{ color: 'var(--color-ink-faint)' }}>When did this happen?</p>
                     <h3 className="text-xl font-bold mb-1" style={{ fontFamily: 'var(--font-serif)' }}>{event.title}</h3>
                     <p className="text-sm mb-5 leading-relaxed" style={{ color: 'var(--color-ink-secondary)' }}>
-                        {(event.quizDescription || event.description).substring(0, 80)}\…
+                        {(event.quizDescription || event.description).substring(0, 80)}…
                     </p>
                     <div className="mcq-options">
                         {dateOpts.map((opt, i) => {

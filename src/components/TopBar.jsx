@@ -25,30 +25,86 @@ export default function TopBar({ activeTab }) {
     const [displayXP, setDisplayXP] = useState(state.totalXP);
     const [showAchievements, setShowAchievements] = useState(false);
     const prevXP = useRef(state.totalXP);
+    const frozenRef = useRef(false);
+    const frozenXP = useRef(null);
+    const latestXPRef = useRef(state.totalXP);
+    const freezeTimerRef = useRef(null);
+    const displayXPRef = useRef(state.totalXP);
     const hasNewAchievements = (state.newAchievements || []).length > 0;
 
     const streakStatus = getStreakStatus(state.lastActiveDate, state.currentStreak);
 
-    // Animate XP counter
+    // Keep refs in sync for event handlers (must be in effects, not render)
+    useEffect(() => { latestXPRef.current = state.totalXP; }, [state.totalXP]);
+    useEffect(() => { displayXPRef.current = displayXP; }, [displayXP]);
+
+    // Imperatively trigger glow + pop on the XP star
+    function triggerXPAnimation() {
+        const targetEl = document.getElementById('xp-star-target');
+        if (!targetEl) return;
+        targetEl.classList.remove('animate-xp-glow');
+        const starSvg = targetEl.querySelector('svg');
+        if (starSvg) starSvg.classList.remove('animate-number-pop');
+        void targetEl.offsetWidth;
+        targetEl.classList.add('animate-xp-glow');
+        if (starSvg) starSvg.classList.add('animate-number-pop');
+    }
+
+    // Animate displayXP from start to end over 600ms
+    function animateCounter(start, end) {
+        const duration = 600;
+        const startTime = Date.now();
+        const animate = () => {
+            const elapsed = Date.now() - startTime;
+            const progress = Math.min(elapsed / duration, 1);
+            const eased = 1 - Math.pow(1 - progress, 3);
+            setDisplayXP(Math.round(start + (end - start) * eased));
+            if (progress < 1) requestAnimationFrame(animate);
+        };
+        requestAnimationFrame(animate);
+    }
+
+    // Freeze/unfreeze XP display for lesson fly animation sync
+    useEffect(() => {
+        const handleFreeze = () => {
+            frozenRef.current = true;
+            frozenXP.current = displayXPRef.current;
+            clearTimeout(freezeTimerRef.current);
+            freezeTimerRef.current = setTimeout(() => {
+                if (frozenRef.current) window.dispatchEvent(new Event('unfreezeXP'));
+            }, 30000);
+        };
+        const handleUnfreeze = () => {
+            frozenRef.current = false;
+            clearTimeout(freezeTimerRef.current);
+            const start = frozenXP.current ?? displayXPRef.current;
+            const end = latestXPRef.current;
+            prevXP.current = end;
+            if (start !== end) {
+                animateCounter(start, end);
+                triggerXPAnimation();
+            }
+        };
+        window.addEventListener('freezeXP', handleFreeze);
+        window.addEventListener('unfreezeXP', handleUnfreeze);
+        return () => {
+            window.removeEventListener('freezeXP', handleFreeze);
+            window.removeEventListener('unfreezeXP', handleUnfreeze);
+            clearTimeout(freezeTimerRef.current);
+        };
+    }, []);
+
+    // Animate XP counter (skip if frozen)
     useEffect(() => {
         if (state.totalXP !== prevXP.current) {
+            if (frozenRef.current) {
+                prevXP.current = state.totalXP;
+                return;
+            }
             const start = prevXP.current;
-            const end = state.totalXP;
-            const duration = 600;
-            const startTime = Date.now();
-
-            const animate = () => {
-                const elapsed = Date.now() - startTime;
-                const progress = Math.min(elapsed / duration, 1);
-                const eased = 1 - Math.pow(1 - progress, 3);
-                setDisplayXP(Math.round(start + (end - start) * eased));
-
-                if (progress < 1) {
-                    requestAnimationFrame(animate);
-                }
-            };
-            requestAnimationFrame(animate);
-            prevXP.current = end;
+            animateCounter(start, state.totalXP);
+            triggerXPAnimation();
+            prevXP.current = state.totalXP;
         }
     }, [state.totalXP]);
 
@@ -90,12 +146,11 @@ export default function TopBar({ activeTab }) {
                             </span>
                         </button>
 
-                        {/* XP — key triggers animation replay on XP gain */}
-                        <div id="xp-star-target" key={state.totalXP} className="topbar-stat animate-xp-glow"
+                        {/* XP */}
+                        <div id="xp-star-target" className="topbar-stat"
                             onClick={() => window.dispatchEvent(new Event('openWeekTracker'))}
                             style={{ cursor: 'pointer' }}>
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-bronze)" strokeWidth="2" strokeLinecap="round"
-                                className="animate-number-pop">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-bronze)" strokeWidth="2" strokeLinecap="round">
                                 <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" fill="var(--color-bronze-light)" stroke="var(--color-bronze)" opacity="0.8" />
                             </svg>
                             <span className="text-sm font-semibold" style={{ color: 'var(--color-bronze)' }}>

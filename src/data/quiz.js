@@ -1,4 +1,5 @@
 import { ALL_EVENTS } from './events';
+import { DESCRIPTION_DISTRACTORS } from './descriptionDistractors';
 
 // ─── Fisher-Yates shuffle ────────────────────────────
 export function shuffle(array) {
@@ -221,7 +222,37 @@ export function generateWhatOptions(correctEvent, lessonEventIds, allEvents = AL
 }
 
 // Generate "description" MCQ options — given an event title, pick the right description
-export function generateDescriptionOptions(correctEvent, allEvents = ALL_EVENTS) {
+// difficulty (optional): 1 = easy distractors, 2 = hard, 3 = very subtle (uses hardCorrect)
+export function generateDescriptionOptions(correctEvent, allEvents = ALL_EVENTS, difficulty = null) {
+    const custom = DESCRIPTION_DISTRACTORS[correctEvent.id];
+
+    if (custom) {
+        // Use hardCorrect as the correct answer at difficulty 3
+        const correctDesc = (difficulty === 3 && custom.hardCorrect)
+            ? custom.hardCorrect
+            : (correctEvent.quizDescription || correctEvent.description);
+
+        const correctOption = { id: correctEvent.id, description: correctDesc, isCorrect: true };
+
+        // Build distractor pool: prefer requested difficulty, then fill from other tiers
+        let pool;
+        if (difficulty) {
+            const preferred = shuffle(custom.distractors.filter(d => d.d === difficulty));
+            const fallback = shuffle(custom.distractors.filter(d => d.d !== difficulty));
+            pool = [...preferred, ...fallback];
+        } else {
+            pool = shuffle(custom.distractors);
+        }
+
+        const options = [correctOption];
+        for (const d of pool) {
+            if (options.length >= 4) break;
+            options.push({ id: correctEvent.id, description: d.text, isCorrect: false });
+        }
+        return shuffle(options);
+    }
+
+    // Fallback: pick descriptions from chronologically nearby events
     const correctOption = {
         id: correctEvent.id,
         description: correctEvent.quizDescription || correctEvent.description,
@@ -229,12 +260,10 @@ export function generateDescriptionOptions(correctEvent, allEvents = ALL_EVENTS)
     };
     const options = [correctOption];
 
-    // Get the era/epoch of the correct event for plausible distractors
     const correctYear = correctEvent.yearEnd
         ? (correctEvent.year + correctEvent.yearEnd) / 2
         : correctEvent.year;
 
-    // Score events by chronological distance (closer = more plausible distractor)
     const candidates = allEvents
         .filter(e => e.id !== correctEvent.id)
         .map(e => {
@@ -243,7 +272,6 @@ export function generateDescriptionOptions(correctEvent, allEvents = ALL_EVENTS)
         })
         .sort((a, b) => a.dist - b.dist);
 
-    // Pick up to 3 distractors, preferring nearby events
     const shuffledPool = shuffle(candidates.slice(0, 12));
     for (const e of shuffledPool) {
         if (options.length >= 4) break;
@@ -254,7 +282,6 @@ export function generateDescriptionOptions(correctEvent, allEvents = ALL_EVENTS)
         });
     }
 
-    // Fill from farther events if needed
     if (options.length < 4) {
         const remaining = shuffle(candidates.slice(12));
         for (const e of remaining) {

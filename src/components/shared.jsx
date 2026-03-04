@@ -2,7 +2,7 @@ import { useState, useRef, useEffect, forwardRef } from 'react';
 import { CATEGORY_CONFIG, IMPORTANCE_CONFIG, getRelatedEvents } from '../data/events';
 
 /** Truncates text to `lines` lines with a "Read more / Less" toggle. */
-export function ExpandableText({ children, lines = 3, className = '', style = {} }) {
+export function ExpandableText({ children, lines = 3, className = '', style = {}, footerLeft = null }) {
     const [expanded, setExpanded] = useState(false);
     const [needsTruncation, setNeedsTruncation] = useState(false);
     const textRef = useRef(null);
@@ -32,15 +32,18 @@ export function ExpandableText({ children, lines = 3, className = '', style = {}
             >
                 {children}
             </p>
-            {needsTruncation && (
-                <div className="text-right">
-                    <button
-                        onClick={() => setExpanded(e => !e)}
-                        className="text-xs font-medium mt-0.5"
-                        style={{ color: 'var(--color-burgundy)', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
-                    >
-                        {expanded ? 'Show less' : 'Read more'}
-                    </button>
+            {(needsTruncation || footerLeft) && (
+                <div className="flex items-center justify-between mt-1">
+                    <div className="flex-1 min-w-0">{footerLeft}</div>
+                    {needsTruncation && (
+                        <button
+                            onClick={() => setExpanded(e => !e)}
+                            className="text-xs font-medium flex-shrink-0 ml-3"
+                            style={{ color: 'var(--color-burgundy)', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
+                        >
+                            {expanded ? 'Show less' : 'Read more'}
+                        </button>
+                    )}
                 </div>
             )}
         </div>
@@ -249,7 +252,7 @@ export function ConfirmModal({ title, message, confirmLabel = 'Yes', cancelLabel
     }, []);
 
     return (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-6" style={{ backgroundColor: 'rgba(var(--color-ink-rgb), 0.4)', backdropFilter: 'blur(4px)' }} onClick={onCancel}>
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-6" style={{ backgroundColor: 'rgba(var(--color-ink-rgb), 0.4)', backdropFilter: 'blur(4px)' }} onClick={onCancel || onConfirm}>
             <div role="dialog" aria-modal="true" aria-labelledby={titleId.current} className="w-full max-w-sm rounded-2xl p-6 animate-fade-in" style={{ backgroundColor: 'var(--color-card)', boxShadow: '0 20px 60px rgba(0,0,0,0.2)' }} onClick={e => e.stopPropagation()}>
                 <h3 id={titleId.current} className="text-lg font-bold mb-2" style={{ fontFamily: 'var(--font-serif)', color: 'var(--color-ink)' }}>
                     {title}
@@ -258,9 +261,11 @@ export function ConfirmModal({ title, message, confirmLabel = 'Yes', cancelLabel
                     {message}
                 </p>
                 <div className="flex gap-3">
-                    <Button ref={cancelRef} variant="secondary" className="flex-1" onClick={onCancel}>
-                        {cancelLabel}
-                    </Button>
+                    {cancelLabel && (
+                        <Button ref={cancelRef} variant="secondary" className="flex-1" onClick={onCancel}>
+                            {cancelLabel}
+                        </Button>
+                    )}
                     <button
                         onClick={onConfirm}
                         className="flex-1 px-6 py-3 rounded-xl font-semibold text-sm transition-all duration-200 active:scale-[0.98] cursor-pointer"
@@ -342,8 +347,9 @@ export function flyXPToStar(sourceEl, amount) {
 
         const anim = flyer.animate([
             { transform: 'translate(-50%, -50%) scale(1.15)', opacity: 1, offset: 0 },
-            { transform: `translate(calc(-50% + ${dx * 0.4}px), calc(-50% + ${dy * 0.65}px)) scale(0.85)`, opacity: 0.9, offset: 0.45 },
-            { transform: `translate(calc(-50% + ${dx}px), calc(-50% + ${dy}px)) scale(0.4)`, opacity: 0, offset: 1 },
+            { transform: `translate(calc(-50% + ${dx * 0.4}px), calc(-50% + ${dy * 0.65}px)) scale(0.85)`, opacity: 0.95, offset: 0.45 },
+            { transform: `translate(calc(-50% + ${dx * 0.85}px), calc(-50% + ${dy * 0.9}px)) scale(0.55)`, opacity: 0.85, offset: 0.8 },
+            { transform: `translate(calc(-50% + ${dx}px), calc(-50% + ${dy}px)) scale(0.35)`, opacity: 0, offset: 1 },
         ], {
             duration: 650,
             easing: 'cubic-bezier(0.4, 0, 0.2, 1)',
@@ -352,11 +358,18 @@ export function flyXPToStar(sourceEl, amount) {
 
         anim.onfinish = () => {
             flyer.remove();
-            // Pulse the star on arrival
+            // Pulse the star AND the number on arrival
             const star = target.querySelector('svg') || target;
             star.classList.remove('animate-number-pop');
             void star.offsetWidth;
             star.classList.add('animate-number-pop');
+
+            const numberSpan = target.querySelector('span.font-semibold');
+            if (numberSpan) {
+                numberSpan.classList.remove('animate-number-pop');
+                void numberSpan.offsetWidth;
+                numberSpan.classList.add('animate-number-pop');
+            }
             resolve();
         };
     });

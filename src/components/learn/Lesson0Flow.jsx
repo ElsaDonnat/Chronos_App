@@ -288,6 +288,7 @@ export default function Lesson0Flow({ lesson, onComplete }) {
     useEffect(() => {
         if (phase === PHASE.SUMMARY && !xpDispatched.current) {
             xpDispatched.current = true;
+            window.dispatchEvent(new Event('freezeXP'));
             dispatch({ type: 'COMPLETE_LESSON', lessonId: 'lesson-0' });
             dispatch({ type: 'ADD_XP', amount: greenCount * 5 + yellowCount * 2 });
         }
@@ -916,6 +917,7 @@ export default function Lesson0Flow({ lesson, onComplete }) {
                     <Button className="w-full" onClick={async () => {
                         const el = document.getElementById('xp-earned-display');
                         if (el) await flyXPToStar(el, xp);
+                        window.dispatchEvent(new Event('unfreezeXP'));
                         onComplete();
                     }}>
                         Start Learning

@@ -1,6 +1,10 @@
 import { useEffect, useRef } from 'react';
 import { useApp } from '../context/AppContext';
 import { CORE_EVENT_COUNT } from './events';
+import { LESSONS, ALL_LEVEL2_LESSONS } from './lessons';
+
+const LEVEL1_COUNT = LESSONS.length;           // 21
+const TOTAL_LESSON_COUNT = LEVEL1_COUNT + ALL_LEVEL2_LESSONS.length; // 21 + 28 = 49
 
 export const ACHIEVEMENTS = [
     // ─── Learning ───
@@ -8,6 +12,7 @@ export const ACHIEVEMENTS = [
         id: 'first-lesson',
         title: 'First Steps',
         description: 'Complete your first lesson',
+        hint: 'Complete any lesson from the Learn tab to take your first steps into history.',
         emoji: '\uD83D\uDC63',
         category: 'learning',
         check: (state) => Object.keys(state.completedLessons).length >= 1,
@@ -34,11 +39,28 @@ export const ACHIEVEMENTS = [
     {
         id: 'all-lessons',
         title: 'Historian',
-        description: 'Complete all 21 lessons',
+        description: 'Complete all Level 1 lessons',
+        hint: 'Finish all 21 core lessons in the main learning path (Level 1) to earn this achievement.',
         emoji: '\uD83C\uDFDB\uFE0F',
         category: 'learning',
-        check: (state) => Object.keys(state.completedLessons).length >= 21,
-        progress: (state) => ({ current: Math.min(Object.keys(state.completedLessons).length, 21), target: 21 }),
+        check: (state) => {
+            const l1 = Object.keys(state.completedLessons).filter(k => k.startsWith('lesson-')).length;
+            return l1 >= LEVEL1_COUNT;
+        },
+        progress: (state) => {
+            const l1 = Object.keys(state.completedLessons).filter(k => k.startsWith('lesson-')).length;
+            return { current: Math.min(l1, LEVEL1_COUNT), target: LEVEL1_COUNT };
+        },
+    },
+    {
+        id: 'all-levels',
+        title: 'Grand Historian',
+        description: 'Complete every lesson across both levels',
+        hint: 'Finish all Level 1 core lessons and every Level 2 chapter to earn this prestigious achievement.',
+        emoji: '\uD83D\uDC51',
+        category: 'learning',
+        check: (state) => Object.keys(state.completedLessons).length >= TOTAL_LESSON_COUNT,
+        progress: (state) => ({ current: Math.min(Object.keys(state.completedLessons).length, TOTAL_LESSON_COUNT), target: TOTAL_LESSON_COUNT }),
     },
 
     // ─── Streaks ───
@@ -113,6 +135,7 @@ export const ACHIEVEMENTS = [
         id: 'discover-all',
         title: 'Cartographer',
         description: `Discover all ${CORE_EVENT_COUNT} events`,
+        hint: `Complete lessons and practice to encounter all ${CORE_EVENT_COUNT} historical events in Chronos.`,
         emoji: '\uD83C\uDF0D',
         category: 'discovery',
         check: (state) => (state.seenEvents || []).length >= CORE_EVENT_COUNT,
@@ -135,6 +158,7 @@ export const ACHIEVEMENTS = [
         id: 'mastery-5',
         title: 'Sharp Mind',
         description: 'Master 5 events (7+ mastery)',
+        hint: 'Score 7 or higher on 5 different events. Practice events you\u2019ve already seen to boost their mastery.',
         emoji: '\uD83E\uDDE0',
         category: 'mastery',
         check: (state) => Object.values(state.eventMastery || {}).filter(m => m.overallMastery >= 7).length >= 5,

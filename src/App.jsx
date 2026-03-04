@@ -42,6 +42,12 @@ export default function App() {
   // Ref for child pages to register a back handler
   const backHandlerRef = useRef(null);
 
+  // ─── "Keep Going" encouragement modal ─────
+  const [showEncouragement, setShowEncouragement] = useState(false);
+  const encourageSessionCountRef = useRef(0);   // times shown this session (max 2)
+  const sessionActivityCountRef = useRef(0);     // qualifying activities this session
+  const lastSessionLengthRef = useRef(state.studySessions?.length || 0);
+
   // Achievement checker — runs on state changes
   useAchievementChecker();
 
@@ -55,6 +61,47 @@ export default function App() {
       return () => clearTimeout(timer);
     }
   }, [state.newAchievements, dispatch]);
+
+  // Track activity completions for "Keep Going" encouragement
+  useEffect(() => {
+    const currentLength = (state.studySessions || []).length;
+    const diff = currentLength - lastSessionLengthRef.current;
+    if (diff <= 0) return;
+    lastSessionLengthRef.current = currentLength;
+
+    const recent = (state.studySessions || []).slice(-diff);
+    const qualifying = recent.filter(s =>
+      ['lesson', 'practice', 'challenge'].includes(s.type)
+    ).length;
+    const prevCount = sessionActivityCountRef.current;
+    sessionActivityCountRef.current += qualifying;
+    const newCount = sessionActivityCountRef.current;
+
+    // Trigger at every 3rd activity (3, 6, 9...)
+    if (Math.floor(newCount / 3) > Math.floor(prevCount / 3) && newCount >= 3) {
+      // Session cap: max 2
+      if (encourageSessionCountRef.current >= 2) return;
+      // Daily cap: max 4
+      const todayStr = new Date().toISOString().split('T')[0];
+      let dailyCount = 0;
+      try {
+        const raw = localStorage.getItem('chronos-encourage-today');
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (parsed.date === todayStr) dailyCount = parsed.count;
+        }
+      } catch { /* ignore */ }
+      if (dailyCount >= 4) return;
+
+      encourageSessionCountRef.current += 1;
+      localStorage.setItem('chronos-encourage-today', JSON.stringify({
+        date: todayStr, count: dailyCount + 1,
+      }));
+      // Defer setState to avoid synchronous setState-in-effect
+      const timer = setTimeout(() => setShowEncouragement(true), 0);
+      return () => clearTimeout(timer);
+    }
+  }, [state.studySessions]);
 
   useEffect(() => {
     mainRef.current?.scrollTo(0, 0);
@@ -137,6 +184,13 @@ export default function App() {
     !shouldShowRating &&
     !shouldShowNotificationOnboarding &&
     onboardingDone;
+
+  // "Keep Going" encouragement — avoid stacking with other modals
+  const shouldShowEncouragement = showEncouragement
+    && !inSession
+    && !shouldShowRating
+    && !shouldShowNotificationOnboarding
+    && !shouldShowMusicPrompt;
 
   // Determine if onboarding overlay should show
   const showOnboardingOverlay = state.onboardingStep
@@ -248,15 +302,24 @@ export default function App() {
       )}
       {shouldShowMusicPrompt && (
         <ConfirmModal
-          title="Enjoying the Music?"
-          message="Chronos plays relaxing ambient music inspired by antiquity while you learn. Want to keep it on? You can change this anytime in Settings."
-          confirmLabel="Keep It On"
-          cancelLabel="Turn It Off"
+          title="Background Music"
+          message="Chronos plays a relaxing ambient soundscape while you study. You can adjust the music and sound effect volumes separately in Settings — or slide them all the way down to mute."
+          confirmLabel="Got It"
+          cancelLabel="Mute Music"
           onConfirm={() => dispatch({ type: 'DISMISS_MUSIC_PROMPT' })}
           onCancel={() => {
-            dispatch({ type: 'TOGGLE_MUSIC' });
+            dispatch({ type: 'SET_MUSIC_VOLUME', value: 0 });
             dispatch({ type: 'DISMISS_MUSIC_PROMPT' });
           }}
+        />
+      )}
+      {shouldShowEncouragement && (
+        <ConfirmModal
+          title="3 in a row!"
+          message="Keep going \u2014 and remember to take a break."
+          confirmLabel="OK"
+          cancelLabel={null}
+          onConfirm={() => setShowEncouragement(false)}
         />
       )}
       {showWeekTracker && <WeekTracker onClose={() => setShowWeekTracker(false)} />}

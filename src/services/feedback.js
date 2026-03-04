@@ -19,10 +19,10 @@ import { Haptics, ImpactStyle, NotificationType } from '@capacitor/haptics';
 
 // ── Configuration (synced from AppContext) ──────────────────────────
 
-let config = { soundEnabled: true, hapticsEnabled: true };
+let config = { soundVolume: 1, hapticsEnabled: true };
 
-export function configure({ soundEnabled, hapticsEnabled }) {
-  config = { soundEnabled, hapticsEnabled };
+export function configure({ soundVolume, hapticsEnabled }) {
+  config = { soundVolume: soundVolume ?? 1, hapticsEnabled };
 }
 
 // ── Audio Context (lazy) ────────────────────────────────────────────
@@ -41,7 +41,7 @@ function getAudioContext() {
 // ── Tone primitives ─────────────────────────────────────────────────
 
 function playTone(freq, duration, startDelay = 0, gain = 0.12, waveform = 'triangle') {
-  if (!config.soundEnabled) return;
+  if (!config.soundVolume) return;
   try {
     const ac = getAudioContext();
     const osc = ac.createOscillator();
@@ -54,12 +54,13 @@ function playTone(freq, duration, startDelay = 0, gain = 0.12, waveform = 'trian
     osc.connect(vol);
     vol.connect(ac.destination);
 
+    const scaledGain = gain * config.soundVolume;
     const start = ac.currentTime + startDelay;
     // Smooth attack
     vol.gain.setValueAtTime(0, start);
-    vol.gain.linearRampToValueAtTime(gain, start + 0.02);
+    vol.gain.linearRampToValueAtTime(scaledGain, start + 0.02);
     // Sustain then smooth decay
-    vol.gain.setValueAtTime(gain, start + duration * 0.5);
+    vol.gain.setValueAtTime(scaledGain, start + duration * 0.5);
     vol.gain.exponentialRampToValueAtTime(0.001, start + duration);
 
     osc.start(start);

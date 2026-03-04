@@ -12,6 +12,42 @@ import DailyQuizFlow from '../components/DailyQuizFlow';
 import Mascot from '../components/Mascot';
 import LessonIcon from '../components/LessonIcon';
 
+// ─── "This Week" card session tracking (survives tab switches, resets on app reload) ───
+let _thisWeekShown = false;       // has the card been shown & acknowledged this session?
+let _thisWeekDismissed = false;   // was it dismissed via X?
+let _completionsSinceTrigger = 0; // qualifying activities since last show
+let _lastTrackedSessionCount = -1; // initialized per-session on first render
+
+function _getWeeklyShownToday() {
+    const todayStr = new Date().toISOString().split('T')[0];
+    try {
+        const raw = localStorage.getItem('chronos-weekly-shown-today');
+        if (raw) {
+            const parsed = JSON.parse(raw);
+            if (parsed.date === todayStr) return parsed;
+        }
+    } catch { /* ignore */ }
+    return { date: todayStr, count: 0 };
+}
+
+function _incrementWeeklyShownToday() {
+    const current = _getWeeklyShownToday();
+    localStorage.setItem('chronos-weekly-shown-today', JSON.stringify({
+        date: current.date, count: current.count + 1,
+    }));
+}
+
+// Subtle era-based accent colors for Level 1 lesson icons
+// Warm progression: golden sand → warm amber (very subtle)
+function getEraAccent(lessonNumber) {
+    if (lessonNumber === 0) return '#8B4157';    // prologue: original burgundy
+    if (lessonNumber <= 3) return '#927862';      // prehistory: warm golden sand
+    if (lessonNumber <= 8) return '#8E7059';      // ancient: warm earth
+    if (lessonNumber <= 12) return '#8A6850';     // medieval: amber earth
+    if (lessonNumber <= 15) return '#866047';     // early modern: warm amber
+    return '#82583E';                              // modern: deep amber
+}
+
 export default function LearnPage({ onSessionChange, registerBackHandler, onTabChange }) {
     const { state, dispatch } = useApp();
     const [activeLessonId, setActiveLessonId] = useState(null);
@@ -117,7 +153,7 @@ export default function LearnPage({ onSessionChange, registerBackHandler, onTabC
         return (state.studySessions || []).length > parseInt(snap, 10);
     }, [isDailyCompleted, today, state.studySessions]);
 
-    // ─── Weekly insights (shown every 3 days) ─────────
+    // ─── "This Week" card (session-based, day 2+, max 2/day) ─────────
     const weekStart = useMemo(() => {
         const d = new Date();
         const day = d.getDay(); // 0=Sun
@@ -125,12 +161,6 @@ export default function LearnPage({ onSessionChange, registerBackHandler, onTabC
         d.setDate(d.getDate() - diff);
         return d.toISOString().split('T')[0];
     }, []);
-    const [weekInsightsDismissed, setWeekInsightsDismissed] = useState(() => {
-        const lastDismissed = localStorage.getItem('chronos-weekly-dismissed');
-        if (!lastDismissed) return false;
-        const daysSince = Math.floor((Date.now() - new Date(lastDismissed).getTime()) / 86400000);
-        return daysSince < 3;
-    });
 
     const weeklyInsights = useMemo(() => {
         const sessions = (state.studySessions || []).filter(s => s.date >= weekStart);
@@ -142,8 +172,57 @@ export default function LearnPage({ onSessionChange, registerBackHandler, onTabC
         };
     }, [state.studySessions, weekStart]);
 
-    const showWeeklyInsights = weeklyInsights && !weekInsightsDismissed
-        && (state.seenEvents || []).length >= 3;
+    // Day 2+ check: user has been active on a previous day
+    const isDay2Plus = useMemo(() => {
+        if (state.lastActiveDate && state.lastActiveDate < today) return true;
+        return (state.studySessions || []).some(s => s.date && s.date.split('T')[0] < today);
+    }, [state.lastActiveDate, state.studySessions, today]);
+
+    // Initialize module-level session count tracker on first render
+    if (_lastTrackedSessionCount === -1) {
+        _lastTrackedSessionCount = (state.studySessions || []).length;
+    }
+
+    // Track qualifying activity completions for the 5-activity re-trigger
+    const [thisWeekDismissed, setThisWeekDismissed] = useState(_thisWeekDismissed);
+    const [thisWeekShown, setThisWeekShown] = useState(_thisWeekShown);
+    const currentSessionCount = (state.studySessions || []).length;
+
+    useEffect(() => {
+        const diff = currentSessionCount - _lastTrackedSessionCount;
+        if (diff <= 0) return;
+        const recent = (state.studySessions || []).slice(-diff);
+        const qualifying = recent.filter(s =>
+            ['lesson', 'practice', 'challenge'].includes(s.type)
+        ).length;
+        _completionsSinceTrigger += qualifying;
+        _lastTrackedSessionCount = currentSessionCount;
+
+        // Re-trigger after 5 qualifying activities if dismissed and daily cap allows
+        if (_completionsSinceTrigger >= 5 && _thisWeekDismissed) {
+            const { count } = _getWeeklyShownToday();
+            if (count < 2) {
+                _thisWeekDismissed = false;
+                _thisWeekShown = false;
+                _completionsSinceTrigger = 0;
+                setThisWeekDismissed(false);
+                setThisWeekShown(false);
+            }
+        }
+    }, [currentSessionCount]); // eslint-disable-line react-hooks/exhaustive-deps
+
+    const showWeeklyInsights = isDay2Plus && weeklyInsights && !thisWeekDismissed
+        && _getWeeklyShownToday().count < 2;
+
+    // Record when the card becomes visible
+    useEffect(() => {
+        if (showWeeklyInsights && !thisWeekShown) {
+            _thisWeekShown = true;
+            _completionsSinceTrigger = 0;
+            _incrementWeeklyShownToday();
+            setThisWeekShown(true);
+        }
+    }, [showWeeklyInsights, thisWeekShown]); // eslint-disable-line react-hooks/exhaustive-deps
 
     // Map lesson IDs to their era group (for skip-ahead dividers)
     const lessonEraEndMap = useMemo(() => {
@@ -457,8 +536,9 @@ export default function LearnPage({ onSessionChange, registerBackHandler, onTabC
                                         </svg>
                                         <button onClick={(e) => {
                                             e.stopPropagation();
-                                            setWeekInsightsDismissed(true);
-                                            localStorage.setItem('chronos-weekly-dismissed', new Date().toISOString().split('T')[0]);
+                                            _thisWeekDismissed = true;
+                                            _completionsSinceTrigger = 0;
+                                            setThisWeekDismissed(true);
                                         }} className="p-1 -mr-1" style={{ color: 'var(--color-ink-faint)' }}>
                                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                                 <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
@@ -496,6 +576,7 @@ export default function LearnPage({ onSessionChange, registerBackHandler, onTabC
                                 const events = isLesson0 ? [] : getEventsByIds(lesson.eventIds);
                                 const masteryData = isLesson0 ? [] : lesson.eventIds.map(id => state.eventMastery[id]).filter(Boolean);
                                 const isSkipped = !isLesson0 && lesson.eventIds.every(id => (state.skippedEvents || []).includes(id));
+                                const accentColor = getEraAccent(lesson.number);
 
                                 // Pulse lesson 0 during onboarding guide
                                 const pulseLesson0 = isOnboardingGuide && isLesson0;
@@ -511,28 +592,27 @@ export default function LearnPage({ onSessionChange, registerBackHandler, onTabC
                                     <Fragment key={lesson.id}>
                                         <Card
                                             onClick={isUnlocked ? () => handleLessonClick(lesson.id) : undefined}
-                                            className={`lesson-card-row animate-fade-in-up ${!isUnlocked ? 'relative overflow-hidden' : ''} ${pulseLesson0 ? 'onboarding-pulse' : ''}`}
+                                            className={`lesson-card-row animate-fade-in-up relative overflow-hidden ${pulseLesson0 ? 'onboarding-pulse' : ''}`}
                                             style={{
                                                 animationDelay: `${index * 60}ms`,
                                                 animationFillMode: 'backwards',
                                                 backgroundColor: isCompleted ? 'rgba(5, 150, 105, 0.04)' : 'var(--color-card)',
                                             }}
                                         >
-                                            {/* Locked lesson: faded icon background + lock badge */}
+                                            {/* Decorative background icon — always visible */}
+                                            <span className="absolute right-1 top-1/2 -translate-y-1/2 pointer-events-none select-none"
+                                                style={{ opacity: 0.045 }}>
+                                                <LessonIcon index={lesson.number} size={72} color={accentColor} />
+                                            </span>
+                                            {/* Lock badge for locked lessons */}
                                             {!isUnlocked && (
-                                                <>
-                                                    <span className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none select-none"
-                                                        style={{ opacity: 0.06 }}>
-                                                        <LessonIcon index={lesson.number} size={48} color="var(--color-ink)" />
-                                                    </span>
-                                                    <div className="absolute top-2 right-2 z-10 w-5 h-5 rounded-full flex items-center justify-center"
-                                                        style={{ backgroundColor: 'rgba(var(--color-ink-rgb), 0.08)' }}>
-                                                        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="var(--color-ink-secondary)" strokeWidth="2.5">
-                                                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
-                                                            <path d="M7 11V7a5 5 0 0 1 10 0v4" />
-                                                        </svg>
-                                                    </div>
-                                                </>
+                                                <div className="absolute top-2 right-2 z-10 w-5 h-5 rounded-full flex items-center justify-center"
+                                                    style={{ backgroundColor: 'rgba(var(--color-ink-rgb), 0.08)' }}>
+                                                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="var(--color-ink-secondary)" strokeWidth="2.5">
+                                                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                                                        <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                                                    </svg>
+                                                </div>
                                             )}
                                             <div className="flex items-center gap-4">
                                                 {/* Progress indicator */}
@@ -540,12 +620,12 @@ export default function LearnPage({ onSessionChange, registerBackHandler, onTabC
                                                     <div className="relative">
                                                         <div className="w-11 h-11 rounded-full flex items-center justify-center" style={{
                                                             backgroundColor: !isUnlocked ? 'rgba(var(--color-ink-rgb), 0.06)' :
-                                                                isCompleted ? 'rgba(5, 150, 105, 0.10)' : 'rgba(139, 65, 87, 0.04)',
+                                                                isCompleted ? 'rgba(5, 150, 105, 0.10)' : `${accentColor}0A`,
                                                             border: !isUnlocked ? '1.5px solid rgba(var(--color-ink-rgb), 0.10)' :
-                                                                isCompleted ? '2px solid rgba(5, 150, 105, 0.35)' : '2px solid var(--color-burgundy)',
+                                                                isCompleted ? '2px solid rgba(5, 150, 105, 0.35)' : `2px solid ${accentColor}`,
                                                         }}>
                                                             <span style={{ opacity: isUnlocked ? 1 : 0.55 }}>
-                                                                <LessonIcon index={lesson.number} size={20} color={isCompleted ? 'var(--color-success)' : 'var(--color-burgundy)'} />
+                                                                <LessonIcon index={lesson.number} size={20} color={accentColor} />
                                                             </span>
                                                         </div>
                                                         {isUnlocked && isCompleted && (
@@ -558,7 +638,7 @@ export default function LearnPage({ onSessionChange, registerBackHandler, onTabC
                                                         )}
                                                         {isUnlocked && !isCompleted && (
                                                             <div className="absolute -bottom-0.5 -right-0.5 rounded-full flex items-center justify-center px-1 py-px"
-                                                                style={{ backgroundColor: 'var(--color-burgundy)', boxShadow: '0 0 0 2px var(--color-card)' }}>
+                                                                style={{ backgroundColor: accentColor, boxShadow: '0 0 0 2px var(--color-card)' }}>
                                                                 <span className="text-[8px] font-bold uppercase text-white leading-none">New</span>
                                                             </div>
                                                         )}
@@ -803,27 +883,26 @@ export default function LearnPage({ onSessionChange, registerBackHandler, onTabC
                                                     <Card
                                                         key={lesson.id}
                                                         onClick={isUnlocked ? () => handleLessonClick(lesson.id) : undefined}
-                                                        className={`lesson-card-row animate-fade-in-up ml-3 ${!isUnlocked ? 'relative overflow-hidden' : ''}`}
+                                                        className={`lesson-card-row animate-fade-in-up ml-3 relative overflow-hidden`}
                                                         style={{
                                                             animationDelay: `${lIdx * 60}ms`,
                                                             animationFillMode: 'backwards',
                                                             backgroundColor: isCompleted ? 'rgba(5, 150, 105, 0.04)' : 'var(--color-card)',
                                                         }}
                                                     >
+                                                        {/* Decorative background icon */}
+                                                        <span className="absolute right-1 top-1/2 -translate-y-1/2 pointer-events-none select-none"
+                                                            style={{ opacity: 0.045 }}>
+                                                            <LessonIcon index={chapter.iconIndex || 6} size={72} color={chapter.color} />
+                                                        </span>
                                                         {!isUnlocked && (
-                                                            <>
-                                                                <span className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none select-none"
-                                                                    style={{ opacity: 0.06 }}>
-                                                                    <LessonIcon index={chapter.iconIndex || 6} size={48} color="var(--color-ink)" />
-                                                                </span>
-                                                                <div className="absolute top-2 right-2 z-10 w-5 h-5 rounded-full flex items-center justify-center"
-                                                                    style={{ backgroundColor: 'rgba(var(--color-ink-rgb), 0.08)' }}>
-                                                                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="var(--color-ink-secondary)" strokeWidth="2.5">
-                                                                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
-                                                                        <path d="M7 11V7a5 5 0 0 1 10 0v4" />
-                                                                    </svg>
-                                                                </div>
-                                                            </>
+                                                            <div className="absolute top-2 right-2 z-10 w-5 h-5 rounded-full flex items-center justify-center"
+                                                                style={{ backgroundColor: 'rgba(var(--color-ink-rgb), 0.08)' }}>
+                                                                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="var(--color-ink-secondary)" strokeWidth="2.5">
+                                                                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                                                                    <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                                                                </svg>
+                                                            </div>
                                                         )}
                                                         <div className="flex items-center gap-4">
                                                             <div className="flex-shrink-0">
@@ -835,7 +914,7 @@ export default function LearnPage({ onSessionChange, registerBackHandler, onTabC
                                                                             isCompleted ? '2px solid rgba(5, 150, 105, 0.35)' : `2px solid ${chapter.color}`,
                                                                     }}>
                                                                         <span style={{ opacity: isUnlocked ? 1 : 0.55 }}>
-                                                                            <LessonIcon index={chapter.iconIndex || 6} size={20} color={isCompleted ? 'var(--color-success)' : chapter.color} />
+                                                                            <LessonIcon index={chapter.iconIndex || 6} size={20} color={chapter.color} />
                                                                         </span>
                                                                     </div>
                                                                     {isUnlocked && isCompleted && (

@@ -4,6 +4,7 @@ import { ALL_EVENTS } from '../data/events';
 import { LESSONS, ALL_LEVEL2_LESSONS } from '../data/lessons';
 import { Card, Button, Divider, ConfirmModal } from './shared';
 import Mascot from './Mascot';
+import StreakFlame from './StreakFlame';
 import {
     rescheduleNotifications,
     cancelAllReminders,
@@ -176,7 +177,10 @@ export default function Settings() {
                         <div className="text-xs mt-1" style={{ color: 'var(--color-ink-muted)' }}>Total XP</div>
                     </Card>
                     <Card className="text-center p-4">
-                        <div className="text-2xl font-bold" style={{ color: 'var(--color-burgundy)' }}>{state.currentStreak}</div>
+                        <div className="flex items-center justify-center gap-1.5">
+                            <StreakFlame status={state.currentStreak > 0 ? 'active' : 'inactive'} size={22} />
+                            <div className="text-2xl font-bold" style={{ color: 'var(--color-burgundy)' }}>{state.currentStreak}</div>
+                        </div>
                         <div className="text-xs mt-1" style={{ color: 'var(--color-ink-muted)' }}>Day Streak</div>
                     </Card>
                     <Card className="text-center p-4">
@@ -225,41 +229,19 @@ export default function Settings() {
 
                 {/* Lesson Settings */}
                 {(() => {
-                    const cards = state.cardsPerLesson || 3;
                     const recap = state.recapPerCard ?? 2;
-                    const totalQ = cards * (2 + recap);
+                    const totalQ = 3 * (2 + recap);
                     const estMin = Math.max(1, Math.round(totalQ / 2));
                     return (
                         <>
-                            <Card className="mb-3 p-4">
-                                <div className="text-sm font-semibold mb-3" style={{ color: 'var(--color-ink-secondary)' }}>Cards per Lesson</div>
-                                <div className="flex gap-2">
-                                    {[1, 2, 3].map(n => {
-                                        const isActive = cards === n;
-                                        return (
-                                            <button
-                                                key={n}
-                                                onClick={() => dispatch({ type: 'SET_CARDS_PER_LESSON', value: n })}
-                                                className="flex-1 py-2.5 rounded-xl text-sm font-semibold transition-colors"
-                                                style={{
-                                                    backgroundColor: isActive ? 'var(--color-burgundy)' : 'var(--color-card)',
-                                                    color: isActive ? 'white' : 'var(--color-ink-secondary)',
-                                                    border: isActive ? 'none' : '1px solid rgba(var(--color-ink-rgb), 0.08)',
-                                                }}
-                                            >
-                                                {n} {n === 1 ? 'card' : 'cards'}
-                                            </button>
-                                        );
-                                    })}
-                                </div>
-                            </Card>
                             <Card className="mb-3 p-4">
                                 <div className="text-sm font-semibold mb-3" style={{ color: 'var(--color-ink-secondary)' }}>Recap Intensity</div>
                                 <div className="flex gap-2">
                                     {[
                                         { value: 0, label: 'Off' },
-                                        { value: 1, label: 'Light' },
-                                        { value: 2, label: 'Full' },
+                                        { value: 1, label: '1/card' },
+                                        { value: 2, label: '2/card' },
+                                        { value: 3, label: '3/card' },
                                     ].map(({ value, label }) => {
                                         const isActive = recap === value;
                                         return (
@@ -282,6 +264,7 @@ export default function Settings() {
                                     <span className="flex-1 text-center text-[11px]" style={{ color: 'var(--color-ink-faint)' }}>No recap</span>
                                     <span className="flex-1 text-center text-[11px]" style={{ color: 'var(--color-ink-faint)' }}>1 per card</span>
                                     <span className="flex-1 text-center text-[11px]" style={{ color: 'var(--color-ink-faint)' }}>2 per card</span>
+                                    <span className="flex-1 text-center text-[11px]" style={{ color: 'var(--color-ink-faint)' }}>3 per card</span>
                                 </div>
                             </Card>
                             <p className="text-xs text-center mb-4" style={{ color: 'var(--color-ink-muted)' }}>
@@ -403,32 +386,52 @@ export default function Settings() {
                 </Card>
 
                 {/* Sound & Haptics */}
-                <Card className="mb-3 p-4">
-                    <div className="flex items-center justify-between mb-3">
-                        <div className="flex items-center gap-2">
-                            <span style={{ fontSize: '16px' }}>&#x1F50A;</span>
-                            <span className="text-sm font-semibold" style={{ color: 'var(--color-ink-secondary)' }}>Sound effects</span>
+                <Card className="mb-3 p-4 space-y-4">
+                    {/* Sound effects volume */}
+                    <div>
+                        <div className="flex items-center justify-between mb-2">
+                            <div className="flex items-center gap-2">
+                                <span style={{ fontSize: '16px' }}>{(state.soundVolume ?? 1) === 0 ? '🔇' : '🔊'}</span>
+                                <span className="text-sm font-semibold" style={{ color: 'var(--color-ink-secondary)' }}>Sound effects</span>
+                            </div>
+                            <span className="text-xs tabular-nums" style={{ color: 'var(--color-ink-muted)', minWidth: '2.5rem', textAlign: 'right' }}>
+                                {(state.soundVolume ?? 1) === 0 ? 'Off' : `${Math.round((state.soundVolume ?? 1) * 100)}%`}
+                            </span>
                         </div>
-                        <button
-                            type="button"
-                            role="switch"
-                            aria-checked={state.soundEnabled}
-                            onClick={() => dispatch({ type: 'TOGGLE_SOUND' })}
-                            className="relative w-11 h-6 rounded-full transition-colors"
-                            style={{
-                                backgroundColor: state.soundEnabled ? 'var(--color-burgundy)' : 'rgba(var(--color-ink-rgb), 0.15)',
-                            }}
-                        >
-                            <span
-                                className="absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white transition-transform"
-                                style={{
-                                    transform: state.soundEnabled ? 'translateX(20px)' : 'translateX(0)',
-                                    boxShadow: '0 1px 3px rgba(0,0,0,0.2)',
-                                }}
-                            />
-                        </button>
+                        <input
+                            type="range" min="0" max="1" step="0.05"
+                            value={state.soundVolume ?? 1}
+                            onChange={e => dispatch({ type: 'SET_SOUND_VOLUME', value: parseFloat(e.target.value) })}
+                            className="w-full h-1.5 rounded-full appearance-none cursor-pointer"
+                            style={{ accentColor: 'var(--color-burgundy)' }}
+                        />
                     </div>
-                    <div className="flex items-center justify-between">
+
+                    {/* Ambient music volume */}
+                    <div className="pt-3" style={{ borderTop: '1px solid rgba(var(--color-ink-rgb), 0.06)' }}>
+                        <div className="flex items-center justify-between mb-2">
+                            <div className="flex items-center gap-2">
+                                <span style={{ fontSize: '16px' }}>{(state.musicVolume ?? 1) === 0 ? '🔇' : '🎵'}</span>
+                                <div>
+                                    <span className="text-sm font-semibold" style={{ color: 'var(--color-ink-secondary)' }}>Ambient music</span>
+                                    <div className="text-[11px]" style={{ color: 'var(--color-ink-muted)' }}>Relaxing antiquity soundscape</div>
+                                </div>
+                            </div>
+                            <span className="text-xs tabular-nums" style={{ color: 'var(--color-ink-muted)', minWidth: '2.5rem', textAlign: 'right' }}>
+                                {(state.musicVolume ?? 1) === 0 ? 'Off' : `${Math.round((state.musicVolume ?? 1) * 100)}%`}
+                            </span>
+                        </div>
+                        <input
+                            type="range" min="0" max="1" step="0.05"
+                            value={state.musicVolume ?? 1}
+                            onChange={e => dispatch({ type: 'SET_MUSIC_VOLUME', value: parseFloat(e.target.value) })}
+                            className="w-full h-1.5 rounded-full appearance-none cursor-pointer"
+                            style={{ accentColor: 'var(--color-burgundy)' }}
+                        />
+                    </div>
+
+                    {/* Haptic feedback toggle */}
+                    <div className="flex items-center justify-between pt-3" style={{ borderTop: '1px solid rgba(var(--color-ink-rgb), 0.06)' }}>
                         <div className="flex items-center gap-2">
                             <span style={{ fontSize: '16px' }}>&#x1F4F3;</span>
                             <span className="text-sm font-semibold" style={{ color: 'var(--color-ink-secondary)' }}>Haptic feedback</span>
@@ -439,43 +442,11 @@ export default function Settings() {
                             aria-checked={state.hapticsEnabled}
                             onClick={() => dispatch({ type: 'TOGGLE_HAPTICS' })}
                             className="relative w-11 h-6 rounded-full transition-colors"
-                            style={{
-                                backgroundColor: state.hapticsEnabled ? 'var(--color-burgundy)' : 'rgba(var(--color-ink-rgb), 0.15)',
-                            }}
+                            style={{ backgroundColor: state.hapticsEnabled ? 'var(--color-burgundy)' : 'rgba(var(--color-ink-rgb), 0.15)' }}
                         >
                             <span
                                 className="absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white transition-transform"
-                                style={{
-                                    transform: state.hapticsEnabled ? 'translateX(20px)' : 'translateX(0)',
-                                    boxShadow: '0 1px 3px rgba(0,0,0,0.2)',
-                                }}
-                            />
-                        </button>
-                    </div>
-                    <div className="flex items-center justify-between mt-3 pt-3" style={{ borderTop: '1px solid rgba(var(--color-ink-rgb), 0.06)' }}>
-                        <div className="flex items-center gap-2">
-                            <span style={{ fontSize: '16px' }}>&#x1F3B6;</span>
-                            <div>
-                                <span className="text-sm font-semibold" style={{ color: 'var(--color-ink-secondary)' }}>Ambient music</span>
-                                <div className="text-[11px]" style={{ color: 'var(--color-ink-muted)' }}>Relaxing antiquity soundscape</div>
-                            </div>
-                        </div>
-                        <button
-                            type="button"
-                            role="switch"
-                            aria-checked={state.musicEnabled}
-                            onClick={() => dispatch({ type: 'TOGGLE_MUSIC' })}
-                            className="relative w-11 h-6 rounded-full transition-colors"
-                            style={{
-                                backgroundColor: state.musicEnabled ? 'var(--color-burgundy)' : 'rgba(var(--color-ink-rgb), 0.15)',
-                            }}
-                        >
-                            <span
-                                className="absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white transition-transform"
-                                style={{
-                                    transform: state.musicEnabled ? 'translateX(20px)' : 'translateX(0)',
-                                    boxShadow: '0 1px 3px rgba(0,0,0,0.2)',
-                                }}
+                                style={{ transform: state.hapticsEnabled ? 'translateX(20px)' : 'translateX(0)', boxShadow: '0 1px 3px rgba(0,0,0,0.2)' }}
                             />
                         </button>
                     </div>

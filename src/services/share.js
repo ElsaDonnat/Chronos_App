@@ -68,6 +68,15 @@ export function buildDailyQuizShareText({ correctCount, totalEvents, xpEarned, d
     return lines.join('\n');
 }
 
+export function buildAchievementShareText({ title, emoji }) {
+    const lines = [
+        `I just unlocked '${title}' ${emoji} on Chronos!`,
+        '',
+        `Learn history with Chronos \u2014 ${STORE_URL}`,
+    ];
+    return lines.join('\n');
+}
+
 export function buildStreakShareText({ currentStreak }) {
     const lines = [];
     if (currentStreak >= 7) {

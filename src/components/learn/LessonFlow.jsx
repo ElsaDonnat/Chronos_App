@@ -3,12 +3,13 @@ import { useApp } from '../../context/AppContext';
 import { getEventsByIds, getEventById, ALL_EVENTS, CATEGORY_CONFIG, ERA_BOUNDARY_EVENTS, ERA_RANGES, getEraBoundaryInfo } from '../../data/events';
 import { scoreDateAnswer, generateLocationOptions, generateWhatOptions, generateDateMCQOptions, generateDescriptionOptions, calculateXP, SCORE_COLORS, getScoreColor, getScoreLabel, shuffle } from '../../data/quiz';
 import { calculateNextReview } from '../../data/spacedRepetition';
-import { Card, Button, ProgressBar, CategoryTag, ImportanceTag, Divider, StarButton, ConfirmModal, ExpandableText, ControversyNote, AnimatedCounter, EventConnections, flyXPToStar } from '../shared';
+import { Card, Button, CategoryTag, ImportanceTag, Divider, StarButton, ConfirmModal, ExpandableText, ControversyNote, AnimatedCounter, EventConnections, flyXPToStar } from '../shared';
 import Mascot from '../Mascot';
 import LessonIcon from '../LessonIcon';
 import { LEVEL2_CHAPTERS } from '../../data/lessons';
 import * as feedback from '../../services/feedback';
 import { shareText, buildLessonShareText } from '../../services/share';
+import StreakFlame from '../StreakFlame';
 
 // ─── PHASES ────────────────────────────────────────────
 const PHASE = {
@@ -114,9 +115,8 @@ const PERIOD_INFO = {
 
 export default function LessonFlow({ lesson, onComplete }) {
     const { state, dispatch } = useApp();
-    const cardsPerLesson = state.cardsPerLesson || 3;
     const recapPerCard = state.recapPerCard ?? 2;
-    const events = useMemo(() => getEventsByIds(lesson.eventIds).slice(0, cardsPerLesson), [lesson, cardsPerLesson]);
+    const events = useMemo(() => getEventsByIds(lesson.eventIds).slice(0, 3), [lesson]);
 
     // Icon index: lesson.number for Level 1, chapter.iconIndex for Level 2
     const lessonIconIndex = useMemo(() => {
@@ -135,7 +135,7 @@ export default function LessonFlow({ lesson, onComplete }) {
     const [quizResults, setQuizResults] = useState([]);
     const [selectedDot, setSelectedDot] = useState(null);    // for result dot modal
     const [showExitConfirm, setShowExitConfirm] = useState(false);
-    const [celebrationData, setCelebrationData] = useState(null); // { event, greenCount, totalAnswered }
+    const [checkpointData, setCheckpointData] = useState(null); // { label, greenCount }
     const xpDispatched = useRef(false);
     const pendingNextAction = useRef(null);
     const lastAnswerScore = useRef(null);
@@ -241,6 +241,7 @@ export default function LessonFlow({ lesson, onComplete }) {
             xpDispatched.current = true;
             feedback.complete();
             const xp = calculateXP(quizResults);
+            window.dispatchEvent(new Event('freezeXP'));
             dispatch({ type: 'COMPLETE_LESSON', lessonId: lesson.id });
             dispatch({ type: 'ADD_XP', amount: xp });
             const duration = sessionStartTime.current ? Math.round((Date.now() - sessionStartTime.current) / 1000) : 0;
@@ -285,21 +286,19 @@ export default function LessonFlow({ lesson, onComplete }) {
         dispatch({ type: 'UPDATE_SR_SCHEDULE', eventId, ...next });
     }, [dispatch, state.srSchedule]);
 
-    // Helper: wrap onNext to show celebration on green answers
-    // Note: quizResults hasn't yet re-rendered with the latest answer (setQuizResults is async),
-    // so we +1 both counts to include the current green answer.
-    const handleNext = useCallback((originalNext, questionEvent) => {
-        if (lastAnswerScore.current === 'green') {
-            const greenSoFar = quizResults.filter(r => r.firstScore === 'green').length + 1;
-            setCelebrationData({ event: questionEvent, greenCount: greenSoFar, totalAnswered: quizResults.length + 1 });
+    // Helper: wrap onNext to show checkpoint at card boundaries
+    const handleNext = useCallback((originalNext, questionEvent, isCardBoundary = false) => {
+        if (isCardBoundary) {
+            const greenSoFar = quizResults.filter(r => r.firstScore === 'green').length;
             pendingNextAction.current = originalNext;
+            setCheckpointData({ label: isCardBoundary, greenCount: greenSoFar });
         } else {
             originalNext();
         }
     }, [quizResults]);
 
-    const dismissCelebration = useCallback(() => {
-        setCelebrationData(null);
+    const dismissCheckpoint = useCallback(() => {
+        setCheckpointData(null);
         if (pendingNextAction.current) {
             pendingNextAction.current();
             pendingNextAction.current = null;
@@ -307,10 +306,12 @@ export default function LessonFlow({ lesson, onComplete }) {
     }, []);
 
     // ════════════════════════════════════════════════════
-    // CELEBRATION INTERSTITIAL
+    // CHECKPOINT INTERSTITIAL (card boundaries)
     // ════════════════════════════════════════════════════
-    if (celebrationData) {
-        return <CelebrationCard data={celebrationData} onDismiss={dismissCelebration} />;
+    if (checkpointData) {
+        return <CheckpointScreen data={checkpointData} onDismiss={dismissCheckpoint}
+            quizResults={quizResults} totalQuestions={totalQuestions}
+            eventsCount={events.length} recapPerCard={recapPerCard} />;
     }
 
     // ════════════════════════════════════════════════════
@@ -504,24 +505,25 @@ export default function LessonFlow({ lesson, onComplete }) {
             <ExitConfirmModal show={showExitConfirm} onConfirm={onComplete} onCancel={() => setShowExitConfirm(false)} />
             <div className="lesson-flow-container animate-fade-in">
                 <div className="flex-shrink-0 pt-4">
-                    <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center justify-between mb-3">
                         <button onClick={handleExit} className="text-sm flex items-center gap-1" style={{ color: 'var(--color-ink-muted)' }}>
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="15 18 9 12 15 6" /></svg>
                             Exit
                         </button>
-                        <span className="text-sm font-medium" style={{ color: 'var(--color-ink-muted)' }}>
-                            Card {cardIndex + 1} of {events.length}
-                        </span>
-                    </div>
-
-                    <ProgressBar value={cardIndex + 1} max={events.length} />
-
-                    <div className="text-center mt-2 mb-1">
                         <span className="text-xs uppercase tracking-widest font-bold px-2.5 py-1 rounded-full"
                             style={{ backgroundColor: 'var(--color-burgundy-soft)', color: 'var(--color-burgundy)' }}>
                             📖 Study
                         </span>
                     </div>
+
+                    <ProgressTimeline
+                        quizResults={quizResults}
+                        totalQuestions={totalQuestions}
+                        eventsCount={events.length}
+                        recapPerCard={recapPerCard}
+                        currentQuestionIndex={cardIndex * 2}
+                        variant="header"
+                    />
                 </div>
 
                 <div className="flex-1 min-h-0 overflow-y-auto mt-4" key={event.id}>
@@ -653,25 +655,40 @@ export default function LessonFlow({ lesson, onComplete }) {
             return null;
         }
 
+        const isLastOfCard = learnQuizIndex === currentCardLearnQs.length - 1;
+
         return (
             <div className="py-4 animate-fade-in" key={`learn-q-${cardIndex}-${learnQuizIndex}`}>
-                <div className="flex items-center justify-between mb-4">
-                    <span className="text-sm" style={{ color: 'var(--color-ink-muted)' }}>
-                        Card {cardIndex + 1} · Question {learnQuizIndex + 1}/2
-                    </span>
-                    <span className="text-xs uppercase tracking-widest font-bold px-2.5 py-1 rounded-full"
-                        style={{ backgroundColor: 'var(--color-burgundy-soft)', color: 'var(--color-burgundy)' }}>
-                        📝 Learn Quiz
-                    </span>
+                <div className="mb-4">
+                    <div className="flex items-center justify-between mb-2">
+                        <span className="text-xs uppercase tracking-widest font-bold px-2.5 py-1 rounded-full"
+                            style={{ backgroundColor: 'var(--color-burgundy-soft)', color: 'var(--color-burgundy)' }}>
+                            📝 Learn Quiz
+                        </span>
+                        <span className="text-xs" style={{ color: 'var(--color-ink-faint)' }}>
+                            {answeredCount + 1}/{totalQuestions}
+                        </span>
+                    </div>
+                    <ProgressTimeline
+                        quizResults={quizResults}
+                        totalQuestions={totalQuestions}
+                        eventsCount={events.length}
+                        recapPerCard={recapPerCard}
+                        currentQuestionIndex={answeredCount}
+                        variant="header"
+                    />
                 </div>
-                <ProgressBar value={answeredCount + 1} max={totalQuestions} />
 
                 <div className="mt-6">
                     <QuizQuestion
                         question={q}
                         lessonEventIds={lesson.eventIds}
                         onAnswer={(score) => recordAnswer(q.event.id, q.type, score)}
-                        onNext={() => handleNext(() => setLearnQuizIndex(i => i + 1), q.event)}
+                        onNext={() => handleNext(
+                            () => setLearnQuizIndex(i => i + 1),
+                            q.event,
+                            isLastOfCard ? `Card ${cardIndex + 1} of ${events.length} complete` : false
+                        )}
                         onBack={learnQuizIndex > 0 ? () => setLearnQuizIndex(i => i - 1) : null}
                     />
                 </div>
@@ -736,25 +753,43 @@ export default function LessonFlow({ lesson, onComplete }) {
             return null;
         }
 
+        // Show recap checkpoint every 3 questions (when recapPerCard=2, i.e. 6 total recap Qs)
+        const recapGroupSize = recapPerCard === 2 ? 3 : recapQuestions.length;
+        const isRecapBoundary = recapGroupSize > 0
+            && (recapIndex + 1) % recapGroupSize === 0
+            && recapIndex < recapQuestions.length - 1;
+        const recapBoundaryLabel = isRecapBoundary
+            ? `Recap ${recapIndex + 1}/${recapQuestions.length}`
+            : false;
+
         return (
             <div className="py-4 animate-fade-in" key={`recap-${recapIndex}`}>
-                <div className="flex items-center justify-between mb-4">
-                    <span className="text-sm" style={{ color: 'var(--color-ink-muted)' }}>
-                        Recap {recapIndex + 1} / {recapQuestions.length}
-                    </span>
-                    <span className="text-xs uppercase tracking-widest font-bold px-2.5 py-1 rounded-full"
-                        style={{ backgroundColor: 'rgba(139, 65, 87, 0.15)', color: 'var(--color-burgundy)' }}>
-                        🔁 Recap
-                    </span>
+                <div className="mb-4">
+                    <div className="flex items-center justify-between mb-2">
+                        <span className="text-xs uppercase tracking-widest font-bold px-2.5 py-1 rounded-full"
+                            style={{ backgroundColor: 'rgba(139, 65, 87, 0.15)', color: 'var(--color-burgundy)' }}>
+                            🔁 Recap
+                        </span>
+                        <span className="text-xs" style={{ color: 'var(--color-ink-faint)' }}>
+                            {answeredCount + 1}/{totalQuestions}
+                        </span>
+                    </div>
+                    <ProgressTimeline
+                        quizResults={quizResults}
+                        totalQuestions={totalQuestions}
+                        eventsCount={events.length}
+                        recapPerCard={recapPerCard}
+                        currentQuestionIndex={answeredCount}
+                        variant="header"
+                    />
                 </div>
-                <ProgressBar value={answeredCount + 1} max={totalQuestions} />
 
                 <div className="mt-6">
                     {q.isDateInput ? (
                         <DateInputQuestion
                             event={q.event}
                             onAnswer={(score) => recordAnswer(q.event.id, 'date_input', score)}
-                            onNext={() => handleNext(() => setRecapIndex(i => i + 1), q.event)}
+                            onNext={() => handleNext(() => setRecapIndex(i => i + 1), q.event, recapBoundaryLabel)}
                             onBack={recapIndex > 0 ? () => setRecapIndex(i => i - 1) : null}
                             onSkip={() => setRecapIndex(i => i + 1)}
                         />
@@ -763,7 +798,7 @@ export default function LessonFlow({ lesson, onComplete }) {
                             question={q}
                             lessonEventIds={lesson.eventIds}
                             onAnswer={(score) => recordAnswer(q.event.id, q.type, score)}
-                            onNext={() => handleNext(() => setRecapIndex(i => i + 1), q.event)}
+                            onNext={() => handleNext(() => setRecapIndex(i => i + 1), q.event, recapBoundaryLabel)}
                             onBack={recapIndex > 0 ? () => setRecapIndex(i => i - 1) : null}
                             onSkip={() => setRecapIndex(i => i + 1)}
                         />
@@ -904,13 +939,15 @@ export default function LessonFlow({ lesson, onComplete }) {
                                         <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" fill="var(--color-bronze-light)" />
                                     </svg>
                                     <div className="text-left">
-                                        <AnimatedCounter value={xp} prefix="+" duration={600} delay={600} className="text-xl font-bold leading-none" style={{ color: 'var(--color-burgundy)' }} />
+                                        <AnimatedCounter value={xp} prefix="+" duration={600} delay={1050} className="text-xl font-bold leading-none" style={{ color: 'var(--color-burgundy)' }} />
                                         <div className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: 'var(--color-ink-faint)' }}>XP earned</div>
                                     </div>
                                 </div>
                                 <div className="w-px h-10" style={{ backgroundColor: 'rgba(var(--color-ink-rgb), 0.08)' }} />
                                 <div className="flex items-center gap-2 animate-scale-in" style={{ animationDelay: '600ms' }}>
-                                    <span className={`text-2xl ${streak > 1 ? 'animate-streak-bounce' : ''}`} style={{ animationDelay: '900ms', animationFillMode: 'backwards' }}>🔥</span>
+                                    <span className={streak > 1 ? 'animate-streak-bounce' : undefined} style={{ animationDelay: '900ms', animationFillMode: 'backwards' }}>
+                                        <StreakFlame status="active" size={28} />
+                                    </span>
                                     <div className="text-left">
                                         <AnimatedCounter value={streak} duration={400} delay={800} className="text-xl font-bold leading-none" style={{ color: 'var(--color-burgundy)' }} />
                                         <div className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: 'var(--color-ink-faint)' }}>Day streak</div>
@@ -925,6 +962,7 @@ export default function LessonFlow({ lesson, onComplete }) {
                     <Button className="w-full" onClick={async () => {
                         const el = document.getElementById('xp-earned-display');
                         if (el) await flyXPToStar(el, xp);
+                        window.dispatchEvent(new Event('unfreezeXP'));
                         onComplete();
                     }}>Continue</Button>
                     <button
@@ -1313,47 +1351,141 @@ function QuizQuestion({ question, lessonEventIds, onAnswer, onNext, onBack, onSk
 }
 
 // ═══════════════════════════════════════════════════════
-// CELEBRATION CARD (correct answer interstitial)
+// PROGRESS TIMELINE — dots + lines showing session progress
 // ═══════════════════════════════════════════════════════
-function CelebrationCard({ data, onDismiss }) {
-    const { event, greenCount, totalAnswered } = data;
+function ProgressTimeline({ quizResults, totalQuestions, eventsCount, questionsPerCard = 2, recapPerCard, currentQuestionIndex, variant = 'header' }) {
+    const isCheckpoint = variant === 'checkpoint';
+    const dotSize = isCheckpoint ? 12 : 8;
+    const currentDotSize = isCheckpoint ? 14 : 10;
+    const futureDotSize = isCheckpoint ? 8 : 6;
+    const lineH = isCheckpoint ? 3 : 2;
+    const gap = isCheckpoint ? 6 : 4;
+    const groupGap = isCheckpoint ? 14 : 10;
+    const sectionGap = isCheckpoint ? 22 : 16;
+
+    const learnCount = eventsCount * questionsPerCard;
+    const recapCount = eventsCount * recapPerCard;
+
+    const getColor = (index) => {
+        if (index >= quizResults.length) return null;
+        const score = quizResults[index].firstScore;
+        if (score === 'green') return 'var(--color-success)';
+        if (score === 'yellow') return 'var(--color-warning)';
+        return 'var(--color-error)';
+    };
+
+    const renderDot = (index) => {
+        const isCurrent = index === currentQuestionIndex;
+        const isFuture = index > quizResults.length || (index === quizResults.length && !isCurrent);
+        const color = getColor(index);
+        const size = isCurrent ? currentDotSize : (isFuture ? futureDotSize : dotSize);
+
+        return (
+            <div key={`dot-${index}`}
+                className={`rounded-full flex-shrink-0 transition-all duration-300 ${isCurrent ? 'timeline-dot-current' : ''} ${isCheckpoint ? 'timeline-dot-stagger' : ''}`}
+                style={{
+                    width: size, height: size,
+                    backgroundColor: color || (isCurrent ? 'var(--color-burgundy)' : 'rgba(28, 25, 23, 0.15)'),
+                    opacity: isFuture && !isCurrent ? 0.3 : 1,
+                    border: isCurrent ? '2px solid var(--color-burgundy)' : 'none',
+                    ...(isCheckpoint ? { animationDelay: `${index * 50}ms` } : {}),
+                }}
+            />
+        );
+    };
+
+    const renderLine = (afterIndex) => {
+        const color = getColor(afterIndex);
+        return (
+            <div key={`line-${afterIndex}`} style={{
+                width: gap + 4, height: lineH,
+                backgroundColor: color || 'rgba(28, 25, 23, 0.12)',
+                opacity: afterIndex < quizResults.length ? 0.6 : 0.2,
+                borderRadius: 1, flexShrink: 0,
+            }} />
+        );
+    };
+
+    // Build learn card groups (2 dots per card)
+    const learnGroups = [];
+    for (let card = 0; card < eventsCount; card++) {
+        const group = [];
+        for (let q = 0; q < questionsPerCard; q++) {
+            group.push(card * questionsPerCard + q);
+        }
+        learnGroups.push(group);
+    }
+
+    return (
+        <div className="flex items-center justify-center w-full" style={{ minHeight: isCheckpoint ? 24 : 16 }}>
+            {/* Learn section */}
+            {learnGroups.map((group, gi) => (
+                <div key={`lg-${gi}`} className="flex items-center" style={{ gap: 0 }}>
+                    {group.map((dotIdx, di) => (
+                        <div key={dotIdx} className="flex items-center" style={{ gap: 0 }}>
+                            {renderDot(dotIdx)}
+                            {di < group.length - 1 && renderLine(dotIdx)}
+                        </div>
+                    ))}
+                    {/* Gap between card groups */}
+                    {gi < learnGroups.length - 1 && <div style={{ width: groupGap }} />}
+                </div>
+            ))}
+
+            {/* Section divider between learn and recap */}
+            {recapCount > 0 && (
+                <div className="flex items-center" style={{ gap: 2, marginLeft: sectionGap - groupGap, marginRight: sectionGap - groupGap }}>
+                    <div className="rounded-full" style={{ width: 2, height: 2, backgroundColor: 'var(--color-ink-faint)', opacity: 0.4 }} />
+                    <div className="rounded-full" style={{ width: 2, height: 2, backgroundColor: 'var(--color-ink-faint)', opacity: 0.4 }} />
+                </div>
+            )}
+
+            {/* Recap section (flat, no grouping since shuffled) */}
+            {recapCount > 0 && (
+                <div className="flex items-center" style={{ gap: 0 }}>
+                    {Array.from({ length: recapCount }, (_, i) => learnCount + i).map((dotIdx, i) => (
+                        <div key={dotIdx} className="flex items-center" style={{ gap: 0 }}>
+                            {renderDot(dotIdx)}
+                            {i < recapCount - 1 && renderLine(dotIdx)}
+                        </div>
+                    ))}
+                </div>
+            )}
+        </div>
+    );
+}
+
+// ═══════════════════════════════════════════════════════
+// CHECKPOINT SCREEN (brief interstitial at card boundaries)
+// ═══════════════════════════════════════════════════════
+function CheckpointScreen({ data, onDismiss, quizResults, totalQuestions, eventsCount, recapPerCard }) {
+    const { label, greenCount } = data;
 
     useEffect(() => {
-        const timer = setTimeout(onDismiss, 1500);
+        const timer = setTimeout(onDismiss, 1000);
         return () => clearTimeout(timer);
     }, [onDismiss]);
 
     return (
-        <div className="lesson-flow-container animate-celebration-enter" onClick={onDismiss}
+        <div className="lesson-flow-container animate-checkpoint-enter" onClick={onDismiss}
             style={{ cursor: 'pointer', userSelect: 'none' }}>
             <div className="flex-1 min-h-0 flex flex-col items-center justify-center py-6">
-                <Mascot mood="celebrating" size={64} />
-                <Card className="w-full mt-4" style={{
-                    borderTop: '3px solid var(--color-success)',
-                    backgroundColor: 'var(--color-success-light)',
-                }}>
-                    <div className="flex items-center gap-2 mb-2">
-                        <span className="flex items-center justify-center w-6 h-6 rounded-full animate-pop-in"
-                            style={{ backgroundColor: 'var(--color-success)', color: 'white', fontSize: '14px' }}>
-                            ✓
-                        </span>
-                        <CategoryTag category={event.category} />
-                    </div>
-                    <h3 className="text-lg font-bold mb-1" style={{ fontFamily: 'var(--font-serif)', color: 'var(--color-ink)' }}>
-                        {event.title}
-                    </h3>
-                    <p className="text-sm font-semibold mb-3" style={{ color: 'var(--color-burgundy)' }}>
-                        {event.date}
-                    </p>
-                    <div className="flex items-center gap-2 pt-2" style={{ borderTop: '1px solid rgba(5, 150, 105, 0.15)' }}>
-                        <span className="text-sm font-bold" style={{ color: 'var(--color-success)' }}>
-                            {greenCount}/{totalAnswered} correct
-                        </span>
-                    </div>
-                </Card>
-                <p className="text-xs mt-4" style={{ color: 'var(--color-ink-faint)' }}>
-                    Tap to continue
+                <ProgressTimeline
+                    quizResults={quizResults}
+                    totalQuestions={totalQuestions}
+                    eventsCount={eventsCount}
+                    recapPerCard={recapPerCard}
+                    currentQuestionIndex={quizResults.length}
+                    variant="checkpoint"
+                />
+                <p className="text-sm font-semibold mt-5" style={{ color: 'var(--color-ink-secondary)' }}>
+                    {label}
                 </p>
+                {greenCount > 0 && (
+                    <p className="text-xs mt-1" style={{ color: 'var(--color-success)' }}>
+                        {greenCount} correct so far
+                    </p>
+                )}
             </div>
         </div>
     );

@@ -38,10 +38,10 @@ const defaultState = {
     hasSeenFavoriteTip: false,
     // Appearance
     themeMode: 'light', // 'light' | 'dark' | 'system'
-    // Sound & haptic feedback
-    soundEnabled: true,
+    // Sound & haptic feedback (volumes 0–1; 0 = muted/off)
+    soundVolume: 1,
     hapticsEnabled: true,
-    musicEnabled: true,
+    musicVolume: 1,
     musicPromptDismissed: false,
 
     // ─── Daily Quiz ───
@@ -138,10 +138,14 @@ function migrateState(parsed) {
     // Migration: theme
     if (parsed.themeMode === undefined) merged.themeMode = 'light';
 
-    // Migration: sound & haptics (default on for existing users)
-    if (parsed.soundEnabled === undefined) merged.soundEnabled = true;
+    // Migration: sound & haptics — convert legacy booleans to volumes
+    if (parsed.soundVolume === undefined) {
+        merged.soundVolume = parsed.soundEnabled === false ? 0 : 1;
+    }
     if (parsed.hapticsEnabled === undefined) merged.hapticsEnabled = true;
-    if (parsed.musicEnabled === undefined) merged.musicEnabled = true;
+    if (parsed.musicVolume === undefined) {
+        merged.musicVolume = parsed.musicEnabled === false ? 0 : 1;
+    }
     if (parsed.musicPromptDismissed === undefined) merged.musicPromptDismissed = false;
 
     // Migration: challenge mode
@@ -297,6 +301,9 @@ function reducer(state, action) {
             };
         }
 
+        case 'CLEAR_ALL_STARS':
+            return { ...state, starredEvents: [] };
+
         case 'TOGGLE_SETTINGS': {
             return { ...state, settingsOpen: !state.settingsOpen };
         }
@@ -347,16 +354,16 @@ function reducer(state, action) {
             return { ...state, hasSeenFavoriteTip: true };
         }
 
-        case 'TOGGLE_SOUND': {
-            return { ...state, soundEnabled: !state.soundEnabled };
+        case 'SET_SOUND_VOLUME': {
+            return { ...state, soundVolume: action.value };
         }
 
         case 'TOGGLE_HAPTICS': {
             return { ...state, hapticsEnabled: !state.hapticsEnabled };
         }
 
-        case 'TOGGLE_MUSIC': {
-            return { ...state, musicEnabled: !state.musicEnabled };
+        case 'SET_MUSIC_VOLUME': {
+            return { ...state, musicVolume: action.value };
         }
 
         case 'SET_THEME': {
@@ -554,8 +561,8 @@ export function AppProvider({ children }) {
             console.error('Failed to save state:', e);
         }
         syncWidgetData(state);
-        configureFeedback({ soundEnabled: state.soundEnabled, hapticsEnabled: state.hapticsEnabled });
-        configureAmbientMusic({ musicEnabled: state.musicEnabled });
+        configureFeedback({ soundVolume: state.soundVolume, hapticsEnabled: state.hapticsEnabled });
+        configureAmbientMusic({ musicVolume: state.musicVolume });
     }, [state]);
 
     // Check streak on mount + init widgets

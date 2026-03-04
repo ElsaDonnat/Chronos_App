@@ -720,6 +720,8 @@ export default function PracticePage({ onSessionChange, registerBackHandler }) {
 // HUB VIEW — Practice mode cards
 // ═══════════════════════════════════════════════════════
 function HubView({ starredEvents, weakEvents, statusTiers, dueCount, state, dispatch, onStartSpacedReview, onStartQuickDates, onStartFavorites, onOpenLessonPicker, onStartByImportance, learnedEvents, learnedCount }) {
+    const [showClearStarsConfirm, setShowClearStarsConfirm] = useState(false);
+
     return (
         <div className="space-y-3">
             {/* Spaced Review */}
@@ -804,13 +806,35 @@ function HubView({ starredEvents, weakEvents, statusTiers, dueCount, state, disp
                             }
                         </p>
                     </div>
-                    {starredEvents.length > 0 && (
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-ink-faint)" strokeWidth="2" className="mt-2 flex-shrink-0">
-                            <polyline points="9 18 15 12 9 6" />
-                        </svg>
-                    )}
+                    <div className="flex items-center gap-2 flex-shrink-0">
+                        {starredEvents.length > 0 && (
+                            <button
+                                onClick={(e) => { e.stopPropagation(); setShowClearStarsConfirm(true); }}
+                                className="text-[10px] font-semibold px-2 py-1 rounded-lg transition-all active:scale-95"
+                                style={{ backgroundColor: 'rgba(166, 61, 61, 0.08)', color: 'var(--color-error)' }}
+                            >
+                                Clear all
+                            </button>
+                        )}
+                        {starredEvents.length > 0 && (
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-ink-faint)" strokeWidth="2" className="mt-0">
+                                <polyline points="9 18 15 12 9 6" />
+                            </svg>
+                        )}
+                    </div>
                 </div>
             </Card>
+
+            {showClearStarsConfirm && (
+                <ConfirmModal
+                    title="Clear all favorites?"
+                    message={`This will remove ${starredEvents.length} event${starredEvents.length !== 1 ? 's' : ''} from your favorites. You can always star them again later.`}
+                    confirmLabel="Clear all"
+                    onConfirm={() => { dispatch({ type: 'CLEAR_ALL_STARS' }); setShowClearStarsConfirm(false); }}
+                    onCancel={() => setShowClearStarsConfirm(false)}
+                    danger
+                />
+            )}
 
             {/* By Lesson */}
             <Card onClick={onOpenLessonPicker} className="lesson-card-row p-4">
