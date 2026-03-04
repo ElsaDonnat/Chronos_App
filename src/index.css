@@ -246,7 +246,7 @@ input, textarea, [contenteditable] {
   color: var(--color-ink);
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 4px;
   margin: 0;
   flex-shrink: 0;
 }

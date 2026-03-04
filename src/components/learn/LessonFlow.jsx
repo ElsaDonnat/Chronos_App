@@ -330,56 +330,57 @@ export default function LessonFlow({ lesson, onComplete }) {
         };
 
         return (
-            <div className="lesson-flow-container animate-fade-in">
-                <div className="flex-shrink-0 pt-4">
+            <div className="lesson-flow-container animate-fade-in" style={{ position: 'relative' }}>
+                {/* Background lesson icon — centered, faint watermark */}
+                <div className="pointer-events-none select-none" style={{
+                    position: 'absolute', inset: 0, display: 'flex',
+                    alignItems: 'center', justifyContent: 'center', opacity: 0.045, zIndex: 0
+                }}>
+                    <LessonIcon index={lessonIconIndex} size={220} color="var(--color-ink)" />
+                </div>
+                <div className="flex-shrink-0 pt-3" style={{ position: 'relative', zIndex: 1 }}>
                     <button onClick={onComplete} className="flex items-center gap-1 text-sm"
                         style={{ color: 'var(--color-ink-muted)' }}>
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="15 18 9 12 15 6" /></svg>
                         Back
                     </button>
                 </div>
-                <div className="flex-1 min-h-0 overflow-y-auto">
-                    <div className="text-center py-4 relative">
-                        {/* Faint lesson icon background */}
-                        <div className="pointer-events-none select-none flex justify-center mb-3" style={{ opacity: 0.07 }}>
-                            <LessonIcon index={lessonIconIndex} size={96} color="var(--color-ink)" />
-                        </div>
-                        <span className="text-xs font-semibold uppercase tracking-widest block mb-2" style={{ color: 'var(--color-ink-faint)' }}>
+                <div className="flex-1 min-h-0 flex flex-col justify-center" style={{ position: 'relative', zIndex: 1 }}>
+                    <div className="text-center py-2">
+                        <span className="text-xs font-semibold uppercase tracking-widest block mb-1" style={{ color: 'var(--color-ink-faint)' }}>
                             Lesson {lesson.number}
                         </span>
-                        <h1 className="lesson-intro-title font-bold mb-3" style={{ fontFamily: 'var(--font-serif)', color: 'var(--color-ink)' }}>
+                        <h1 className="lesson-intro-title font-bold mb-1" style={{ fontFamily: 'var(--font-serif)', color: 'var(--color-ink)' }}>
                             {lesson.title}
                         </h1>
-                        <p className="text-sm mb-4" style={{ color: 'var(--color-ink-muted)' }}>
+                        <p className="text-sm mb-2" style={{ color: 'var(--color-ink-muted)' }}>
                             {lesson.subtitle}
                         </p>
-                        <Divider />
-                        <p className="text-base italic my-6" style={{ fontFamily: 'var(--font-serif)', color: 'var(--color-ink-secondary)' }}>
+                        <p className="text-sm italic mb-3" style={{ fontFamily: 'var(--font-serif)', color: 'var(--color-ink-secondary)' }}>
                             "{lesson.mood}"
                         </p>
-                        <Divider />
-                        <p className="text-sm mt-4 mb-2" style={{ color: 'var(--color-ink-muted)' }}>
+                        <p className="text-xs mb-2" style={{ color: 'var(--color-ink-muted)' }}>
                             {events.length} {events.length === 1 ? 'event' : 'events'} · {totalQuestions} questions · ~{Math.max(1, Math.round(totalQuestions / 2))} min
                         </p>
                         {/* Event preview */}
                         {lesson.isLesson0 ? (
-                            <div className="flex justify-center gap-3 mt-2 mb-4 flex-wrap">
+                            <div className="flex justify-center gap-2 mt-1 mb-2 flex-wrap">
                                 {Object.values(PERIOD_INFO).map((period, i) => (
                                     <div key={i}
-                                        className="flex flex-col items-center gap-1 px-3 py-2 rounded-xl animate-fade-in-up"
+                                        className="flex flex-col items-center gap-0.5 px-2.5 py-1.5 rounded-xl animate-fade-in-up"
                                         style={{ backgroundColor: `${period.color}10`, animationDelay: `${i * 0.08}s` }}>
-                                        <span className="text-xl">{period.icon}</span>
+                                        <span className="text-lg">{period.icon}</span>
                                         <span className="text-[10px] font-semibold" style={{ color: period.color }}>{period.title}</span>
                                     </div>
                                 ))}
                             </div>
                         ) : events.length > 0 && (
-                            <div className="flex flex-col gap-2 mt-2 mb-4 text-left">
+                            <div className="flex flex-col gap-1.5 mt-1 mb-2 text-left">
                                 {events.map((event, i) => {
                                     const catConfig = CATEGORY_CONFIG[event.category];
                                     return (
                                         <div key={event.id}
-                                            className="flex items-center gap-3 px-3 py-2.5 rounded-xl animate-fade-in-up"
+                                            className="flex items-center gap-3 px-3 py-2 rounded-xl animate-fade-in-up"
                                             style={{ backgroundColor: catConfig?.bg || 'var(--color-parchment-dark)', animationDelay: `${i * 0.1}s` }}>
                                             <span className="flex-shrink-0 w-2 h-2 rounded-full" style={{ backgroundColor: catConfig?.color || 'var(--color-ink-faint)' }} />
                                             <div className="min-w-0 flex-1">
@@ -391,16 +392,14 @@ export default function LessonFlow({ lesson, onComplete }) {
                                 })}
                             </div>
                         )}
-
-                        <Mascot mood="happy" size={64} />
                         {timesCompleted > 0 && (
-                            <p className="text-xs font-medium mt-3 mb-1" style={{ color: 'var(--color-success)' }}>
+                            <p className="text-xs font-medium mt-1" style={{ color: 'var(--color-success)' }}>
                                 ✓ Completed {timesCompleted} {timesCompleted === 1 ? 'time' : 'times'}
                             </p>
                         )}
                     </div>
                 </div>
-                <div className="flex-shrink-0 pt-4 pb-2">
+                <div className="flex-shrink-0 pt-3 pb-2" style={{ position: 'relative', zIndex: 1 }}>
                     <Button className="w-full" onClick={startLesson}>
                         {timesCompleted > 0 ? 'Learn Again' : 'Begin Learning'}
                     </Button>

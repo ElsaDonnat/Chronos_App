@@ -152,13 +152,13 @@ export default function Settings() {
                 style={{ backgroundColor: 'var(--color-parchment)', maxHeight: '80vh', overflowY: 'auto', boxShadow: 'var(--shadow-elevated)' }}
                 onClick={e => e.stopPropagation()}
             >
-                <div className="flex items-center justify-between mb-4">
+                <div className="relative flex items-center justify-center mb-4">
                     <h2 className="text-lg font-bold" style={{ fontFamily: 'var(--font-serif)', color: 'var(--color-ink)' }}>
-                        Your Journey
+                        Your &nbsp;Journey
                     </h2>
                     <button
                         onClick={() => dispatch({ type: 'TOGGLE_SETTINGS' })}
-                        className="p-1 rounded-lg"
+                        className="absolute right-0 p-1 rounded-lg"
                         style={{ color: 'var(--color-ink-muted)' }}
                     >
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -238,11 +238,11 @@ export default function Settings() {
                                 <div className="text-sm font-semibold mb-3" style={{ color: 'var(--color-ink-secondary)' }}>Recap Intensity</div>
                                 <div className="flex gap-2">
                                     {[
-                                        { value: 0, label: 'Off' },
-                                        { value: 1, label: '1/card' },
-                                        { value: 2, label: '2/card' },
-                                        { value: 3, label: '3/card' },
-                                    ].map(({ value, label }) => {
+                                        { value: 0, label: 'Off', sub: 'No recap' },
+                                        { value: 1, label: '1', sub: '1 per card' },
+                                        { value: 2, label: '2', sub: '2 per card' },
+                                        { value: 3, label: '3', sub: '3 per card' },
+                                    ].map(({ value, label, sub }) => {
                                         const isActive = recap === value;
                                         return (
                                             <button
@@ -261,10 +261,14 @@ export default function Settings() {
                                     })}
                                 </div>
                                 <div className="flex gap-2 mt-1">
-                                    <span className="flex-1 text-center text-[11px]" style={{ color: 'var(--color-ink-faint)' }}>No recap</span>
-                                    <span className="flex-1 text-center text-[11px]" style={{ color: 'var(--color-ink-faint)' }}>1 per card</span>
-                                    <span className="flex-1 text-center text-[11px]" style={{ color: 'var(--color-ink-faint)' }}>2 per card</span>
-                                    <span className="flex-1 text-center text-[11px]" style={{ color: 'var(--color-ink-faint)' }}>3 per card</span>
+                                    {[
+                                        'No recap',
+                                        '1 per card',
+                                        '2 per card',
+                                        '3 per card',
+                                    ].map(text => (
+                                        <span key={text} className="flex-1 text-center text-[11px]" style={{ color: 'var(--color-ink-faint)' }}>{text}</span>
+                                    ))}
                                 </div>
                             </Card>
                             <p className="text-xs text-center mb-4" style={{ color: 'var(--color-ink-muted)' }}>

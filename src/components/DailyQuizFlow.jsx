@@ -57,8 +57,15 @@ export default function DailyQuizFlow({ onComplete }) {
     if (phase === PHASES.INTRO) {
         return (
             <div className="daily-quiz-container animate-fade-in">
-                <div className="flex-1 min-h-0 overflow-y-auto">
-                    <div className="py-6 text-center">
+                <div className="flex-shrink-0 pt-3">
+                    <button onClick={onComplete} className="flex items-center gap-1 text-sm"
+                        style={{ color: 'var(--color-ink-muted)' }}>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="15 18 9 12 15 6" /></svg>
+                        Back
+                    </button>
+                </div>
+                <div className="flex-1 min-h-0 flex flex-col justify-center">
+                    <div className="py-4 text-center">
                         <div className="daily-quiz-date-badge">
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                 <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
@@ -69,7 +76,7 @@ export default function DailyQuizFlow({ onComplete }) {
                             {dailyData.dateLabel}
                         </div>
 
-                        <h2 className="text-2xl font-bold mt-4 mb-1" style={{ fontFamily: 'var(--font-serif)', color: 'var(--color-ink)' }}>
+                        <h2 className="text-2xl font-bold mt-3 mb-1" style={{ fontFamily: 'var(--font-serif)', color: 'var(--color-ink)' }}>
                             This Day in History
                         </h2>
                         <p className="text-sm mb-2" style={{ color: 'var(--color-ink-muted)' }}>
@@ -80,7 +87,7 @@ export default function DailyQuizFlow({ onComplete }) {
                             {'2\× XP BONUS'}
                         </div>
 
-                        <div className="mt-8 space-y-4 px-4">
+                        <div className="mt-4 space-y-3 px-4">
                             {events.map((event, i) => (
                                 <div key={i} className="daily-quiz-year-card animate-fade-in-up" style={{ animationDelay: `${i * 150}ms` }}>
                                     <span className="daily-quiz-year">{event.year}</span>

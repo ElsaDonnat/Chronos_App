@@ -5,6 +5,14 @@ Format follows [Keep a Changelog](https://keepachangelog.com/) and [Semantic Ver
 
 Use the latest version entry for Play Store "What's New" text.
 
+## [1.6.6] - 2026-03-04
+
+### Changed
+- **"Your Journey" modal** — title is now centered with improved spacing
+- **Streak flame (inactive)** — flame is now grey instead of blue, larger (full-size matching active flame), and static (no animation) when streak is not ongoing
+
+---
+
 ## [1.6.0] - 2026-03-03
 
 ### Changed

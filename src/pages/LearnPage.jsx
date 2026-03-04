@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useRef, Fragment } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { useApp } from '../context/AppContext';
 import { LESSONS, ERA_QUIZ_GROUPS, LEVEL2_CHAPTERS, ALL_LEVEL2_LESSONS } from '../data/lessons';
 import { getEventsByIds, getEventById } from '../data/events';
@@ -53,7 +53,15 @@ export default function LearnPage({ onSessionChange, registerBackHandler, onTabC
     const [activeLessonId, setActiveLessonId] = useState(null);
     const [showPlacement, setShowPlacement] = useState(null);
     const [showDailyQuiz, setShowDailyQuiz] = useState(false);
-    const [expandedEra, setExpandedEra] = useState(null);
+    const [expandedEra, setExpandedEra] = useState(() => {
+        // Auto-expand the era containing the user's next incomplete lesson
+        for (const era of ERA_QUIZ_GROUPS) {
+            for (const lessonId of era.lessonIds) {
+                if (!state.completedLessons[lessonId]) return era.id;
+            }
+        }
+        return null;
+    });
     const [expandedChapter, setExpandedChapter] = useState(null);
     const [paceWarningLessonId, setPaceWarningLessonId] = useState(null);
     const [dailyCompletedExpanded, setDailyCompletedExpanded] = useState(false);
@@ -224,15 +232,6 @@ export default function LearnPage({ onSessionChange, registerBackHandler, onTabC
         }
     }, [showWeeklyInsights, thisWeekShown]); // eslint-disable-line react-hooks/exhaustive-deps
 
-    // Map lesson IDs to their era group (for skip-ahead dividers)
-    const lessonEraEndMap = useMemo(() => {
-        const map = {};
-        for (const group of ERA_QUIZ_GROUPS) {
-            const lastLessonId = group.lessonIds[group.lessonIds.length - 1];
-            map[lastLessonId] = group;
-        }
-        return map;
-    }, []);
 
     useEffect(() => {
         onSessionChange?.(!!activeLessonId || showPlacement || isPlacementActive || showDailyQuiz);
@@ -569,168 +568,281 @@ export default function LearnPage({ onSessionChange, registerBackHandler, onTabC
                         )}
 
                         <div className="space-y-3">
-                            {LESSONS.map((lesson, index) => {
-                                const isUnlocked = index === 0 || state.completedLessons[LESSONS[index - 1].id];
-                                const isCompleted = state.completedLessons[lesson.id];
-                                const isLesson0 = !!lesson.isLesson0;
-                                const events = isLesson0 ? [] : getEventsByIds(lesson.eventIds);
-                                const masteryData = isLesson0 ? [] : lesson.eventIds.map(id => state.eventMastery[id]).filter(Boolean);
-                                const isSkipped = !isLesson0 && lesson.eventIds.every(id => (state.skippedEvents || []).includes(id));
-                                const accentColor = getEraAccent(lesson.number);
-
-                                // Pulse lesson 0 during onboarding guide
-                                const pulseLesson0 = isOnboardingGuide && isLesson0;
-
-                                // Era skip-ahead divider after this lesson?
-                                const eraGroup = lessonEraEndMap[lesson.id];
-                                const showEraSkip = showSkipDividers && eraGroup
-                                    && !state.placementQuizzes[eraGroup.id]?.passed;
-                                const eraUnlocked = showEraSkip ? isPlacementQuizUnlocked(eraGroup.id, state.placementQuizzes) : false;
-                                const isEraExpanded = showEraSkip ? expandedEra === eraGroup.id : false;
-
+                            {/* ── Prologue (always visible) ── */}
+                            {(() => {
+                                const lesson = LESSONS[0];
+                                const isCompleted = !!state.completedLessons[lesson.id];
+                                const accentColor = getEraAccent(0);
+                                const pulseLesson0 = isOnboardingGuide;
                                 return (
-                                    <Fragment key={lesson.id}>
-                                        <Card
-                                            onClick={isUnlocked ? () => handleLessonClick(lesson.id) : undefined}
-                                            className={`lesson-card-row animate-fade-in-up relative overflow-hidden ${pulseLesson0 ? 'onboarding-pulse' : ''}`}
-                                            style={{
-                                                animationDelay: `${index * 60}ms`,
-                                                animationFillMode: 'backwards',
-                                                backgroundColor: isCompleted ? 'rgba(5, 150, 105, 0.04)' : 'var(--color-card)',
-                                            }}
-                                        >
-                                            {/* Decorative background icon — always visible */}
-                                            <span className="absolute right-1 top-1/2 -translate-y-1/2 pointer-events-none select-none"
-                                                style={{ opacity: 0.045 }}>
-                                                <LessonIcon index={lesson.number} size={72} color={accentColor} />
-                                            </span>
-                                            {/* Lock badge for locked lessons */}
-                                            {!isUnlocked && (
-                                                <div className="absolute top-2 right-2 z-10 w-5 h-5 rounded-full flex items-center justify-center"
-                                                    style={{ backgroundColor: 'rgba(var(--color-ink-rgb), 0.08)' }}>
-                                                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="var(--color-ink-secondary)" strokeWidth="2.5">
-                                                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
-                                                        <path d="M7 11V7a5 5 0 0 1 10 0v4" />
-                                                    </svg>
-                                                </div>
-                                            )}
-                                            <div className="flex items-center gap-4">
-                                                {/* Progress indicator */}
-                                                <div className="flex-shrink-0">
-                                                    <div className="relative">
-                                                        <div className="w-11 h-11 rounded-full flex items-center justify-center" style={{
-                                                            backgroundColor: !isUnlocked ? 'rgba(var(--color-ink-rgb), 0.06)' :
-                                                                isCompleted ? 'rgba(5, 150, 105, 0.10)' : `${accentColor}0A`,
-                                                            border: !isUnlocked ? '1.5px solid rgba(var(--color-ink-rgb), 0.10)' :
-                                                                isCompleted ? '2px solid rgba(5, 150, 105, 0.35)' : `2px solid ${accentColor}`,
-                                                        }}>
-                                                            <span style={{ opacity: isUnlocked ? 1 : 0.55 }}>
-                                                                <LessonIcon index={lesson.number} size={20} color={accentColor} />
-                                                            </span>
-                                                        </div>
-                                                        {isUnlocked && isCompleted && (
-                                                            <div className="absolute -bottom-0.5 -right-0.5 w-[18px] h-[18px] rounded-full flex items-center justify-center"
-                                                                style={{ backgroundColor: 'var(--color-success)', boxShadow: '0 0 0 2px var(--color-card)' }}>
-                                                                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3.5">
-                                                                    <polyline points="20 6 9 17 4 12" />
-                                                                </svg>
-                                                            </div>
-                                                        )}
-                                                        {isUnlocked && !isCompleted && (
-                                                            <div className="absolute -bottom-0.5 -right-0.5 rounded-full flex items-center justify-center px-1 py-px"
-                                                                style={{ backgroundColor: accentColor, boxShadow: '0 0 0 2px var(--color-card)' }}>
-                                                                <span className="text-[8px] font-bold uppercase text-white leading-none">New</span>
-                                                            </div>
-                                                        )}
+                                    <Card
+                                        onClick={() => handleLessonClick(lesson.id)}
+                                        className={`lesson-card-row animate-fade-in-up relative overflow-hidden ${pulseLesson0 ? 'onboarding-pulse' : ''}`}
+                                        style={{ backgroundColor: isCompleted ? 'rgba(5, 150, 105, 0.04)' : 'var(--color-card)' }}
+                                    >
+                                        <span className="absolute right-1 top-1/2 -translate-y-1/2 pointer-events-none select-none"
+                                            style={{ opacity: 0.045 }}>
+                                            <LessonIcon index={0} size={72} color={accentColor} />
+                                        </span>
+                                        <div className="flex items-center gap-4">
+                                            <div className="flex-shrink-0">
+                                                <div className="relative">
+                                                    <div className="w-11 h-11 rounded-full flex items-center justify-center" style={{
+                                                        backgroundColor: isCompleted ? 'rgba(5, 150, 105, 0.10)' : `${accentColor}0A`,
+                                                        border: isCompleted ? '2px solid rgba(5, 150, 105, 0.35)' : `2px solid ${accentColor}`,
+                                                    }}>
+                                                        <LessonIcon index={0} size={20} color={accentColor} />
                                                     </div>
-                                                </div>
-
-                                                {/* Content */}
-                                                <div className="flex-1 min-w-0">
-                                                    <div className="flex items-center gap-2 mb-0.5">
-                                                        <span className="text-[11px] font-medium uppercase tracking-wider" style={{ color: 'var(--color-ink-faint)' }}>
-                                                            {isLesson0 ? 'Prologue' : `Lesson ${lesson.number}`}
-                                                        </span>
-                                                        {isSkipped && (
-                                                            <span className="text-[9px] font-bold uppercase px-1.5 py-0.5 rounded"
-                                                                style={{ backgroundColor: 'rgba(139, 65, 87, 0.08)', color: 'var(--color-burgundy)' }}>
-                                                                Placed
-                                                            </span>
-                                                        )}
-                                                        {masteryData.length > 0 && (
-                                                            <div className="flex gap-0.5">
-                                                                {lesson.eventIds.slice(0, 7).map(id => {
-                                                                    const m = state.eventMastery[id];
-                                                                    return (
-                                                                        <div key={id} className="w-1.5 h-1.5 rounded-full" style={{
-                                                                            backgroundColor: m ? (
-                                                                                m.overallMastery >= 7 ? 'var(--color-success)' :
-                                                                                    m.overallMastery >= 3 ? 'var(--color-warning)' : 'var(--color-error)'
-                                                                            ) : 'var(--color-ink-faint)',
-                                                                            opacity: m ? 1 : 0.2
-                                                                        }} />
-                                                                    );
-                                                                })}
-                                                            </div>
-                                                        )}
-                                                    </div>
-                                                    <h3 className="text-base font-bold leading-tight" style={{ fontFamily: 'var(--font-serif)', color: isUnlocked ? 'var(--color-ink)' : 'var(--color-ink-faint)' }}>
-                                                        {lesson.title}
-                                                    </h3>
-                                                    <p className="text-sm mt-0.5" style={{ color: isUnlocked ? 'var(--color-ink-muted)' : 'var(--color-ink-faint)' }}>
-                                                        {lesson.subtitle}
-                                                    </p>
-                                                </div>
-
-                                                {/* Right side: event count + arrow */}
-                                                <div className="flex items-center gap-3 flex-shrink-0">
-                                                    {isUnlocked && (
-                                                        <>
-                                                            <span className="text-xs hidden sm:block" style={{ color: 'var(--color-ink-faint)' }}>
-                                                                {isLesson0 ? '5 eras' : `${events.length} events`}
-                                                            </span>
-                                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-ink-faint)" strokeWidth="2" className="flex-shrink-0">
-                                                                <polyline points="9 18 15 12 9 6" />
+                                                    {isCompleted && (
+                                                        <div className="absolute -bottom-0.5 -right-0.5 w-[18px] h-[18px] rounded-full flex items-center justify-center"
+                                                            style={{ backgroundColor: 'var(--color-success)', boxShadow: '0 0 0 2px var(--color-card)' }}>
+                                                            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3.5">
+                                                                <polyline points="20 6 9 17 4 12" />
                                                             </svg>
-                                                        </>
+                                                        </div>
+                                                    )}
+                                                    {!isCompleted && (
+                                                        <div className="absolute -bottom-0.5 -right-0.5 rounded-full flex items-center justify-center px-1 py-px"
+                                                            style={{ backgroundColor: accentColor, boxShadow: '0 0 0 2px var(--color-card)' }}>
+                                                            <span className="text-[8px] font-bold uppercase text-white leading-none">New</span>
+                                                        </div>
                                                     )}
                                                 </div>
                                             </div>
-                                        </Card>
-                                        {showEraSkip && (
-                                            <div className="my-1">
-                                                <button
-                                                    onClick={() => setExpandedEra(isEraExpanded ? null : eraGroup.id)}
-                                                    className="w-full flex items-center gap-3 group"
-                                                    style={{ cursor: 'pointer' }}
-                                                >
-                                                    <div className="flex-1 h-px" style={{ backgroundColor: 'rgba(139, 65, 87, 0.15)' }} />
-                                                    <div className="flex items-center gap-1.5 px-2 py-1 rounded-full transition-colors"
-                                                        style={{ backgroundColor: isEraExpanded ? 'rgba(139, 65, 87, 0.08)' : 'transparent' }}>
-                                                        <span className="text-sm">🎓</span>
-                                                        <span className="text-[11px] font-semibold uppercase tracking-wider" style={{ color: 'var(--color-burgundy)' }}>
-                                                            Skip {eraGroup.label.replace(/^The /, '')}
-                                                        </span>
+                                            <div className="flex-1 min-w-0">
+                                                <span className="text-[11px] font-medium uppercase tracking-wider" style={{ color: 'var(--color-ink-faint)' }}>
+                                                    Prologue
+                                                </span>
+                                                <h3 className="text-base font-bold leading-tight" style={{ fontFamily: 'var(--font-serif)', color: 'var(--color-ink)' }}>
+                                                    {lesson.title}
+                                                </h3>
+                                                <p className="text-sm mt-0.5" style={{ color: 'var(--color-ink-muted)' }}>
+                                                    {lesson.subtitle}
+                                                </p>
+                                            </div>
+                                            <div className="flex items-center gap-3 flex-shrink-0">
+                                                <span className="text-xs hidden sm:block" style={{ color: 'var(--color-ink-faint)' }}>5 eras</span>
+                                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-ink-faint)" strokeWidth="2" className="flex-shrink-0">
+                                                    <polyline points="9 18 15 12 9 6" />
+                                                </svg>
+                                            </div>
+                                        </div>
+                                    </Card>
+                                );
+                            })()}
+
+                            {/* ── Era sections (collapsible) ── */}
+                            {ERA_QUIZ_GROUPS.map((era, eraIdx) => {
+                                const eraLessons = era.lessonIds.map(id => LESSONS.find(l => l.id === id));
+                                const completedCount = eraLessons.filter(l => !!state.completedLessons[l.id]).length;
+                                const totalCount = eraLessons.length;
+                                const eventCount = era.eventIds.length;
+                                const isEraComplete = completedCount === totalCount;
+                                const eraInProgress = completedCount > 0 && !isEraComplete;
+                                const isExpanded = expandedEra === era.id;
+                                const accentColor = getEraAccent(eraLessons[0].number);
+
+                                // Skip-ahead quiz
+                                const canSkip = showSkipDividers && !state.placementQuizzes?.[era.id]?.passed;
+                                const skipUnlocked = canSkip ? isPlacementQuizUnlocked(era.id, state.placementQuizzes) : false;
+
+                                return (
+                                    <div key={era.id} className="animate-fade-in-up"
+                                        style={{ animationDelay: `${(eraIdx + 1) * 60}ms`, animationFillMode: 'backwards' }}>
+                                        {/* Era header — collapsible */}
+                                        <Card
+                                            className="cursor-pointer active:scale-[0.98] transition-transform"
+                                            style={{
+                                                padding: '8px 12px',
+                                                borderLeft: `3px solid ${isEraComplete ? 'rgba(5, 150, 105, 0.5)' : accentColor}`,
+                                                backgroundColor: isEraComplete ? 'rgba(5, 150, 105, 0.04)' : `${accentColor}08`,
+                                            }}
+                                            onClick={() => setExpandedEra(isExpanded ? null : era.id)}
+                                        >
+                                            <div className="flex items-center gap-3">
+                                                <div className="relative flex-shrink-0">
+                                                    <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{
+                                                        backgroundColor: isEraComplete ? 'rgba(5, 150, 105, 0.10)' : `${accentColor}15`,
+                                                        border: isEraComplete ? '2px solid rgba(5, 150, 105, 0.35)' : undefined,
+                                                    }}>
+                                                        <LessonIcon index={eraLessons[0].number} size={20} color={isEraComplete ? 'var(--color-success)' : accentColor} />
                                                     </div>
-                                                    <div className="flex-1 h-px" style={{ backgroundColor: 'rgba(139, 65, 87, 0.15)' }} />
-                                                </button>
-                                                {isEraExpanded && (
-                                                    <Card className="mt-2 p-4 animate-fade-in" style={{ borderLeft: '3px solid var(--color-burgundy)' }}>
+                                                    {isEraComplete && (
+                                                        <div className="absolute -bottom-1 -right-1 w-[18px] h-[18px] rounded-full flex items-center justify-center"
+                                                            style={{ backgroundColor: 'var(--color-success)', boxShadow: '0 0 0 2px var(--color-card)' }}>
+                                                            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3.5">
+                                                                <polyline points="20 6 9 17 4 12" />
+                                                            </svg>
+                                                        </div>
+                                                    )}
+                                                </div>
+                                                <div className="flex-1 min-w-0">
+                                                    <h3 className="text-base font-bold leading-tight"
+                                                        style={{ fontFamily: 'var(--font-serif)', color: 'var(--color-ink)' }}>
+                                                        {era.label}
+                                                    </h3>
+                                                    <p className="text-xs mt-0.5" style={{ color: 'var(--color-ink-muted)' }}>
+                                                        {totalCount} lessons {'\u00B7'} {eventCount} events
+                                                    </p>
+                                                </div>
+                                                <div className="flex items-center gap-2 flex-shrink-0">
+                                                    {eraInProgress && (
+                                                        <span className="text-[10px] font-bold px-2 py-1 rounded-full"
+                                                            style={{ backgroundColor: `${accentColor}15`, color: accentColor }}>
+                                                            {completedCount}/{totalCount}
+                                                        </span>
+                                                    )}
+                                                    {isEraComplete && (
+                                                        <span className="text-[10px] font-bold px-2 py-1 rounded-full"
+                                                            style={{ backgroundColor: 'rgba(5, 150, 105, 0.1)', color: 'var(--color-success)' }}>
+                                                            Complete
+                                                        </span>
+                                                    )}
+                                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                                                        stroke={isEraComplete ? 'var(--color-success)' : accentColor} strokeWidth="2.5"
+                                                        className="flex-shrink-0 transition-transform duration-200"
+                                                        style={{ transform: isExpanded ? 'rotate(90deg)' : 'rotate(0deg)' }}>
+                                                        <polyline points="9 18 15 12 9 6" />
+                                                    </svg>
+                                                </div>
+                                            </div>
+                                        </Card>
+
+                                        {/* Lessons within era — shown when expanded */}
+                                        {isExpanded && (
+                                            <div className="space-y-3 ml-3 mt-3 animate-fade-in" style={{ borderLeft: `2px solid ${accentColor}20` }}>
+                                                {eraLessons.map((lesson, lIdx) => {
+                                                    const globalIdx = LESSONS.findIndex(l => l.id === lesson.id);
+                                                    const isUnlocked = globalIdx === 0 || !!state.completedLessons[LESSONS[globalIdx - 1].id];
+                                                    const isCompleted = !!state.completedLessons[lesson.id];
+                                                    const events = getEventsByIds(lesson.eventIds);
+                                                    const masteryData = lesson.eventIds.map(id => state.eventMastery[id]).filter(Boolean);
+                                                    const isSkipped = lesson.eventIds.every(id => (state.skippedEvents || []).includes(id));
+
+                                                    return (
+                                                        <Card
+                                                            key={lesson.id}
+                                                            onClick={isUnlocked ? () => handleLessonClick(lesson.id) : undefined}
+                                                            className="lesson-card-row animate-fade-in-up ml-3 relative overflow-hidden"
+                                                            style={{
+                                                                animationDelay: `${lIdx * 60}ms`,
+                                                                animationFillMode: 'backwards',
+                                                                backgroundColor: isCompleted ? 'rgba(5, 150, 105, 0.04)' : 'var(--color-card)',
+                                                            }}
+                                                        >
+                                                            <span className="absolute right-1 top-1/2 -translate-y-1/2 pointer-events-none select-none"
+                                                                style={{ opacity: 0.045 }}>
+                                                                <LessonIcon index={lesson.number} size={72} color={accentColor} />
+                                                            </span>
+                                                            {!isUnlocked && (
+                                                                <div className="absolute top-2 right-2 z-10 w-5 h-5 rounded-full flex items-center justify-center"
+                                                                    style={{ backgroundColor: 'rgba(var(--color-ink-rgb), 0.08)' }}>
+                                                                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="var(--color-ink-secondary)" strokeWidth="2.5">
+                                                                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                                                                        <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                                                                    </svg>
+                                                                </div>
+                                                            )}
+                                                            <div className="flex items-center gap-4">
+                                                                <div className="flex-shrink-0">
+                                                                    <div className="relative">
+                                                                        <div className="w-11 h-11 rounded-full flex items-center justify-center" style={{
+                                                                            backgroundColor: !isUnlocked ? 'rgba(var(--color-ink-rgb), 0.06)' :
+                                                                                isCompleted ? 'rgba(5, 150, 105, 0.10)' : `${accentColor}0A`,
+                                                                            border: !isUnlocked ? '1.5px solid rgba(var(--color-ink-rgb), 0.10)' :
+                                                                                isCompleted ? '2px solid rgba(5, 150, 105, 0.35)' : `2px solid ${accentColor}`,
+                                                                        }}>
+                                                                            <span style={{ opacity: isUnlocked ? 1 : 0.55 }}>
+                                                                                <LessonIcon index={lesson.number} size={20} color={accentColor} />
+                                                                            </span>
+                                                                        </div>
+                                                                        {isUnlocked && isCompleted && (
+                                                                            <div className="absolute -bottom-0.5 -right-0.5 w-[18px] h-[18px] rounded-full flex items-center justify-center"
+                                                                                style={{ backgroundColor: 'var(--color-success)', boxShadow: '0 0 0 2px var(--color-card)' }}>
+                                                                                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3.5">
+                                                                                    <polyline points="20 6 9 17 4 12" />
+                                                                                </svg>
+                                                                            </div>
+                                                                        )}
+                                                                        {isUnlocked && !isCompleted && (
+                                                                            <div className="absolute -bottom-0.5 -right-0.5 rounded-full flex items-center justify-center px-1 py-px"
+                                                                                style={{ backgroundColor: accentColor, boxShadow: '0 0 0 2px var(--color-card)' }}>
+                                                                                <span className="text-[8px] font-bold uppercase text-white leading-none">New</span>
+                                                                            </div>
+                                                                        )}
+                                                                    </div>
+                                                                </div>
+                                                                <div className="flex-1 min-w-0">
+                                                                    <div className="flex items-center gap-2 mb-0.5">
+                                                                        <span className="text-[11px] font-medium uppercase tracking-wider" style={{ color: 'var(--color-ink-faint)' }}>
+                                                                            Lesson {lesson.number}
+                                                                        </span>
+                                                                        {isSkipped && (
+                                                                            <span className="text-[9px] font-bold uppercase px-1.5 py-0.5 rounded"
+                                                                                style={{ backgroundColor: 'rgba(139, 65, 87, 0.08)', color: 'var(--color-burgundy)' }}>
+                                                                                Placed
+                                                                            </span>
+                                                                        )}
+                                                                        {masteryData.length > 0 && (
+                                                                            <div className="flex gap-0.5">
+                                                                                {lesson.eventIds.slice(0, 7).map(id => {
+                                                                                    const m = state.eventMastery[id];
+                                                                                    return (
+                                                                                        <div key={id} className="w-1.5 h-1.5 rounded-full" style={{
+                                                                                            backgroundColor: m ? (
+                                                                                                m.overallMastery >= 7 ? 'var(--color-success)' :
+                                                                                                    m.overallMastery >= 3 ? 'var(--color-warning)' : 'var(--color-error)'
+                                                                                            ) : 'var(--color-ink-faint)',
+                                                                                            opacity: m ? 1 : 0.2
+                                                                                        }} />
+                                                                                    );
+                                                                                })}
+                                                                            </div>
+                                                                        )}
+                                                                    </div>
+                                                                    <h3 className="text-base font-bold leading-tight" style={{ fontFamily: 'var(--font-serif)', color: isUnlocked ? 'var(--color-ink)' : 'var(--color-ink-faint)' }}>
+                                                                        {lesson.title}
+                                                                    </h3>
+                                                                    <p className="text-sm mt-0.5" style={{ color: isUnlocked ? 'var(--color-ink-muted)' : 'var(--color-ink-faint)' }}>
+                                                                        {lesson.subtitle}
+                                                                    </p>
+                                                                </div>
+                                                                <div className="flex items-center gap-3 flex-shrink-0">
+                                                                    {isUnlocked && (
+                                                                        <>
+                                                                            <span className="text-xs hidden sm:block" style={{ color: 'var(--color-ink-faint)' }}>
+                                                                                {events.length} events
+                                                                            </span>
+                                                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-ink-faint)" strokeWidth="2" className="flex-shrink-0">
+                                                                                <polyline points="9 18 15 12 9 6" />
+                                                                            </svg>
+                                                                        </>
+                                                                    )}
+                                                                </div>
+                                                            </div>
+                                                        </Card>
+                                                    );
+                                                })}
+
+                                                {/* Skip-ahead quiz at bottom of era */}
+                                                {canSkip && (
+                                                    <Card className="ml-3 p-3 animate-fade-in" style={{ borderLeft: '3px solid var(--color-burgundy)', backgroundColor: 'var(--color-burgundy-soft)' }}>
                                                         <div className="flex items-center gap-3">
+                                                            <span className="text-sm">🎓</span>
                                                             <div className="flex-1 min-w-0">
-                                                                <h3 className="text-sm font-bold" style={{ fontFamily: 'var(--font-serif)' }}>
-                                                                    {eraGroup.label}
-                                                                </h3>
-                                                                <p className="text-xs mt-0.5" style={{ color: 'var(--color-ink-muted)' }}>
-                                                                    {eraGroup.questionCount} questions {'·'} {eraGroup.lessonIds.length} lessons
+                                                                <h4 className="text-xs font-bold" style={{ fontFamily: 'var(--font-serif)' }}>
+                                                                    Skip {era.label.replace(/^The /, '')}
+                                                                </h4>
+                                                                <p className="text-[10px] mt-0.5" style={{ color: 'var(--color-ink-muted)' }}>
+                                                                    {era.questionCount} questions {'\u00B7'} {era.lessonIds.length} lessons
                                                                 </p>
                                                             </div>
-                                                            {eraUnlocked ? (
-                                                                <Button onClick={() => setShowPlacement(eraGroup.id)} style={{ fontSize: '12px', padding: '6px 12px' }}>
+                                                            {skipUnlocked ? (
+                                                                <Button onClick={() => setShowPlacement(era.id)} style={{ fontSize: '11px', padding: '5px 10px' }}>
                                                                     Take Quiz
                                                                 </Button>
                                                             ) : (
-                                                                <span className="text-[10px] font-medium px-2.5 py-1 rounded-full whitespace-nowrap"
+                                                                <span className="text-[10px] font-medium px-2 py-1 rounded-full whitespace-nowrap"
                                                                     style={{ backgroundColor: 'rgba(var(--color-ink-rgb), 0.06)', color: 'var(--color-ink-muted)' }}>
                                                                     Pass previous era first
                                                                 </span>
@@ -740,7 +852,7 @@ export default function LearnPage({ onSessionChange, registerBackHandler, onTabC
                                                 )}
                                             </div>
                                         )}
-                                    </Fragment>
+                                    </div>
                                 );
                             })}
                         </div>

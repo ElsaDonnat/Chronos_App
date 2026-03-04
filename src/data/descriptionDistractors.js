@@ -30,7 +30,7 @@ export const DESCRIPTION_DISTRACTORS = {
         distractors: [
             { text: "Homo sapiens first appeared in Europe and spread to Africa.", d: 1 },
             { text: "Our species emerged fully equipped with spoken language from the start.", d: 1 },
-            { text: "The first humans could create fire using friction techniques with wood.", d: 2 },
+            { text: "Homo sapiens evolved independently in several regions rather than emerging first in Africa.", d: 2 },
             { text: "Homo sapiens initially coexisted peacefully with all other human species.", d: 2 },
             { text: "Climate adaptation, not tool use, was the defining advantage of early Homo sapiens.", d: 3 },
         ]
@@ -202,7 +202,7 @@ export const DESCRIPTION_DISTRACTORS = {
             { text: "He rebuilt Rome itself as a grand Christian capital filled with churches and cathedrals.", d: 1 },
             { text: "Constantine compelled all Roman subjects to convert to Christianity under threat of punishment.", d: 2 },
             { text: "The Edict of Milan established the Pope as the supreme authority over both church and state.", d: 2 },
-            { text: "Constantine's conversion was primarily a military strategy to unify his army under a single religious banner.", d: 3 },
+            { text: "Constantinople was built on the ruins of a city Constantine destroyed, not on the ancient Greek colony of Byzantium.", d: 3 },
         ]
     },
     f21: {
@@ -520,7 +520,7 @@ export const DESCRIPTION_DISTRACTORS = {
         distractors: [
             { text: "European war debts from WWI caused the Depression, not the US stock market crash.", d: 1 },
             { text: "The Depression primarily affected Europe while the US economy remained relatively stable.", d: 1 },
-            { text: "Government intervention prolonged the Depression rather than helping to resolve it.", d: 2 },
+            { text: "The Depression was confined to the United States and had little impact on European or Asian economies.", d: 2 },
             { text: "The Depression ended naturally through market self-correction without government action.", d: 2 },
             { text: "The crisis strengthened democratic institutions everywhere as citizens rallied behind elected leaders.", d: 3 },
         ]
@@ -570,7 +570,7 @@ export const DESCRIPTION_DISTRACTORS = {
         distractors: [
             { text: "The US and Soviet Union collaborated on space exploration from the beginning.", d: 1 },
             { text: "The Soviet Union landed humans on the Moon before the United States.", d: 1 },
-            { text: "The Space Race was driven primarily by military weapons development rather than national prestige.", d: 2 },
+            { text: "The US and Soviet Union raced to the Moon because they believed it contained valuable mineral resources.", d: 2 },
             { text: "The Moon landing had little cultural impact and quickly faded from public attention.", d: 2 },
             { text: "Both superpowers maintained active crewed Moon programs well into the 1970s.", d: 3 },
         ]
@@ -902,7 +902,7 @@ export const DESCRIPTION_DISTRACTORS = {
         distractors: [
             { text: "The Silk Road was established by Roman merchants traveling eastward to China.", d: 1 },
             { text: "The Han Dynasty lasted only a few decades before being overthrown by Mongol invaders.", d: 1 },
-            { text: "Han civil servants were selected by aristocratic birth rather than examination.", d: 2 },
+            { text: "The Han Dynasty's Silk Road only carried luxury goods like silk, not ideas or religions.", d: 2 },
             { text: "The Han Dynasty's primary achievement was military expansion, not cultural or administrative innovation.", d: 2 },
             { text: "Paper was invented during the Tang Dynasty, several centuries after the Han period.", d: 3 },
         ]
@@ -985,7 +985,7 @@ export const DESCRIPTION_DISTRACTORS = {
             { text: "Cort\u00e9s conquered the Aztecs with a large army of 50,000 European soldiers.", d: 1 },
             { text: "The Aztecs had partial immunity to smallpox from earlier exposure to similar diseases.", d: 2 },
             { text: "Tenochtitl\u00e1n was a small settlement that fell quickly to the first Spanish assault.", d: 2 },
-            { text: "Disease played a role but Spanish alliances with other Indigenous groups were the decisive factor in the conquest.", d: 3 },
+            { text: "Smallpox arrived in the Americas centuries before the Spanish, carried by earlier Viking explorers.", d: 3 },
         ]
     },
     f99: {
@@ -1076,7 +1076,7 @@ export const DESCRIPTION_DISTRACTORS = {
             { text: "The Kingdom of Kush never had any political power over Egypt.", d: 1 },
             { text: "Kush's pyramids were built by Egyptian architects sent south to build colonial monuments.", d: 2 },
             { text: "Meroe was primarily a farming settlement with no significant industrial activity.", d: 2 },
-            { text: "Kush's iron-smelting technology was imported from the Mediterranean rather than developed independently.", d: 3 },
+            { text: "Kush's civilization arose after Egypt's decline and never overlapped with Egyptian power.", d: 3 },
         ]
     },
     f108: {
@@ -1152,7 +1152,7 @@ export const DESCRIPTION_DISTRACTORS = {
     f115: {
         hardCorrect: "Menelik II mobilized 100,000 troops and decisively defeated Italy, ensuring Ethiopia remained uncolonized.",
         distractors: [
-            { text: "Ethiopia was eventually colonized by Italy despite winning the Battle of Adwa.", d: 1 },
+            { text: "Ethiopia won at Adwa only because European nations supplied Menelik with modern weapons and military advisors.", d: 1 },
             { text: "Ethiopia defeated Italy through guerrilla warfare rather than a decisive pitched battle.", d: 1 },
             { text: "Several other African nations also defeated European colonial armies and remained independent.", d: 2 },
             { text: "Italy sent only a small exploratory force rather than a full colonial army to Ethiopia.", d: 2 },
@@ -1195,7 +1195,7 @@ export const DESCRIPTION_DISTRACTORS = {
         distractors: [
             { text: "Leonardo and Michelangelo worked together collaboratively on most of their major projects.", d: 1 },
             { text: "Renaissance art was primarily abstract and did not attempt realistic depiction of the human form.", d: 1 },
-            { text: "The Mona Lisa was widely celebrated as a masterpiece during Leonardo's own lifetime.", d: 2 },
+            { text: "Leonardo completed the Mona Lisa in a single sitting, demonstrating his unmatched speed and skill.", d: 2 },
             { text: "Michelangelo painted the Sistine Chapel ceiling eagerly, as painting was his preferred medium.", d: 2 },
             { text: "Renaissance artistic techniques were entirely original, with no influence from ancient Greek or Roman art.", d: 3 },
         ]
