@@ -8,8 +8,16 @@ Use the latest version entry for Play Store "What's New" text.
 ## [1.6.6] - 2026-03-04
 
 ### Changed
+- **Learn page — collapsible era sections** — lessons are now grouped under expandable era headers showing completion progress; the user's current era auto-expands on load
+- **Lesson intro redesigned** — large faint watermark icon behind content, tighter vertical spacing, removed mascot from intro screen
+- **Daily Quiz intro** — added back button, vertically centered layout
+- **Streak flame (inactive)** — flame is now grey instead of blue, full-size (matching active flame), and static (no animation) when streak is not ongoing
 - **"Your Journey" modal** — title is now centered with improved spacing
-- **Streak flame (inactive)** — flame is now grey instead of blue, larger (full-size matching active flame), and static (no animation) when streak is not ongoing
+- **TopBar hourglass enlarged** — icon bumped from 20px to 26px with tighter logo gap
+
+### Fixed
+- **Vite base path** — Capacitor builds now use relative `./` base path instead of `/Chronos_App/`, fixing asset loading on Android
+- **Quiz distractors** — replaced 10 description distractors that were ambiguous or debatable with clearer, more distinct wrong answers
 
 ---
 
