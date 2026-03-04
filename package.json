@@ -8,9 +8,10 @@
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "cap:sync": "npm run build && npx cap sync",
+    "cap:build": "set CAPACITOR_BUILD=true && npm run build",
+    "cap:sync": "npm run cap:build && npx cap sync",
     "cap:open": "npx cap open android",
-    "release": "npm run lint && npm run build && npx cap sync"
+    "release": "npm run lint && npm run cap:build && npx cap sync"
   },
   "dependencies": {
     "@capacitor/android": "^8.1.0",

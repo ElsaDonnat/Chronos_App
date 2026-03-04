@@ -5,10 +5,10 @@ import { readFileSync } from 'fs'
 
 const pkg = JSON.parse(readFileSync('./package.json', 'utf-8'))
 
-export default defineConfig({
-  base: '/Chronos_App/',
+export default defineConfig(({ command }) => ({
+  base: process.env.CAPACITOR_BUILD ? './' : '/Chronos_App/',
   plugins: [react(), tailwindcss()],
   define: {
     __APP_VERSION__: JSON.stringify(pkg.version),
   },
-})
+}))
