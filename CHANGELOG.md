@@ -5,6 +5,14 @@ Format follows [Keep a Changelog](https://keepachangelog.com/) and [Semantic Ver
 
 Use the version entries from the last playstore push to the most recent version for Play Store "What's New" text.
 
+## [1.7.4] - 2026-03-05
+
+### Fixed
+- **Hourglass shake animation** — replaced CSS animation with SVG-native `<animateTransform additive="sum">` so the hourglass shakes in the mascot's hand instead of jumping to its face; interval capped at 7–10s
+
+### Changed
+- **Challenge hub header gradient** — darker header gradient, dark brown subtitle, brown text shadow on title, opaque parchment emoji backdrops, bigger circles, slightly smaller emoji text
+
 ## [1.7.3] - 2026-03-05
 
 ### Changed

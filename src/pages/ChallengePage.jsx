@@ -932,7 +932,7 @@ export default function ChallengePage({ onSessionChange, registerBackHandler }) 
             <div style={{ padding: '0 0 16px' }} className="animate-fade-in">
                 {/* Arena header */}
                 <div style={{
-                    background: 'linear-gradient(180deg, rgba(139, 65, 87, 0.38) 0%, rgba(139, 65, 87, 0.18) 100%)',
+                    background: 'linear-gradient(180deg, rgba(100, 40, 60, 0.83) 0%, rgba(139, 65, 87, 0.18) 100%)',
                     borderRadius: '0 0 20px 20px',
                     margin: '-16px -16px 0',
                     padding: '20px 16px 22px',
@@ -944,7 +944,7 @@ export default function ChallengePage({ onSessionChange, registerBackHandler }) 
                         <Mascot mood="happy" size={48} />
                     </div>
 
-                    <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.3rem', fontWeight: 700, textAlign: 'center', color: 'white', marginBottom: 4 }}>
+                    <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.3rem', fontWeight: 700, textAlign: 'center', color: 'white', textShadow: '0 1px 6px rgba(62, 30, 20, 0.45)', marginBottom: 4 }}>
                         Challenger Mode
                     </h2>
                     <p style={{ textAlign: 'center', fontSize: '0.82rem', color: '#3E2723', marginBottom: 18 }}>
@@ -999,7 +999,15 @@ export default function ChallengePage({ onSessionChange, registerBackHandler }) 
                                         }}>
                                             {tier.label.slice(0, 3)}
                                         </span>
-                                        <span style={{ fontSize: '1.1rem', lineHeight: 1, opacity: reached ? 1 : 0.7, filter: 'none' }}>
+                                        <span style={{
+                                            fontSize: '1.03rem', lineHeight: 1,
+                                            background: 'rgba(250, 246, 240, 0.85)',
+                                            borderRadius: '50%',
+                                            width: 30, height: 30,
+                                            display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                            opacity: reached ? 1 : 0.75,
+                                            boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+                                        }}>
                                             {tier.icon}
                                         </span>
                                     </div>

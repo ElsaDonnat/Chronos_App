@@ -37,7 +37,7 @@ export default function Mascot({ mood = 'happy', size = 80, className = '', vari
         const interval = setInterval(() => {
             setShakeHourglass(true);
             setTimeout(() => setShakeHourglass(false), 500);
-        }, 6000 + Math.random() * 6000);
+        }, 7000 + Math.random() * 3000);
         return () => clearInterval(interval);
     }, [v.showHourglass]);
 
@@ -128,9 +128,12 @@ export default function Mascot({ mood = 'happy', size = 80, className = '', vari
                         </ellipse>
 
                         {/* Hourglass — held out to the side, away from face */}
-                        <g transform="translate(16, 7)" style={shakeHourglass ? { transformBox: 'fill-box', transformOrigin: 'center', animation: 'hourglassShake 0.25s ease-in-out 2' } : {}}>
+                        <g transform="translate(16, 7)">
                             {/* Logo-style hourglass, scaled to fit (0.55× of 24×24 logo, centered at origin) */}
                             <g transform="scale(0.55) translate(-12, -12)">
+                            {shakeHourglass && (
+                                <animateTransform attributeName="transform" type="rotate" values="0 12 12;8 12 12;-8 12 12;5 12 12;-5 12 12;0 12 12" dur="0.4s" repeatCount="1" additive="sum" />
+                            )}
                                 {/* Hourglass silhouette — filled body */}
                                 <path d="M7 4 L17 4 C17.5 4 17.8 4.2 17.8 4.4 L17.8 4.4 C17.8 4.6 17.5 4.8 17 4.8 L16 4.8 C16 8 14.4 10.4 12 12 C14.4 13.6 16 16 16 19.2 L17 19.2 C17.5 19.2 17.8 19.4 17.8 19.6 L17.8 19.6 C17.8 19.8 17.5 20 17 20 L7 20 C6.5 20 6.2 19.8 6.2 19.6 L6.2 19.6 C6.2 19.4 6.5 19.2 7 19.2 L8 19.2 C8 16 9.6 13.6 12 12 C9.6 10.4 8 8 8 4.8 L7 4.8 C6.5 4.8 6.2 4.6 6.2 4.4 L6.2 4.4 C6.2 4.2 6.5 4 7 4 Z" fill="#8B4157" />
                                 {/* Glass interior top */}
