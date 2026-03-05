@@ -5,6 +5,8 @@ import { getEventsByIds } from '../data/events';
 import { Card, Button, ProgressBar, DiHBadge } from './shared';
 import Mascot from './Mascot';
 import { shareText, buildDailyQuizShareText } from '../services/share';
+import * as feedback from '../services/feedback';
+import StreakCelebration from './StreakCelebration';
 
 const PHASES = { INTRO: 'intro', QUIZ: 'quiz', RESULTS: 'results' };
 
@@ -21,7 +23,7 @@ function shuffleOptions(correct, wrongs) {
 }
 
 export default function DailyQuizFlow({ onComplete }) {
-    const { dispatch } = useApp();
+    const { state, dispatch } = useApp();
     const dailyData = getTodaysDailyQuiz();
     const events = useMemo(() => getEventsByIds(dailyData.eventIds), [dailyData.eventIds]);
 
@@ -32,6 +34,7 @@ export default function DailyQuizFlow({ onComplete }) {
     const [answered, setAnswered] = useState(false);
     const [showCard, setShowCard] = useState(false);
     const [shareToast, setShareToast] = useState(false);
+    const [streakCelebration, setStreakCelebration] = useState(null);
     const sessionStartTime = useRef(null);
 
     // Shuffle options once per question
@@ -113,10 +116,18 @@ export default function DailyQuizFlow({ onComplete }) {
 
         const handleAnswer = (optIndex) => {
             if (answered) return;
+            feedback.select();
             setSelectedOption(optIndex);
             setAnswered(true);
             const isCorrect = options[optIndex].isCorrect;
             setResults(prev => [...prev, isCorrect ? 'correct' : 'wrong']);
+            // Update 'what' mastery — consistent with lesson learn quiz behavior
+            dispatch({
+                type: 'UPDATE_EVENT_MASTERY',
+                eventId: event.id,
+                questionType: 'what',
+                score: isCorrect ? 'green' : 'red',
+            });
             // Show the card reveal after a short delay
             setTimeout(() => setShowCard(true), 400);
         };
@@ -128,6 +139,17 @@ export default function DailyQuizFlow({ onComplete }) {
             if (quizIndex + 1 < totalEvents) {
                 setQuizIndex(i => i + 1);
             } else {
+                // Detect streak earning before dispatching XP
+                const today = new Date().toISOString().split('T')[0];
+                const wasActiveToday = state.lastActiveDate === today;
+                let prevStreakStatus = 'inactive';
+                if (!wasActiveToday && state.lastActiveDate && state.currentStreak > 0) {
+                    const yesterday = new Date();
+                    yesterday.setDate(yesterday.getDate() - 1);
+                    if (state.lastActiveDate === yesterday.toISOString().split('T')[0]) {
+                        prevStreakStatus = 'at-risk';
+                    }
+                }
                 // Quiz done — calculate XP and dispatch
                 const xpEarned = results.filter(r => r === 'correct').length * DAILY_QUIZ_XP_PER_CORRECT;
                 const eventIds = events.map(e => e.id);
@@ -138,6 +160,11 @@ export default function DailyQuizFlow({ onComplete }) {
                 }
                 const duration = sessionStartTime.current ? Math.round((Date.now() - sessionStartTime.current) / 1000) : 0;
                 dispatch({ type: 'RECORD_STUDY_SESSION', duration, sessionType: 'daily_quiz', questionsAnswered: results.length });
+                // Show streak celebration if this is the first activity today
+                if (!wasActiveToday) {
+                    const newStreak = prevStreakStatus === 'at-risk' ? state.currentStreak + 1 : 1;
+                    setTimeout(() => setStreakCelebration({ previousStatus: prevStreakStatus, newStreak }), 600);
+                }
                 setPhase(PHASES.RESULTS);
             }
         };
@@ -343,6 +370,15 @@ export default function DailyQuizFlow({ onComplete }) {
                         </p>
                     )}
                 </div>
+
+                {/* Streak Celebration */}
+                {streakCelebration && (
+                    <StreakCelebration
+                        previousStatus={streakCelebration.previousStatus}
+                        newStreak={streakCelebration.newStreak}
+                        onDismiss={() => setStreakCelebration(null)}
+                    />
+                )}
             </div>
         );
     }

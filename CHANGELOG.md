@@ -5,6 +5,72 @@ Format follows [Keep a Changelog](https://keepachangelog.com/) and [Semantic Ver
 
 Use the latest version entry for Play Store "What's New" text.
 
+## [1.7.0] - 2026-03-05
+
+### Added
+- **Streak celebration overlay** — when the user completes their first lesson, practice, daily quiz, or challenge of the day, a brief animated overlay shows the flame transitioning from grey/red to active orange with a green checkmark badge popping in, the streak count, and "Streak started!" or "Streak extended!" text. Auto-dismisses after ~3s or on tap
+- **UI micro-interaction sounds** — subtle Duolingo-style sound effects on button taps, quiz option selection, tab switches, learn card reveals, modal opens, toggle switches, and star toggling
+- **Overhauled sound engine** — replaced raw triangle-wave oscillators with layered sine tones through lowpass filters for a warm, polished marimba-like sound (no more retro game feel)
+
+### Fixed
+- **Ambient music looping** — music was not looping because the `ended` handler checked a non-existent config property; now correctly checks `musicVolume > 0`
+
+### Changed
+- **Reduced default volume** — ambient music gain ceiling lowered from 0.0325 to 0.02; all sound effect gains halved for a softer default experience
+- **Era-specific accent colors** — each era chapter on the Learn page now has a distinct color that evolves through time: earthy brown (Prehistory) → brown-orange (Ancient) → amber-orange (Medieval) → golden amber (Early Modern) → muted warm red (Modern). Colors are more differentiated from Level 2 chapter colors
+- **Era icons for chapter headers** — chapter headers now show the era's thematic icon (bone, temple, swords, compass, globe) matching the Lesson 0 prologue cards, instead of reusing the first lesson's icon
+- **Lesson icon styling** — lesson icons now use a consistent burgundy outline with beige/parchment fill, distinct from the era accent color which is used for card borders, badges, and decorative elements
+
+## [1.6.9] - 2026-03-05
+
+### Changed
+- **Recap transition cards restyled** — the "Time to Recap" screen now shows events vertically with full titles, dates, and category colors (matching the lesson intro style) instead of truncated burgundy pills
+- **Removed horizontal scrollbar during lessons** — eliminated the stray horizontal scrollbar/loading bar that appeared at the bottom of lesson screens
+
+## [1.6.8] - 2026-03-05
+
+### Added
+- **Context-aware description difficulty** — description quiz questions now use different difficulty tiers depending on where they appear:
+  - **Lesson learn phase (d:1):** easy distractors — obviously wrong, reinforces what was just read on the card
+  - **Lesson recap phase (d:2):** medium distractors — plausible-sounding but wrong, tests retention
+  - **Practice mode (d:2→3):** scales with mastery — low mastery (0-6) gets medium distractors, high mastery (7+) gets very subtle distractors plus `hardCorrect` as the correct answer
+  - **Placement quiz (d:2):** medium distractors — fair test of existing knowledge
+- **Daily quiz mastery tracking** — daily quiz now updates the "what" mastery dimension when answering, consistent with lesson behavior
+- **Hide skip quiz for completed eras** — the "Skip [Era]" placement quiz button no longer appears on the learn page once all lessons in that era are completed (still accessible from Settings)
+
+### Fixed
+- **Map shows only completed events** — events now only appear on the map after completing their lesson (previously all events were visible regardless of lesson progress). `MARK_EVENTS_SEEN` moved from lesson start to lesson completion in `LessonFlow.jsx`. MapView always filters by `learnedIds`.
+
+### Documentation
+- **Map system architecture in CLAUDE.md** — new "Map System" section documenting the full data pipeline (TopoJSON → SVG generation), rendering approach (inline SVG, Natural Earth I projection), region system, pin clustering, interaction model, and known scalability limitations
+- **Map & Timeline roadmap in BACKLOG.md** — comprehensive 10-workstream roadmap covering: per-country SVG paths, region audit, concurrent events view, time slider, country highlighting, interaction improvements, semantic zoom, visual polish, search, and component extraction prep
+
+### How the difficulty system works
+
+Each event in `descriptionDistractors.js` has hand-crafted distractors across 3 tiers:
+- **d:1** — clearly wrong but topically adjacent (e.g., "A sudden mutation gave primates the ability to walk upright")
+- **d:2** — plausible but with wrong details (e.g., "Brain size doubled immediately after separating from great apes")
+- **d:3** — very subtle, nearly correct but one key detail is off (e.g., "The divergence was rapid and produced the first stone tool users")
+
+At d:3, the correct answer also switches from the regular `description` to `hardCorrect` — a non-obvious true statement that's harder to identify.
+
+The `generateDescriptionOptions(event, allEvents, difficulty)` function in `quiz.js` picks 3 distractors preferring the requested tier, falling back to other tiers if needed. When `difficulty` is null (legacy), all tiers are mixed randomly.
+
+**Files:** `src/data/quiz.js` (generation), `src/data/descriptionDistractors.js` (content, 126+ events covered), `LessonFlow.jsx` / `PracticePage.jsx` / `PlacementQuizFlow.jsx` (consumers).
+
+### Docs
+- **CLAUDE.md** — added housekeeping rules (keep docs/changelog/version up to date after every substantial change), commit & push workflow (build web + Android first, commit message includes version + full changelog since last push, push triggers GitHub Pages deploy), and description difficulty tier documentation
+
+---
+
+## [1.6.7] - 2026-03-05
+
+### Added
+- **"Welcome Back" modal** — when the user returns after 2+ days of inactivity, a cute axolotl modal greets them with a message that varies by how long they were away
+- **Daily quiz description distractors** — added hand-crafted distractors for all 30 daily events so description questions in practice mode use plausible, thematically relevant wrong answers instead of random nearby events
+
+---
+
 ## [1.6.6] - 2026-03-04
 
 ### Changed

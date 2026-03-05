@@ -8,6 +8,7 @@ import { Card, Button, MasteryDots, ProgressBar, Divider, CategoryTag, Importanc
 import Mascot from '../components/Mascot';
 import * as feedback from '../services/feedback';
 import { shareText, buildPracticeShareText } from '../services/share';
+import StreakCelebration from '../components/StreakCelebration';
 
 // ─── Matching colors (same palette as Lesson0Flow) ───
 const MATCH_COLORS = [
@@ -48,6 +49,7 @@ export default function PracticePage({ onSessionChange, registerBackHandler }) {
     const sessionRecorded = useRef(false);
     const [sessionDuration, setSessionDuration] = useState(0);
     const [shareToast, setShareToast] = useState(false);
+    const [streakCelebration, setStreakCelebration] = useState(null);
 
     useEffect(() => {
         onSessionChange?.(view === VIEW.SESSION || view === VIEW.RESULTS);
@@ -314,6 +316,17 @@ export default function PracticePage({ onSessionChange, registerBackHandler }) {
 
         const handleSessionNext = () => {
             if (currentIndex + 1 >= sessionQuestions.length) {
+                // Detect streak earning before dispatching XP
+                const today = new Date().toISOString().split('T')[0];
+                const wasActiveToday = state.lastActiveDate === today;
+                let prevStreakStatus = 'inactive';
+                if (!wasActiveToday && state.lastActiveDate && state.currentStreak > 0) {
+                    const yesterday = new Date();
+                    yesterday.setDate(yesterday.getDate() - 1);
+                    if (state.lastActiveDate === yesterday.toISOString().split('T')[0]) {
+                        prevStreakStatus = 'at-risk';
+                    }
+                }
                 // Session complete — calculate XP and show results
                 const xp = results.reduce((s, r) => {
                     const diff = getEventById(r.eventId)?.difficulty || 1;
@@ -326,6 +339,11 @@ export default function PracticePage({ onSessionChange, registerBackHandler }) {
                     const duration = Math.round((Date.now() - sessionStartTime.current) / 1000);
                     setSessionDuration(duration);
                     dispatch({ type: 'RECORD_STUDY_SESSION', duration, sessionType: 'practice', questionsAnswered: results.length });
+                }
+                // Show streak celebration if this is the first activity today
+                if (!wasActiveToday && xp > 0) {
+                    const newStreak = prevStreakStatus === 'at-risk' ? state.currentStreak + 1 : 1;
+                    setTimeout(() => setStreakCelebration({ previousStatus: prevStreakStatus, newStreak }), 600);
                 }
                 setView(VIEW.RESULTS);
                 feedback.complete();
@@ -347,26 +365,25 @@ export default function PracticePage({ onSessionChange, registerBackHandler }) {
                     onCancel={() => setShowExitConfirm(false)}
                 />
             )}
-            <div className="py-4 animate-fade-in" key={`practice-${currentIndex}`}>
-                <div className="flex items-center justify-between mb-4">
-                    <button onClick={() => setShowExitConfirm(true)} className="text-sm flex items-center gap-1"
-                        style={{ color: 'var(--color-ink-muted)' }}>
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                            <polyline points="15 18 9 12 15 6" />
-                        </svg>
-                        Exit
-                    </button>
-                    <span className="text-[10px] uppercase tracking-widest font-bold px-2 py-0.5 rounded-full"
-                        style={{ backgroundColor: 'var(--color-burgundy-soft)', color: 'var(--color-burgundy)' }}>
-                        {sessionMode}
-                    </span>
-                    <span className="text-sm font-medium" style={{ color: 'var(--color-ink-muted)' }}>
-                        {currentIndex + 1} / {sessionQuestions.length}
-                    </span>
+            <div className="lesson-flow-container">
+                <div className="flex-shrink-0 pt-4">
+                    <div className="flex items-center justify-center mb-4 relative">
+                        <button onClick={() => setShowExitConfirm(true)} className="text-sm flex items-center gap-1 absolute left-0"
+                            style={{ color: 'var(--color-ink-muted)' }}>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                <polyline points="15 18 9 12 15 6" />
+                            </svg>
+                            Exit
+                        </button>
+                        <span className="text-[10px] uppercase tracking-widest font-bold px-2 py-0.5 rounded-full"
+                            style={{ backgroundColor: 'var(--color-burgundy-soft)', color: 'var(--color-burgundy)' }}>
+                            {sessionMode} · {currentIndex + 1}/{sessionQuestions.length}
+                        </span>
+                    </div>
+                    <ProgressBar value={currentIndex + 1} max={sessionQuestions.length} />
                 </div>
-                <ProgressBar value={currentIndex + 1} max={sessionQuestions.length} />
 
-                <div className="mt-6">
+                <div className="flex-1 min-h-0 overflow-y-auto mt-4" key={`practice-${currentIndex}`}>
                     {q.type === 'match' ? (
                         <PracticeMatchQuestion
                             question={q}
@@ -396,6 +413,7 @@ export default function PracticePage({ onSessionChange, registerBackHandler }) {
                     ) : (
                         <PracticeQuestion
                             question={q}
+                            eventMastery={state.eventMastery[q.event.id]}
                             isStarred={(state.starredEvents || []).includes(q.event.id)}
                             onToggleStar={() => dispatch({ type: 'TOGGLE_STAR', eventId: q.event.id })}
                             onAnswer={(score) => {
@@ -558,6 +576,15 @@ export default function PracticePage({ onSessionChange, registerBackHandler }) {
                         </p>
                     )}
                 </div>
+
+                {/* Streak Celebration */}
+                {streakCelebration && (
+                    <StreakCelebration
+                        previousStatus={streakCelebration.previousStatus}
+                        newStreak={streakCelebration.newStreak}
+                        onDismiss={() => setStreakCelebration(null)}
+                    />
+                )}
             </div>
         );
     }
@@ -1316,7 +1343,7 @@ function PracticeMatchQuestion({ question, onAnswer, onNext, onBack }) {
 // ═══════════════════════════════════════════════════════
 // PRACTICE QUESTION — individual question card
 // ═══════════════════════════════════════════════════════
-function PracticeQuestion({ question, isStarred, onToggleStar, onAnswer, onNext, onBack }) {
+function PracticeQuestion({ question, eventMastery, isStarred, onToggleStar, onAnswer, onNext, onBack }) {
     const { event, type } = question;
     const [answered, setAnswered] = useState(false);
     const [selectedAnswer, setSelectedAnswer] = useState(null);
@@ -1324,9 +1351,20 @@ function PracticeQuestion({ question, isStarred, onToggleStar, onAnswer, onNext,
     const [dateInput, setDateInput] = useState('');
     const [era, setEra] = useState(event.year < 0 ? 'BCE' : 'CE');
 
+    // Scale description difficulty with mastery: low mastery (0-6) → d:2, high mastery (7-12) → d:3
+    const descDifficulty = (() => {
+        if (!eventMastery) return 2;
+        const scoreMap = { green: 3, yellow: 1, red: 0 };
+        const overall = (scoreMap[eventMastery.locationScore] ?? 0)
+            + (scoreMap[eventMastery.dateScore] ?? 0)
+            + (scoreMap[eventMastery.whatScore] ?? 0)
+            + (scoreMap[eventMastery.descriptionScore] ?? 0);
+        return overall >= 7 ? 3 : 2;
+    })();
+
     const [locationOptions] = useState(() => generateLocationOptions(event));
     const [whatOptions] = useState(() => generateWhatOptions(event, ALL_EVENTS.map(e => e.id)));
-    const [descriptionOptions] = useState(() => generateDescriptionOptions(event));
+    const [descriptionOptions] = useState(() => generateDescriptionOptions(event, ALL_EVENTS, descDifficulty));
 
 
     const handleMCQ = (answer, correct) => {
@@ -1556,15 +1594,15 @@ function PracticeQuestion({ question, isStarred, onToggleStar, onAnswer, onNext,
                     <p className="text-sm mb-5" style={{ color: 'var(--color-burgundy)' }}>{event.date}</p>
                     <div className="mcq-options">
                         {descriptionOptions.map((opt, i) => {
-                            const isCorrect = opt.id === event.id;
-                            const isSelected = selectedAnswer === opt.id;
+                            const isCorrect = opt.isCorrect;
+                            const isSelected = selectedAnswer === i;
                             let optStyle = {};
                             if (answered) {
                                 if (isCorrect) optStyle = { backgroundColor: 'rgba(5, 150, 105, 0.1)', borderColor: 'var(--color-success)' };
                                 else if (isSelected && !isCorrect) optStyle = { backgroundColor: 'rgba(166, 61, 61, 0.1)', borderColor: 'var(--color-error)' };
                             }
                             return (
-                                <button key={i} onClick={() => handleMCQ(opt.id, event.id)} disabled={answered}
+                                <button key={i} onClick={() => handleMCQ(i, descriptionOptions.findIndex(o => o.isCorrect))} disabled={answered}
                                     className="mcq-option"
                                     style={{ borderColor: isSelected && !answered ? 'var(--color-burgundy)' : undefined, ...optStyle }}>
                                     <span className="leading-relaxed text-sm block" style={{ color: 'var(--color-ink-secondary)' }}>{opt.description}</span>

@@ -6,12 +6,29 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ```bash
 npm run dev       # Start Vite dev server with HMR
-npm run build     # Production build
+npm run build     # Production build (GitHub Pages, base=/Chronos_App/)
 npm run lint      # ESLint (flat config, JS/JSX only)
 npm run preview   # Preview production build
 ```
 
 No test framework is configured.
+
+## Dual Build Targets (IMPORTANT)
+
+Vite uses different `base` paths depending on the target:
+- **GitHub Pages:** `base: '/Chronos_App/'` — default `npm run build`
+- **Android/Capacitor:** `base: './'` — requires `CAPACITOR_BUILD=true npm run build`
+
+> [!CAUTION]
+> If you run `npm run build` without `CAPACITOR_BUILD=true` and then `npx cap sync`, the Android app will get assets with `/Chronos_App/` paths and **fail to load**. Always use the correct build for each target.
+
+### When the user says "build" (during development)
+
+Build for Android so changes are visible in Android Studio:
+```bash
+CAPACITOR_BUILD=true npm run build && npx cap sync
+```
+No need to build for GitHub Pages during development — that happens automatically on push.
 
 ## Android Build
 
@@ -53,13 +70,65 @@ No router — `App.jsx` uses `activeTab` state (`'learn'` | `'timeline'` | `'pra
 - **`dailyQuiz.js`** — 10 days of daily quiz content (30 real historical events). Cycling: `dayIndex = daysSinceEpoch % 10`. Each day has 3 events with learn-then-quiz flow
 - **`achievements.js`** — 15 achievements across 7 categories + `useAchievementChecker()` hook that runs on state changes
 
+### Map System
+
+**Data pipeline** (`scripts/write-map-data.mjs`):
+- Reads `world-atlas/countries-110m.json` (TopoJSON, Natural Earth 110m resolution)
+- Uses `d3-geo`'s Natural Earth I projection to convert GeoJSON country polygons → SVG path strings
+- Merges all countries **per continent** into 5 giant SVG `<path>` strings (Europe, Middle East, Africa, Asia, Americas) — individual country boundaries are lost
+- Outputs `src/data/mapPaths.js` (~40KB) containing `MAP_REGIONS`, `SUB_REGIONS`, `REGION_CENTERS`, and `projectToSVG()`
+- Regenerate with: `node scripts/write-map-data.mjs`
+
+**Rendering** (`src/components/MapView.jsx`):
+- Pure inline SVG, 800×500 viewBox, zero external map libraries
+- Continent shapes as `<path>`, graticule grid as `<polyline>`
+- Event pins placed via `projectToSVG(lat, lng)` — same Natural Earth I polynomial at runtime as at build time
+- Grid-based clustering: 25 SVG-unit cells group nearby pins; cluster pins show count badge
+- Pinch-zoom via CSS `transform: scale()` + custom touch pan handler (max 4×)
+- Fullscreen mode: 280% width SVG inside a scrollable container, centered on Europe/Middle East
+
+**Region system**: 11 sub-regions (Europe, Middle East, N/W/E/S Africa, S/E Asia, N/C/S America) → 5 continent SVG groups. Events use sub-regions; the map highlights/dims the parent continent.
+
+**Pin interaction**: single pin → event popup card; cluster pin → expandable event list. Only learned events (in `seenEvents`) appear on the map.
+
+**Strengths**: zero runtime map deps, offline-capable, deterministic projection, fast render, clean regeneration pipeline.
+
+**Known limitations for future expansion**:
+- No country-level shapes — countries merged into continents, can't highlight or interact with individual countries
+- 110m resolution — coastlines look chunky when zoomed; would need 50m or 10m for detail
+- Clustering doesn't adapt to zoom level — fixed grid regardless of scale
+- CSS-only zoom — just scales the SVG, no re-render at higher detail (no semantic zoom)
+- Region selection dims other continents rather than panning/zooming to the selected area
+- No desktop wheel zoom or hover states on map features
+
 ### Lesson Flow (`src/components/learn/LessonFlow.jsx`)
 
 8-phase flow: INTRO → PERIOD_INTRO → (LEARN_CARD → LEARN_QUIZ) × 3 events → RECAP_TRANSITION → RECAP (6 questions) → FINAL_REVIEW → SUMMARY. Each lesson produces 12 total questions. All flows (lessons, practice, daily quiz) auto-track duration via `useRef` timer and dispatch `RECORD_STUDY_SESSION` on completion.
 
 ### Mastery System
 
-Each event is scored on 4 dimensions (location, date, what, description), each `'green'` (3pts) | `'yellow'` (1pt) | `'red'` (0pts) | `null`. Overall mastery is 0-12.
+Each event is scored on 4 dimensions (location, date, what, description), each `'green'` (3pts) | `'yellow'` (1pt) | `'red'` (0pts) | `null`. Overall mastery is 0-12. Mastery is updated by lessons (learn + recap phases), practice sessions, and daily quiz ("what" dimension only). Displayed via `MasteryDots` component across Timeline, Map, Practice, and Settings.
+
+### Description Question Difficulty Tiers
+
+Description questions use hand-crafted distractors from `src/data/descriptionDistractors.js` (126+ events covered). Each event has distractors across 3 difficulty tiers:
+
+- **d:1** — clearly wrong but topically adjacent
+- **d:2** — plausible but with wrong details
+- **d:3** — very subtle, nearly correct but one key detail is off. Also switches the correct answer to `hardCorrect` (a non-obvious true statement)
+
+`generateDescriptionOptions(event, allEvents, difficulty)` in `quiz.js` selects distractors preferring the requested tier. **Difficulty is context-dependent:**
+
+| Context | Difficulty | Rationale |
+|---------|-----------|-----------|
+| Lesson learn phase | 1 | Reinforcement — just read the card |
+| Lesson recap phase | 2 | Retention test — plausible distractors |
+| Practice (mastery 0-6) | 2 | Still building knowledge |
+| Practice (mastery 7-12) | 3 | Challenge — hardCorrect + subtle distractors |
+| Placement quiz | 2 | Fair knowledge test |
+| Daily quiz | N/A | Only asks "what happened?" (title MCQ) |
+
+When modifying quiz difficulty logic, update this table and the changelog.
 
 ### Design System
 
@@ -81,9 +150,30 @@ Reusable UI primitives (Button, Card, MasteryDots, CategoryTag, ProgressRing) ar
 
 **New lesson:** Add to `LESSONS` in `src/data/lessons.js` with exactly 3 eventIds for regular lessons.
 
+### Streak & Flame Icon (`src/components/StreakFlame.jsx`)
+
+**Streak status** is computed from `lastActiveDate` + `currentStreak` via `getStreakStatus()` (defined locally in `TopBar.jsx`, `WeekTracker.jsx`, and `widgetBridge.js`):
+- **`active`** — studied today. Orange/yellow flame + dark-green checkmark (brown outline) in upper-right.
+- **`at-risk`** — last active yesterday, hasn't studied today. Red flame + small clock badge in upper-right.
+- **`inactive`** — streak is 0 or gap > 1 day. Grey translucent flame, no badge.
+
+The `StreakFlame` component is a pure inline SVG (viewBox `-2 -2 28 28`) with three visual layers: campfire logs, flame shape (color varies by status), and an optional badge overlay. Used in TopBar (18px), WeekTracker (32px), Settings (22px), and LessonFlow summary (28px). CSS animations (`streak-flame--active`, `streak-flame--at-risk`) are in `index.css`.
+
+`FLAME_COUNT_COLORS` export provides matching text colors for the streak count number beside the flame.
+
+### Streak Celebration (`src/components/StreakCelebration.jsx`)
+
+Brief overlay shown when the user earns their streak for the day (first lesson/practice/daily quiz/challenge completion). Shows the flame crossfading from its previous state (grey or red) to active orange, a green checkmark badge popping in, the streak count, and "Streak started!"/"Streak extended!" text. Auto-dismisses after ~3s or on tap.
+
+Integrated in: `LessonFlow.jsx`, `Lesson0Flow.jsx`, `PracticePage.jsx`, `DailyQuizFlow.jsx`, `ChallengePage.jsx`. Each detects whether `lastActiveDate !== today` before dispatching `ADD_XP`, captures the previous streak status, and shows the celebration via `setTimeout` after 600ms.
+
 ### Feedback Service (`src/services/feedback.js`)
 
-Module-level sound + haptics service. `configure({ soundEnabled, hapticsEnabled })` is called from AppContext on every state persist. Quiz components call `feedback.correct()`, `feedback.wrong()`, `feedback.close()`, `feedback.complete()`, or `feedback.forScore(score)` directly — no hooks or state passing needed. Sounds use Web Audio API (sine oscillators, no audio files). Haptics use `@capacitor/haptics` (graceful no-op on web).
+Module-level sound + haptics service. `configure({ soundVolume, hapticsEnabled })` is called from AppContext on every state persist. All sounds use Web Audio API (sine oscillators with lowpass filtering, no audio files). Haptics use `@capacitor/haptics` (graceful no-op on web).
+
+**Quiz feedback sounds:** `correct()`, `wrong()`, `close()`, `complete()`, `achievement()`, `heartLost()`, `gameOver()`, `forScore(score)`. Layered sine tones through lowpass filter for warm marimba-like timbre.
+
+**UI micro-interaction sounds:** `tap()` (Button clicks), `select()` (quiz option pick), `tabSwitch()` (tab navigation), `cardReveal()` (learn card appears), `modalOpen()` (settings/confirm modals), `toggleClick()` (switch toggles), `starPing()` (star/unstar). These use a lightweight `playTick` primitive (single filtered sine, 35–120ms). `tap()` is wired into the shared `Button` component; `starPing()` into `StarButton`; others are called at specific integration points.
 
 ### Android Widgets
 
@@ -109,7 +199,18 @@ Two home screen widgets (Streak + Quick Practice) use the `capacitor-widget-brid
 
 **Widget UI limitations:** Widgets use `RemoteViews`, which supports only a limited set of views (`LinearLayout`, `TextView`, `ImageView`, etc.). No custom fonts, no complex animations, no WebView.
 
-## Versioning (IMPORTANT — do this before every commit)
+## Housekeeping (IMPORTANT — do this after every substantial change)
+
+After each substantial change to features, UX/UI, or mechanics:
+
+1. **Check if `CLAUDE.md` needs updating** — keep architecture docs, tables, and patterns current
+2. **Check if `README.md` needs updating** — if it describes features that changed
+3. **Add the change to `CHANGELOG.md`** under the current version
+4. **Bump the version** in `package.json` by `+0.0.1` (patch) for most changes. Use `+0.1.0` (minor) for new features or significant redesigns. Use your judgement — the goal is that these files stay up to date at all times, but are not cluttered with trivial details or tiny fixes.
+
+> Do NOT skip this. These docs are the source of truth for new agents picking up the codebase. Stale docs cause wasted time and wrong assumptions.
+
+## Versioning
 
 The **single source of truth** for the app version is `"version"` in `package.json`. The Android `versionCode` is **automatically derived** from it in `android/app/build.gradle` using the formula: `major × 10000 + minor × 100 + patch`.
 
@@ -119,23 +220,57 @@ The **single source of truth** for the app version is `"version"` in `package.js
 | `"1.5.2"`            | 10502               |
 | `"2.1.0"`            | 20100               |
 
-### Before every `git commit` + `git push`:
-
-1. **Bump the version** in `package.json` (use semver: patch for fixes, minor for features, major for breaking changes)
-2. **Update `CHANGELOG.md`** with the new version and what changed
-3. **Then commit and push**
-
 > [!CAUTION]
-> If you forget to bump the version, the Google Play Store will reject the AAB upload because the versionCode must be strictly higher than any previously uploaded version. The current published version derives from whatever `package.json` says — never hardcode versionCode in `build.gradle`.
+> If you forget to bump the version, the Google Play Store will reject the AAB upload because the versionCode must be strictly higher than any previously uploaded version. Never hardcode versionCode in `build.gradle`.
 
-### After bumping version, rebuild for Android:
+## Commit & Push Workflow (IMPORTANT)
 
-```bash
-npm run build
-npx cap sync
-# Then generate AAB from Android Studio or:
-$env:JAVA_HOME = "C:\Program Files\Android\Android Studio\jbr"; cd android; .\gradlew.bat bundleRelease
+**Do NOT commit immediately after making changes.** The user will review first. Only commit when the user explicitly says to commit/push.
+
+### When the user says "commit" or "push":
+
+1. **Build for Android (Capacitor) first:**
+   ```bash
+   CAPACITOR_BUILD=true npm run build
+   npx cap sync
+   ```
+2. **Build Android AAB:**
+   ```bash
+   export JAVA_HOME="/c/Program Files/Android/Android Studio/jbr"
+   cd android && ./gradlew.bat bundleRelease
+   ```
+3. **Rebuild for GitHub Pages** (so the committed `dist/` or deploy workflow uses the right base path):
+   ```bash
+   npm run build
+   ```
+4. **If all builds succeed**, commit and push:
+   ```bash
+   git add <relevant files>
+   git commit -m "<version> — <summary>"
+   git push origin main
+   ```
+
+> The push triggers the GitHub Pages deploy workflow which rebuilds from source, so step 3 is mainly a sanity check. The critical thing is that `npx cap sync` in step 1 uses the Capacitor build.
+
+### Commit message format
+
+The commit message must include:
+- **The current version number** (e.g., `v1.6.8`)
+- **A summary of ALL changelog entries since the last pushed commit** — not just the latest version. If multiple versions were worked on locally before pushing (e.g., v1.6.8 and v1.6.9), the commit message should summarize changes from both.
+
+Check `git log` to find the last pushed version, then gather all changelog entries after it.
+
+Example: if v1.6.7 was the last push and you're now at v1.6.9:
 ```
+v1.6.9 — Context-aware description difficulty, daily quiz mastery tracking, welcome-back modal
+
+Co-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>
+```
+
+### What the push triggers
+
+- **GitHub Pages** — the deploy workflow (`.github/workflows/deploy.yml`) automatically builds and deploys the web app on every push to `main`
+- **Android (phone)** — `npx cap sync` copies the web build into the Android project; the AAB from `gradlew bundleRelease` is at `android/app/build/outputs/bundle/release/` ready for Play Store upload
 
 ## Gotchas
 

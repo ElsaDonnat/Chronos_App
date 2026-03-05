@@ -121,13 +121,13 @@ export default function WeekTracker({ onClose }) {
                     style={{ background: 'linear-gradient(to bottom, rgba(139, 65, 87, 0.06), transparent)' }}>
                     <div className="flex items-center justify-center gap-3 mb-2">
                         <StreakFlame status={streakStatus} size={32} />
-                        <span className="text-3xl font-bold" style={{ color: FLAME_COUNT_COLORS[streakStatus] }}>
+                        <span className="text-3xl font-bold" style={{ color: streakStatus === 'inactive' ? '#A8A29E' : 'var(--color-burgundy)' }}>
                             {state.currentStreak}
                         </span>
                     </div>
                     <p className="text-sm font-semibold" style={{ fontFamily: 'var(--font-serif)', color: 'var(--color-ink)' }}>
                         {state.currentStreak === 0 ? 'Start a streak!' :
-                            `${state.currentStreak} day${state.currentStreak === 1 ? '' : 's'} in a row`}
+                            `day${state.currentStreak === 1 ? '' : 's'} in a row`}
                     </p>
                 </div>
 
@@ -201,24 +201,24 @@ export default function WeekTracker({ onClose }) {
                 {/* Overall progress row */}
                 <div className="px-5 pb-3">
                     <div className="flex gap-2">
-                        <div className="flex-1 flex items-center gap-2 p-2.5 rounded-xl" style={{ backgroundColor: 'rgba(184, 134, 11, 0.06)' }}>
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-bronze)" strokeWidth="2" strokeLinecap="round">
-                                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" fill="var(--color-bronze-light)" stroke="var(--color-bronze)" opacity="0.8" />
-                            </svg>
-                            <div>
+                        <div className="flex-1 flex flex-col items-center justify-center gap-1 p-2.5 rounded-xl" style={{ backgroundColor: 'rgba(184, 134, 11, 0.06)' }}>
+                            <div className="flex items-center gap-1.5">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-bronze)" strokeWidth="2" strokeLinecap="round">
+                                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" fill="var(--color-bronze-light)" stroke="var(--color-bronze)" opacity="0.8" />
+                                </svg>
                                 <div className="text-sm font-bold" style={{ color: 'var(--color-bronze)' }}>{state.totalXP} XP</div>
-                                <div className="text-[10px]" style={{ color: 'var(--color-ink-faint)' }}>total earned</div>
                             </div>
+                            <div className="text-[10px]" style={{ color: 'var(--color-ink-faint)' }}>total earned</div>
                         </div>
-                        <div className="flex-1 flex items-center gap-2 p-2.5 rounded-xl" style={{ backgroundColor: 'rgba(139, 65, 87, 0.05)' }}>
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-burgundy)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
-                                <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
-                            </svg>
-                            <div>
+                        <div className="flex-1 flex flex-col items-center justify-center gap-1 p-2.5 rounded-xl" style={{ backgroundColor: 'rgba(139, 65, 87, 0.05)' }}>
+                            <div className="flex items-center gap-1.5">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-burgundy)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                    <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
+                                    <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
+                                </svg>
                                 <div className="text-sm font-bold" style={{ color: 'var(--color-burgundy)' }}>{eventsLearned}</div>
-                                <div className="text-[10px]" style={{ color: 'var(--color-ink-faint)' }}>events learned</div>
                             </div>
+                            <div className="text-[10px]" style={{ color: 'var(--color-ink-faint)' }}>events learned</div>
                         </div>
                     </div>
                 </div>
@@ -228,21 +228,21 @@ export default function WeekTracker({ onClose }) {
                     <div className="px-5 pb-3">
                         <div className="flex gap-2">
                             {strongest && (
-                                <div className="flex-1 flex items-center gap-1.5 p-2.5 rounded-xl" style={{ backgroundColor: 'rgba(5, 150, 105, 0.06)' }}>
-                                    <span className="text-sm">💪</span>
-                                    <div>
+                                <div className="flex-1 flex flex-col items-center justify-center gap-0.5 p-2.5 rounded-xl" style={{ backgroundColor: 'rgba(5, 150, 105, 0.06)' }}>
+                                    <div className="flex items-center gap-1">
+                                        <span className="text-sm">💪</span>
                                         <div className="text-[10px] font-semibold" style={{ color: 'var(--color-success)' }}>Strongest</div>
-                                        <div className="text-xs font-medium" style={{ color: 'var(--color-ink-secondary)' }}>{strongest.label}</div>
                                     </div>
+                                    <div className="text-xs font-medium" style={{ color: 'var(--color-ink-secondary)' }}>{strongest.label}</div>
                                 </div>
                             )}
                             {weakest && (
-                                <div className="flex-1 flex items-center gap-1.5 p-2.5 rounded-xl" style={{ backgroundColor: 'rgba(198, 134, 42, 0.06)' }}>
-                                    <span className="text-sm">📖</span>
-                                    <div>
+                                <div className="flex-1 flex flex-col items-center justify-center gap-0.5 p-2.5 rounded-xl" style={{ backgroundColor: 'rgba(198, 134, 42, 0.06)' }}>
+                                    <div className="flex items-center gap-1">
+                                        <span className="text-sm">📖</span>
                                         <div className="text-[10px] font-semibold" style={{ color: 'var(--color-warning)' }}>Focus on</div>
-                                        <div className="text-xs font-medium" style={{ color: 'var(--color-ink-secondary)' }}>{weakest.label}</div>
                                     </div>
+                                    <div className="text-xs font-medium" style={{ color: 'var(--color-ink-secondary)' }}>{weakest.label}</div>
                                 </div>
                             )}
                         </div>

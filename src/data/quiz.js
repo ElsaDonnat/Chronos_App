@@ -1,4 +1,4 @@
-import { ALL_EVENTS } from './events';
+import { ALL_EVENTS, ERA_RANGES, getEraForYear } from './events';
 import { DESCRIPTION_DISTRACTORS } from './descriptionDistractors';
 
 // ─── Fisher-Yates shuffle ────────────────────────────
@@ -295,6 +295,17 @@ export function generateDescriptionOptions(correctEvent, allEvents = ALL_EVENTS,
     }
 
     return shuffle(options);
+}
+
+// Generate "which era?" MCQ options — 4 options from the 5 eras
+export function generateEraOptions(correctEvent) {
+    const correctEra = getEraForYear(correctEvent.year);
+    const others = ERA_RANGES.filter(e => e.id !== correctEra.id);
+    const picked = shuffle(others).slice(0, 3);
+    return shuffle([
+        { id: correctEra.id, label: correctEra.label, isCorrect: true },
+        ...picked.map(e => ({ id: e.id, label: e.label, isCorrect: false })),
+    ]);
 }
 
 // Calculate XP for a session — difficulty multiplier applied per result

@@ -1270,4 +1270,307 @@ export const DESCRIPTION_DISTRACTORS = {
             { text: "The democratization of creative tools had little effect on the types of art being produced.", d: 3 },
         ]
     },
+
+    // ─── Daily Quiz Events (dih-0 through dih-29) ─────────────────────
+
+    'dih-0': {
+        hardCorrect: "Fifty-nine delegates signed the declaration in an unfinished building, breaking from Mexico to form the Republic of Texas.",
+        distractors: [
+            { text: "Texas declared independence after winning the Battle of the Alamo.", d: 1 },
+            { text: "The US Congress voted to annex Texas as a new state.", d: 1 },
+            { text: "Sam Houston led a constitutional convention that formally joined the United States.", d: 2 },
+            { text: "Texas declared independence following a decisive military victory over Mexican forces.", d: 2 },
+            { text: "The declaration was signed at the Alamo by delegates who had just repelled a Mexican siege.", d: 3 },
+        ]
+    },
+    'dih-1': {
+        hardCorrect: "Wilt Chamberlain scored 100 points against the Knicks \u2014 a single-game NBA record that still stands.",
+        distractors: [
+            { text: "Michael Jordan set the all-time NBA scoring record in a single game.", d: 1 },
+            { text: "The NBA introduced the three-point line after this record-breaking game.", d: 1 },
+            { text: "Chamberlain's 100-point game was played in a sold-out arena in Philadelphia.", d: 2 },
+            { text: "The record was set during an NBA Finals game broadcast on national television.", d: 2 },
+            { text: "Chamberlain scored 100 points in a playoff game against the Boston Celtics.", d: 3 },
+        ]
+    },
+    'dih-2': {
+        hardCorrect: "The original King Kong premiered at Radio City Music Hall, pioneering stop-motion animation in cinema.",
+        distractors: [
+            { text: "King Kong was the first film to use computer-generated special effects.", d: 1 },
+            { text: "Walt Disney produced King Kong as his first live-action feature.", d: 1 },
+            { text: "King Kong premiered in Hollywood and was the first film to win an Academy Award for visual effects.", d: 2 },
+            { text: "The film used elaborate puppetry rather than stop-motion for its special effects.", d: 2 },
+            { text: "King Kong premiered at Grauman's Chinese Theatre and introduced rear-projection techniques to cinema.", d: 3 },
+        ]
+    },
+    'dih-3': {
+        hardCorrect: "President Hoover signed a resolution making 'The Star-Spangled Banner' the official US anthem, over a century after Key wrote the lyrics.",
+        distractors: [
+            { text: "The national anthem was adopted immediately after Francis Scott Key wrote it in 1814.", d: 1 },
+            { text: "Congress chose 'America the Beautiful' as the national anthem.", d: 1 },
+            { text: "President Roosevelt signed the anthem into law during the Great Depression.", d: 2 },
+            { text: "The anthem was adopted by executive order rather than a congressional resolution.", d: 2 },
+            { text: "The resolution was signed by President Coolidge after a decade-long public campaign.", d: 3 },
+        ]
+    },
+    'dih-4': {
+        hardCorrect: "The inventor of the telephone was born in Edinburgh to a family deeply involved in the study of speech and elocution.",
+        distractors: [
+            { text: "Alexander Graham Bell was born in London and studied electrical engineering.", d: 1 },
+            { text: "The inventor of the telegraph was born in Scotland.", d: 1 },
+            { text: "Bell was born in Glasgow to a family of physicians who specialized in hearing disorders.", d: 2 },
+            { text: "Bell was born into a family of instrument makers who built early telegraph equipment.", d: 2 },
+            { text: "Bell was born in Edinburgh to a family of acoustics researchers who studied sound waves.", d: 3 },
+        ]
+    },
+    'dih-5': {
+        hardCorrect: "Florida was admitted as the 27th state after being ceded to the US by Spain through the Adams\u2013On\u00eds Treaty.",
+        distractors: [
+            { text: "Florida was purchased from France as part of the Louisiana Purchase.", d: 1 },
+            { text: "Florida became a state after the Mexican-American War.", d: 1 },
+            { text: "Florida was the 25th state admitted, following a territorial war with Britain.", d: 2 },
+            { text: "Florida was ceded by Britain to the US after the War of 1812.", d: 2 },
+            { text: "Florida was admitted as the 27th state directly after being acquired from Portugal.", d: 3 },
+        ]
+    },
+    'dih-6': {
+        hardCorrect: "The Constitution went into effect, replacing the Articles of Confederation, and the first Congress convened in New York City.",
+        distractors: [
+            { text: "The Declaration of Independence was ratified by all thirteen colonies.", d: 1 },
+            { text: "George Washington was inaugurated as the first president.", d: 1 },
+            { text: "The Constitution was ratified and the first Congress met in Philadelphia.", d: 2 },
+            { text: "The Bill of Rights was adopted alongside the Constitution on the same day.", d: 2 },
+            { text: "The Constitution replaced the Articles of Confederation and Congress first convened in Philadelphia.", d: 3 },
+        ]
+    },
+    'dih-7': {
+        hardCorrect: "Tchaikovsky's Swan Lake premiered at the Bolshoi Theatre to a lukewarm reception, though it later became the most famous ballet in history.",
+        distractors: [
+            { text: "Swan Lake premiered to great acclaim and immediately became a worldwide sensation.", d: 1 },
+            { text: "The Nutcracker premiered at the Bolshoi Theatre in Moscow.", d: 1 },
+            { text: "Swan Lake premiered at the Mariinsky Theatre in Saint Petersburg to mixed reviews.", d: 2 },
+            { text: "Tchaikovsky composed Swan Lake after attending a performance at the Paris Opera.", d: 2 },
+            { text: "Swan Lake premiered at the Bolshoi Theatre to enthusiastic reviews and was immediately recognized as a masterpiece.", d: 3 },
+        ]
+    },
+    'dih-8': {
+        hardCorrect: "Vermont became the 14th state \u2014 the first after the original thirteen \u2014 having been an independent republic with a slavery ban since 1777.",
+        distractors: [
+            { text: "Vermont was one of the original thirteen colonies.", d: 1 },
+            { text: "Maine was the first state admitted after the original thirteen.", d: 1 },
+            { text: "Vermont joined as the 15th state and was the second to ban slavery.", d: 2 },
+            { text: "Vermont was admitted after its constitution was rewritten to include a slavery compromise.", d: 2 },
+            { text: "Vermont became the 14th state after operating as an independent republic that permitted limited indentured servitude.", d: 3 },
+        ]
+    },
+    'dih-9': {
+        hardCorrect: "British soldiers fired into a crowd of colonists, killing five people and fueling the anti-British revolutionary movement.",
+        distractors: [
+            { text: "Colonists attacked a British fort, starting the American Revolution.", d: 1 },
+            { text: "The Boston Tea Party was the first violent clash between colonists and British troops.", d: 1 },
+            { text: "British soldiers opened fire on a crowd of armed colonial militia, killing twelve.", d: 2 },
+            { text: "The clash occurred when colonists stormed a British customs house.", d: 2 },
+            { text: "British soldiers fired on a crowd of colonists after being provoked by an organized militia ambush.", d: 3 },
+        ]
+    },
+    'dih-10': {
+        hardCorrect: "Stalin died after a stroke, ending nearly three decades of totalitarian rule and triggering a power struggle won by Khrushchev.",
+        distractors: [
+            { text: "Stalin was overthrown in a military coup led by Soviet generals.", d: 1 },
+            { text: "Lenin died, ending the first era of Soviet leadership.", d: 1 },
+            { text: "Stalin died of natural causes, and power was immediately transferred to his chosen successor.", d: 2 },
+            { text: "Stalin's death led to a peaceful transition of power to Beria.", d: 2 },
+            { text: "Stalin died after a stroke, ending his rule; Malenkov consolidated power without significant internal opposition.", d: 3 },
+        ]
+    },
+    'dih-11': {
+        hardCorrect: "The cartographer who created the most influential map projection in history was born; the Mercator projection became the standard for nautical navigation.",
+        distractors: [
+            { text: "The inventor of the compass was born in the Netherlands.", d: 1 },
+            { text: "Copernicus, who revolutionized astronomy, was born in Flanders.", d: 1 },
+            { text: "The creator of the first globe was born and later published his projection in 1550.", d: 2 },
+            { text: "Mercator was born in Amsterdam and his projection was designed for overland trade routes.", d: 2 },
+            { text: "Mercator was born in Flanders and his projection, published in 1589, became the standard for aerial navigation.", d: 3 },
+        ]
+    },
+    'dih-12': {
+        hardCorrect: "After a 13-day siege, Mexican forces under Santa Anna overran the Alamo, killing nearly all 200 Texan defenders.",
+        distractors: [
+            { text: "Texan forces won a decisive victory at the Alamo against Mexican troops.", d: 1 },
+            { text: "The Battle of San Jacinto was fought inside the Alamo mission.", d: 1 },
+            { text: "The siege lasted three days before the Alamo's defenders surrendered.", d: 2 },
+            { text: "Mexican forces captured the Alamo after the defenders fled to nearby settlements.", d: 2 },
+            { text: "After a 13-day siege, Mexican forces overran the Alamo, though most defenders escaped through a rear exit.", d: 3 },
+        ]
+    },
+    'dih-13': {
+        hardCorrect: "Mendeleev presented his periodic table to the Russian Chemical Society, arranging elements by atomic weight and predicting undiscovered ones.",
+        distractors: [
+            { text: "Einstein presented his theory of atomic structure to the German scientific community.", d: 1 },
+            { text: "The periodic table was first published by a British chemist at Oxford.", d: 1 },
+            { text: "Mendeleev arranged elements by atomic number and left no gaps in his table.", d: 2 },
+            { text: "Mendeleev presented his table in Moscow, arranging elements by their chemical reactivity.", d: 2 },
+            { text: "Mendeleev presented his periodic table, arranging elements by atomic weight but making no predictions about undiscovered elements.", d: 3 },
+        ]
+    },
+    'dih-14': {
+        hardCorrect: "Ghana became the first sub-Saharan African country to gain independence from colonial rule, led by Kwame Nkrumah.",
+        distractors: [
+            { text: "Nigeria was the first African nation to gain independence from European colonial rule.", d: 1 },
+            { text: "South Africa gained independence and ended apartheid in the 1950s.", d: 1 },
+            { text: "Ghana gained independence from France under the leadership of Nkrumah.", d: 2 },
+            { text: "Ghana was the second sub-Saharan nation to gain independence, following Liberia's decolonization.", d: 2 },
+            { text: "Ghana gained independence from Britain under Nkrumah, becoming the first African nation overall to decolonize.", d: 3 },
+        ]
+    },
+    'dih-15': {
+        hardCorrect: "Bell received the telephone patent, beating rival Elisha Gray by just hours; three days later he made the first successful call.",
+        distractors: [
+            { text: "Edison invented and patented the telephone before anyone else.", d: 1 },
+            { text: "The telegraph was patented, revolutionizing long-distance communication.", d: 1 },
+            { text: "Bell received the patent after a lengthy court battle with Gray that lasted several years.", d: 2 },
+            { text: "Bell patented the telephone and made his first call on the same day.", d: 2 },
+            { text: "Bell received the patent, beating Gray by several weeks after Gray withdrew his application.", d: 3 },
+        ]
+    },
+    'dih-16': {
+        hardCorrect: "Civil rights marchers on the Edmund Pettus Bridge were attacked by state troopers; the televised violence led to the Voting Rights Act.",
+        distractors: [
+            { text: "Martin Luther King Jr. led a march on Washington that resulted in the Civil Rights Act.", d: 1 },
+            { text: "Rosa Parks led a protest march that was met with police violence.", d: 1 },
+            { text: "Marchers crossed the bridge peacefully and the event led to the Civil Rights Act of 1964.", d: 2 },
+            { text: "The march was organized in Montgomery and led to the desegregation of public schools.", d: 2 },
+            { text: "Marchers were attacked on the Edmund Pettus Bridge, leading directly to the Civil Rights Act of 1964.", d: 3 },
+        ]
+    },
+    'dih-17': {
+        hardCorrect: "Parker Brothers began selling Monopoly, based on earlier designs by Elizabeth Magie meant to demonstrate the problems of land monopolies.",
+        distractors: [
+            { text: "Milton Bradley invented and published the board game Monopoly.", d: 1 },
+            { text: "The card game Monopoly was released and became an instant bestseller.", d: 1 },
+            { text: "Parker Brothers created Monopoly from scratch as an original game concept.", d: 2 },
+            { text: "Monopoly was originally designed as a children's educational game about banking.", d: 2 },
+            { text: "Parker Brothers began selling Monopoly, based on a game by Elizabeth Magie that was intended to promote land ownership.", d: 3 },
+        ]
+    },
+    'dih-18': {
+        hardCorrect: "Clara Zetkin proposed International Women's Day at the International Socialist Women's Conference; it was first celebrated in 1911.",
+        distractors: [
+            { text: "International Women's Day was established by the United Nations in 1945.", d: 1 },
+            { text: "The first Women's Day march took place in London for voting rights.", d: 1 },
+            { text: "Zetkin proposed the day at a labor conference in Berlin, and it was first celebrated in 1915.", d: 2 },
+            { text: "International Women's Day was proposed at a suffragette convention in New York.", d: 2 },
+            { text: "Zetkin proposed the day at a socialist conference in Copenhagen; it was first celebrated in 1913.", d: 3 },
+        ]
+    },
+    'dih-19': {
+        hardCorrect: "On International Women's Day, women textile workers in Petrograd struck, sparking the revolution that toppled Tsar Nicholas II within days.",
+        distractors: [
+            { text: "Lenin led an armed uprising that overthrew the Tsar.", d: 1 },
+            { text: "The Russian army mutinied and forced the Tsar to abdicate.", d: 1 },
+            { text: "Male factory workers in Moscow launched a general strike that led to the Tsar's abdication.", d: 2 },
+            { text: "Soldiers in Petrograd refused orders and joined a naval mutiny that overthrew the government.", d: 2 },
+            { text: "Women workers in Petrograd struck on May Day, sparking the revolution that toppled the Tsar.", d: 3 },
+        ]
+    },
+    'dih-20': {
+        hardCorrect: "MH370 vanished en route from Kuala Lumpur to Beijing with 239 aboard; despite the largest aviation search ever, it was never fully recovered.",
+        distractors: [
+            { text: "A plane crashed into the Pacific Ocean after running out of fuel.", d: 1 },
+            { text: "A Malaysian Airlines flight was shot down over a conflict zone.", d: 1 },
+            { text: "MH370 disappeared over the South China Sea and was located on the ocean floor within months.", d: 2 },
+            { text: "The plane vanished en route from Singapore to Sydney with over 300 passengers.", d: 2 },
+            { text: "MH370 vanished en route from Kuala Lumpur to Beijing; wreckage was recovered in the southern Indian Ocean within a year.", d: 3 },
+        ]
+    },
+    'dih-21': {
+        hardCorrect: "The Barbie doll was unveiled at the American International Toy Fair by Mattel co-founder Ruth Handler, named after her daughter Barbara.",
+        distractors: [
+            { text: "The Barbie doll was invented by a toy designer at Hasbro.", d: 1 },
+            { text: "The first fashion doll was introduced at a trade show in London.", d: 1 },
+            { text: "Barbie was unveiled at a toy fair in Los Angeles and named after Handler's niece.", d: 2 },
+            { text: "The doll was created by Mattel's male design team and named by a marketing focus group.", d: 2 },
+            { text: "Barbie was unveiled at the toy fair by Ruth Handler and named after her sister Barbara.", d: 3 },
+        ]
+    },
+    'dih-22': {
+        hardCorrect: "Pancho Villa led nearly 500 guerrillas in a cross-border raid on Columbus, New Mexico, prompting a US military expedition into Mexico.",
+        distractors: [
+            { text: "Mexican forces invaded Texas, reigniting tensions along the US-Mexico border.", d: 1 },
+            { text: "The Mexican army attacked a US military base during the Mexican Revolution.", d: 1 },
+            { text: "Villa raided a US town with a small band of fifty fighters, causing minimal casualties.", d: 2 },
+            { text: "Villa's raid targeted a US Army fort and successfully captured American weapons.", d: 2 },
+            { text: "Villa led nearly 500 guerrillas in a raid on Columbus, and the subsequent US expedition successfully captured him.", d: 3 },
+        ]
+    },
+    'dih-23': {
+        hardCorrect: "The explorer whose first name would lend itself to the Americas was born in Florence; his voyages proved the Americas were separate continents.",
+        distractors: [
+            { text: "Christopher Columbus was born in Florence and later discovered America.", d: 1 },
+            { text: "Marco Polo was born and would later name the American continents.", d: 1 },
+            { text: "Vespucci was born in Venice and his voyages confirmed Columbus had reached Asia.", d: 2 },
+            { text: "The explorer was born in Rome and named the continents after his family surname.", d: 2 },
+            { text: "Vespucci was born in Florence; his voyages confirmed that Columbus had indeed reached the eastern coast of Asia.", d: 3 },
+        ]
+    },
+    'dih-24': {
+        hardCorrect: "Bell made the first successful telephone call to his assistant Watson, saying 'Mr. Watson, come here,' just three days after receiving his patent.",
+        distractors: [
+            { text: "Edison made the first telephone call from New York to Washington.", d: 1 },
+            { text: "The first telegraph message was sent across a wire.", d: 1 },
+            { text: "Bell's first call was made across town to a colleague at a rival laboratory.", d: 2 },
+            { text: "The first telephone call was made one month after Bell received his patent.", d: 2 },
+            { text: "Bell made the first call to Watson from an adjacent building, a week after receiving his patent.", d: 3 },
+        ]
+    },
+    'dih-25': {
+        hardCorrect: "Harriet Tubman, who led roughly 70 enslaved people to freedom via the Underground Railroad and served as a Union spy, died at 91.",
+        distractors: [
+            { text: "Frederick Douglass, the famous abolitionist and orator, died in New York.", d: 1 },
+            { text: "Sojourner Truth, who escaped slavery and became a famous activist, died.", d: 1 },
+            { text: "Tubman led hundreds of enslaved people to freedom and later served in the Confederate Army as a scout.", d: 2 },
+            { text: "Tubman escaped slavery and became a prominent abolitionist speaker, though she never returned south.", d: 2 },
+            { text: "Tubman led roughly 70 people to freedom and served as a Union nurse, dying at 91.", d: 3 },
+        ]
+    },
+    'dih-26': {
+        hardCorrect: "Tens of thousands of Tibetans surrounded the Norbulingka Palace to protect the Dalai Lama; the uprising was crushed and he fled to India.",
+        distractors: [
+            { text: "The Dalai Lama led a successful revolt and established an independent Tibetan state.", d: 1 },
+            { text: "China invaded Tibet for the first time, forcing the Dalai Lama to flee.", d: 1 },
+            { text: "Tibetan monks peacefully protested at a monastery, and the Dalai Lama negotiated safe passage to Nepal.", d: 2 },
+            { text: "The uprising centered on the Potala Palace, and the Dalai Lama fled to Bhutan.", d: 2 },
+            { text: "Tibetans surrounded the Norbulingka Palace to protect the Dalai Lama, who fled to Nepal after the uprising was suppressed.", d: 3 },
+        ]
+    },
+    'dih-27': {
+        hardCorrect: "A magnitude 9.1 earthquake off Japan triggered a massive tsunami and the Fukushima nuclear disaster, killing nearly 20,000 people.",
+        distractors: [
+            { text: "A major volcanic eruption in Japan caused widespread destruction and a nuclear plant failure.", d: 1 },
+            { text: "A typhoon struck Japan's coast, causing the Fukushima reactor to melt down.", d: 1 },
+            { text: "A magnitude 8.0 earthquake struck Tokyo directly, causing the Fukushima disaster.", d: 2 },
+            { text: "The earthquake struck inland, and the resulting landslides caused the nuclear disaster.", d: 2 },
+            { text: "A magnitude 9.1 earthquake off Japan triggered a tsunami and the Fukushima disaster, killing nearly 5,000 people.", d: 3 },
+        ]
+    },
+    'dih-28': {
+        hardCorrect: "Gorbachev became General Secretary at 54, the youngest Soviet leader in decades; his glasnost and perestroika reforms led to the USSR's dissolution.",
+        distractors: [
+            { text: "Yeltsin became the leader of the Soviet Union and introduced democratic reforms.", d: 1 },
+            { text: "Brezhnev took power and launched a series of economic modernization programs.", d: 1 },
+            { text: "Gorbachev became leader at age 65 and his conservative policies preserved the Soviet Union.", d: 2 },
+            { text: "Gorbachev introduced reforms that strengthened the Soviet Union's centralized control.", d: 2 },
+            { text: "Gorbachev became the youngest Soviet leader and his reforms of glasnost and detente stabilized the USSR.", d: 3 },
+        ]
+    },
+    'dih-29': {
+        hardCorrect: "The first known cases of the 1918 flu pandemic appeared at a US Army camp; the virus would infect a third of the world and kill 50\u2013100 million.",
+        distractors: [
+            { text: "The Spanish Flu originated in Spain and spread to the rest of the world.", d: 1 },
+            { text: "A polio epidemic broke out at a military camp during World War I.", d: 1 },
+            { text: "The first cases appeared in a European field hospital and the pandemic killed about 10 million.", d: 2 },
+            { text: "The pandemic began in a naval base and primarily affected populations in Europe.", d: 2 },
+            { text: "The first cases appeared at a US Army camp; the virus infected a quarter of the world's population and killed around 20 million.", d: 3 },
+        ]
+    },
 };

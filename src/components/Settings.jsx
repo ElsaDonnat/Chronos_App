@@ -10,6 +10,7 @@ import {
     cancelAllReminders,
     requestNotificationPermission,
 } from '../services/notifications';
+import * as feedback from '../services/feedback';
 
 const STORAGE_KEY = 'chronos-state-v1';
 
@@ -58,6 +59,9 @@ export default function Settings() {
     const hours = Math.floor(totalSeconds / 3600);
     const minutes = Math.floor((totalSeconds % 3600) / 60);
     const studyTimeStr = hours > 0 ? `${hours}h ${minutes}m` : `${minutes}m`;
+
+    // Play modal open sound on mount
+    useEffect(() => { feedback.modalOpen(); }, []);
 
     // Reschedule notifications when settings change
     useEffect(() => {
@@ -178,7 +182,14 @@ export default function Settings() {
                     </Card>
                     <Card className="text-center p-4">
                         <div className="flex items-center justify-center gap-1.5">
-                            <StreakFlame status={state.currentStreak > 0 ? 'active' : 'inactive'} size={22} />
+                            <StreakFlame status={(() => {
+                                if (!state.lastActiveDate || state.currentStreak === 0) return 'inactive';
+                                const today = new Date().toISOString().split('T')[0];
+                                if (state.lastActiveDate === today) return 'active';
+                                const yesterday = new Date();
+                                yesterday.setDate(yesterday.getDate() - 1);
+                                return state.lastActiveDate === yesterday.toISOString().split('T')[0] ? 'at-risk' : 'inactive';
+                            })()} size={22} />
                             <div className="text-2xl font-bold" style={{ color: 'var(--color-burgundy)' }}>{state.currentStreak}</div>
                         </div>
                         <div className="text-xs mt-1" style={{ color: 'var(--color-ink-muted)' }}>Day Streak</div>
@@ -287,6 +298,7 @@ export default function Settings() {
                             role="switch"
                             aria-checked={state.notificationsEnabled}
                             onClick={async () => {
+                                feedback.toggleClick();
                                 if (!state.notificationsEnabled) {
                                     const result = await requestNotificationPermission();
                                     if (result === 'denied') return;
@@ -338,7 +350,7 @@ export default function Settings() {
                                     type="button"
                                     role="switch"
                                     aria-checked={state.streakRemindersEnabled}
-                                    onClick={() => dispatch({ type: 'SET_STREAK_REMINDERS', value: !state.streakRemindersEnabled })}
+                                    onClick={() => { feedback.toggleClick(); dispatch({ type: 'SET_STREAK_REMINDERS', value: !state.streakRemindersEnabled }); }}
                                     className="relative w-11 h-6 rounded-full transition-colors"
                                     style={{
                                         backgroundColor: state.streakRemindersEnabled ? 'var(--color-burgundy)' : 'rgba(var(--color-ink-rgb), 0.15)',
@@ -390,7 +402,7 @@ export default function Settings() {
                 </Card>
 
                 {/* Sound & Haptics */}
-                <Card className="mb-3 p-4 space-y-4">
+                <Card className="mb-3 p-4 space-y-4" style={{ userSelect: 'none', WebkitUserSelect: 'none' }}>
                     {/* Sound effects volume */}
                     <div>
                         <div className="flex items-center justify-between mb-2">
@@ -406,8 +418,10 @@ export default function Settings() {
                             type="range" min="0" max="1" step="0.05"
                             value={state.soundVolume ?? 1}
                             onChange={e => dispatch({ type: 'SET_SOUND_VOLUME', value: parseFloat(e.target.value) })}
-                            className="w-full h-1.5 rounded-full appearance-none cursor-pointer"
-                            style={{ accentColor: 'var(--color-burgundy)' }}
+                            className="volume-slider"
+                            style={{
+                                background: `linear-gradient(to right, var(--color-burgundy) ${(state.soundVolume ?? 1) * 100}%, rgba(var(--color-ink-rgb), 0.12) ${(state.soundVolume ?? 1) * 100}%)`
+                            }}
                         />
                     </div>
 
@@ -429,8 +443,10 @@ export default function Settings() {
                             type="range" min="0" max="1" step="0.05"
                             value={state.musicVolume ?? 1}
                             onChange={e => dispatch({ type: 'SET_MUSIC_VOLUME', value: parseFloat(e.target.value) })}
-                            className="w-full h-1.5 rounded-full appearance-none cursor-pointer"
-                            style={{ accentColor: 'var(--color-burgundy)' }}
+                            className="volume-slider"
+                            style={{
+                                background: `linear-gradient(to right, var(--color-burgundy) ${(state.musicVolume ?? 1) * 100}%, rgba(var(--color-ink-rgb), 0.12) ${(state.musicVolume ?? 1) * 100}%)`
+                            }}
                         />
                     </div>
 
@@ -444,7 +460,7 @@ export default function Settings() {
                             type="button"
                             role="switch"
                             aria-checked={state.hapticsEnabled}
-                            onClick={() => dispatch({ type: 'TOGGLE_HAPTICS' })}
+                            onClick={() => { feedback.toggleClick(); dispatch({ type: 'TOGGLE_HAPTICS' }); }}
                             className="relative w-11 h-6 rounded-full transition-colors"
                             style={{ backgroundColor: state.hapticsEnabled ? 'var(--color-burgundy)' : 'rgba(var(--color-ink-rgb), 0.15)' }}
                         >

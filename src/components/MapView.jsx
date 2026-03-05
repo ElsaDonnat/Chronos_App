@@ -385,15 +385,12 @@ export default function MapView({ events, learnedIds, hideUnknown, eventMastery,
     const { mapContainerRef, cssTransform, isZoomed, onTouchStart, onTouchMove, onTouchEnd, resetZoom } = usePanZoom();
 
     const visibleEvents = useMemo(() => {
-        let evts = events;
+        let evts = events.filter(e => learnedIds.has(e.id));
         if (selectedRegion) {
             evts = evts.filter(e => e.location.region === selectedRegion);
         }
-        if (hideUnknown) {
-            evts = evts.filter(e => learnedIds.has(e.id));
-        }
         return evts;
-    }, [events, selectedRegion, hideUnknown, learnedIds]);
+    }, [events, selectedRegion, learnedIds]);
 
     const pins = useMemo(() => clusterPins(visibleEvents, learnedIds), [visibleEvents, learnedIds]);
 

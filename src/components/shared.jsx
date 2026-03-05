@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect, forwardRef } from 'react';
 import { CATEGORY_CONFIG, IMPORTANCE_CONFIG, getRelatedEvents } from '../data/events';
+import * as feedback from '../services/feedback';
 
 /** Truncates text to `lines` lines with a "Read more / Less" toggle. */
 export function ExpandableText({ children, lines = 3, className = '', style = {}, footerLeft = null }) {
@@ -61,6 +62,27 @@ export function CategoryTag({ category }) {
         >
             {config.label}
         </span>
+    );
+}
+
+const CATEGORY_ICON_PATHS = {
+    science: <><circle cx="12" cy="18" r="4" /><line x1="12" y1="14" x2="12" y2="5" /><line x1="9" y1="9" x2="15" y2="9" /><circle cx="12" cy="4" r="1" /></>,
+    war: <><path d="M5 3l14 14" /><path d="M19 3L5 17" /><path d="M5 17l2 2 2-2" /><path d="M19 17l-2 2-2-2" /></>,
+    politics: <><path d="M4 21h16V10H4z" /><path d="M5 10l7-7 7 7" /><line x1="9" y1="21" x2="9" y2="14" /><line x1="15" y1="21" x2="15" y2="14" /></>,
+    culture: <><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c1 0 2-.8 2-2 0-.5-.2-1-.5-1.3-.3-.3-.5-.8-.5-1.3 0-1.1.9-2 2-2h2.5c3 0 5.5-2.5 5.5-5.5C23 6 18 2 12 2z" /><circle cx="8" cy="8" r="1.5" fill="currentColor" stroke="none" /><circle cx="15" cy="8" r="1.5" fill="currentColor" stroke="none" /><circle cx="17" cy="13" r="1.5" fill="currentColor" stroke="none" /></>,
+    revolution: <><path d="M12 22V8" /><path d="M12 8c0-4-3-6-6-6 0 3 2 5.5 6 6z" /><path d="M12 8c0-4 3-6 6-6 0 3-2 5.5-6 6z" /><path d="M12 14c0-2.5-2-4-4-4.5" /><path d="M12 14c0-2.5 2-4 4-4.5" /></>,
+};
+
+export function CategoryIcon({ category, size = 16, color }) {
+    const paths = CATEGORY_ICON_PATHS[category];
+    if (!paths) return null;
+    const c = color || CATEGORY_CONFIG[category]?.color || 'currentColor';
+    return (
+        <svg width={size} height={size} viewBox="0 0 24 24" fill="none"
+            stroke={c} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
+            style={{ color: c, flexShrink: 0 }}>
+            {paths}
+        </svg>
     );
 }
 
@@ -196,7 +218,7 @@ export const Button = forwardRef(function Button({ children, onClick, variant = 
     return (
         <button
             ref={ref}
-            onClick={onClick}
+            onClick={(e) => { if (!disabled) feedback.tap(); onClick?.(e); }}
             disabled={disabled}
             className={`${base} ${className}`}
             style={{
@@ -229,7 +251,7 @@ export function Card({ children, className = '', onClick, style = {} }) {
 export function StarButton({ isStarred, onClick, size = 18 }) {
     return (
         <button
-            onClick={(e) => { e.stopPropagation(); onClick(); }}
+            onClick={(e) => { e.stopPropagation(); feedback.starPing(); onClick(); }}
             className="flex items-center justify-center transition-all duration-200 active:scale-90"
             style={{ color: isStarred ? '#E6A817' : 'var(--color-ink-faint)', minWidth: '44px', minHeight: '44px' }}
             title={isStarred ? 'Remove from favorites' : 'Add to favorites'}
@@ -249,6 +271,7 @@ export function ConfirmModal({ title, message, confirmLabel = 'Yes', cancelLabel
 
     useEffect(() => {
         cancelRef.current?.focus();
+        feedback.modalOpen();
     }, []);
 
     return (

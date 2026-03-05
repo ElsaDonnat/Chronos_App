@@ -2,7 +2,7 @@ import { useState, useMemo } from 'react';
 import { useApp } from '../../context/AppContext';
 import { ERA_QUIZ_GROUPS } from '../../data/lessons';
 import { generatePlacementQuestions, scorePlacementQuiz, getNextPlacementEra, isPlacementQuizUnlocked } from '../../data/placementQuiz';
-import { generateLocationOptions, generateWhatOptions, generateDateMCQOptions, generateDescriptionOptions, SCORE_COLORS, getScoreColor, getScoreLabel, scoreDateAnswer } from '../../data/quiz';
+import { generateLocationOptions, generateWhatOptions, generateDateMCQOptions, generateDescriptionOptions, generateEraOptions, SCORE_COLORS, getScoreColor, getScoreLabel, scoreDateAnswer } from '../../data/quiz';
 import { Card, Button, ProgressBar } from '../shared';
 import Mascot from '../Mascot';
 import * as feedback from '../../services/feedback';
@@ -71,6 +71,7 @@ export default function PlacementQuizFlow({ onComplete, initialEra }) {
     const [activeEra, setActiveEra] = useState(initialEra || null);
     const [questions, setQuestions] = useState(() => initialEra ? generatePlacementQuestions(initialEra) : []);
     const [currentIndex, setCurrentIndex] = useState(0);
+    const [viewIndex, setViewIndex] = useState(0);
     const [results, setResults] = useState([]);
     const [showResults, setShowResults] = useState(false);
     const [quizScore, setQuizScore] = useState(null);
@@ -82,13 +83,14 @@ export default function PlacementQuizFlow({ onComplete, initialEra }) {
         setActiveEra(eraId);
         setQuestions(qs);
         setCurrentIndex(0);
+        setViewIndex(0);
         setResults([]);
         setShowResults(false);
         setQuizScore(null);
     };
 
-    const handleAnswer = (score) => {
-        setResults(prev => [...prev, { score }]);
+    const handleAnswer = (score, selectedAnswer, options) => {
+        setResults(prev => [...prev, { score, selectedAnswer, options }]);
         feedback.forScore(score);
     };
 
@@ -108,6 +110,7 @@ export default function PlacementQuizFlow({ onComplete, initialEra }) {
             feedback.complete();
         } else {
             setCurrentIndex(i => i + 1);
+            setViewIndex(currentIndex + 1);
         }
     };
 
@@ -215,12 +218,14 @@ export default function PlacementQuizFlow({ onComplete, initialEra }) {
 
     // ─── Quiz session ───
     if (activeEra && questions.length > 0 && !showResults) {
-        const q = questions[currentIndex];
+        const isReviewing = viewIndex < currentIndex;
+        const q = questions[viewIndex];
+        const reviewResult = isReviewing ? results[viewIndex] : null;
         return (
             <div className="lesson-flow-container animate-fade-in">
                 <div className="flex-shrink-0 pt-4">
-                    <div className="flex items-center justify-between mb-3">
-                        <button onClick={() => initialEra ? onComplete() : setActiveEra(null)} className="text-sm flex items-center gap-1"
+                    <div className="flex items-center justify-center mb-3 relative">
+                        <button onClick={() => initialEra ? onComplete() : setActiveEra(null)} className="text-sm flex items-center gap-1 absolute left-0"
                             style={{ color: 'var(--color-ink-muted)' }}>
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                 <polyline points="15 18 9 12 15 6" />
@@ -229,23 +234,50 @@ export default function PlacementQuizFlow({ onComplete, initialEra }) {
                         </button>
                         <span className="text-[10px] uppercase tracking-widest font-bold px-2 py-0.5 rounded-full"
                             style={{ backgroundColor: 'var(--color-burgundy-soft)', color: 'var(--color-burgundy)' }}>
-                            Placement
-                        </span>
-                        <span className="text-sm font-medium" style={{ color: 'var(--color-ink-muted)' }}>
-                            {currentIndex + 1} / {questions.length}
+                            {isReviewing ? 'Reviewing' : 'Placement'} · {viewIndex + 1}/{questions.length}
                         </span>
                     </div>
                     <ProgressBar value={currentIndex + 1} max={questions.length} />
                 </div>
 
                 <div className="flex-1 min-h-0 overflow-y-auto">
-                    <div className="mt-4" key={`placement-q-${currentIndex}`}>
+                    <div className="mt-4" key={`placement-q-${viewIndex}`}>
                         <PlacementQuestion
                             question={q}
                             onAnswer={handleAnswer}
                             onNext={handleNext}
+                            reviewMode={isReviewing}
+                            reviewResult={reviewResult}
                         />
                     </div>
+                </div>
+
+                {/* Previous / Back to current navigation */}
+                <div className="flex-shrink-0 flex items-center justify-between pt-2 pb-1">
+                    {viewIndex > 0 ? (
+                        <button
+                            onClick={() => setViewIndex(i => i - 1)}
+                            className="text-xs flex items-center gap-1 py-1.5 px-2 rounded-lg"
+                            style={{ color: 'var(--color-ink-muted)' }}
+                        >
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                <polyline points="15 18 9 12 15 6" />
+                            </svg>
+                            Previous
+                        </button>
+                    ) : <div />}
+                    {isReviewing && (
+                        <button
+                            onClick={() => setViewIndex(currentIndex)}
+                            className="text-xs flex items-center gap-1 py-1.5 px-2 rounded-lg font-semibold"
+                            style={{ color: 'var(--color-burgundy)' }}
+                        >
+                            Back to Q{currentIndex + 1}
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                <polyline points="9 18 15 12 9 6" />
+                            </svg>
+                        </button>
+                    )}
                 </div>
             </div>
         );
@@ -333,17 +365,22 @@ export default function PlacementQuizFlow({ onComplete, initialEra }) {
 }
 
 // ─── Placement question (MCQ-only, simpler than PracticeQuestion) ───
-function PlacementQuestion({ question, onAnswer, onNext }) {
+function PlacementQuestion({ question, onAnswer, onNext, reviewMode, reviewResult }) {
     const { event, type } = question;
-    const [answered, setAnswered] = useState(false);
-    const [selectedAnswer, setSelectedAnswer] = useState(null);
-    const [score, setScore] = useState(null);
+    const [answered, setAnswered] = useState(reviewMode || false);
+    const [selectedAnswer, setSelectedAnswer] = useState(reviewMode ? reviewResult?.selectedAnswer : null);
+    const [score, setScore] = useState(reviewMode ? reviewResult?.score : null);
 
-    // Pre-generate options (all MCQ for placement)
-    const [locationOpts] = useState(() => type === 'location' ? generateLocationOptions(event) : []);
-    const [whatOpts] = useState(() => type === 'what' ? generateWhatOptions(event, [event.id]) : []);
-    const [descOpts] = useState(() => type === 'description' ? generateDescriptionOptions(event) : []);
-    const [dateOpts] = useState(() => type === 'date' ? generateDateMCQOptions(event) : []);
+    // Pre-generate options (use saved options in review mode for consistency)
+    const savedOpts = reviewMode ? reviewResult?.options : null;
+    const [locationOpts] = useState(() => type === 'location' ? (savedOpts || generateLocationOptions(event)) : []);
+    const [whatOpts] = useState(() => type === 'what' ? (savedOpts || generateWhatOptions(event, [event.id])) : []);
+    const [descOpts] = useState(() => type === 'description' ? (savedOpts || generateDescriptionOptions(event, undefined, 2)) : []);
+    const [dateOpts] = useState(() => type === 'date' ? (savedOpts || generateDateMCQOptions(event)) : []);
+    const [eraOpts] = useState(() => type === 'era' ? (savedOpts || generateEraOptions(event)) : []);
+
+    // Get current options for saving with the answer
+    const currentOpts = type === 'location' ? locationOpts : type === 'what' ? whatOpts : type === 'description' ? descOpts : type === 'date' ? dateOpts : eraOpts;
 
     const handleMCQ = (answer, correct) => {
         if (answered) return;
@@ -351,7 +388,7 @@ function PlacementQuestion({ question, onAnswer, onNext }) {
         const s = answer === correct ? 'green' : 'red';
         setScore(s);
         setAnswered(true);
-        onAnswer(s);
+        onAnswer(s, answer, currentOpts);
     };
 
     const handleDateMCQ = (opt) => {
@@ -360,7 +397,7 @@ function PlacementQuestion({ question, onAnswer, onNext }) {
         const s = opt.isCorrect ? 'green' : scoreDateAnswer(opt.year, opt.year < 0 ? 'BCE' : 'CE', event);
         setScore(s);
         setAnswered(true);
-        onAnswer(s);
+        onAnswer(s, opt.label, currentOpts);
     };
 
     const cardStyle = answered && score
@@ -407,7 +444,7 @@ function PlacementQuestion({ question, onAnswer, onNext }) {
                     </div>
                     {feedback}
                 </Card>
-                {answered && (
+                {answered && !reviewMode && (
                     <div className="pinned-footer">
                         <Button className="w-full" onClick={onNext}>Continue →</Button>
                     </div>
@@ -443,7 +480,7 @@ function PlacementQuestion({ question, onAnswer, onNext }) {
                     </div>
                     {feedback}
                 </Card>
-                {answered && (
+                {answered && !reviewMode && (
                     <div className="pinned-footer">
                         <Button className="w-full" onClick={onNext}>Continue →</Button>
                     </div>
@@ -479,7 +516,7 @@ function PlacementQuestion({ question, onAnswer, onNext }) {
                     </div>
                     {feedback}
                 </Card>
-                {answered && (
+                {answered && !reviewMode && (
                     <div className="pinned-footer">
                         <Button className="w-full" onClick={onNext}>Continue →</Button>
                     </div>
@@ -497,15 +534,15 @@ function PlacementQuestion({ question, onAnswer, onNext }) {
                     <p className="text-sm mb-5" style={{ color: 'var(--color-burgundy)' }}>{event.date}</p>
                     <div className="mcq-options">
                         {descOpts.map((opt, i) => {
-                            const isCorrect = opt.id === event.id;
-                            const isSelected = selectedAnswer === opt.id;
+                            const isCorrect = opt.isCorrect;
+                            const isSelected = selectedAnswer === i;
                             let s = {};
                             if (answered) {
                                 if (isCorrect) s = { backgroundColor: 'rgba(5, 150, 105, 0.1)', borderColor: 'var(--color-success)' };
                                 else if (isSelected && !isCorrect) s = { backgroundColor: 'rgba(166, 61, 61, 0.1)', borderColor: 'var(--color-error)' };
                             }
                             return (
-                                <button key={i} onClick={() => handleMCQ(opt.id, event.id)} disabled={answered}
+                                <button key={i} onClick={() => handleMCQ(i, descOpts.findIndex(o => o.isCorrect))} disabled={answered}
                                     className="mcq-option" style={s}>
                                     <span className="leading-relaxed text-sm block" style={{ color: 'var(--color-ink-secondary)' }}>{opt.description}</span>
                                     {answered && isCorrect && <span className="text-xs font-bold mt-1 block" style={{ color: 'var(--color-success)' }}>{'\✓'} Correct</span>}
@@ -515,7 +552,45 @@ function PlacementQuestion({ question, onAnswer, onNext }) {
                     </div>
                     {feedback}
                 </Card>
-                {answered && (
+                {answered && !reviewMode && (
+                    <div className="pinned-footer">
+                        <Button className="w-full" onClick={onNext}>Continue →</Button>
+                    </div>
+                )}
+            </div>
+        );
+    }
+
+    if (type === 'era') {
+        return (
+            <div className="animate-slide-in-right">
+                <Card style={cardStyle}>
+                    <p className="text-xs uppercase tracking-wider font-semibold mb-2" style={{ color: 'var(--color-ink-faint)' }}>Which era?</p>
+                    <h3 className="text-xl font-bold mb-1" style={{ fontFamily: 'var(--font-serif)' }}>{event.title}</h3>
+                    <p className="text-sm mb-5 leading-relaxed" style={{ color: 'var(--color-ink-secondary)' }}>
+                        {(event.quizDescription || event.description).substring(0, 80)}{'\u2026'}
+                    </p>
+                    <div className="mcq-options mcq-options--grid">
+                        {eraOpts.map((opt, i) => {
+                            const isCorrect = opt.isCorrect;
+                            const isSelected = selectedAnswer === opt.id;
+                            let s = {};
+                            if (answered) {
+                                if (isCorrect) s = { backgroundColor: 'rgba(5, 150, 105, 0.1)', borderColor: 'var(--color-success)' };
+                                else if (isSelected && !isCorrect) s = { backgroundColor: 'rgba(166, 61, 61, 0.1)', borderColor: 'var(--color-error)' };
+                            }
+                            return (
+                                <button key={i} onClick={() => handleMCQ(opt.id, eraOpts.find(o => o.isCorrect).id)} disabled={answered}
+                                    className="mcq-option font-semibold" style={s}>
+                                    {opt.label}
+                                    {answered && isCorrect && <span className="ml-2 text-xs" style={{ color: 'var(--color-success)' }}>{'\u2713'}</span>}
+                                </button>
+                            );
+                        })}
+                    </div>
+                    {feedback}
+                </Card>
+                {answered && !reviewMode && (
                     <div className="pinned-footer">
                         <Button className="w-full" onClick={onNext}>Continue →</Button>
                     </div>

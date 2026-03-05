@@ -3,13 +3,14 @@ import { useApp } from '../../context/AppContext';
 import { getEventsByIds, getEventById, ALL_EVENTS, CATEGORY_CONFIG, ERA_BOUNDARY_EVENTS, ERA_RANGES, getEraBoundaryInfo } from '../../data/events';
 import { scoreDateAnswer, generateLocationOptions, generateWhatOptions, generateDateMCQOptions, generateDescriptionOptions, calculateXP, SCORE_COLORS, getScoreColor, getScoreLabel, shuffle } from '../../data/quiz';
 import { calculateNextReview } from '../../data/spacedRepetition';
-import { Card, Button, CategoryTag, ImportanceTag, Divider, StarButton, ConfirmModal, ExpandableText, ControversyNote, AnimatedCounter, EventConnections, flyXPToStar } from '../shared';
+import { Card, Button, CategoryTag, CategoryIcon, ImportanceTag, Divider, StarButton, ConfirmModal, ExpandableText, ControversyNote, AnimatedCounter, EventConnections, flyXPToStar } from '../shared';
 import Mascot from '../Mascot';
 import LessonIcon from '../LessonIcon';
 import { LEVEL2_CHAPTERS } from '../../data/lessons';
 import * as feedback from '../../services/feedback';
 import { shareText, buildLessonShareText } from '../../services/share';
 import StreakFlame from '../StreakFlame';
+import StreakCelebration from '../StreakCelebration';
 
 // ─── PHASES ────────────────────────────────────────────
 const PHASE = {
@@ -143,6 +144,7 @@ export default function LessonFlow({ lesson, onComplete }) {
     const [sessionDuration, setSessionDuration] = useState(0);
     const [shareToast, setShareToast] = useState(false);
     const [postLessonModal, setPostLessonModal] = useState(null); // null | 'placement' | 'support'
+    const [streakCelebration, setStreakCelebration] = useState(null); // null | { previousStatus, newStreak }
 
     // For each card, randomly pick 3 of the 4 question types to use for MCQs (discarding 1)
     // Then assign 2 to the learn phase and 1 to the recap phase
@@ -228,6 +230,11 @@ export default function LessonFlow({ lesson, onComplete }) {
     // Set session start time on mount
     useEffect(() => { sessionStartTime.current = Date.now(); }, []);
 
+    // Play card reveal sound when a new learn card appears
+    useEffect(() => {
+        if (phase === PHASE.LEARN_CARD) feedback.cardReveal();
+    }, [phase, cardIndex]);
+
     useEffect(() => {
         if (shareToast) {
             const t = setTimeout(() => setShareToast(false), 2000);
@@ -240,13 +247,30 @@ export default function LessonFlow({ lesson, onComplete }) {
         if (phase === PHASE.SUMMARY && !xpDispatched.current) {
             xpDispatched.current = true;
             feedback.complete();
+            // Detect streak earning before dispatching XP (which updates lastActiveDate)
+            const today = new Date().toISOString().split('T')[0];
+            const wasActiveToday = state.lastActiveDate === today;
+            let prevStreakStatus = 'inactive';
+            if (!wasActiveToday && state.lastActiveDate && state.currentStreak > 0) {
+                const yesterday = new Date();
+                yesterday.setDate(yesterday.getDate() - 1);
+                if (state.lastActiveDate === yesterday.toISOString().split('T')[0]) {
+                    prevStreakStatus = 'at-risk';
+                }
+            }
             const xp = calculateXP(quizResults);
             window.dispatchEvent(new Event('freezeXP'));
             dispatch({ type: 'COMPLETE_LESSON', lessonId: lesson.id });
+            dispatch({ type: 'MARK_EVENTS_SEEN', eventIds: events.map(e => e.id) });
             dispatch({ type: 'ADD_XP', amount: xp });
             const duration = sessionStartTime.current ? Math.round((Date.now() - sessionStartTime.current) / 1000) : 0;
             setSessionDuration(duration); // eslint-disable-line react-hooks/set-state-in-effect
             dispatch({ type: 'RECORD_STUDY_SESSION', duration, sessionType: 'lesson', questionsAnswered: quizResults.length });
+            // Show streak celebration if this is the first activity today
+            if (!wasActiveToday) {
+                const newStreak = prevStreakStatus === 'at-risk' ? state.currentStreak + 1 : 1;
+                setTimeout(() => setStreakCelebration({ previousStatus: prevStreakStatus, newStreak }), 600);
+            }
             // Show post-lesson modals for specific lessons
             if (!lesson.chapterId) {
                 if (lesson.number === 1) {
@@ -326,7 +350,6 @@ export default function LessonFlow({ lesson, onComplete }) {
                 setPhase(PHASE.LEARN_CARD);
             }
             setCardIndex(0);
-            dispatch({ type: 'MARK_EVENTS_SEEN', eventIds: events.map(e => e.id) });
         };
 
         return (
@@ -380,9 +403,9 @@ export default function LessonFlow({ lesson, onComplete }) {
                                     const catConfig = CATEGORY_CONFIG[event.category];
                                     return (
                                         <div key={event.id}
-                                            className="flex items-center gap-3 px-3 py-2 rounded-xl animate-fade-in-up"
-                                            style={{ backgroundColor: catConfig?.bg || 'var(--color-parchment-dark)', animationDelay: `${i * 0.1}s` }}>
-                                            <span className="flex-shrink-0 w-2 h-2 rounded-full" style={{ backgroundColor: catConfig?.color || 'var(--color-ink-faint)' }} />
+                                            className="flex items-center gap-3 px-3 py-2.5 rounded-xl animate-fade-in-up"
+                                            style={{ backgroundColor: catConfig?.bg || 'var(--color-parchment-dark)', border: `1.5px solid ${catConfig?.color || 'var(--color-ink-faint)'}25`, animationDelay: `${i * 0.1}s` }}>
+                                            <CategoryIcon category={event.category} size={18} />
                                             <div className="min-w-0 flex-1">
                                                 <p className="text-sm font-semibold truncate" style={{ color: 'var(--color-ink)' }}>{event.title}</p>
                                                 <p className="text-xs" style={{ color: catConfig?.color || 'var(--color-ink-muted)' }}>{event.date}</p>
@@ -504,14 +527,14 @@ export default function LessonFlow({ lesson, onComplete }) {
             <ExitConfirmModal show={showExitConfirm} onConfirm={onComplete} onCancel={() => setShowExitConfirm(false)} />
             <div className="lesson-flow-container animate-fade-in">
                 <div className="flex-shrink-0 pt-4">
-                    <div className="flex items-center justify-between mb-3">
-                        <button onClick={handleExit} className="text-sm flex items-center gap-1" style={{ color: 'var(--color-ink-muted)' }}>
+                    <div className="flex items-center justify-center mb-3 relative">
+                        <button onClick={handleExit} className="text-sm flex items-center gap-1 absolute left-0" style={{ color: 'var(--color-ink-muted)' }}>
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="15 18 9 12 15 6" /></svg>
                             Exit
                         </button>
                         <span className="text-xs uppercase tracking-widest font-bold px-2.5 py-1 rounded-full"
                             style={{ backgroundColor: 'var(--color-burgundy-soft)', color: 'var(--color-burgundy)' }}>
-                            📖 Study
+                            📖 Study · {cardIndex + 1}/{events.length}
                         </span>
                     </div>
 
@@ -657,15 +680,19 @@ export default function LessonFlow({ lesson, onComplete }) {
         const isLastOfCard = learnQuizIndex === currentCardLearnQs.length - 1;
 
         return (
-            <div className="py-4 animate-fade-in" key={`learn-q-${cardIndex}-${learnQuizIndex}`}>
-                <div className="mb-4">
-                    <div className="flex items-center justify-between mb-2">
+            <>
+            <ExitConfirmModal show={showExitConfirm} onConfirm={onComplete} onCancel={() => setShowExitConfirm(false)} />
+            <div className="lesson-flow-container">
+                <div className="flex-shrink-0 pt-4">
+                    <div className="flex items-center justify-center mb-2 relative">
+                        <button onClick={handleExit} className="text-sm flex items-center gap-1 absolute left-0"
+                            style={{ color: 'var(--color-ink-muted)' }}>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="15 18 9 12 15 6" /></svg>
+                            Exit
+                        </button>
                         <span className="text-xs uppercase tracking-widest font-bold px-2.5 py-1 rounded-full"
                             style={{ backgroundColor: 'var(--color-burgundy-soft)', color: 'var(--color-burgundy)' }}>
-                            📝 Learn Quiz
-                        </span>
-                        <span className="text-xs" style={{ color: 'var(--color-ink-faint)' }}>
-                            {answeredCount + 1}/{totalQuestions}
+                            📝 Learn Quiz · {answeredCount + 1}/{totalQuestions}
                         </span>
                     </div>
                     <ProgressTimeline
@@ -678,10 +705,11 @@ export default function LessonFlow({ lesson, onComplete }) {
                     />
                 </div>
 
-                <div className="mt-6">
+                <div className="flex-1 min-h-0 overflow-y-auto mt-4" key={`learn-q-${cardIndex}-${learnQuizIndex}`}>
                     <QuizQuestion
                         question={q}
                         lessonEventIds={lesson.eventIds}
+                        descriptionDifficulty={1}
                         onAnswer={(score) => recordAnswer(q.event.id, q.type, score)}
                         onNext={() => handleNext(
                             () => setLearnQuizIndex(i => i + 1),
@@ -692,6 +720,7 @@ export default function LessonFlow({ lesson, onComplete }) {
                     />
                 </div>
             </div>
+            </>
         );
     }
 
@@ -715,13 +744,21 @@ export default function LessonFlow({ lesson, onComplete }) {
                         <p className="text-xs mb-6" style={{ color: 'var(--color-ink-faint)' }}>
                             {recapQuestions.length} {recapQuestions.length === 1 ? 'question' : 'questions'}{recapPerCard === 2 ? ' — including typing exact dates' : ''}
                         </p>
-                        <div className="flex justify-center gap-2 mb-4 flex-wrap">
-                            {events.map((e, i) => (
-                                <div key={i} className="px-3 py-1.5 rounded-lg text-xs font-medium"
-                                    style={{ backgroundColor: 'var(--color-burgundy-soft)', color: 'var(--color-burgundy)' }}>
-                                    {e.title.length > 20 ? e.title.substring(0, 18) + '\…' : e.title}
-                                </div>
-                            ))}
+                        <div className="flex flex-col gap-1.5 mt-1 mb-4 text-left mx-auto" style={{ maxWidth: 320 }}>
+                            {events.map((e, i) => {
+                                const catConfig = CATEGORY_CONFIG[e.category];
+                                return (
+                                    <div key={e.id}
+                                        className="flex items-center gap-3 px-3 py-2.5 rounded-xl animate-fade-in-up"
+                                        style={{ backgroundColor: catConfig?.bg || 'var(--color-parchment-dark)', border: `1.5px solid ${catConfig?.color || 'var(--color-ink-faint)'}25`, animationDelay: `${i * 0.1}s` }}>
+                                        <CategoryIcon category={e.category} size={18} />
+                                        <div className="min-w-0 flex-1">
+                                            <p className="text-sm font-semibold truncate" style={{ color: 'var(--color-ink)' }}>{e.title}</p>
+                                            <p className="text-xs" style={{ color: catConfig?.color || 'var(--color-ink-muted)' }}>{e.date}</p>
+                                        </div>
+                                    </div>
+                                );
+                            })}
                         </div>
                     </div>
                 </div>
@@ -762,15 +799,19 @@ export default function LessonFlow({ lesson, onComplete }) {
             : false;
 
         return (
-            <div className="py-4 animate-fade-in" key={`recap-${recapIndex}`}>
-                <div className="mb-4">
-                    <div className="flex items-center justify-between mb-2">
+            <>
+            <ExitConfirmModal show={showExitConfirm} onConfirm={onComplete} onCancel={() => setShowExitConfirm(false)} />
+            <div className="lesson-flow-container">
+                <div className="flex-shrink-0 pt-4">
+                    <div className="flex items-center justify-center mb-2 relative">
+                        <button onClick={handleExit} className="text-sm flex items-center gap-1 absolute left-0"
+                            style={{ color: 'var(--color-ink-muted)' }}>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="15 18 9 12 15 6" /></svg>
+                            Exit
+                        </button>
                         <span className="text-xs uppercase tracking-widest font-bold px-2.5 py-1 rounded-full"
                             style={{ backgroundColor: 'rgba(139, 65, 87, 0.15)', color: 'var(--color-burgundy)' }}>
-                            🔁 Recap
-                        </span>
-                        <span className="text-xs" style={{ color: 'var(--color-ink-faint)' }}>
-                            {answeredCount + 1}/{totalQuestions}
+                            🔁 Recap · {answeredCount + 1}/{totalQuestions}
                         </span>
                     </div>
                     <ProgressTimeline
@@ -783,7 +824,7 @@ export default function LessonFlow({ lesson, onComplete }) {
                     />
                 </div>
 
-                <div className="mt-6">
+                <div className="flex-1 min-h-0 overflow-y-auto mt-4" key={`recap-${recapIndex}`}>
                     {q.isDateInput ? (
                         <DateInputQuestion
                             event={q.event}
@@ -796,6 +837,7 @@ export default function LessonFlow({ lesson, onComplete }) {
                         <QuizQuestion
                             question={q}
                             lessonEventIds={lesson.eventIds}
+                            descriptionDifficulty={2}
                             onAnswer={(score) => recordAnswer(q.event.id, q.type, score)}
                             onNext={() => handleNext(() => setRecapIndex(i => i + 1), q.event, recapBoundaryLabel)}
                             onBack={recapIndex > 0 ? () => setRecapIndex(i => i - 1) : null}
@@ -804,6 +846,7 @@ export default function LessonFlow({ lesson, onComplete }) {
                     )}
                 </div>
             </div>
+            </>
         );
     }
 
@@ -888,20 +931,20 @@ export default function LessonFlow({ lesson, onComplete }) {
                         <div className="absolute inset-x-0 flex justify-center pointer-events-none select-none" style={{ opacity: 0.06, top: '88px' }}>
                             <LessonIcon index={lessonIconIndex} size={120} color="var(--color-ink)" />
                         </div>
-                        <Mascot mood={allPassed ? 'celebrating' : 'thinking'} size={80} />
-                        <h2 className="text-2xl font-bold mt-4 mb-1" style={{ fontFamily: 'var(--font-serif)' }}>
+                        <Mascot mood={allPassed ? 'celebrating' : 'thinking'} size={64} />
+                        <h2 className="text-2xl font-bold mt-2 mb-0.5" style={{ fontFamily: 'var(--font-serif)' }}>
                             {allPassed ? 'Lesson Complete!' : 'Keep Practicing'}
                         </h2>
-                        <p className="text-sm mb-6" style={{ color: 'var(--color-ink-muted)' }}>{lesson.title}</p>
+                        <p className="text-sm mb-3" style={{ color: 'var(--color-ink-muted)' }}>{lesson.title}</p>
 
                         <Card className={allPassed ? 'animate-celebration' : ''} style={{
                             borderTop: allPassed ? '3px solid var(--color-success)' : '3px solid var(--color-warning)',
                         }}>
-                            <div className="text-sm font-semibold mb-3" style={{ color: 'var(--color-ink-secondary)' }}>
+                            <div className="text-sm font-semibold mb-2" style={{ color: 'var(--color-ink-secondary)' }}>
                                 {events.length} events · {quizResults.length} questions · {sessionTimeStr}
                             </div>
 
-                            <div className="flex items-center gap-1 mb-4 justify-center flex-wrap">
+                            <div className="flex items-center gap-1 mb-3 justify-center flex-wrap">
                                 {quizResults.map((r, i) => (
                                     <button key={i}
                                         className="w-3 h-3 rounded-full result-dot-btn animate-dot-stagger"
@@ -915,7 +958,7 @@ export default function LessonFlow({ lesson, onComplete }) {
                                 ))}
                             </div>
 
-                            <div className="grid grid-cols-3 gap-3 text-center mb-4">
+                            <div className="grid grid-cols-3 gap-3 text-center mb-3">
                                 <div className="animate-scale-in" style={{ animationDelay: '200ms' }}>
                                     <div className="text-lg font-bold" style={{ color: 'var(--color-success)' }}>{greenCount}</div>
                                     <div className="text-xs" style={{ color: 'var(--color-ink-muted)' }}>Exact</div>
@@ -1081,6 +1124,15 @@ export default function LessonFlow({ lesson, onComplete }) {
                     </div>
                 )}
 
+                {/* Streak Celebration */}
+                {streakCelebration && (
+                    <StreakCelebration
+                        previousStatus={streakCelebration.previousStatus}
+                        newStreak={streakCelebration.newStreak}
+                        onDismiss={() => setStreakCelebration(null)}
+                    />
+                )}
+
                 {/* Support Modal (after lessons 2 and 20) */}
                 {postLessonModal === 'support' && (
                     <div className="dot-modal-backdrop" onClick={() => setPostLessonModal(null)}>
@@ -1155,7 +1207,7 @@ function ExitConfirmModal({ show, onConfirm, onCancel }) {
 // ═══════════════════════════════════════════════════════
 // MCQ QUIZ QUESTION (for location, date MCQ, what)
 // ═══════════════════════════════════════════════════════
-function QuizQuestion({ question, lessonEventIds, onAnswer, onNext, onBack, onSkip }) {
+function QuizQuestion({ question, lessonEventIds, onAnswer, onNext, onBack, onSkip, descriptionDifficulty = null }) {
     const { event, type } = question;
     const [answered, setAnswered] = useState(false);
     const [selectedAnswer, setSelectedAnswer] = useState(null);
@@ -1165,11 +1217,10 @@ function QuizQuestion({ question, lessonEventIds, onAnswer, onNext, onBack, onSk
     const [locationOptions] = useState(() => generateLocationOptions(event));
     const [whatOptions] = useState(() => generateWhatOptions(event, lessonEventIds));
     const [dateOptions] = useState(() => generateDateMCQOptions(event));
-    const [descriptionOptions] = useState(() => generateDescriptionOptions(event));
-
-
+    const [descriptionOptions] = useState(() => generateDescriptionOptions(event, ALL_EVENTS, descriptionDifficulty));
     const handleAnswer = useCallback((answer, correct) => {
         if (answered) return;
+        feedback.select();
         setSelectedAnswer(answer);
         const s = answer === correct ? 'green' : 'red';
         setScore(s);
@@ -1322,15 +1373,15 @@ function QuizQuestion({ question, lessonEventIds, onAnswer, onNext, onBack, onSk
                     <p className="text-sm mb-5" style={{ color: 'var(--color-burgundy)' }}>{event.date}</p>
                     <div className="mcq-options">
                         {descriptionOptions.map((opt, i) => {
-                            const isCorrect = opt.id === event.id;
-                            const isSelected = selectedAnswer === opt.id;
+                            const isCorrect = opt.isCorrect;
+                            const isSelected = selectedAnswer === i;
                             let optStyle = {};
                             if (answered) {
                                 if (isCorrect) optStyle = { backgroundColor: 'rgba(5, 150, 105, 0.1)', borderColor: 'var(--color-success)' };
                                 else if (isSelected && !isCorrect) optStyle = { backgroundColor: 'rgba(166, 61, 61, 0.1)', borderColor: 'var(--color-error)' };
                             }
                             return (
-                                <button key={i} onClick={() => handleAnswer(opt.id, event.id)} disabled={answered}
+                                <button key={i} onClick={() => handleAnswer(i, descriptionOptions.findIndex(o => o.isCorrect))} disabled={answered}
                                     className="mcq-option"
                                     style={{ borderColor: isSelected && !answered ? 'var(--color-burgundy)' : undefined, ...optStyle }}>
                                     <span className="leading-relaxed text-sm block" style={{ color: 'var(--color-ink-secondary)' }}>{opt.description}</span>

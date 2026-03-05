@@ -57,15 +57,20 @@ export const FLAME_COUNT_COLORS = {
 export default function StreakFlame({ status = 'inactive', size = 18 }) {
     const className = status !== 'inactive' ? `streak-flame--${status}` : undefined;
     return (
-        <svg width={size} height={size} viewBox="0 0 24 24" fill="none" className={className}>
+        <svg width={size} height={size} viewBox="-2 -2 28 28" fill="none" className={className}>
             {LOGS}
             {FLAMES[status]}
-            {status === 'active' && (
+            {status === 'at-risk' && (
                 <>
-                    {/* Green tick badge — bottom-right */}
-                    <circle cx="19" cy="20" r="4.5" fill="#16A34A"/>
-                    <circle cx="19" cy="20" r="3.5" fill="#22C55E"/>
-                    <path d="M16.8,20 L18.2,21.3 L21.2,18.5" fill="none" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                    {/* Clock badge — upper-right, overlapping flame edge */}
+                    <circle cx="20" cy="4" r="4.5" fill="#991B1B"/>
+                    <circle cx="20" cy="4" r="3.5" fill="#DC2626"/>
+                    {/* Clock face */}
+                    <circle cx="20" cy="4" r="2.2" fill="none" stroke="white" strokeWidth="0.8"/>
+                    {/* Hour hand (pointing to 12) */}
+                    <line x1="20" y1="4" x2="20" y2="2.5" stroke="white" strokeWidth="0.8" strokeLinecap="round"/>
+                    {/* Minute hand (pointing to 3) */}
+                    <line x1="20" y1="4" x2="21.3" y2="4" stroke="white" strokeWidth="0.8" strokeLinecap="round"/>
                 </>
             )}
         </svg>

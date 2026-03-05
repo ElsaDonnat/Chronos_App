@@ -5,6 +5,7 @@ import { CATEGORY_CONFIG } from '../data/events';
 import { Button } from '../components/shared';
 import Mascot from '../components/Mascot';
 import * as feedback from '../services/feedback';
+import StreakCelebration from '../components/StreakCelebration';
 
 // SVG tier icons — replace emoji to avoid rendering issues on Android
 const TierIcon = ({ tierId, size = 24, color = '#666' }) => {
@@ -57,6 +58,7 @@ function ChallengeQuestion({ question, onAnswer }) {
 
     const handleSelect = (index, isCorrect) => {
         if (answered) return;
+        feedback.select();
         setSelected(index);
         setAnswered(true);
         if (isCorrect) feedback.correct();
@@ -599,6 +601,8 @@ export default function ChallengePage({ onSessionChange, registerBackHandler }) 
 
     const [tierTransition, setTierTransition] = useState(null); // tier object or null
     const [recentLevels, setRecentLevels] = useState([]); // tracks L1/L2 sequence for mixing
+    const [recentTypes, setRecentTypes] = useState([]); // tracks question types to prevent repeats
+    const [streakCelebration, setStreakCelebration] = useState(null);
 
     // Multiplayer setup
     const [newPlayerName, setNewPlayerName] = useState('');
@@ -630,17 +634,19 @@ export default function ChallengePage({ onSessionChange, registerBackHandler }) 
         setReactorMood('happy');
         setTierTransition(null);
         setRecentLevels([]);
+        setRecentTypes([]);
         sessionStartTime.current = Date.now();
         sessionRecorded.current = false;
 
         // Generate first question (tiered)
-        const q = generateTieredChallengeQuestion(pool, 0, new Set(), []);
+        const q = generateTieredChallengeQuestion(pool, 0, new Set(), [], []);
         setCurrentQuestion(q);
         const newUsed = new Set();
         if (q?.events) q.events.forEach(e => newUsed.add(e.id));
         else if (q?.event) newUsed.add(q.event.id);
         setUsedEventIds(newUsed);
         setRecentLevels(q?.level ? [q.level] : [1]);
+        setRecentTypes(q?.type ? [q.type] : []);
         setView(VIEW.GAME);
     }, [state.seenEvents]);
 
@@ -694,14 +700,32 @@ export default function ChallengePage({ onSessionChange, registerBackHandler }) 
             correctCount: totalCorrect,
         });
 
+        // Detect streak earning before dispatching XP
+        const today = new Date().toISOString().split('T')[0];
+        const wasActiveToday = state.lastActiveDate === today;
+        let prevStreakStatus = 'inactive';
+        if (!wasActiveToday && state.lastActiveDate && state.currentStreak > 0) {
+            const yesterday = new Date();
+            yesterday.setDate(yesterday.getDate() - 1);
+            if (state.lastActiveDate === yesterday.toISOString().split('T')[0]) {
+                prevStreakStatus = 'at-risk';
+            }
+        }
+
         // Award XP for the game
         if (totalCorrect > 0) {
             dispatch({ type: 'ADD_XP', amount: totalCorrect * 8 });
         }
 
+        // Show streak celebration if this is the first activity today
+        if (!wasActiveToday && totalCorrect > 0) {
+            const newStreak = prevStreakStatus === 'at-risk' ? state.currentStreak + 1 : 1;
+            setTimeout(() => setStreakCelebration({ previousStatus: prevStreakStatus, newStreak }), 600);
+        }
+
         feedback.gameOver();
         setView(VIEW.RESULTS);
-    }, [dispatch, mode, players, questionIndex, bestStreak]);
+    }, [dispatch, mode, players, questionIndex, bestStreak, state.lastActiveDate, state.currentStreak]);
 
     const advanceQuestion = useCallback(() => {
         const nextIdx = questionIndex + 1;
@@ -709,7 +733,7 @@ export default function ChallengePage({ onSessionChange, registerBackHandler }) 
         setQuizmasterMood('thinking');
         setReactorMood('happy');
         const q = mode === 'solo'
-            ? generateTieredChallengeQuestion(questionPool, nextIdx, usedEventIds, recentLevels)
+            ? generateTieredChallengeQuestion(questionPool, nextIdx, usedEventIds, recentLevels, recentTypes)
             : generateChallengeQuestion(questionPool, nextIdx, usedEventIds);
         setCurrentQuestion(q);
         if (q?.events) {
@@ -720,7 +744,10 @@ export default function ChallengePage({ onSessionChange, registerBackHandler }) 
         if (q?.level) {
             setRecentLevels(prev => [...prev.slice(-5), q.level]);
         }
-    }, [questionIndex, questionPool, usedEventIds, mode, recentLevels]);
+        if (q?.type) {
+            setRecentTypes(prev => [...prev.slice(-5), q.type]);
+        }
+    }, [questionIndex, questionPool, usedEventIds, mode, recentLevels, recentTypes]);
 
     const advanceToNextPlayer = useCallback((currentPlayers) => {
         let nextPI = (currentPlayerIndex + 1) % currentPlayers.length;
@@ -1296,16 +1323,31 @@ export default function ChallengePage({ onSessionChange, registerBackHandler }) 
                     <div style={{
                         display: 'flex', gap: 3, marginBottom: 16, padding: '0 4px',
                     }}>
-                        {CHALLENGE_TIERS.map(tier => {
-                            const tierIdx = CHALLENGE_TIERS.indexOf(tier);
+                        {CHALLENGE_TIERS.map((tier, tierIdx) => {
                             const reachedIdx = CHALLENGE_TIERS.indexOf(reachedTier);
-                            const isReached = tierIdx <= reachedIdx;
+                            const progress = getTierProgress(questionIndex);
+                            let fillPercent;
+                            if (tierIdx < reachedIdx) {
+                                fillPercent = 100;
+                            } else if (tierIdx === reachedIdx) {
+                                fillPercent = ((progress.indexInTier + 1) / tier.questions) * 100;
+                            } else {
+                                fillPercent = 0;
+                            }
                             return (
                                 <div key={tier.id} style={{
                                     flex: tier.questions, height: 6, borderRadius: 3,
-                                    background: isReached ? tier.color : 'rgba(var(--color-ink-rgb), 0.06)',
-                                    transition: 'background 0.3s',
-                                }} title={tier.label} />
+                                    background: 'rgba(var(--color-ink-rgb), 0.06)',
+                                    overflow: 'hidden',
+                                }} title={tier.label}>
+                                    {fillPercent > 0 && (
+                                        <div style={{
+                                            width: `${fillPercent}%`, height: '100%', borderRadius: 3,
+                                            background: tier.color,
+                                            transition: 'width 0.3s',
+                                        }} />
+                                    )}
+                                </div>
                             );
                         })}
                     </div>
@@ -1340,14 +1382,23 @@ export default function ChallengePage({ onSessionChange, registerBackHandler }) 
                     </div>
 
                     {/* Buttons */}
-                    <div style={{ display: 'flex', gap: 8 }}>
+                    <div style={{ display: 'flex', gap: 8, justifyContent: 'center' }}>
                         <Button variant="ghost" onClick={() => setView(VIEW.HUB)}>
                             Back
                         </Button>
-                        <Button onClick={startSoloGame} style={{ flex: 1 }}>
+                        <Button onClick={startSoloGame}>
                             Play Again
                         </Button>
                     </div>
+
+                    {/* Streak Celebration */}
+                    {streakCelebration && (
+                        <StreakCelebration
+                            previousStatus={streakCelebration.previousStatus}
+                            newStreak={streakCelebration.newStreak}
+                            onDismiss={() => setStreakCelebration(null)}
+                        />
+                    )}
                 </div>
             );
         }
@@ -1421,14 +1472,14 @@ export default function ChallengePage({ onSessionChange, registerBackHandler }) 
                 </div>
 
                 {/* Buttons */}
-                <div style={{ display: 'flex', gap: 8 }}>
+                <div style={{ display: 'flex', gap: 8, justifyContent: 'center' }}>
                     <Button variant="ghost" onClick={() => setView(VIEW.HUB)}>
                         Back
                     </Button>
                     <Button onClick={() => {
                         setPlayers(prev => prev.map(p => ({ ...p, hearts: MAX_HEARTS, score: 0, eliminated: false })));
                         startMultiplayerGame();
-                    }} style={{ flex: 1 }}>
+                    }}>
                         Play Again
                     </Button>
                 </div>

@@ -583,7 +583,7 @@ export function AppProvider({ children }) {
                 : state.themeMode;
             document.documentElement.dataset.theme = resolved;
             const meta = document.querySelector('meta[name="theme-color"]');
-            if (meta) meta.setAttribute('content', resolved === 'dark' ? '#1A1816' : '#FAF6F0');
+            if (meta) meta.setAttribute('content', resolved === 'dark' ? '#282420' : '#FAF6F0');
         };
         apply();
         if (state.themeMode === 'system') {

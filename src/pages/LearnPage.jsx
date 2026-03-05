@@ -37,15 +37,72 @@ function _incrementWeeklyShownToday() {
     }));
 }
 
-// Subtle era-based accent colors for Level 1 lesson icons
-// Warm progression: golden sand → warm amber (very subtle)
+// Era accent colors — evolving warm palette: brown → amber → gold → red
+// Each era has a distinctly different hue while staying muted for parchment
+const ERA_COLORS = {
+    prehistory:  '#9E4A4A',  // muted warm red
+    ancient:     '#7A6B50',  // earthy olive-brown
+    medieval:    '#B06A30',  // distinct warm orange
+    earlymodern: '#9A8528',  // olive-gold
+    modern:      '#B09035',  // golden amber
+};
+
 function getEraAccent(lessonNumber) {
-    if (lessonNumber === 0) return '#8B4157';    // prologue: original burgundy
-    if (lessonNumber <= 3) return '#927862';      // prehistory: warm golden sand
-    if (lessonNumber <= 8) return '#8E7059';      // ancient: warm earth
-    if (lessonNumber <= 12) return '#8A6850';     // medieval: amber earth
-    if (lessonNumber <= 15) return '#866047';     // early modern: warm amber
-    return '#82583E';                              // modern: deep amber
+    if (lessonNumber === 0) return '#8B4157';      // prologue: burgundy
+    if (lessonNumber <= 3) return ERA_COLORS.prehistory;
+    if (lessonNumber <= 8) return ERA_COLORS.ancient;
+    if (lessonNumber <= 12) return ERA_COLORS.medieval;
+    if (lessonNumber <= 15) return ERA_COLORS.earlymodern;
+    return ERA_COLORS.modern;
+}
+
+function getEraColor(eraId) {
+    return ERA_COLORS[eraId] || '#8B4157';
+}
+
+// Era-specific SVG icons for chapter headers (matching Lesson 0 era icons)
+function EraChapterIcon({ eraId, size = 22, color }) {
+    const c = color || getEraColor(eraId);
+    const props = { width: size, height: size, viewBox: '0 0 24 24', fill: 'none', stroke: c, strokeWidth: '1.8', strokeLinecap: 'round', strokeLinejoin: 'round' };
+    switch (eraId) {
+        case 'prehistory': return (
+            <svg {...props}>
+                <path d="M5 10c0-1.5 1-2.5 2-3 .5-1.5-.5-3-2-3.5S2 4 2.5 5.5c-1 .5-1.5 2-.5 3s2.5 1 3 1.5z" fill={c} opacity="0.15" />
+                <path d="M19 14c0 1.5-1 2.5-2 3-.5 1.5.5 3 2 3.5s3-.5 2.5-2c1-.5 1.5-2 .5-3s-2.5-1-3-1.5z" fill={c} opacity="0.15" />
+                <line x1="7" y1="9" x2="17" y2="15" />
+            </svg>
+        );
+        case 'ancient': return (
+            <svg {...props}>
+                <path d="M3 21h18" /><path d="M5 21V7l7-4 7 4v14" fill={c} opacity="0.12" />
+                <line x1="9" y1="21" x2="9" y2="10" /><line x1="15" y1="21" x2="15" y2="10" />
+                <path d="M5 7l7-4 7 4" /><line x1="3" y1="21" x2="21" y2="21" />
+            </svg>
+        );
+        case 'medieval': return (
+            <svg {...props}>
+                <path d="M5 3l14 14" /><path d="M9.5 7.5L5 3" /><path d="M19 3L5 17" />
+                <path d="M14.5 7.5L19 3" /><path d="M5 17l2 2 2-2" /><path d="M19 17l-2 2-2-2" />
+            </svg>
+        );
+        case 'earlymodern': return (
+            <svg {...props}>
+                <circle cx="12" cy="12" r="9" fill={c} opacity="0.08" />
+                <polygon points="16.24,7.76 14.12,14.12 7.76,16.24 9.88,9.88" fill={c} opacity="0.2" stroke={c} />
+                <line x1="12" y1="3" x2="12" y2="5" /><line x1="12" y1="19" x2="12" y2="21" />
+                <line x1="3" y1="12" x2="5" y2="12" /><line x1="19" y1="12" x2="21" y2="12" />
+            </svg>
+        );
+        case 'modern': return (
+            <svg {...props}>
+                <circle cx="12" cy="12" r="9" fill={c} opacity="0.08" />
+                <ellipse cx="12" cy="12" rx="4" ry="9" />
+                <line x1="3" y1="12" x2="21" y2="12" />
+                <path d="M4.5 7.5h15M4.5 16.5h15" />
+            </svg>
+        );
+        default: return null;
+    }
 }
 
 export default function LearnPage({ onSessionChange, registerBackHandler, onTabChange }) {
@@ -643,7 +700,7 @@ export default function LearnPage({ onSessionChange, registerBackHandler, onTabC
                                 const accentColor = getEraAccent(eraLessons[0].number);
 
                                 // Skip-ahead quiz
-                                const canSkip = showSkipDividers && !state.placementQuizzes?.[era.id]?.passed;
+                                const canSkip = showSkipDividers && !isEraComplete && !state.placementQuizzes?.[era.id]?.passed;
                                 const skipUnlocked = canSkip ? isPlacementQuizUnlocked(era.id, state.placementQuizzes) : false;
 
                                 return (
@@ -665,7 +722,7 @@ export default function LearnPage({ onSessionChange, registerBackHandler, onTabC
                                                         backgroundColor: isEraComplete ? 'rgba(5, 150, 105, 0.10)' : `${accentColor}15`,
                                                         border: isEraComplete ? '2px solid rgba(5, 150, 105, 0.35)' : undefined,
                                                     }}>
-                                                        <LessonIcon index={eraLessons[0].number} size={20} color={isEraComplete ? 'var(--color-success)' : accentColor} />
+                                                        <EraChapterIcon eraId={era.id} size={20} color={isEraComplete ? 'var(--color-success)' : accentColor} />
                                                     </div>
                                                     {isEraComplete && (
                                                         <div className="absolute -bottom-1 -right-1 w-[18px] h-[18px] rounded-full flex items-center justify-center"
@@ -748,12 +805,12 @@ export default function LearnPage({ onSessionChange, registerBackHandler, onTabC
                                                                     <div className="relative">
                                                                         <div className="w-11 h-11 rounded-full flex items-center justify-center" style={{
                                                                             backgroundColor: !isUnlocked ? 'rgba(var(--color-ink-rgb), 0.06)' :
-                                                                                isCompleted ? 'rgba(5, 150, 105, 0.10)' : `${accentColor}0A`,
+                                                                                isCompleted ? 'rgba(5, 150, 105, 0.06)' : 'rgba(250, 246, 240, 0.8)',
                                                                             border: !isUnlocked ? '1.5px solid rgba(var(--color-ink-rgb), 0.10)' :
-                                                                                isCompleted ? '2px solid rgba(5, 150, 105, 0.35)' : `2px solid ${accentColor}`,
+                                                                                isCompleted ? '2px solid rgba(5, 150, 105, 0.35)' : '2px solid var(--color-burgundy)',
                                                                         }}>
                                                                             <span style={{ opacity: isUnlocked ? 1 : 0.55 }}>
-                                                                                <LessonIcon index={lesson.number} size={20} color={accentColor} />
+                                                                                <LessonIcon index={lesson.number} size={20} color={'var(--color-burgundy)'} />
                                                                             </span>
                                                                         </div>
                                                                         {isUnlocked && isCompleted && (
@@ -826,29 +883,27 @@ export default function LearnPage({ onSessionChange, registerBackHandler, onTabC
 
                                                 {/* Skip-ahead quiz at bottom of era */}
                                                 {canSkip && (
-                                                    <Card className="ml-3 p-3 animate-fade-in" style={{ borderLeft: '3px solid var(--color-burgundy)', backgroundColor: 'var(--color-burgundy-soft)' }}>
-                                                        <div className="flex items-center gap-3">
-                                                            <span className="text-sm">🎓</span>
-                                                            <div className="flex-1 min-w-0">
-                                                                <h4 className="text-xs font-bold" style={{ fontFamily: 'var(--font-serif)' }}>
-                                                                    Skip {era.label.replace(/^The /, '')}
-                                                                </h4>
-                                                                <p className="text-[10px] mt-0.5" style={{ color: 'var(--color-ink-muted)' }}>
-                                                                    {era.questionCount} questions {'\u00B7'} {era.lessonIds.length} lessons
-                                                                </p>
-                                                            </div>
-                                                            {skipUnlocked ? (
-                                                                <Button onClick={() => setShowPlacement(era.id)} style={{ fontSize: '11px', padding: '5px 10px' }}>
-                                                                    Take Quiz
-                                                                </Button>
-                                                            ) : (
-                                                                <span className="text-[10px] font-medium px-2 py-1 rounded-full whitespace-nowrap"
-                                                                    style={{ backgroundColor: 'rgba(var(--color-ink-rgb), 0.06)', color: 'var(--color-ink-muted)' }}>
-                                                                    Pass previous era first
-                                                                </span>
-                                                            )}
-                                                        </div>
-                                                    </Card>
+                                                    <div className="ml-3 animate-fade-in flex items-center gap-2 px-3 py-1.5 rounded-lg"
+                                                        style={{ backgroundColor: 'rgba(var(--color-ink-rgb), 0.03)' }}>
+                                                        <span className="text-[10px]" style={{ color: 'var(--color-ink-faint)' }}>
+                                                            Know this already? Take the{' '}
+                                                        </span>
+                                                        {skipUnlocked ? (
+                                                            <button onClick={() => setShowPlacement(era.id)}
+                                                                className="text-[10px] font-medium px-2 py-0.5 rounded-full cursor-pointer"
+                                                                style={{ backgroundColor: 'rgba(var(--color-ink-rgb), 0.06)', color: 'var(--color-ink-secondary)' }}>
+                                                                quiz
+                                                            </button>
+                                                        ) : (
+                                                            <span className="text-[10px] font-medium px-2 py-0.5 rounded-full"
+                                                                style={{ backgroundColor: 'rgba(var(--color-ink-rgb), 0.04)', color: 'var(--color-ink-faint)' }}>
+                                                                quiz
+                                                            </span>
+                                                        )}
+                                                        <span className="text-[10px]" style={{ color: 'var(--color-ink-faint)' }}>
+                                                            {' '}to skip it!
+                                                        </span>
+                                                    </div>
                                                 )}
                                             </div>
                                         )}

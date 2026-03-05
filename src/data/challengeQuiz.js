@@ -47,15 +47,22 @@ export function getTierProgress(questionIndex) {
 // ─── Tier-specific type pools ────────────────────────────────
 
 const TIER_TYPES = {
-    beginner:  ['categorySort', 'eraDetective'],
-    amateur:   ['hardMCQ', 'trueOrFalse', 'eraDetective', 'categorySort'],
-    advanced:  ['hardMCQ', 'whichCameFirst', 'oddOneOut', 'trueOrFalse'],
+    beginner:  ['categorySort', 'eraDetective', 'trueOrFalse'],
+    amateur:   ['eraDetective', 'categorySort', 'trueOrFalse', 'hardMCQ'],
+    advanced:  ['hardMCQ', 'trueOrFalse', 'whichCameFirst', 'oddOneOut'],
     historian: ['whichCameFirst', 'oddOneOut', 'hardMCQ', 'trueOrFalse'],
-    expert:    ['whichCameFirst', 'oddOneOut', 'hardMCQ', 'trueOrFalse'],
+    expert:    ['whichCameFirst', 'oddOneOut', 'hardMCQ'],
 };
 
-function pickTypeForTier(tierId) {
-    const types = TIER_TYPES[tierId] || EASY_TYPES;
+function pickTypeForTier(tierId, recentTypes = []) {
+    let types = TIER_TYPES[tierId] || EASY_TYPES;
+    // Prevent 3+ of the same type in a row
+    const last2 = recentTypes.slice(-2);
+    if (last2.length === 2 && last2[0] === last2[1]) {
+        const blocked = last2[0];
+        const filtered = types.filter(t => t !== blocked);
+        if (filtered.length > 0) types = filtered;
+    }
     return types[Math.floor(Math.random() * types.length)];
 }
 
@@ -157,12 +164,14 @@ export function generateChallengeQuestion(pool, questionIndex, usedEventIds = ne
     return generateHardMCQ(event);
 }
 
-function generateByType(type, pool, usedEventIds) {
+function generateByType(type, pool, usedEventIds, { tierId } = {}) {
     switch (type) {
         case 'hardMCQ': {
             const event = pickUnused(pool, usedEventIds);
             if (!event) return null;
-            return generateHardMCQ(event);
+            // No exact-date questions in beginner/amateur — too hard
+            const excludeSubTypes = (tierId === 'beginner' || tierId === 'amateur') ? ['date'] : [];
+            return generateHardMCQ(event, { excludeSubTypes });
         }
         case 'whichCameFirst': return generateWhichCameFirst(pool, usedEventIds);
         case 'oddOneOut': return generateOddOneOut(pool, usedEventIds);
@@ -192,9 +201,10 @@ function pickUnused(pool, usedIds) {
 // ─── Question generators ─────────────────────────────────────
 
 /** Hard MCQ — distractors from same era + category for maximum plausibility. */
-function generateHardMCQ(event) {
+function generateHardMCQ(event, { excludeSubTypes = [] } = {}) {
     const era = getEraForYear(event.year);
-    const subTypes = shuffle(['location', 'date', 'what', 'description']);
+    const allSubTypes = ['location', 'date', 'what', 'description'].filter(t => !excludeSubTypes.includes(t));
+    const subTypes = shuffle(allSubTypes.length > 0 ? allSubTypes : ['location', 'what', 'description']);
     const subType = subTypes[0];
 
     let options, correctIndex;
@@ -452,7 +462,7 @@ function generateCategorySort(event) {
  * From question 3 onward, mixes Level 2 events in (~1/3 ratio).
  * Never more than 3 consecutive questions from the same level.
  */
-export function generateTieredChallengeQuestion(pool, questionIndex, usedEventIds = new Set(), recentLevels = []) {
+export function generateTieredChallengeQuestion(pool, questionIndex, usedEventIds = new Set(), recentLevels = [], recentTypes = []) {
     const { tier } = getTierProgress(questionIndex);
 
     // Determine which pool to use based on level mixing
@@ -479,14 +489,14 @@ export function generateTieredChallengeQuestion(pool, questionIndex, usedEventId
         levelPool = poolObj.level1.length >= 4 ? poolObj.level1 : poolObj.all;
     }
 
-    const type = pickTypeForTier(tier.id);
+    const type = pickTypeForTier(tier.id, recentTypes);
     const allTypes = TIER_TYPES[tier.id] || EASY_TYPES;
     const types = [type, ...shuffle(allTypes.filter(t => t !== type))];
     const tierPool = filterPoolForTier(levelPool, tier.id);
     const effectivePool = tierPool.length >= 8 ? tierPool : levelPool.length >= 4 ? levelPool : poolObj.all;
 
     for (const t of types) {
-        const q = generateByType(t, effectivePool, usedEventIds);
+        const q = generateByType(t, effectivePool, usedEventIds, { tierId: tier.id });
         if (q) {
             q.tier = tier;
             q.level = isLevel2Event(q.event) ? 2 : 1;

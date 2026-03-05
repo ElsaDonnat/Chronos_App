@@ -5,6 +5,7 @@ import { SCORE_COLORS, getScoreLabel, shuffle } from '../../data/quiz';
 import { Card, Button, ProgressBar, Divider, ExpandableText, ControversyNote, flyXPToStar } from '../shared';
 import Mascot from '../Mascot';
 import * as feedback from '../../services/feedback';
+import StreakCelebration from '../StreakCelebration';
 
 // ─── Matching colors for pairing lines ──────────────────
 const MATCH_COLORS = [
@@ -280,6 +281,7 @@ export default function Lesson0Flow({ lesson, onComplete }) {
     const [matchSelected, setMatchSelected] = useState(null); // currently selected name id
     const [matchChecked, setMatchChecked] = useState(false);
     const xpDispatched = useRef(false);
+    const [streakCelebration, setStreakCelebration] = useState(null);
 
     const greenCount = useMemo(() => results.filter(r => r.score === 'green').length, [results]);
     const yellowCount = useMemo(() => results.filter(r => r.score === 'yellow').length, [results]);
@@ -288,9 +290,25 @@ export default function Lesson0Flow({ lesson, onComplete }) {
     useEffect(() => {
         if (phase === PHASE.SUMMARY && !xpDispatched.current) {
             xpDispatched.current = true;
+            // Detect streak earning before dispatching XP
+            const today = new Date().toISOString().split('T')[0];
+            const wasActiveToday = state.lastActiveDate === today;
+            let prevStreakStatus = 'inactive';
+            if (!wasActiveToday && state.lastActiveDate && state.currentStreak > 0) {
+                const yesterday = new Date();
+                yesterday.setDate(yesterday.getDate() - 1);
+                if (state.lastActiveDate === yesterday.toISOString().split('T')[0]) {
+                    prevStreakStatus = 'at-risk';
+                }
+            }
             window.dispatchEvent(new Event('freezeXP'));
             dispatch({ type: 'COMPLETE_LESSON', lessonId: 'lesson-0' });
             dispatch({ type: 'ADD_XP', amount: greenCount * 5 + yellowCount * 2 });
+            // Show streak celebration if this is the first activity today
+            if (!wasActiveToday) {
+                const newStreak = prevStreakStatus === 'at-risk' ? state.currentStreak + 1 : 1;
+                setTimeout(() => setStreakCelebration({ previousStatus: prevStreakStatus, newStreak }), 600);
+            }
         }
     }, [phase, greenCount, yellowCount, dispatch]);
 
@@ -378,7 +396,7 @@ export default function Lesson0Flow({ lesson, onComplete }) {
                     </div>
                 </div>
 
-                <div className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden mt-3" key={period.id}>
+                <div className="flex-1 min-h-0 overflow-y-auto mt-3" key={period.id}>
                     <div className="animate-slide-in-right">
                         <Card className="era-card-content" style={{ borderLeft: `4px solid ${period.color}`, overflow: 'hidden' }}>
                             <div className="text-center mb-2 sm:mb-4">
@@ -553,20 +571,23 @@ export default function Lesson0Flow({ lesson, onComplete }) {
             const matchScore = matchChecked ? results[results.length - 1]?.score : null;
 
             return (
-                <div className="py-4 animate-fade-in" key={`quiz-${quizIndex}`}>
-                    <div className="flex items-center justify-between mb-4">
-                        <button onClick={onComplete} className="text-sm flex items-center gap-1"
-                            style={{ color: 'var(--color-ink-muted)' }}>
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="15 18 9 12 15 6" /></svg>
-                            Exit
-                        </button>
-                        <span className="text-sm font-medium" style={{ color: 'var(--color-ink-muted)' }}>
-                            {quizIndex + 1} / {quizQuestions.length}
-                        </span>
+                <div className="lesson-flow-container">
+                    <div className="flex-shrink-0 pt-4">
+                        <div className="flex items-center justify-center mb-4 relative">
+                            <button onClick={onComplete} className="text-sm flex items-center gap-1 absolute left-0"
+                                style={{ color: 'var(--color-ink-muted)' }}>
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="15 18 9 12 15 6" /></svg>
+                                Exit
+                            </button>
+                            <span className="text-xs uppercase tracking-widest font-bold px-2.5 py-1 rounded-full"
+                                style={{ backgroundColor: 'var(--color-burgundy-soft)', color: 'var(--color-burgundy)' }}>
+                                Quiz · {quizIndex + 1}/{quizQuestions.length}
+                            </span>
+                        </div>
+                        <ProgressBar value={quizIndex + 1} max={quizQuestions.length} />
                     </div>
-                    <ProgressBar value={quizIndex + 1} max={quizQuestions.length} />
 
-                    <div className="mt-4 animate-slide-in-right">
+                    <div className="flex-1 min-h-0 overflow-y-auto mt-4 animate-slide-in-right" key={`quiz-match-${quizIndex}`}>
                         <Card style={matchChecked && matchScore ? {
                             backgroundColor: SCORE_COLORS[matchScore].bg,
                             borderLeft: `3px solid ${SCORE_COLORS[matchScore].border}`
@@ -709,6 +730,7 @@ export default function Lesson0Flow({ lesson, onComplete }) {
         // ── MCQ question (date / event) ────────────────
         const handleAnswer = (answer) => {
             if (answered) return;
+            feedback.select();
             setSelectedAnswer(answer);
             const isCorrect = q.type === 'event'
                 ? answer === q.correctDisplay
@@ -723,20 +745,23 @@ export default function Lesson0Flow({ lesson, onComplete }) {
         const correctValue = q.type === 'event' ? q.correctDisplay : q.correctAnswer;
 
         return (
-            <div className="py-4 animate-fade-in" key={`quiz-${quizIndex}`}>
-                <div className="flex items-center justify-between mb-4">
-                    <button onClick={onComplete} className="text-sm flex items-center gap-1"
-                        style={{ color: 'var(--color-ink-muted)' }}>
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="15 18 9 12 15 6" /></svg>
-                        Exit
-                    </button>
-                    <span className="text-sm font-medium" style={{ color: 'var(--color-ink-muted)' }}>
-                        {quizIndex + 1} / {quizQuestions.length}
-                    </span>
+            <div className="lesson-flow-container">
+                <div className="flex-shrink-0 pt-4">
+                    <div className="flex items-center justify-center mb-4 relative">
+                        <button onClick={onComplete} className="text-sm flex items-center gap-1 absolute left-0"
+                            style={{ color: 'var(--color-ink-muted)' }}>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="15 18 9 12 15 6" /></svg>
+                            Exit
+                        </button>
+                        <span className="text-xs uppercase tracking-widest font-bold px-2.5 py-1 rounded-full"
+                            style={{ backgroundColor: 'var(--color-burgundy-soft)', color: 'var(--color-burgundy)' }}>
+                            Quiz · {quizIndex + 1}/{quizQuestions.length}
+                        </span>
+                    </div>
+                    <ProgressBar value={quizIndex + 1} max={quizQuestions.length} />
                 </div>
-                <ProgressBar value={quizIndex + 1} max={quizQuestions.length} />
 
-                <div className="mt-6 animate-slide-in-right">
+                <div className="flex-1 min-h-0 overflow-y-auto mt-4 animate-slide-in-right" key={`quiz-mcq-${quizIndex}`}>
                     <Card style={answered && currentScore ? {
                         backgroundColor: SCORE_COLORS[currentScore].bg,
                         borderLeft: `3px solid ${SCORE_COLORS[currentScore].border}`
@@ -808,24 +833,20 @@ export default function Lesson0Flow({ lesson, onComplete }) {
         const xp = greenCount * 5 + yellowCount * 2;
 
         return (
-            <div className="py-8 text-center animate-fade-in">
-                <Mascot mood="celebrating" size={80} />
+            <div className="py-4 text-center animate-fade-in">
+                <Mascot mood="celebrating" size={64} />
 
-                <h2 className="text-2xl font-bold mt-4 mb-1" style={{ fontFamily: 'var(--font-serif)' }}>
+                <h2 className="text-2xl font-bold mt-2 mb-0.5" style={{ fontFamily: 'var(--font-serif)' }}>
                     Timeline Unlocked!
                 </h2>
-                <p className="text-sm mb-6" style={{ color: 'var(--color-ink-muted)' }}>
+                <p className="text-sm mb-3" style={{ color: 'var(--color-ink-muted)' }}>
                     You now know the shape of human history
                 </p>
 
                 <Card className="animate-celebration" style={{
                     borderTop: '3px solid var(--color-success)',
                 }}>
-                    <div className="text-sm font-semibold mb-3" style={{ color: 'var(--color-ink-secondary)' }}>
-                        5 eras studied
-                    </div>
-
-                    <div className="flex items-center gap-1 mb-4 justify-center flex-wrap">
+                    <div className="flex items-center gap-1 mb-3 justify-center flex-wrap">
                         {results.map((r, i) => {
                             const period = PERIODS.find(p => p.id === r.periodId);
                             const dotLabel = r.type === 'match' ? 'Matching' : r.type === 'date' ? 'Date' : 'Period Name';
@@ -842,7 +863,7 @@ export default function Lesson0Flow({ lesson, onComplete }) {
                         })}
                     </div>
 
-                    <div className={`grid gap-3 text-center mb-4 ${yellowCount > 0 ? 'grid-cols-3' : 'grid-cols-2'}`}>
+                    <div className={`grid gap-3 text-center mb-3 ${yellowCount > 0 ? 'grid-cols-3' : 'grid-cols-2'}`}>
                         <div>
                             <div className="text-lg font-bold" style={{ color: 'var(--color-success)' }}>{greenCount}</div>
                             <div className="text-xs" style={{ color: 'var(--color-ink-muted)' }}>Correct</div>
@@ -862,7 +883,7 @@ export default function Lesson0Flow({ lesson, onComplete }) {
                     <Divider />
 
                     {/* XP Reward */}
-                    <div id="xp-earned-display" className="flex items-center justify-center gap-2 mt-3 animate-xp-pop" style={{ animationDelay: '300ms' }}>
+                    <div id="xp-earned-display" className="flex items-center justify-center gap-2 mt-2 animate-xp-pop" style={{ animationDelay: '300ms' }}>
                         <svg className="animate-xp-glow" style={{ animationDelay: '500ms' }} width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--color-bronze)" strokeWidth="2">
                             <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" fill="var(--color-bronze-light)" />
                         </svg>
@@ -873,7 +894,7 @@ export default function Lesson0Flow({ lesson, onComplete }) {
                     </div>
 
                     {/* Era preview */}
-                    <div className="mt-4 pt-3" style={{ borderTop: '1px solid rgba(var(--color-ink-rgb), 0.06)' }}>
+                    <div className="mt-2 pt-2" style={{ borderTop: '1px solid rgba(var(--color-ink-rgb), 0.06)' }}>
                         <p className="text-[11px] uppercase tracking-wider font-semibold mb-2" style={{ color: 'var(--color-ink-faint)' }}>
                             Eras Unlocked
                         </p>
@@ -891,7 +912,7 @@ export default function Lesson0Flow({ lesson, onComplete }) {
                 </Card>
 
                 {/* What's next in Chronos */}
-                <Card className="mt-4 text-left">
+                <Card className="mt-3 text-left">
                     <p className="text-[11px] uppercase tracking-wider font-semibold mb-3" style={{ color: 'var(--color-ink-faint)' }}>
                         What's next in Chronos
                     </p>
@@ -913,7 +934,7 @@ export default function Lesson0Flow({ lesson, onComplete }) {
                     </div>
                 </Card>
 
-                <div className="mt-6">
+                <div className="mt-4">
                     <Button className="w-full" onClick={async () => {
                         const el = document.getElementById('xp-earned-display');
                         if (el) await flyXPToStar(el, xp);
@@ -1007,6 +1028,15 @@ export default function Lesson0Flow({ lesson, onComplete }) {
                         </div>
                     );
                 })()}
+
+                {/* Streak Celebration */}
+                {streakCelebration && (
+                    <StreakCelebration
+                        previousStatus={streakCelebration.previousStatus}
+                        newStreak={streakCelebration.newStreak}
+                        onDismiss={() => setStreakCelebration(null)}
+                    />
+                )}
             </div>
         );
     }

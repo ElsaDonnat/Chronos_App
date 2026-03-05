@@ -4,7 +4,7 @@ import { ERA_QUIZ_GROUPS } from './lessons';
 
 // ─── Placement Quiz — pure functions ─────────────────
 
-const QUESTION_TYPES = ['date', 'location', 'what', 'description'];
+const QUESTION_TYPES = ['date', 'location', 'what', 'description', 'era'];
 
 /**
  * Generate questions for a placement quiz.

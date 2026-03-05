@@ -10,30 +10,179 @@
 
 ---
 
-## P3 — Map view improvements (remaining)
+## Map & Timeline — Full Roadmap
 
-Four batches of map improvements shipped. Map now uses **Natural Earth I projection** (800×500 viewBox) with properly-shaped continents. Fullscreen uses 280% oversized scrollable container with auto-centering, sticky close button overlay. Inline uses 200% width with 2:1 aspect ratio. Pinch-to-zoom, category legend, dark mode, graticule all done. Remaining items in priority order:
+The map is intended to become a flagship feature of Chronos — visually rich, scalable to hundreds of events, and eventually extractable as a standalone component. This roadmap covers everything from foundational architectural changes to polish. Items are ordered by dependency (foundations first, features second, polish last).
 
-### P2 — High impact UX
-- **Region auto-scroll in fullscreen** — tapping a region chip/dropdown should scroll the fullscreen map to center on that region. Currently chips filter pins but don't navigate the viewport.
-- **Double-tap to zoom** — standard mobile gesture. Double-tap should zoom to 2× centered on the tap point; double-tap again to reset.
-- **Swipe-down to dismiss fullscreen** — more discoverable than the small Close button. Pull down gesture closes the fullscreen overlay.
+**Current state (as of v1.6.6):** Natural Earth I projection, 800×500 SVG viewBox, 5 continent path blobs (no country borders), 11 sub-regions, grid-based pin clustering, CSS pinch-zoom, fullscreen mode. See CLAUDE.md "Map System" section for full architecture docs.
 
-### P3 — Meaningful features
-- **Event connection arcs** — draw faint curved lines between related events on the map. Data already exists in `EVENT_CONNECTIONS`. Togglable via a button or auto-shown when a connected pin is selected.
-- **Pin labels on zoom** — when zoomed >2×, show event title text next to pins for identification without tapping.
-- **Animated pin entrance** — pins pop in with staggered animation when the map loads or filters change. Makes the map feel alive.
+---
+
+### Foundation — Per-country SVG paths (REQUIRED FIRST)
+
+**Why:** The single biggest architectural limitation. Countries are currently merged into continent blobs — you can't highlight France when selecting a French event, can't show internal borders, can't do country-level interaction. Every ambitious feature below benefits from this.
+
+**What to do:**
+- Update `scripts/write-map-data.mjs` to output individual country `<path>` elements grouped by continent, instead of merging all paths per continent into one string
+- Each country path needs its ISO code so it can be targeted (e.g., highlight on event hover/select)
+- Maintain continent `<g>` groups for continent-level highlighting (the current behavior)
+- Add a `countryCode` field to event locations so the map knows which country to highlight
+- Expect ~3-5× increase in SVG data size (from ~40KB to ~120-200KB); acceptable for a bundled SPA
+- Consider 50m resolution instead of 110m for cleaner coastlines when zoomed — test both and compare file size vs. visual quality
+
+**Files:** `scripts/write-map-data.mjs`, `src/data/mapPaths.js`, `src/data/events.js` (add `countryCode`), `src/components/MapView.jsx`
+
+---
+
+### Foundation — Region system audit
+
+**Why:** The 11 sub-regions are good but need validation for future content. The two-tier system (5 continents → N sub-regions) should be a first-class concept so filters can offer both "group by continent" and "group by region" views.
+
+**What to do:**
+- Audit current 11 sub-regions: ensure they make sense for a world history app. Currently missing: **Southeast Asia** (would split from East Asia — important for events in Vietnam, Cambodia, Indonesia, etc.), **Oceania** (Australia, Pacific Islands — no events yet but needed for future-proofing), **Central Asia** (Silk Road events, Mongol Empire homeland — currently lumped into East Asia)
+- Likely target: **13-14 sub-regions** (add Southeast Asia, Oceania, possibly Central Asia)
+- Formalize the two-tier model: `CONTINENTS` (5-6 top-level groups) and `SUB_REGIONS` (13-14) with explicit mapping. Filters should let users toggle between the two tiers
+- Update `REGION_TO_CONTINENT`, `SUB_REGIONS`, `REGION_CENTERS`, and `normalizeRegion()` in `mapPaths.js`
+- Re-tag affected events in `events.js` (e.g., Mongol Empire from "East Asia" → "Central Asia", Khmer Empire → "Southeast Asia")
+
+**Files:** `src/data/mapPaths.js`, `src/data/events.js`, `src/pages/TimelinePage.jsx` (filter UI)
+
+---
+
+### Feature — Concurrent Events view (new Timeline tab)
+
+**Why:** A core educational insight in world history is understanding what was happening simultaneously in different places. The user saw an attempt at this (screenshot showed a grid of events by category × time) but it was cluttered and organized by event type. The right axis is **region**, not category — "While Rome was falling, what was happening in China?"
+
+**What to do:**
+- Add a third tab to the Timeline page: `Timeline | Map | Sync` (or "Concurrent" / "World View" — name TBD)
+- Layout: vertical axis = regions (grouped by continent), horizontal axis = time. Each row shows events for that region, positioned by year
+- Time navigation: **era buttons** for quick jumps (Ancient, Medieval, etc.) + a **draggable time slider** within each era for fine-grained scrubbing. The slider defines a time window (e.g., ±50 years around the cursor) and shows events within that window
+- Visual: clean horizontal swim lanes per region. Events appear as small titled cards or dots. Vertical "now" line shows the selected year. Fade events outside the time window
+- Only show learned events (consistent with map behavior)
+- Consider linking to map: tapping an event in the concurrent view could highlight it on the map, and vice versa
+
+**Files:** New component `src/components/ConcurrentView.jsx` (or similar), `src/pages/TimelinePage.jsx` (add tab)
+
+---
+
+### Feature — Time slider on map
+
+**Why:** The "killer feature" for a history map. Scrubbing through time and watching pins appear/disappear chronologically makes history tangible. Works both as standalone map feature and as the time control shared with the Concurrent view.
+
+**What to do:**
+- Add a slider bar below the map (both inline and fullscreen modes)
+- Slider range = min year to max year of all learned events
+- As user drags, pins fade in/out based on whether their year falls within a window around the slider position
+- Era-aware window size: prehistory shows wider window (±500 years), modern shows tighter (±20 years)
+- Era quick-jump buttons above or beside the slider
+- Optional: auto-play mode that slowly scrubs through time
+
+**Files:** `src/components/MapView.jsx`, potentially a shared `TimeSlider` component
+
+---
+
+### Feature — Country highlighting on event selection
+
+**Why:** With per-country paths (see Foundation above), selecting a pin should light up the country where it happened. Makes the geographic context immediately visible.
+
+**What to do:**
+- When a pin is tapped, highlight its `countryCode` path with a distinct fill/stroke
+- For events spanning multiple countries or regions (e.g., "Napoleonic Wars — Europe"), highlight the primary country and optionally outline the broader region
+- Smooth transition animation on highlight
+
+**Files:** `src/components/MapView.jsx`, `src/data/events.js` (needs `countryCode` per event)
+
+---
+
+### UX — Interaction improvements
+
+These are independent of each other and can be done in any order:
+
+- **Region auto-scroll in fullscreen** — tapping a region chip/dropdown should scroll the fullscreen map to center on that region. Currently chips filter pins but don't navigate the viewport. Use `REGION_CENTERS` to calculate scroll target.
+- **Double-tap to zoom** — standard mobile gesture. Double-tap zooms to 2× centered on tap point; double-tap again resets. Must coexist with single-tap pin selection (use a brief delay or distance threshold).
+- **Swipe-down to dismiss fullscreen** — more discoverable than the small Close button. Pull-down gesture closes the fullscreen overlay.
+- **Desktop wheel zoom** — `onWheel` handler that adjusts scale. Currently only touch pinch-zoom works.
+- **Hover states (desktop)** — subtle glow/scale on pin hover, country path highlight on hover (requires per-country paths).
 - **Cluster drill-down** — tapping a cluster auto-zooms to that area so individual pins spread out, instead of the current flat list popup.
 
-### P4 — Ambitious features
-- **Timeline scrubber** — a slider along the bottom that scrubs through time; pins appear/disappear chronologically. The killer feature for a history map.
-- **Era coloring mode** — toggle to color pins by era (Prehistory/Ancient/Medieval/Early Modern/Modern) instead of category. Gives a temporal view of geographic spread.
-- **Search on map** — search bar that filters, highlights, and auto-scrolls to the matching pin.
+**Files:** `src/components/MapView.jsx`
 
-### P5 — Polish
+---
+
+### UX — Semantic zoom (zoom-adaptive rendering)
+
+**Why:** Current zoom is CSS-only — `transform: scale()` just magnifies the same SVG. At 4× zoom, pins are huge, text is blurry, and clustering doesn't adapt. True semantic zoom re-renders the map at each zoom level.
+
+**What to do:**
+- **Dynamic cluster recalculation** — `CLUSTER_GRID = 25` is fixed. Recompute clusters based on current zoom level: at 2×, use grid size 12; at 4×, use grid size 6. Pins should spread out as you zoom in.
+- **Pin labels on zoom** — when zoomed >2×, show event title text next to pins for identification without tapping.
+- **Level-of-detail rendering** — at base zoom, show simplified continent shapes. At 2×+, show country borders (requires per-country paths). At 4×+, show region labels and pin titles.
+- Replace CSS `transform: scale()` with actual SVG viewBox manipulation for crisper rendering at all zoom levels.
+
+**Files:** `src/components/MapView.jsx`
+
+---
+
+### Visual — Map aesthetics
+
+- **Event connection arcs** — draw faint curved lines between related events on the map. Data already exists in `EVENT_CONNECTIONS`. Togglable via a button or auto-shown when a connected pin is selected.
+- **Animated pin entrance** — pins pop in with staggered animation when the map loads or filters change.
+- **Era coloring mode** — toggle to color pins by era (Prehistory/Ancient/Medieval/Early Modern/Modern) instead of category. Gives a temporal view of geographic spread.
 - **Region labels fade near pins** — the static continent name labels can overlap event pins. Fade them when pins are nearby or when zoomed in.
-- **Dynamic cluster recalculation** — `CLUSTER_GRID = 25` is fixed. Clusters should re-compute at different zoom levels so pins spread as you zoom in.
-- **Mini-map in fullscreen** — small overview rectangle showing which portion of the world map is currently in the viewport.
+- **Higher resolution map data** — switch from 110m to 50m (or 10m for fullscreen) for cleaner coastlines. Test bundle size impact. Could lazy-load the high-res version only for fullscreen.
+
+---
+
+### Visual — Search on map
+
+**Why:** As event count grows (currently 126, targeting 200+), finding a specific event on the map becomes hard.
+
+**What to do:**
+- Search bar overlaid on map (fullscreen mode primarily)
+- Fuzzy search by event title, date, or location
+- Matching pin highlighted + map auto-scrolls/zooms to it
+- Search results dropdown for multiple matches
+
+**Files:** `src/components/MapView.jsx`
+
+---
+
+### Architecture — Clean component interfaces for future extraction
+
+**Why:** The map, concurrent view, and timeline data should eventually be extractable from Chronos as a standalone history visualization tool. Not a rewrite — just clean interfaces now that prevent tight coupling later.
+
+**What to do:**
+- `MapView` should accept generic event data via props (it mostly does already — `events`, `learnedIds`, `eventMastery`). Ensure no direct imports of Chronos-specific state inside MapView.
+- Extract the projection math (`projectToSVG`, region system) into a standalone utility module with no Chronos imports
+- The new `ConcurrentView` should similarly accept events + mastery as props
+- The `TimeSlider` component should be reusable across map and concurrent view
+- Keep card/popup components (EventPopup, ClusterPopup) accepting event objects — these become the "card dependencies" that travel with the map if extracted
+- No need to build a package now — just maintain clean prop boundaries so extraction is a packaging task, not a rewrite
+
+**Files:** `src/components/MapView.jsx`, `src/data/mapPaths.js`, any new components
+
+---
+
+### Polish — Fullscreen experience
+
+- **Mini-map** — small overview rectangle in corner showing which portion of the world map is currently in the viewport.
+- **Orientation lock hint** — on mobile, suggest rotating to landscape for better fullscreen map viewing.
+- **Gesture tutorial** — first time opening fullscreen, show a brief hint about pinch-to-zoom and scroll.
+
+---
+
+### Implementation order (suggested)
+
+1. **Per-country SVG paths** — unblocks country highlighting, semantic zoom, visual quality
+2. **Region audit** — small, low-risk, unblocks concurrent view's region axis
+3. **UX interaction improvements** — independent quick wins (double-tap zoom, wheel zoom, auto-scroll)
+4. **Time slider on map** — high-impact standalone feature
+5. **Concurrent events view** — the biggest new feature, benefits from time slider and region system
+6. **Country highlighting** — leverages per-country paths
+7. **Semantic zoom** — significant UX leap, requires per-country paths
+8. **Visual polish** — connection arcs, animations, era coloring
+9. **Search on map** — important as event count grows
+10. **Component extraction prep** — ongoing, enforce clean interfaces throughout
 
 ## P2 — Star events from lesson summary result cards
 

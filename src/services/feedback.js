@@ -2,7 +2,8 @@
  * Sound effects (Web Audio API) and haptic feedback (@capacitor/haptics).
  *
  * Sounds are generated programmatically — no audio files needed.
- * Triangle waves with smooth envelopes for a warm, musical feel.
+ * Layered sine waves with lowpass filtering for a warm, polished feel
+ * reminiscent of wooden marimba / bell tones.
  *
  * Usage:
  *   import * as feedback from '../services/feedback';
@@ -40,40 +41,118 @@ function getAudioContext() {
 
 // ── Tone primitives ─────────────────────────────────────────────────
 
-function playTone(freq, duration, startDelay = 0, gain = 0.12, waveform = 'triangle') {
+/**
+ * Play a rich, filtered tone with natural ADSR envelope.
+ * Layers fundamental + octave partial through a lowpass filter
+ * for a warm marimba-like sound instead of raw oscillator blips.
+ */
+function playNote(freq, duration, startDelay = 0, gain = 0.05) {
   if (!config.soundVolume) return;
   try {
     const ac = getAudioContext();
-    const osc = ac.createOscillator();
-    const vol = ac.createGain();
-
-    osc.type = waveform;
-    osc.frequency.value = freq;
-    vol.gain.value = 0;
-
-    osc.connect(vol);
-    vol.connect(ac.destination);
-
     const scaledGain = gain * config.soundVolume;
     const start = ac.currentTime + startDelay;
-    // Smooth attack
-    vol.gain.setValueAtTime(0, start);
-    vol.gain.linearRampToValueAtTime(scaledGain, start + 0.02);
-    // Sustain then smooth decay
-    vol.gain.setValueAtTime(scaledGain, start + duration * 0.5);
-    vol.gain.exponentialRampToValueAtTime(0.001, start + duration);
 
-    osc.start(start);
-    osc.stop(start + duration);
-  } catch { /* silent */
+    // Master gain for this note
+    const master = ac.createGain();
+    master.gain.value = 0;
+    master.connect(ac.destination);
+
+    // Lowpass filter — removes harsh upper harmonics
+    const filter = ac.createBiquadFilter();
+    filter.type = 'lowpass';
+    filter.frequency.value = Math.min(freq * 4, 6000);
+    filter.Q.value = 0.7;
+    filter.connect(master);
+
+    // Fundamental (sine — clean, warm)
+    const osc1 = ac.createOscillator();
+    const g1 = ac.createGain();
+    osc1.type = 'sine';
+    osc1.frequency.value = freq;
+    g1.gain.value = 1.0;
+    osc1.connect(g1);
+    g1.connect(filter);
+
+    // Octave partial (sine, softer) — adds body
+    const osc2 = ac.createOscillator();
+    const g2 = ac.createGain();
+    osc2.type = 'sine';
+    osc2.frequency.value = freq * 2;
+    g2.gain.value = 0.15;
+    osc2.connect(g2);
+    g2.connect(filter);
+
+    // Sub-octave body (very soft, adds warmth)
+    const osc3 = ac.createOscillator();
+    const g3 = ac.createGain();
+    osc3.type = 'sine';
+    osc3.frequency.value = freq * 0.5;
+    g3.gain.value = 0.12;
+    osc3.connect(g3);
+    g3.connect(filter);
+
+    // Natural ADSR envelope — gentle attack, smooth exponential decay
+    const attack = 0.015;
+    const decayStart = start + attack;
+    master.gain.setValueAtTime(0, start);
+    master.gain.linearRampToValueAtTime(scaledGain, decayStart);
+    // Sustain briefly then natural decay
+    master.gain.setTargetAtTime(scaledGain * 0.6, decayStart, duration * 0.15);
+    master.gain.setTargetAtTime(0.0001, decayStart + duration * 0.3, duration * 0.25);
+
+    const endTime = start + duration + 0.1;
+    osc1.start(start); osc1.stop(endTime);
+    osc2.start(start); osc2.stop(endTime);
+    osc3.start(start); osc3.stop(endTime);
+  } catch {
     // Silently fail — audio not critical
   }
 }
 
-/** Layer two slightly-detuned oscillators for a warm, rich timbre */
-function playWarmTone(freq, duration, startDelay = 0, gain = 0.12) {
-  playTone(freq, duration, startDelay, gain * 0.65, 'triangle');
-  playTone(freq * 1.003, duration * 1.1, startDelay, gain * 0.35, 'sine');
+/**
+ * Play a chord (multiple notes simultaneously) for a richer sound.
+ * Each note gets reduced gain to avoid clipping.
+ */
+function playChord(freqs, duration, startDelay = 0, gain = 0.05) {
+  const perNote = gain / Math.sqrt(freqs.length);
+  freqs.forEach(f => playNote(f, duration, startDelay, perNote));
+}
+
+// ── Lightweight UI sound primitive ───────────────────────────────────
+
+/** Ultra-short single-sine tone for UI micro-interactions. */
+function playTick(freq, duration, startDelay = 0, gain = 0.025) {
+  if (!config.soundVolume) return;
+  try {
+    const ac = getAudioContext();
+    const scaledGain = gain * config.soundVolume;
+    const start = ac.currentTime + startDelay;
+
+    const osc = ac.createOscillator();
+    const vol = ac.createGain();
+    osc.type = 'sine';
+    osc.frequency.value = freq;
+
+    // Soft lowpass to remove any harshness
+    const filter = ac.createBiquadFilter();
+    filter.type = 'lowpass';
+    filter.frequency.value = Math.min(freq * 3, 4000);
+    filter.Q.value = 0.5;
+
+    osc.connect(filter);
+    filter.connect(vol);
+    vol.connect(ac.destination);
+
+    vol.gain.setValueAtTime(0, start);
+    vol.gain.linearRampToValueAtTime(scaledGain, start + 0.008);
+    vol.gain.exponentialRampToValueAtTime(0.0001, start + duration);
+
+    osc.start(start);
+    osc.stop(start + duration + 0.01);
+  } catch {
+    // Silently fail
+  }
 }
 
 // ── Haptic primitives ───────────────────────────────────────────────
@@ -83,7 +162,7 @@ function hapticNotification(type) {
   if (Capacitor.getPlatform() === 'web') return;
   try {
     Haptics.notification({ type });
-  } catch { /* silent */
+  } catch {
     // Silently fail
   }
 }
@@ -93,64 +172,65 @@ function hapticImpact(style) {
   if (Capacitor.getPlatform() === 'web') return;
   try {
     Haptics.impact({ style });
-  } catch { /* silent */
+  } catch {
     // Silently fail
   }
 }
 
 // ── Public feedback functions ───────────────────────────────────────
 
-/** Green answer — warm ascending major third (G4 → B4) */
+/** Green answer — warm major chord bloom (C5 + E5 + G5) */
 export function correct() {
-  playWarmTone(392.00, 0.12, 0, 0.12);       // G4
-  playWarmTone(493.88, 0.15, 0.09, 0.11);    // B4
+  playChord([523.25, 659.25, 783.99], 0.35, 0, 0.05);       // C major triad
+  playNote(1046.50, 0.25, 0.06, 0.015);                      // C6 shimmer
   hapticNotification(NotificationType.Success);
 }
 
-/** Yellow answer — gentle warm tone (A4) */
+/** Yellow answer — gentle sus4 resolve (Fsus4 → F) */
 export function close() {
-  playTone(440.00, 0.14, 0, 0.09);           // A4
+  playChord([349.23, 466.16], 0.20, 0, 0.035);               // F4 + Bb4
+  playNote(440.00, 0.25, 0.08, 0.025);                       // A4 resolve
   hapticNotification(NotificationType.Warning);
 }
 
-/** Red answer — soft descending minor second (G4 → F#4) */
+/** Red answer — soft minor second cluster, gentle */
 export function wrong() {
-  playTone(392.00, 0.12, 0, 0.07);           // G4
-  playTone(369.99, 0.16, 0.09, 0.05);        // F#4
+  playChord([311.13, 329.63], 0.30, 0, 0.03);                // Eb4 + E4 dissonance
+  playNote(293.66, 0.35, 0.10, 0.02);                        // D4 descend
   hapticNotification(NotificationType.Error);
 }
 
-/** Lesson or quiz complete — warm ascending arpeggio (C4 → E4 → G4 → C5) */
+/** Lesson or quiz complete — ascending major 7th arpeggio with bloom */
 export function complete() {
-  playWarmTone(261.63, 0.14, 0, 0.10);       // C4
-  playWarmTone(329.63, 0.14, 0.10, 0.10);    // E4
-  playWarmTone(392.00, 0.14, 0.20, 0.10);    // G4
-  playWarmTone(523.25, 0.22, 0.30, 0.10);    // C5
+  playNote(261.63, 0.25, 0, 0.04);                           // C4
+  playNote(329.63, 0.25, 0.12, 0.04);                        // E4
+  playNote(392.00, 0.25, 0.24, 0.04);                        // G4
+  playChord([523.25, 659.25, 783.99], 0.45, 0.36, 0.04);     // C5 major chord bloom
   hapticImpact(ImpactStyle.Medium);
 }
 
-/** Achievement unlocked — bright sparkle (C5 → E5 → G5 → C6) with shimmer */
+/** Achievement unlocked — bright ascending sparkle with final chord */
 export function achievement() {
-  playWarmTone(523.25, 0.12, 0, 0.10);       // C5
-  playWarmTone(659.25, 0.12, 0.08, 0.10);    // E5
-  playWarmTone(783.99, 0.12, 0.16, 0.10);    // G5
-  playWarmTone(1046.50, 0.25, 0.24, 0.09);   // C6
-  playTone(2093.00, 0.30, 0.24, 0.03, 'sine'); // C7 faint sparkle
+  playNote(523.25, 0.18, 0, 0.04);                           // C5
+  playNote(659.25, 0.18, 0.08, 0.04);                        // E5
+  playNote(783.99, 0.18, 0.16, 0.04);                        // G5
+  playChord([1046.50, 1318.51, 1567.98], 0.50, 0.26, 0.035); // C6 major chord
+  playNote(2093.00, 0.40, 0.30, 0.008);                      // C7 faint sparkle
   hapticImpact(ImpactStyle.Heavy);
 }
 
-/** Heart lost — descending tritone (B4 → F4) */
+/** Heart lost — gentle descending minor 3rd */
 export function heartLost() {
-  playTone(493.88, 0.18, 0, 0.09);           // B4
-  playTone(349.23, 0.22, 0.12, 0.07);        // F4
+  playChord([493.88, 587.33], 0.25, 0, 0.035);               // B4 + D5
+  playNote(392.00, 0.35, 0.12, 0.025);                       // G4 drop
   hapticNotification(NotificationType.Error);
 }
 
-/** Game over — slow descending A minor (E4 → C4 → A3) */
+/** Game over — slow descending minor with fading body */
 export function gameOver() {
-  playWarmTone(329.63, 0.20, 0, 0.08);       // E4
-  playWarmTone(261.63, 0.20, 0.18, 0.07);    // C4
-  playWarmTone(220.00, 0.30, 0.36, 0.06);    // A3
+  playChord([329.63, 392.00], 0.30, 0, 0.03);                // E4 + G4
+  playChord([261.63, 311.13], 0.30, 0.20, 0.025);            // C4 + Eb4
+  playNote(220.00, 0.50, 0.40, 0.02);                        // A3 low fade
   hapticImpact(ImpactStyle.Heavy);
 }
 
@@ -159,4 +239,48 @@ export function forScore(score) {
   if (score === 'green') correct();
   else if (score === 'yellow') close();
   else if (score === 'red') wrong();
+}
+
+// ── UI micro-interaction sounds ─────────────────────────────────────
+
+/** Soft pop for primary action buttons */
+export function tap() {
+  playTick(800, 0.06, 0, 0.02);
+  playTick(1200, 0.04, 0, 0.008);
+  hapticImpact(ImpactStyle.Light);
+}
+
+/** Light click for selecting a quiz option (before result) */
+export function select() {
+  playTick(600, 0.05, 0, 0.018);
+  playTick(900, 0.03, 0.01, 0.006);
+}
+
+/** Subtle tick for tab navigation */
+export function tabSwitch() {
+  playTick(500, 0.04, 0, 0.015);
+}
+
+/** Soft rising sweep for card/content reveals */
+export function cardReveal() {
+  playTick(400, 0.10, 0, 0.012);
+  playTick(600, 0.08, 0.03, 0.010);
+  playTick(800, 0.06, 0.06, 0.006);
+}
+
+/** Gentle swoosh for modal openings */
+export function modalOpen() {
+  playTick(300, 0.12, 0, 0.012);
+  playTick(500, 0.10, 0.04, 0.010);
+}
+
+/** Tiny click for toggle switches */
+export function toggleClick() {
+  playTick(700, 0.035, 0, 0.015);
+}
+
+/** Small sparkle for star toggle */
+export function starPing() {
+  playTick(1200, 0.08, 0, 0.015);
+  playTick(1800, 0.06, 0.03, 0.010);
 }

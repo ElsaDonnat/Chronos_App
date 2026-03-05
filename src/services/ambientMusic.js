@@ -15,7 +15,7 @@ const TRACK_URL = '/bensound-silentwaves.mp3';
 const FADE_IN_SEC = 3;
 const FADE_OUT_SEC = 2;
 const CROSSFADE_SEC = 6; // overlap between ending and restarting
-const VOLUME_MAX = 0.0325; // absolute gain ceiling (50% of original)
+const VOLUME_MAX = 0.02; // absolute gain ceiling (~30% of original)
 
 // musicVolume: 0–1 user slider value; effectiveVolume = VOLUME_MAX * musicVolume
 let config = { musicVolume: 0 };
@@ -62,7 +62,7 @@ function createAudio() {
 
     // When the track ends, restart it (crossfade is handled by timeupdate)
     audio.addEventListener('ended', () => {
-        if (isPlaying && config.musicEnabled) {
+        if (isPlaying && config.musicVolume > 0) {
             audio.currentTime = 0;
             audio.play().catch(() => {});
             fadeIn();

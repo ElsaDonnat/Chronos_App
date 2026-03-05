@@ -12,6 +12,7 @@ import Settings from './components/Settings';
 import WeekTracker from './components/WeekTracker';
 import NotificationOnboarding from './components/NotificationOnboarding';
 import OnboardingOverlay from './components/OnboardingOverlay';
+import WelcomeBackModal from './components/WelcomeBackModal';
 import { ConfirmModal } from './components/shared';
 import {
   createNotificationChannel,
@@ -47,6 +48,23 @@ export default function App() {
   const encourageSessionCountRef = useRef(0);   // times shown this session (max 2)
   const sessionActivityCountRef = useRef(0);     // qualifying activities this session
   const lastSessionLengthRef = useRef(state.studySessions?.length || 0);
+
+  // ─── "Welcome Back" modal for returning users ─────
+  const [showWelcomeBack, setShowWelcomeBack] = useState(false);
+  const [daysAway, setDaysAway] = useState(0);
+
+  useEffect(() => {
+    if (!state.lastActiveDate) return;
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const last = new Date(state.lastActiveDate);
+    last.setHours(0, 0, 0, 0);
+    const diffDays = Math.floor((today - last) / (1000 * 60 * 60 * 24));
+    if (diffDays >= 2) {
+      setDaysAway(diffDays);
+      setShowWelcomeBack(true);
+    }
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Achievement checker — runs on state changes
   useAchievementChecker();
@@ -192,6 +210,15 @@ export default function App() {
     && !shouldShowNotificationOnboarding
     && !shouldShowMusicPrompt;
 
+  // "Welcome Back" — show when returning after 2+ days, avoid stacking
+  const shouldShowWelcomeBack = showWelcomeBack
+    && !inSession
+    && !shouldShowRating
+    && !shouldShowNotificationOnboarding
+    && !shouldShowMusicPrompt
+    && !shouldShowEncouragement
+    && onboardingDone;
+
   // Determine if onboarding overlay should show
   const showOnboardingOverlay = state.onboardingStep
     && state.onboardingStep !== 'complete'
@@ -252,7 +279,7 @@ export default function App() {
 
   return (
     <div className="app-shell">
-      <TopBar activeTab={activeTab} />
+      {!inSession && <TopBar activeTab={activeTab} />}
       <div className="app-body">
         <Sidebar activeTab={activeTab} onTabChange={setActiveTab} />
         <main className="main-content" ref={mainRef}>
@@ -321,6 +348,9 @@ export default function App() {
           cancelLabel={null}
           onConfirm={() => setShowEncouragement(false)}
         />
+      )}
+      {shouldShowWelcomeBack && (
+        <WelcomeBackModal daysAway={daysAway} onDismiss={() => setShowWelcomeBack(false)} />
       )}
       {showWeekTracker && <WeekTracker onClose={() => setShowWeekTracker(false)} />}
       {showOnboardingOverlay && (
