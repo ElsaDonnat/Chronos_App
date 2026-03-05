@@ -942,22 +942,24 @@ export default function ChallengePage({ onSessionChange, registerBackHandler }) 
                     </p>
 
                     {/* Tier progression ladder */}
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 0 }}>
-                        {CHALLENGE_TIERS.map((tier, i) => {
-                            const reached = i <= bestTierReached;
-                            const isBest = i === bestTierReached;
-                            const dotSize = isBest ? 14 : 10;
-                            return (
-                                <div key={tier.id} style={{ display: 'flex', alignItems: 'center' }}>
-                                    {i > 0 && (
-                                        <div style={{
-                                            width: 18,
-                                            height: 2,
-                                            background: i <= bestTierReached ? tier.color : 'rgba(250, 246, 240, 0.2)',
-                                            transition: 'background 0.3s',
-                                        }} />
-                                    )}
-                                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
+                    <div style={{ position: 'relative', display: 'flex', justifyContent: 'center', padding: '0 8px' }}>
+                        {/* Connector line — positioned behind dots, vertically centered on dot row */}
+                        <div style={{
+                            position: 'absolute',
+                            top: 7,
+                            left: '15%',
+                            right: '15%',
+                            height: 2,
+                            background: 'rgba(250, 246, 240, 0.15)',
+                            zIndex: 0,
+                        }} />
+                        <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', width: '100%', maxWidth: 320, position: 'relative', zIndex: 1 }}>
+                            {CHALLENGE_TIERS.map((tier, i) => {
+                                const reached = i <= bestTierReached;
+                                const isBest = i === bestTierReached;
+                                const dotSize = isBest ? 16 : 12;
+                                return (
+                                    <div key={tier.id} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3 }}>
                                         <div style={{
                                             width: dotSize,
                                             height: dotSize,
@@ -968,17 +970,20 @@ export default function ChallengePage({ onSessionChange, registerBackHandler }) 
                                             transition: 'all 0.3s',
                                         }} />
                                         <span style={{
-                                            fontSize: '0.55rem',
+                                            fontSize: '0.65rem',
                                             color: reached ? 'rgba(250, 246, 240, 0.9)' : 'rgba(250, 246, 240, 0.35)',
                                             fontWeight: isBest ? 700 : 400,
                                             letterSpacing: '0.02em',
                                         }}>
                                             {tier.label.slice(0, 3)}
                                         </span>
+                                        <span style={{ fontSize: '0.7rem', lineHeight: 1, opacity: reached ? 1 : 0.4 }}>
+                                            {tier.icon}
+                                        </span>
                                     </div>
-                                </div>
-                            );
-                        })}
+                                );
+                            })}
+                        </div>
                     </div>
                 </div>
 
