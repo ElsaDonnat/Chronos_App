@@ -261,9 +261,16 @@ input, textarea, [contenteditable] {
 }
 
 @media (min-width: 900px) {
+  .topbar-inner {
+    position: relative;
+  }
   .topbar-section-name {
     display: block;
-    padding-left: var(--sidebar-width);
+    position: absolute;
+    left: var(--sidebar-width);
+    right: 0;
+    text-align: center;
+    pointer-events: none;
   }
 }
 
