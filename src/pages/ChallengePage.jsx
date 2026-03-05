@@ -932,10 +932,10 @@ export default function ChallengePage({ onSessionChange, registerBackHandler }) 
             <div style={{ padding: '0 0 16px' }} className="animate-fade-in">
                 {/* Arena header */}
                 <div style={{
-                    background: 'linear-gradient(180deg, rgba(139, 65, 87, 0.13) 0%, rgba(155, 112, 128, 0.18) 100%)',
+                    background: 'linear-gradient(180deg, rgba(139, 65, 87, 0.38) 0%, rgba(139, 65, 87, 0.18) 100%)',
                     borderRadius: '0 0 20px 20px',
-                    margin: '0 -16px 0',
-                    padding: '12px 16px 22px',
+                    margin: '-16px -16px 0',
+                    padding: '20px 16px 22px',
                     marginBottom: 20,
                 }}>
                     {/* Mascot duo */}
@@ -944,10 +944,10 @@ export default function ChallengePage({ onSessionChange, registerBackHandler }) 
                         <Mascot mood="happy" size={48} />
                     </div>
 
-                    <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.3rem', fontWeight: 700, textAlign: 'center', color: 'var(--color-ink)', marginBottom: 4 }}>
+                    <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.3rem', fontWeight: 700, textAlign: 'center', color: 'white', marginBottom: 4 }}>
                         Challenger Mode
                     </h2>
-                    <p style={{ textAlign: 'center', fontSize: '0.82rem', color: 'var(--color-ink-muted)', marginBottom: 18 }}>
+                    <p style={{ textAlign: 'center', fontSize: '0.82rem', color: '#3E2723', marginBottom: 18 }}>
                         Climb from Beginner to God {'\u2014'} {TOTAL_CHALLENGE_QUESTIONS} questions, {CHALLENGE_TIERS.length} tiers!
                     </p>
 
@@ -957,8 +957,8 @@ export default function ChallengePage({ onSessionChange, registerBackHandler }) 
                         <div style={{
                             position: 'absolute',
                             top: 6,
-                            left: '8%',
-                            right: '8%',
+                            left: '15%',
+                            right: '15%',
                             height: 0,
                             borderTop: '2px dotted rgba(139, 65, 87, 0.35)',
                             zIndex: 0,
@@ -968,14 +968,14 @@ export default function ChallengePage({ onSessionChange, registerBackHandler }) 
                             <div style={{
                                 position: 'absolute',
                                 top: 6,
-                                left: '8%',
-                                width: `${(bestTierReached / (CHALLENGE_TIERS.length - 1)) * 84}%`,
+                                left: '15%',
+                                width: `${(bestTierReached / (CHALLENGE_TIERS.length - 1)) * 70}%`,
                                 height: 0,
                                 borderTop: '2px solid var(--color-burgundy)',
                                 zIndex: 0,
                             }} />
                         )}
-                        <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', width: '100%', maxWidth: 320, position: 'relative', zIndex: 1 }}>
+                        <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', width: '85%', maxWidth: 280, position: 'relative', zIndex: 1 }}>
                             {CHALLENGE_TIERS.map((tier, i) => {
                                 const reached = i <= bestTierReached;
                                 const isBest = i === bestTierReached;
@@ -999,7 +999,7 @@ export default function ChallengePage({ onSessionChange, registerBackHandler }) 
                                         }}>
                                             {tier.label.slice(0, 3)}
                                         </span>
-                                        <span style={{ fontSize: '0.7rem', lineHeight: 1, opacity: reached ? 1 : 0.7 }}>
+                                        <span style={{ fontSize: '1.1rem', lineHeight: 1, opacity: reached ? 1 : 0.7, filter: 'none' }}>
                                             {tier.icon}
                                         </span>
                                     </div>

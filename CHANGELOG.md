@@ -10,6 +10,7 @@ Use the version entries from the last playstore push to the most recent version 
 ### Changed
 - **Streak flame clock badge** — added parchment fill background, white drop shadow, and scaled up 40% so the brown clock reads clearly against the red flame
 - **Challenge hub tier ladder** — circles now have solid parchment fill (dots no longer bleed through), dotted line is more visible, tier labels/icons are bolder, gradient header is stronger, and top gap reduced
+- **Challenge hub tier emojis** — tier icons are 50% larger and vibrant when reached (greyed out when not); progress line narrowed ~15% for a tighter layout
 
 ## [1.7.2] - 2026-03-05
 
