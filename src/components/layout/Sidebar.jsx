@@ -1,5 +1,6 @@
 import { useApp } from '../../context/AppContext';
 import { ALL_EVENTS } from '../../data/events';
+import * as feedback from '../../services/feedback';
 
 const NAV_ITEMS = [
     {
@@ -63,7 +64,7 @@ export default function Sidebar({ activeTab, onTabChange }) {
                     return (
                         <button
                             key={item.id}
-                            onClick={() => onTabChange(item.id)}
+                            onClick={() => { feedback.tabSwitch(); onTabChange(item.id); }}
                             className={`sidebar-nav-item ${isActive ? 'sidebar-nav-item--active' : ''}`}
                         >
                             <span className="sidebar-nav-icon">
@@ -105,7 +106,7 @@ export function MobileTabBar({ activeTab, onTabChange }) {
                 return (
                     <button
                         key={item.id}
-                        onClick={() => onTabChange(item.id)}
+                        onClick={() => { feedback.tabSwitch(); onTabChange(item.id); }}
                         className={`mobile-tab-item ${isActive ? 'mobile-tab-item--active' : ''}`}
                     >
                         {item.icon(isActive)}
