@@ -606,6 +606,8 @@ export default function ChallengePage({ onSessionChange, registerBackHandler }) 
 
     // Multiplayer setup
     const [newPlayerName, setNewPlayerName] = useState('');
+    const [mePlayerName, setMePlayerName] = useState(null);
+    const [showMePicker, setShowMePicker] = useState(false);
 
     // Timers
     const sessionStartTime = useRef(null);
@@ -691,6 +693,13 @@ export default function ChallengePage({ onSessionChange, registerBackHandler }) 
             ? players[0]?.score || 0
             : players.reduce((sum, p) => sum + p.score, 0);
 
+        // Check if "me" won in multiplayer
+        let isVictory = false;
+        if (mode === 'multiplayer' && mePlayerName) {
+            const winner = [...players].sort((a, b) => b.score - a.score || b.hearts - a.hearts)[0];
+            isVictory = winner?.name === mePlayerName;
+        }
+
         // Update challenge stats
         dispatch({
             type: 'UPDATE_CHALLENGE_STATS',
@@ -698,6 +707,7 @@ export default function ChallengePage({ onSessionChange, registerBackHandler }) 
             score: mode === 'solo' ? (players[0]?.score || 0) : 0,
             bestStreak,
             correctCount: totalCorrect,
+            isVictory,
         });
 
         // Detect streak earning before dispatching XP
@@ -1024,6 +1034,12 @@ export default function ChallengePage({ onSessionChange, registerBackHandler }) 
                                 </p>
                                 <p style={{ fontSize: '0.7rem', color: 'var(--color-ink-muted)' }}>Solo Best</p>
                             </div>
+                            <div style={{ textAlign: 'center' }}>
+                                <p style={{ fontSize: '1.25rem', fontWeight: 700, fontFamily: 'var(--font-serif)', color: 'var(--color-burgundy)' }}>
+                                    {ch.multiplayerVictories || 0}
+                                </p>
+                                <p style={{ fontSize: '0.7rem', color: 'var(--color-ink-muted)' }}>Victories</p>
+                            </div>
                             {allTimeAccuracy !== null && (
                                 <div style={{ textAlign: 'center' }}>
                                     <p style={{ fontSize: '1.25rem', fontWeight: 700, fontFamily: 'var(--font-serif)', color: 'var(--color-burgundy)' }}>
@@ -1132,13 +1148,96 @@ export default function ChallengePage({ onSessionChange, registerBackHandler }) 
                         Back
                     </Button>
                     <Button
-                        onClick={startMultiplayerGame}
+                        onClick={() => setShowMePicker(true)}
                         disabled={players.length === 0}
                         style={{ flex: 1 }}
                     >
                         Start Game
                     </Button>
                 </div>
+
+                {/* "Which one is you?" picker */}
+                {showMePicker && (
+                    <div style={{
+                        position: 'fixed', inset: 0, zIndex: 100,
+                        background: 'rgba(0,0,0,0.45)',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        padding: 24,
+                    }} onClick={() => { setShowMePicker(false); }}>
+                        <div
+                            style={{
+                                background: 'var(--color-card)',
+                                borderRadius: 16,
+                                padding: '24px 20px',
+                                width: '100%',
+                                maxWidth: 320,
+                                boxShadow: '0 12px 40px rgba(0,0,0,0.2)',
+                            }}
+                            onClick={e => e.stopPropagation()}
+                            className="animate-fade-in"
+                        >
+                            <h3 style={{
+                                fontFamily: 'var(--font-serif)',
+                                fontSize: '1.05rem',
+                                fontWeight: 700,
+                                textAlign: 'center',
+                                color: 'var(--color-ink)',
+                                marginBottom: 4,
+                            }}>
+                                Which one is you?
+                            </h3>
+                            <p style={{ textAlign: 'center', fontSize: '0.78rem', color: 'var(--color-ink-muted)', marginBottom: 16 }}>
+                                We'll track your victories
+                            </p>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 16 }}>
+                                {players.map((p) => (
+                                    <button
+                                        key={p.name}
+                                        onClick={() => {
+                                            setMePlayerName(p.name);
+                                            setShowMePicker(false);
+                                            startMultiplayerGame();
+                                        }}
+                                        style={{
+                                            padding: '10px 14px',
+                                            borderRadius: 10,
+                                            border: '1.5px solid var(--color-ink-faint, #E7E5E4)',
+                                            background: 'var(--color-parchment)',
+                                            fontWeight: 600,
+                                            fontSize: '0.9rem',
+                                            color: 'var(--color-ink)',
+                                            cursor: 'pointer',
+                                            fontFamily: 'var(--font-sans)',
+                                            transition: 'background 0.15s',
+                                        }}
+                                    >
+                                        {p.name}
+                                    </button>
+                                ))}
+                            </div>
+                            <button
+                                onClick={() => {
+                                    setMePlayerName(null);
+                                    setShowMePicker(false);
+                                    startMultiplayerGame();
+                                }}
+                                style={{
+                                    width: '100%',
+                                    padding: '8px 14px',
+                                    borderRadius: 10,
+                                    border: 'none',
+                                    background: 'none',
+                                    fontSize: '0.82rem',
+                                    color: 'var(--color-ink-muted)',
+                                    cursor: 'pointer',
+                                    fontFamily: 'var(--font-sans)',
+                                }}
+                            >
+                                None of them
+                            </button>
+                        </div>
+                    </div>
+                )}
             </div>
         );
     }

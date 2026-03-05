@@ -83,6 +83,7 @@ const defaultState = {
         soloBestStreak: 0,
         totalChallengeCorrect: 0,
         multiplayerGamesPlayed: 0,
+        multiplayerVictories: 0,
         lastPlayedDate: null,
     },
 };
@@ -533,6 +534,9 @@ function reducer(state, action) {
                     multiplayerGamesPlayed: action.mode === 'multiplayer'
                         ? (ch.multiplayerGamesPlayed || 0) + 1
                         : (ch.multiplayerGamesPlayed || 0),
+                    multiplayerVictories: action.isVictory
+                        ? (ch.multiplayerVictories || 0) + 1
+                        : (ch.multiplayerVictories || 0),
                     lastPlayedDate: getTodayDate(),
                 },
             };
