@@ -435,7 +435,7 @@ export default function Settings() {
                             onChange={e => dispatch({ type: 'SET_SOUND_VOLUME', value: parseFloat(e.target.value) })}
                             className="volume-slider"
                             style={{
-                                background: `linear-gradient(to right, var(--color-burgundy) ${(state.soundVolume ?? 1) * 100}%, rgba(var(--color-ink-rgb), 0.12) ${(state.soundVolume ?? 1) * 100}%)`
+                                background: `linear-gradient(to right, rgba(139, 65, 87, 0.45) ${(state.soundVolume ?? 1) * 100}%, rgba(var(--color-ink-rgb), 0.12) ${(state.soundVolume ?? 1) * 100}%)`
                             }}
                         />
                     </div>
@@ -460,7 +460,7 @@ export default function Settings() {
                             onChange={e => dispatch({ type: 'SET_MUSIC_VOLUME', value: parseFloat(e.target.value) })}
                             className="volume-slider"
                             style={{
-                                background: `linear-gradient(to right, var(--color-burgundy) ${(state.musicVolume ?? 1) * 100}%, rgba(var(--color-ink-rgb), 0.12) ${(state.musicVolume ?? 1) * 100}%)`
+                                background: `linear-gradient(to right, rgba(139, 65, 87, 0.45) ${(state.musicVolume ?? 1) * 100}%, rgba(var(--color-ink-rgb), 0.12) ${(state.musicVolume ?? 1) * 100}%)`
                             }}
                         />
                     </div>
