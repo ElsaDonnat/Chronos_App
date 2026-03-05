@@ -1060,7 +1060,7 @@ export default function LearnPage({ onSessionChange, registerBackHandler, onTabC
                                                         {/* Decorative background icon */}
                                                         <span className="absolute right-1 top-1/2 -translate-y-1/2 pointer-events-none select-none"
                                                             style={{ opacity: 0.045 }}>
-                                                            <LessonIcon index={chapter.iconIndex || 6} size={72} color={chapter.color} />
+                                                            <LessonIcon index={lesson.iconIndex || chapter.iconIndex || 6} size={72} color={chapter.color} />
                                                         </span>
                                                         {!isUnlocked && (
                                                             <div className="absolute top-2 right-2 z-10 w-5 h-5 rounded-full flex items-center justify-center"
@@ -1081,7 +1081,7 @@ export default function LearnPage({ onSessionChange, registerBackHandler, onTabC
                                                                             isCompleted ? '2px solid rgba(5, 150, 105, 0.35)' : `2px solid ${chapter.color}`,
                                                                     }}>
                                                                         <span style={{ opacity: isUnlocked ? 1 : 0.55 }}>
-                                                                            <LessonIcon index={chapter.iconIndex || 6} size={20} color={chapter.color} />
+                                                                            <LessonIcon index={lesson.iconIndex || chapter.iconIndex || 6} size={20} color={chapter.color} />
                                                                         </span>
                                                                     </div>
                                                                     {isUnlocked && isCompleted && (

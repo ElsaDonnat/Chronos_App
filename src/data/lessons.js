@@ -254,6 +254,7 @@ export const LEVEL2_CHAPTERS = [
                 mood: 'A king loses his head, and the world takes note\u2026',
                 chapterId: 'ch-revolutions',
                 periodId: null,
+                iconIndex: 21,
                 eventIds: ['f61', 'f42', 'f43'],
             },
             {
@@ -264,6 +265,7 @@ export const LEVEL2_CHAPTERS = [
                 mood: 'The fire of liberty crosses oceans and ignites continents\u2026',
                 chapterId: 'ch-revolutions',
                 periodId: null,
+                iconIndex: 22,
                 eventIds: ['f62', 'f63', 'f47'],
             },
             {
@@ -274,6 +276,7 @@ export const LEVEL2_CHAPTERS = [
                 mood: 'A generation marches into the trenches, and empires fall\u2026',
                 chapterId: 'ch-revolutions',
                 periodId: null,
+                iconIndex: 18,
                 eventIds: ['f64', 'f50', 'f65'],
             },
             {
@@ -284,6 +287,7 @@ export const LEVEL2_CHAPTERS = [
                 mood: 'The people rise again, armed with phones and fury\u2026',
                 chapterId: 'ch-revolutions',
                 periodId: null,
+                iconIndex: 23,
                 eventIds: ['f66', 'f67'],
             },
         ],
@@ -305,6 +309,7 @@ export const LEVEL2_CHAPTERS = [
                 mood: 'Long before electricity, dreamers imagined machines that could think\u2026',
                 chapterId: 'ch-road-to-ai',
                 periodId: null,
+                iconIndex: 24,
                 eventIds: ['f38', 'f68', 'f69'],
             },
             {
@@ -315,6 +320,7 @@ export const LEVEL2_CHAPTERS = [
                 mood: 'A mathematician\u2019s thought experiment becomes a room full of wires\u2026',
                 chapterId: 'ch-road-to-ai',
                 periodId: null,
+                iconIndex: 25,
                 eventIds: ['f70', 'f71', 'f72'],
             },
             {
@@ -325,6 +331,7 @@ export const LEVEL2_CHAPTERS = [
                 mood: 'They promised thinking machines by 1970. Reality had other plans\u2026',
                 chapterId: 'ch-road-to-ai',
                 periodId: null,
+                iconIndex: 26,
                 eventIds: ['f73', 'f58', 'f74'],
             },
             {
@@ -335,6 +342,7 @@ export const LEVEL2_CHAPTERS = [
                 mood: 'A computer beats a grandmaster, and the world will never be the same\u2026',
                 chapterId: 'ch-road-to-ai',
                 periodId: null,
+                iconIndex: 2,
                 eventIds: ['f75', 'f76', 'f77'],
             },
         ],
@@ -356,6 +364,7 @@ export const LEVEL2_CHAPTERS = [
                 mood: 'Ordinary people decide that human beings cannot be property\u2026',
                 chapterId: 'ch-fight-for-freedom',
                 periodId: null,
+                iconIndex: 27,
                 eventIds: ['f39', 'f78', 'f79'],
             },
             {
@@ -366,6 +375,7 @@ export const LEVEL2_CHAPTERS = [
                 mood: 'Half the world\u2019s population demands to be counted\u2026',
                 chapterId: 'ch-fight-for-freedom',
                 periodId: null,
+                iconIndex: 28,
                 eventIds: ['f80', 'f81', 'f56'],
             },
             {
@@ -376,6 +386,7 @@ export const LEVEL2_CHAPTERS = [
                 mood: 'They sat at lunch counters, marched through tear gas, and refused to be invisible\u2026',
                 chapterId: 'ch-fight-for-freedom',
                 periodId: null,
+                iconIndex: 29,
                 eventIds: ['f82', 'f83', 'f84'],
             },
             {
@@ -386,6 +397,7 @@ export const LEVEL2_CHAPTERS = [
                 mood: 'Freedom is never guaranteed \u2014 each generation must fight for it anew\u2026',
                 chapterId: 'ch-fight-for-freedom',
                 periodId: null,
+                iconIndex: 30,
                 eventIds: ['f85', 'f86', 'f87'],
             },
         ],
@@ -407,6 +419,7 @@ export const LEVEL2_CHAPTERS = [
                 mood: 'One man\u2019s vision swallows the known world\u2026',
                 chapterId: 'ch-empires',
                 periodId: null,
+                iconIndex: 31,
                 eventIds: ['f88', 'f15', 'f89'],
             },
             {
@@ -417,6 +430,7 @@ export const LEVEL2_CHAPTERS = [
                 mood: 'Two empires that never met share a road of silk\u2026',
                 chapterId: 'ch-empires',
                 periodId: null,
+                iconIndex: 8,
                 eventIds: ['f90', 'f18', 'f91'],
             },
             {
@@ -427,6 +441,7 @@ export const LEVEL2_CHAPTERS = [
                 mood: 'Three empires rule from the Mediterranean to the Pacific\u2026',
                 chapterId: 'ch-empires',
                 periodId: null,
+                iconIndex: 10,
                 eventIds: ['f92', 'f93', 'f96'],
             },
             {
@@ -437,6 +452,7 @@ export const LEVEL2_CHAPTERS = [
                 mood: 'The sun finally sets, and the colonized demand their freedom\u2026',
                 chapterId: 'ch-empires',
                 periodId: null,
+                iconIndex: 43,
                 eventIds: ['f94', 'f95', 'f56'],
             },
         ],
@@ -458,6 +474,7 @@ export const LEVEL2_CHAPTERS = [
                 mood: 'An invisible enemy brings the mightiest empires to their knees\u2026',
                 chapterId: 'ch-plagues',
                 periodId: null,
+                iconIndex: 42,
                 eventIds: ['f97', 'f22', 'f98'],
             },
             {
@@ -468,6 +485,7 @@ export const LEVEL2_CHAPTERS = [
                 mood: 'A quarter of London dies, and a country doctor finds the answer\u2026',
                 chapterId: 'ch-plagues',
                 periodId: null,
+                iconIndex: 32,
                 eventIds: ['f30', 'f99', 'f100'],
             },
             {
@@ -478,6 +496,7 @@ export const LEVEL2_CHAPTERS = [
                 mood: 'Crowded cities breed new horrors \u2014 but also new heroes\u2026',
                 chapterId: 'ch-plagues',
                 periodId: null,
+                iconIndex: 33,
                 eventIds: ['f101', 'f102', 'f103'],
             },
             {
@@ -488,6 +507,7 @@ export const LEVEL2_CHAPTERS = [
                 mood: 'Humanity finally defeats one plague \u2014 only to face new ones\u2026',
                 chapterId: 'ch-plagues',
                 periodId: null,
+                iconIndex: 34,
                 eventIds: ['f104', 'f105', 'f106'],
             },
         ],
@@ -509,6 +529,7 @@ export const LEVEL2_CHAPTERS = [
                 mood: 'While Europe sleeps in its Dark Age, Africa builds empires of gold and faith\u2026',
                 chapterId: 'ch-africa',
                 periodId: null,
+                iconIndex: 21,
                 eventIds: ['f107', 'f108', 'f109'],
             },
             {
@@ -519,6 +540,7 @@ export const LEVEL2_CHAPTERS = [
                 mood: 'A king\u2019s pilgrimage crashes Egypt\u2019s economy \u2014 with generosity\u2026',
                 chapterId: 'ch-africa',
                 periodId: null,
+                iconIndex: 41,
                 eventIds: ['f110', 'f111', 'f112'],
             },
             {
@@ -529,6 +551,7 @@ export const LEVEL2_CHAPTERS = [
                 mood: 'Master artists, warrior kings, and the only African nation to defeat a European army\u2026',
                 chapterId: 'ch-africa',
                 periodId: null,
+                iconIndex: 35,
                 eventIds: ['f113', 'f114', 'f115'],
             },
             {
@@ -539,6 +562,7 @@ export const LEVEL2_CHAPTERS = [
                 mood: 'The colonial map is redrawn \u2014 this time, by Africans\u2026',
                 chapterId: 'ch-africa',
                 periodId: null,
+                iconIndex: 36,
                 eventIds: ['f116', 'f56', 'f83'],
             },
         ],
@@ -560,6 +584,7 @@ export const LEVEL2_CHAPTERS = [
                 mood: 'A blind poet sings, and three thousand years later, we still listen\u2026',
                 chapterId: 'ch-art',
                 periodId: null,
+                iconIndex: 37,
                 eventIds: ['f117', 'f118', 'f120'],
             },
             {
@@ -570,6 +595,7 @@ export const LEVEL2_CHAPTERS = [
                 mood: 'An artist looks at the world and shows us what we never noticed\u2026',
                 chapterId: 'ch-art',
                 periodId: null,
+                iconIndex: 38,
                 eventIds: ['f119', 'f122', 'f125'],
             },
             {
@@ -580,6 +606,7 @@ export const LEVEL2_CHAPTERS = [
                 mood: 'A deaf composer writes the future, and a new art form is born in flickering light\u2026',
                 chapterId: 'ch-art',
                 periodId: null,
+                iconIndex: 39,
                 eventIds: ['f121', 'f123', 'f124'],
             },
             {
@@ -590,6 +617,7 @@ export const LEVEL2_CHAPTERS = [
                 mood: 'First the press, then the pixel \u2014 art escapes the gatekeepers\u2026',
                 chapterId: 'ch-art',
                 periodId: null,
+                iconIndex: 40,
                 eventIds: ['f126', 'f34', 'f58'],
             },
         ],
