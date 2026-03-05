@@ -5,6 +5,13 @@ Format follows [Keep a Changelog](https://keepachangelog.com/) and [Semantic Ver
 
 Use the version entries from the last playstore push to the most recent version for Play Store "What's New" text.
 
+## [1.7.2] - 2026-03-05
+
+### Changed
+- **Challenger Mode hub redesign** — the Challenge tab now features a dark warm gradient header (dusty rose/mauve tones) with cream text, giving it a distinct arena feel while staying within the app's design language
+- **Tier progression ladder** — horizontal visual showing all 6 tiers (Beginner → God) with colored dots, connector line, tier emojis, and labels. Dots fill based on the player's best solo score; current best tier gets a glow effect
+- **Renamed "Challenge Mode" to "Challenger Mode"**
+
 ## [1.7.1] - 2026-03-05
 
 ### Added
