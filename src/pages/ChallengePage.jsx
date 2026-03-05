@@ -932,7 +932,7 @@ export default function ChallengePage({ onSessionChange, registerBackHandler }) 
             <div style={{ padding: '0 0 16px' }} className="animate-fade-in">
                 {/* Arena header */}
                 <div style={{
-                    background: 'linear-gradient(180deg, #7A5060 0%, #9B7080 100%)',
+                    background: 'linear-gradient(180deg, rgba(139, 65, 87, 0.08) 0%, rgba(155, 112, 128, 0.12) 100%)',
                     borderRadius: '0 0 20px 20px',
                     margin: '0 -16px 0',
                     padding: '24px 16px 22px',
@@ -944,25 +944,37 @@ export default function ChallengePage({ onSessionChange, registerBackHandler }) 
                         <Mascot mood="happy" size={48} />
                     </div>
 
-                    <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.3rem', fontWeight: 700, textAlign: 'center', color: '#FAF6F0', marginBottom: 4 }}>
+                    <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.3rem', fontWeight: 700, textAlign: 'center', color: 'var(--color-ink)', marginBottom: 4 }}>
                         Challenger Mode
                     </h2>
-                    <p style={{ textAlign: 'center', fontSize: '0.82rem', color: 'rgba(250, 246, 240, 0.65)', marginBottom: 18 }}>
+                    <p style={{ textAlign: 'center', fontSize: '0.82rem', color: 'var(--color-ink-muted)', marginBottom: 18 }}>
                         Climb from Beginner to God {'\u2014'} {TOTAL_CHALLENGE_QUESTIONS} questions, {CHALLENGE_TIERS.length} tiers!
                     </p>
 
                     {/* Tier progression ladder */}
                     <div style={{ position: 'relative', display: 'flex', justifyContent: 'center', padding: '0 8px' }}>
-                        {/* Connector line — positioned behind dots, vertically centered on dot row */}
+                        {/* Dotted connector line — full width */}
                         <div style={{
                             position: 'absolute',
                             top: 7,
-                            left: '15%',
-                            right: '15%',
-                            height: 2,
-                            background: 'rgba(250, 246, 240, 0.15)',
+                            left: '8%',
+                            right: '8%',
+                            height: 0,
+                            borderTop: '2px dotted rgba(139, 65, 87, 0.2)',
                             zIndex: 0,
                         }} />
+                        {/* Solid progress line — up to best tier reached */}
+                        {bestTierReached >= 0 && (
+                            <div style={{
+                                position: 'absolute',
+                                top: 7,
+                                left: '8%',
+                                width: `${(bestTierReached / (CHALLENGE_TIERS.length - 1)) * 84}%`,
+                                height: 0,
+                                borderTop: '2px solid var(--color-burgundy)',
+                                zIndex: 0,
+                            }} />
+                        )}
                         <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', width: '100%', maxWidth: 320, position: 'relative', zIndex: 1 }}>
                             {CHALLENGE_TIERS.map((tier, i) => {
                                 const reached = i <= bestTierReached;
@@ -974,20 +986,20 @@ export default function ChallengePage({ onSessionChange, registerBackHandler }) 
                                             width: dotSize,
                                             height: dotSize,
                                             borderRadius: '50%',
-                                            background: reached ? tier.color : 'transparent',
-                                            border: `2px solid ${reached ? tier.color : 'rgba(250, 246, 240, 0.3)'}`,
-                                            boxShadow: isBest ? `0 0 8px ${tier.color}80` : 'none',
+                                            background: reached ? 'var(--color-burgundy)' : 'transparent',
+                                            border: `2px solid ${reached ? 'var(--color-burgundy)' : 'rgba(139, 65, 87, 0.25)'}`,
+                                            boxShadow: isBest ? '0 0 8px rgba(139, 65, 87, 0.4)' : 'none',
                                             transition: 'all 0.3s',
                                         }} />
                                         <span style={{
                                             fontSize: '0.65rem',
-                                            color: reached ? 'rgba(250, 246, 240, 0.9)' : 'rgba(250, 246, 240, 0.35)',
-                                            fontWeight: isBest ? 700 : 400,
+                                            color: reached ? 'var(--color-burgundy)' : 'var(--color-ink-faint)',
+                                            fontWeight: isBest ? 700 : 500,
                                             letterSpacing: '0.02em',
                                         }}>
                                             {tier.label.slice(0, 3)}
                                         </span>
-                                        <span style={{ fontSize: '0.7rem', lineHeight: 1, opacity: reached ? 1 : 0.4 }}>
+                                        <span style={{ fontSize: '0.7rem', lineHeight: 1, opacity: reached ? 1 : 0.5 }}>
                                             {tier.icon}
                                         </span>
                                     </div>
