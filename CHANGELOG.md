@@ -5,6 +5,18 @@ Format follows [Keep a Changelog](https://keepachangelog.com/) and [Semantic Ver
 
 Use the version entries from the last playstore push to the most recent version for Play Store "What's New" text.
 
+## [1.7.1] - 2026-03-05
+
+### Added
+- **Per-lesson icons for Level 2 chapters** — each lesson in Level 2 now displays its own unique icon on the Learn page
+
+### Fixed
+- **Topbar section name centering on desktop** — section name no longer shifts off-center on wider screens
+
+### Changed
+- **Streak flame at-risk clock** — clock badge changed from white to dark brown (#5D4037) and made 15% larger for better visibility
+- **Settings label clarity** — "Recap Intensity" renamed to "Recap intensity (lessons)" to clarify scope
+
 ## [1.7.0] - 2026-03-05
 
 ### Added

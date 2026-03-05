@@ -246,7 +246,7 @@ export default function Settings() {
                     return (
                         <>
                             <Card className="mb-3 p-4">
-                                <div className="text-sm font-semibold mb-3" style={{ color: 'var(--color-ink-secondary)' }}>Recap Intensity</div>
+                                <div className="text-sm font-semibold mb-3" style={{ color: 'var(--color-ink-secondary)' }}>Recap intensity (lessons)</div>
                                 <div className="flex gap-2">
                                     {[
                                         { value: 0, label: 'Off', sub: 'No recap' },

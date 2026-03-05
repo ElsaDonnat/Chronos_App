@@ -306,6 +306,9 @@ When you encounter a merge conflict:
 
 This also applies to **unexpected code you didn't write** — if you see unfamiliar changes in files you're working on (e.g., from a recently merged branch), do NOT revert or "clean up" those changes. Ask the user first.
 
+> [!CAUTION]
+> **NEVER discard, revert, or `git checkout --` any changed file without asking the user first.** This includes uncommitted changes, stash pops, and diffs that look "stale" or redundant after a merge. You cannot know whether those changes are intentional. Even if a diff looks like it reverts something already committed, the user may have made that change on purpose. **Always ask before running `git checkout --`, `git restore`, or discarding any diff.**
+
 ### Rules to minimize conflicts:
 
 - Each agent should work on **different files/features** when possible

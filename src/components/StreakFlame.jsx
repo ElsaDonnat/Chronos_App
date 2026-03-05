@@ -62,12 +62,14 @@ export default function StreakFlame({ status = 'inactive', size = 18 }) {
             {FLAMES[status]}
             {status === 'at-risk' && (
                 <>
-                    {/* Clock badge — upper-right, white clock, no background circle */}
-                    <circle cx="20" cy="4" r="3.2" fill="none" stroke="white" strokeWidth="1.2"/>
-                    {/* Hour hand (pointing to 12) */}
-                    <line x1="20" y1="4" x2="20" y2="2" stroke="white" strokeWidth="1.2" strokeLinecap="round"/>
-                    {/* Minute hand (pointing to 3) */}
-                    <line x1="20" y1="4" x2="21.8" y2="4" stroke="white" strokeWidth="1.2" strokeLinecap="round"/>
+                    {/* Clock badge — upper-right, dark brown, 15% larger */}
+                    <g transform="translate(17.5, 4) scale(1.15)">
+                        <circle cx="0" cy="0" r="3.2" fill="none" stroke="#5D4037" strokeWidth="1.2"/>
+                        {/* Hour hand (pointing to 12) */}
+                        <line x1="0" y1="0" x2="0" y2="-2" stroke="#5D4037" strokeWidth="1.2" strokeLinecap="round"/>
+                        {/* Minute hand (pointing to 3) */}
+                        <line x1="0" y1="0" x2="1.8" y2="0" stroke="#5D4037" strokeWidth="1.2" strokeLinecap="round"/>
+                    </g>
                 </>
             )}
         </svg>
