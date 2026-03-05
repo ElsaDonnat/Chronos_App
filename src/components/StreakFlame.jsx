@@ -58,13 +58,14 @@ export default function StreakFlame({ status = 'inactive', size = 18 }) {
     const className = status !== 'inactive' ? `streak-flame--${status}` : undefined;
     return (
         <svg width={size} height={size} viewBox="-2 -2 28 28" fill="none" className={className}>
+            <defs><filter id="clockShadow" x="-40%" y="-40%" width="180%" height="180%"><feDropShadow dx="0" dy="0" stdDeviation="1" floodColor="white" floodOpacity="0.85" /></filter></defs>
             {LOGS}
             {FLAMES[status]}
             {status === 'at-risk' && (
                 <>
-                    {/* Clock badge — upper-right, dark brown, 15% larger */}
-                    <g transform="translate(17.5, 4) scale(1.15)">
-                        <circle cx="0" cy="0" r="3.2" fill="none" stroke="#5D4037" strokeWidth="1.2"/>
+                    {/* Clock badge — upper-right, dark brown, 40% larger, white shadow */}
+                    <g transform="translate(17.5, 4) scale(1.4)" filter="url(#clockShadow)">
+                        <circle cx="0" cy="0" r="3.2" fill="#F5E6D3" stroke="#5D4037" strokeWidth="1.2"/>
                         {/* Hour hand (pointing to 12) */}
                         <line x1="0" y1="0" x2="0" y2="-2" stroke="#5D4037" strokeWidth="1.2" strokeLinecap="round"/>
                         {/* Minute hand (pointing to 3) */}

@@ -5,6 +5,12 @@ Format follows [Keep a Changelog](https://keepachangelog.com/) and [Semantic Ver
 
 Use the version entries from the last playstore push to the most recent version for Play Store "What's New" text.
 
+## [1.7.3] - 2026-03-05
+
+### Changed
+- **Streak flame clock badge** — added parchment fill background, white drop shadow, and scaled up 40% so the brown clock reads clearly against the red flame
+- **Challenge hub tier ladder** — circles now have solid parchment fill (dots no longer bleed through), dotted line is more visible, tier labels/icons are bolder, gradient header is stronger, and top gap reduced
+
 ## [1.7.2] - 2026-03-05
 
 ### Changed
