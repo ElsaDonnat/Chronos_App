@@ -37,7 +37,10 @@
       "Bash(npm uninstall @resvg/resvg-js)",
       "Bash(./gradlew bundleRelease)",
       "Bash(ls -la c:Userselsadchronossrcdata*distract*)",
-      "Read(//c/Users/elsad/.claude/projects/c--Users-elsad-chronos/24e1de97-27a7-4386-9eb9-6e200364fade/tool-results/**)"
+      "Read(//c/Users/elsad/.claude/projects/c--Users-elsad-chronos/24e1de97-27a7-4386-9eb9-6e200364fade/tool-results/**)",
+      "Read(//c/Users/elsad/.claude/projects/c--Users-elsad-chronos/213d2f6e-bece-42f7-a9c0-bb2d10bc446c/tool-results/**)",
+      "Bash(./gradlew.bat bundleRelease)",
+      "Bash(CAPACITOR_BUILD=true npm run build)"
     ]
   }
 }

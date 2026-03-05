@@ -3,7 +3,7 @@
 All notable changes to Chronos are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/) and [Semantic Versioning](https://semver.org/).
 
-Use the latest version entry for Play Store "What's New" text.
+Use the version entries from the last playstore push to the most recent version for Play Store "What's New" text.
 
 ## [1.7.0] - 2026-03-05
 

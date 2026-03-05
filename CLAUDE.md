@@ -272,6 +272,46 @@ Co-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>
 - **GitHub Pages** — the deploy workflow (`.github/workflows/deploy.yml`) automatically builds and deploys the web app on every push to `main`
 - **Android (phone)** — `npx cap sync` copies the web build into the Android project; the AAB from `gradlew bundleRelease` is at `android/app/build/outputs/bundle/release/` ready for Play Store upload
 
+## Multi-Agent Workflow (Worktrees)
+
+The user often runs multiple Claude Code agents in parallel. To avoid conflicts, each agent works in its own **git worktree** on a separate branch.
+
+### If you are a secondary agent (not on `main`):
+
+1. **You are already in a worktree** — check with `git branch` to confirm
+2. **Work normally** — make changes, but do NOT commit to `main` or push
+3. **Commit to your feature branch** when done (the user or the main agent will merge later)
+4. **Do NOT run the full build & push workflow** — that's only for the main agent on `main`
+5. **Do NOT bump the version or update CHANGELOG** — the main agent handles housekeeping after merge
+
+### If you are the main agent (on `main`) and need to merge a worktree branch:
+
+```bash
+git merge <branch-name>        # merge the feature branch
+git branch -d <branch-name>    # clean up the branch
+git worktree remove <path>     # clean up the worktree folder
+```
+
+### Handling merge conflicts (IMPORTANT)
+
+> [!CAUTION]
+> **NEVER silently resolve merge conflicts.** Another agent made those changes for a reason you don't know about.
+
+When you encounter a merge conflict:
+
+1. **Stop.** Do not auto-resolve or pick a side.
+2. **Explain the conflict to the user** — show which files conflict, what your version says vs. what the other branch says, and what the difference means.
+3. **Ask the user what to do.** The other agent's changes may be intentional, may depend on other changes you haven't seen, or may represent a design decision the user made. You don't have full context — the user does.
+4. **Assume the other changes have a reason.** Even if they look wrong or redundant to you, another agent may have been following different instructions. Never delete or overwrite another agent's work without explicit user approval.
+
+This also applies to **unexpected code you didn't write** — if you see unfamiliar changes in files you're working on (e.g., from a recently merged branch), do NOT revert or "clean up" those changes. Ask the user first.
+
+### Rules to minimize conflicts:
+
+- Each agent should work on **different files/features** when possible
+- Avoid both agents editing `index.css`, `AppContext.jsx`, or `shared.jsx` simultaneously — these are high-traffic files
+- The main agent on `main` owns housekeeping (CHANGELOG, version bump, CLAUDE.md updates)
+
 ## Gotchas
 
 - **Unicode en-dashes in source files:** Many strings in this codebase use `\u2013` (en-dash `–`), not a regular hyphen-minus (`-`). When editing these strings with the Edit tool, you must use the exact `\u2013` character or the match will fail. If an edit fails on a string containing dashes, check the encoding with `node -e` first.
