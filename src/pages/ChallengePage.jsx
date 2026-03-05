@@ -913,20 +913,74 @@ export default function ChallengePage({ onSessionChange, registerBackHandler }) 
     // ─── Render ──────────────────────────────────────
 
     if (view === VIEW.HUB) {
+        // Determine best tier reached from solo high score
+        const bestTierReached = ch.soloHighScore > 0
+            ? CHALLENGE_TIERS.indexOf(getTierForQuestion(ch.soloHighScore - 1))
+            : -1;
+
         return (
             <div style={{ padding: '16px 0' }} className="animate-fade-in">
-                {/* Mascot duo header */}
-                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'flex-end', gap: 12, marginBottom: 20 }}>
-                    <Mascot variant="quizmaster" mood="happy" size={56} />
-                    <Mascot mood="happy" size={48} />
-                </div>
+                {/* Dark arena header */}
+                <div style={{
+                    background: 'linear-gradient(180deg, #3D2028 0%, #5A3040 100%)',
+                    borderRadius: '0 0 20px 20px',
+                    margin: '-16px -16px 0',
+                    padding: '28px 16px 22px',
+                    marginBottom: 20,
+                }}>
+                    {/* Mascot duo */}
+                    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'flex-end', gap: 12, marginBottom: 16 }}>
+                        <Mascot variant="quizmaster" mood="happy" size={56} />
+                        <Mascot mood="happy" size={48} />
+                    </div>
 
-                <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.3rem', fontWeight: 700, textAlign: 'center', color: 'var(--color-ink)', marginBottom: 4 }}>
-                    Challenge Mode
-                </h2>
-                <p style={{ textAlign: 'center', fontSize: '0.82rem', color: 'var(--color-ink-muted)', marginBottom: 20 }}>
-                    Climb from Beginner to God — {TOTAL_CHALLENGE_QUESTIONS} questions, {CHALLENGE_TIERS.length} tiers!
-                </p>
+                    <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.3rem', fontWeight: 700, textAlign: 'center', color: '#FAF6F0', marginBottom: 4 }}>
+                        Challenge Mode
+                    </h2>
+                    <p style={{ textAlign: 'center', fontSize: '0.82rem', color: 'rgba(250, 246, 240, 0.65)', marginBottom: 18 }}>
+                        Climb from Beginner to God \u2014 {TOTAL_CHALLENGE_QUESTIONS} questions, {CHALLENGE_TIERS.length} tiers!
+                    </p>
+
+                    {/* Tier progression ladder */}
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 0 }}>
+                        {CHALLENGE_TIERS.map((tier, i) => {
+                            const reached = i <= bestTierReached;
+                            const isBest = i === bestTierReached;
+                            const dotSize = isBest ? 14 : 10;
+                            return (
+                                <div key={tier.id} style={{ display: 'flex', alignItems: 'center' }}>
+                                    {i > 0 && (
+                                        <div style={{
+                                            width: 18,
+                                            height: 2,
+                                            background: i <= bestTierReached ? tier.color : 'rgba(250, 246, 240, 0.2)',
+                                            transition: 'background 0.3s',
+                                        }} />
+                                    )}
+                                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
+                                        <div style={{
+                                            width: dotSize,
+                                            height: dotSize,
+                                            borderRadius: '50%',
+                                            background: reached ? tier.color : 'transparent',
+                                            border: `2px solid ${reached ? tier.color : 'rgba(250, 246, 240, 0.3)'}`,
+                                            boxShadow: isBest ? `0 0 8px ${tier.color}80` : 'none',
+                                            transition: 'all 0.3s',
+                                        }} />
+                                        <span style={{
+                                            fontSize: '0.55rem',
+                                            color: reached ? 'rgba(250, 246, 240, 0.9)' : 'rgba(250, 246, 240, 0.35)',
+                                            fontWeight: isBest ? 700 : 400,
+                                            letterSpacing: '0.02em',
+                                        }}>
+                                            {tier.label.slice(0, 3)}
+                                        </span>
+                                    </div>
+                                </div>
+                            );
+                        })}
+                    </div>
+                </div>
 
                 {/* Mode cards */}
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginBottom: 24 }}>
