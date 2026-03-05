@@ -54,11 +54,21 @@ export default function Settings() {
     const totalEvents = ALL_EVENTS.length;
     const completedLessons = Object.keys(state.completedLessons).length;
 
-    // Format total study time
+    // Format study time
     const totalSeconds = state.totalStudyTime || 0;
-    const hours = Math.floor(totalSeconds / 3600);
-    const minutes = Math.floor((totalSeconds % 3600) / 60);
-    const studyTimeStr = hours > 0 ? `${hours}h ${minutes}m` : `${minutes}m`;
+    const formatTime = (secs) => {
+        const h = Math.floor(secs / 3600);
+        const m = Math.floor((secs % 3600) / 60);
+        return h > 0 ? `${h}h ${m}m` : `${m}m`;
+    };
+    const studyTimeStr = formatTime(totalSeconds);
+
+    // Today's study time
+    const todayStr = new Date().toISOString().slice(0, 10);
+    const todaySeconds = (state.studySessions || [])
+        .filter(s => s.date && s.date.slice(0, 10) === todayStr)
+        .reduce((sum, s) => sum + (s.duration || 0), 0);
+    const todayTimeStr = formatTime(todaySeconds);
 
     // Play modal open sound on mount
     useEffect(() => { feedback.modalOpen(); }, []);
@@ -204,15 +214,23 @@ export default function Settings() {
                     </Card>
                 </div>
 
-                {totalSeconds > 0 && (
-                    <Card className="flex items-center gap-3 mb-4 p-4">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--color-burgundy)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="flex-shrink-0">
-                            <circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" />
-                        </svg>
-                        <div className="flex-1 min-w-0">
-                            <div className="text-sm font-semibold" style={{ color: 'var(--color-ink)' }}>{studyTimeStr} spent learning</div>
-                            <div className="text-xs" style={{ color: 'var(--color-ink-muted)' }}>
-                                {(state.studySessions || []).length} study sessions
+                {(totalSeconds > 0 || todaySeconds > 0) && (
+                    <Card className="mb-4 p-4">
+                        <div className="flex items-center gap-2 mb-3">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-burgundy)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="flex-shrink-0">
+                                <circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" />
+                            </svg>
+                            <span className="text-sm font-semibold" style={{ color: 'var(--color-ink-secondary)' }}>Study Time</span>
+                        </div>
+                        <div className="flex items-center justify-around">
+                            <div className="flex flex-col items-center">
+                                <span className="text-xl font-bold" style={{ color: 'var(--color-burgundy)' }}>{todayTimeStr}</span>
+                                <span className="text-[11px]" style={{ color: 'var(--color-ink-muted)' }}>Today</span>
+                            </div>
+                            <div style={{ width: 1, height: 28, backgroundColor: 'rgba(var(--color-ink-rgb), 0.08)' }} />
+                            <div className="flex flex-col items-center">
+                                <span className="text-xl font-bold" style={{ color: 'var(--color-ink)' }}>{studyTimeStr}</span>
+                                <span className="text-[11px]" style={{ color: 'var(--color-ink-muted)' }}>Total</span>
                             </div>
                         </div>
                     </Card>
@@ -322,19 +340,16 @@ export default function Settings() {
                         </button>
                     </div>
                     {state.notificationsEnabled && (
-                        <div className="mt-3 space-y-3 animate-fade-in">
-                            <div>
-                                <label
-                                    className="text-xs block mb-1.5"
-                                    style={{ color: 'var(--color-ink-muted)' }}
-                                >
+                        <div className="mt-2 space-y-2 animate-fade-in">
+                            <div className="flex items-center justify-between">
+                                <span className="text-xs" style={{ color: 'var(--color-ink-muted)' }}>
                                     Reminder time
-                                </label>
+                                </span>
                                 <input
                                     type="time"
                                     value={state.dailyReminderTime}
                                     onChange={e => dispatch({ type: 'SET_DAILY_REMINDER_TIME', value: e.target.value })}
-                                    className="w-full rounded-xl px-3 py-2 text-sm"
+                                    className="rounded-lg px-2 py-1 text-xs"
                                     style={{
                                         backgroundColor: 'var(--color-parchment)',
                                         color: 'var(--color-ink)',
@@ -351,16 +366,16 @@ export default function Settings() {
                                     role="switch"
                                     aria-checked={state.streakRemindersEnabled}
                                     onClick={() => { feedback.toggleClick(); dispatch({ type: 'SET_STREAK_REMINDERS', value: !state.streakRemindersEnabled }); }}
-                                    className="relative w-11 h-6 rounded-full transition-colors"
+                                    className="relative w-9 h-5 rounded-full transition-colors"
                                     style={{
-                                        backgroundColor: state.streakRemindersEnabled ? 'var(--color-burgundy)' : 'rgba(var(--color-ink-rgb), 0.15)',
+                                        backgroundColor: state.streakRemindersEnabled ? '#D4C5B0' : 'rgba(var(--color-ink-rgb), 0.12)',
                                     }}
                                 >
                                     <span
-                                        className="absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white transition-transform"
+                                        className="absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-white transition-transform"
                                         style={{
-                                            transform: state.streakRemindersEnabled ? 'translateX(20px)' : 'translateX(0)',
-                                            boxShadow: '0 1px 3px rgba(0,0,0,0.2)',
+                                            transform: state.streakRemindersEnabled ? 'translateX(16px)' : 'translateX(0)',
+                                            boxShadow: '0 1px 2px rgba(0,0,0,0.18)',
                                         }}
                                     />
                                 </button>
