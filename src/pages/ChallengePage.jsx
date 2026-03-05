@@ -919,13 +919,13 @@ export default function ChallengePage({ onSessionChange, registerBackHandler }) 
             : -1;
 
         return (
-            <div style={{ padding: '16px 0' }} className="animate-fade-in">
-                {/* Dark arena header */}
+            <div style={{ padding: '0 0 16px' }} className="animate-fade-in">
+                {/* Arena header */}
                 <div style={{
-                    background: 'linear-gradient(180deg, #3D2028 0%, #5A3040 100%)',
+                    background: 'linear-gradient(180deg, #7A5060 0%, #9B7080 100%)',
                     borderRadius: '0 0 20px 20px',
-                    margin: '-16px -16px 0',
-                    padding: '28px 16px 22px',
+                    margin: '0 -16px 0',
+                    padding: '24px 16px 22px',
                     marginBottom: 20,
                 }}>
                     {/* Mascot duo */}
@@ -935,10 +935,10 @@ export default function ChallengePage({ onSessionChange, registerBackHandler }) 
                     </div>
 
                     <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.3rem', fontWeight: 700, textAlign: 'center', color: '#FAF6F0', marginBottom: 4 }}>
-                        Challenge Mode
+                        Challenger Mode
                     </h2>
                     <p style={{ textAlign: 'center', fontSize: '0.82rem', color: 'rgba(250, 246, 240, 0.65)', marginBottom: 18 }}>
-                        Climb from Beginner to God \u2014 {TOTAL_CHALLENGE_QUESTIONS} questions, {CHALLENGE_TIERS.length} tiers!
+                        Climb from Beginner to God {'\u2014'} {TOTAL_CHALLENGE_QUESTIONS} questions, {CHALLENGE_TIERS.length} tiers!
                     </p>
 
                     {/* Tier progression ladder */}
