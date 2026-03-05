@@ -78,6 +78,12 @@ The app version is managed in `package.json` (`"version": "X.Y.Z"`). The Android
 
 > Google Play will reject uploads if the versionCode hasn't increased. Always bump `package.json` version before building a new release.
 
+## Publishing
+
+- **Web (GitHub Pages)**: Deploys automatically on every push to `main` via GitHub Actions
+- **Android (Play Store)**: The AAB is built via Gradle (`gradlew bundleRelease`) and uploaded to the Play Store from **Android Studio** — not from the command line
+- **GitHub Releases**: Created via git tags (`git tag vX.Y.Z && git push origin vX.Y.Z`) + GitHub web UI. The `gh` CLI is not installed.
+
 ## Working with Multiple Claude Code Agents
 
 You can run multiple Claude Code agents in parallel using **git worktrees**. Each agent gets its own isolated copy of the repo on a separate branch, so they won't interfere with each other.

@@ -272,6 +272,11 @@ Co-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>
 - **GitHub Pages** — the deploy workflow (`.github/workflows/deploy.yml`) automatically builds and deploys the web app on every push to `main`
 - **Android (phone)** — `npx cap sync` copies the web build into the Android project; the AAB from `gradlew bundleRelease` is at `android/app/build/outputs/bundle/release/` ready for Play Store upload
 
+### Publishing releases
+
+- **GitHub releases**: `gh` CLI is **not installed**. To create a release, push a git tag (`git tag vX.Y.Z && git push origin vX.Y.Z`) and the user will create the release from GitHub's web UI or from Android Studio.
+- **Play Store**: The user uploads the AAB from Android Studio — not from the command line. Do NOT attempt to use `gh` or any CLI tool for releases.
+
 ## Multi-Agent Workflow (Worktrees)
 
 The user often runs multiple Claude Code agents in parallel. To avoid conflicts, each agent works in its own **git worktree** on a separate branch.
