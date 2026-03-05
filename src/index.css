@@ -238,6 +238,7 @@ input, textarea, [contenteditable] {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  position: relative;
 }
 
 .topbar-logo {
@@ -263,7 +264,11 @@ input, textarea, [contenteditable] {
 @media (min-width: 900px) {
   .topbar-section-name {
     display: block;
-    padding-left: var(--sidebar-width);
+    position: absolute;
+    left: calc(var(--sidebar-width) + 16px);
+    right: 0;
+    text-align: center;
+    pointer-events: none;
   }
 }
 
