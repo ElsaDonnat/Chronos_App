@@ -116,6 +116,18 @@ export default function TimelinePage() {
                 </p>
             </div>
 
+            {learnedIds.size === 0 && (
+                <div className="text-center py-12 animate-fade-in">
+                    <Mascot mood="happy" size={64} />
+                    <p className="text-base font-semibold mt-3" style={{ fontFamily: 'var(--font-serif)', color: 'var(--color-ink-secondary)' }}>
+                        Your timeline begins with your first lesson
+                    </p>
+                    <p className="text-sm mt-1" style={{ color: 'var(--color-ink-muted)' }}>
+                        Complete lessons to discover events and fill your timeline
+                    </p>
+                </div>
+            )}
+
             {/* View toggle */}
             <div className="mb-4">
                 <TabSelector
@@ -413,17 +425,6 @@ export default function TimelinePage() {
                 </div>
             )}
 
-            {learnedIds.size === 0 && (
-                <div className="text-center py-12 animate-fade-in">
-                    <Mascot mood="happy" size={64} />
-                    <p className="text-base font-semibold mt-3" style={{ fontFamily: 'var(--font-serif)', color: 'var(--color-ink-secondary)' }}>
-                        Your timeline begins with your first lesson
-                    </p>
-                    <p className="text-sm mt-1" style={{ color: 'var(--color-ink-muted)' }}>
-                        Complete lessons to discover events and fill your timeline
-                    </p>
-                </div>
-            )}
         </div>
     );
 }

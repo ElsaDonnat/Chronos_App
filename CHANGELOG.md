@@ -11,6 +11,12 @@ Use the version entries from the last playstore push to the most recent version 
 - **Challenger Mode hub redesign** — the Challenge tab now features a dark warm gradient header (dusty rose/mauve tones) with cream text, giving it a distinct arena feel while staying within the app's design language
 - **Tier progression ladder** — horizontal visual showing all 6 tiers (Beginner → God) with colored dots, connector line, tier emojis, and labels. Dots fill based on the player's best solo score; current best tier gets a glow effect
 - **Renamed "Challenge Mode" to "Challenger Mode"**
+- **Study time split** — Settings now shows Today vs Total study time side by side
+- **Hourglass logo tweak** — slightly bigger and repositioned in top bar
+- **Multiplayer victories counter** — Challenge hub shows total multiplayer wins
+- **Lighter slider tracks** — volume slider track lines are now a softer burgundy
+- **Timeline empty state moved to top** — "Your timeline begins with your first lesson" now appears at the top of the tab instead of the bottom
+- **Desktop topbar centering fix** — section name offset adjusted for better centering
 
 ## [1.7.1] - 2026-03-05
 
