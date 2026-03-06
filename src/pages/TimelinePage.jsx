@@ -8,7 +8,7 @@ import Mascot from '../components/Mascot';
 
 // SVG era icons — replace emoji to avoid rendering issues on Android
 const EraIcon = ({ type, size = 24 }) => {
-    const colors = { prehistory: '#0D9488', ancient: '#6B5B73', medieval: '#A0522D', earlymodern: '#65774A', modern: '#8B4157' };
+    const colors = { prehistory: '#9E4A4A', ancient: '#7A6B50', medieval: '#B06A30', earlymodern: '#9A8528', modern: '#B09035' };
     const c = colors[type] || '#666';
     const s = { width: size, height: size, viewBox: '0 0 24 24', fill: 'none', stroke: c, strokeWidth: '1.8', strokeLinecap: 'round', strokeLinejoin: 'round' };
     const icons = {
@@ -87,20 +87,20 @@ export default function TimelinePage() {
     };
 
     const eraDetails = {
-        prehistory: { iconType: 'prehistory', title: 'Prehistory', subtitle: 'c. 7 million years ago – c. 3200 BCE', description: 'The longest chapter in human history — from the first split with our ape ancestors through mastering fire, developing language, migrating across the globe, and eventually settling into farming communities.', color: '#0D9488' },
-        ancient: { iconType: 'ancient', title: 'The Ancient World', subtitle: 'c. 3200 BCE – 500 CE', description: 'Writing is invented, cities rise, empires clash. From Sumer to Rome, humanity builds the foundations of law, philosophy, religion, and governance.', color: '#6B5B73' },
-        medieval: { iconType: 'medieval', title: 'The Medieval World', subtitle: '500 – 1500 CE', description: 'Empires fragment and reform. Faiths spread across continents, scholars preserve and advance knowledge, and horseback conquerors redraw the map of Eurasia.', color: '#A0522D' },
-        earlymodern: { iconType: 'earlymodern', title: 'The Early Modern Period', subtitle: '1500 – 1800 CE', description: 'Print breaks the monopoly on knowledge, ships connect every continent, and thinkers challenge the divine right of kings.', color: '#65774A' },
-        modern: { iconType: 'modern', title: 'The Modern World', subtitle: '1800 – Present', description: 'Industry, ideology, and information transform human life at accelerating speed. Two world wars reshape the global order, and digital networks connect billions.', color: '#8B4157' },
+        prehistory: { iconType: 'prehistory', title: 'Prehistory', subtitle: 'c. 7 million years ago – c. 3200 BCE', description: 'The longest chapter in human history — from the first split with our ape ancestors through mastering fire, developing language, migrating across the globe, and eventually settling into farming communities.', color: '#9E4A4A' },
+        ancient: { iconType: 'ancient', title: 'The Ancient World', subtitle: 'c. 3200 BCE – 500 CE', description: 'Writing is invented, cities rise, empires clash. From Sumer to Rome, humanity builds the foundations of law, philosophy, religion, and governance.', color: '#7A6B50' },
+        medieval: { iconType: 'medieval', title: 'The Medieval World', subtitle: '500 – 1500 CE', description: 'Empires fragment and reform. Faiths spread across continents, scholars preserve and advance knowledge, and horseback conquerors redraw the map of Eurasia.', color: '#B06A30' },
+        earlymodern: { iconType: 'earlymodern', title: 'The Early Modern Period', subtitle: '1500 – 1800 CE', description: 'Print breaks the monopoly on knowledge, ships connect every continent, and thinkers challenge the divine right of kings.', color: '#9A8528' },
+        modern: { iconType: 'modern', title: 'The Modern World', subtitle: '1800 – Present', description: 'Industry, ideology, and information transform human life at accelerating speed. Two world wars reshape the global order, and digital networks connect billions.', color: '#B09035' },
     };
 
     const getEraColor = (eraId) => {
         const colors = {
-            prehistory: 'rgba(13, 148, 136, 0.06)',
-            ancient: 'rgba(107, 91, 115, 0.06)',
-            medieval: 'rgba(160, 82, 45, 0.06)',
-            earlymodern: 'rgba(101, 119, 74, 0.06)',
-            modern: 'rgba(139, 65, 87, 0.06)',
+            prehistory: 'rgba(158, 74, 74, 0.06)',
+            ancient: 'rgba(122, 107, 80, 0.06)',
+            medieval: 'rgba(176, 106, 48, 0.06)',
+            earlymodern: 'rgba(154, 133, 40, 0.06)',
+            modern: 'rgba(176, 144, 53, 0.06)',
         };
         return colors[eraId] || 'transparent';
     };

@@ -59,11 +59,11 @@ const EraIcon = ({ type, size = 20, color }) => {
 
 // Period icons/colors for era selection
 const ERA_STYLE = {
-    prehistory: { iconType: 'prehistory', color: '#0D9488' },
-    ancient: { iconType: 'ancient', color: '#6B5B73' },
-    medieval: { iconType: 'medieval', color: '#A0522D' },
-    earlymodern: { iconType: 'earlymodern', color: '#65774A' },
-    modern: { iconType: 'modern', color: '#8B4157' },
+    prehistory: { iconType: 'prehistory', color: '#9E4A4A' },
+    ancient: { iconType: 'ancient', color: '#7A6B50' },
+    medieval: { iconType: 'medieval', color: '#B06A30' },
+    earlymodern: { iconType: 'earlymodern', color: '#9A8528' },
+    modern: { iconType: 'modern', color: '#B09035' },
 };
 
 export default function PlacementQuizFlow({ onComplete, initialEra }) {

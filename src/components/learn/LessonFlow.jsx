@@ -30,15 +30,15 @@ const QUESTION_TYPES = ['date', 'location', 'what', 'description'];
 const EraIcon = ({ type, size = 36 }) => {
     const icons = {
         prehistory: ( // bone
-            <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="#0D9488" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M5 10c0-1.5 1-2.5 2-3 .5-1.5-.5-3-2-3.5S2 4 2.5 5.5c-1 .5-1.5 2-.5 3s2.5 1 3 1.5z" fill="#0D9488" opacity="0.15" />
-                <path d="M19 14c0 1.5-1 2.5-2 3-.5 1.5.5 3 2 3.5s3-.5 2.5-2c1-.5 1.5-2 .5-3s-2.5-1-3-1.5z" fill="#0D9488" opacity="0.15" />
+            <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="#9E4A4A" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M5 10c0-1.5 1-2.5 2-3 .5-1.5-.5-3-2-3.5S2 4 2.5 5.5c-1 .5-1.5 2-.5 3s2.5 1 3 1.5z" fill="#9E4A4A" opacity="0.15" />
+                <path d="M19 14c0 1.5-1 2.5-2 3-.5 1.5.5 3 2 3.5s3-.5 2.5-2c1-.5 1.5-2 .5-3s-2.5-1-3-1.5z" fill="#9E4A4A" opacity="0.15" />
                 <line x1="7" y1="9" x2="17" y2="15" />
             </svg>
         ),
         ancient: ( // temple columns
-            <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="#6B5B73" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M3 21h18M5 21V7l7-4 7 4v14" fill="#6B5B73" opacity="0.1" />
+            <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="#7A6B50" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M3 21h18M5 21V7l7-4 7 4v14" fill="#7A6B50" opacity="0.1" />
                 <line x1="9" y1="21" x2="9" y2="10" />
                 <line x1="15" y1="21" x2="15" y2="10" />
                 <path d="M5 7l7-4 7 4" />
@@ -46,7 +46,7 @@ const EraIcon = ({ type, size = 36 }) => {
             </svg>
         ),
         medieval: ( // crossed swords
-            <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="#A0522D" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+            <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="#B06A30" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M5 3l14 14M9.5 7.5L5 3M19 3L5 17" />
                 <path d="M14.5 7.5L19 3" />
                 <path d="M5 17l2 2 2-2" />
@@ -54,9 +54,9 @@ const EraIcon = ({ type, size = 36 }) => {
             </svg>
         ),
         earlymodern: ( // compass
-            <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="#65774A" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                <circle cx="12" cy="12" r="9" fill="#65774A" opacity="0.08" />
-                <polygon points="16.24,7.76 14.12,14.12 7.76,16.24 9.88,9.88" fill="#65774A" opacity="0.2" stroke="#65774A" />
+            <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="#9A8528" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="12" cy="12" r="9" fill="#9A8528" opacity="0.08" />
+                <polygon points="16.24,7.76 14.12,14.12 7.76,16.24 9.88,9.88" fill="#9A8528" opacity="0.2" stroke="#9A8528" />
                 <line x1="12" y1="3" x2="12" y2="5" />
                 <line x1="12" y1="19" x2="12" y2="21" />
                 <line x1="3" y1="12" x2="5" y2="12" />
@@ -64,8 +64,8 @@ const EraIcon = ({ type, size = 36 }) => {
             </svg>
         ),
         modern: ( // globe
-            <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="#8B4157" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                <circle cx="12" cy="12" r="9" fill="#8B4157" opacity="0.08" />
+            <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="#B09035" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="12" cy="12" r="9" fill="#B09035" opacity="0.08" />
                 <ellipse cx="12" cy="12" rx="4" ry="9" />
                 <line x1="3" y1="12" x2="21" y2="12" />
                 <path d="M4.5 7.5h15M4.5 16.5h15" />
@@ -82,35 +82,35 @@ const PERIOD_INFO = {
         subtitle: 'c. 7\u20136 million years ago \u2013 c. 3200 BCE',
         keywords: 'Evolution, fire, farming.',
         description: 'Literally "before written records," prehistory spans 99% of the human story \u2014 from bipedalism and stone tools through the mastery of fire, the emergence of language, migration out of Africa, and the Neolithic transition to settled agriculture.',
-        color: '#0D9488', iconType: 'prehistory',
+        color: '#9E4A4A', iconType: 'prehistory',
     },
     ancient: {
         title: 'The Ancient World',
         subtitle: 'c. 3200 BCE \u2013 476 CE',
         keywords: 'Writing, cities, empires.',
         description: 'Defined by writing, cities, states, and empires. From Sumer and Egypt to Greece, Rome, China, and India \u2014 humanity built the foundations of law, philosophy, science, and organized religion.',
-        color: '#6B5B73', iconType: 'ancient',
+        color: '#7A6B50', iconType: 'ancient',
     },
     medieval: {
         title: 'The Medieval World',
         subtitle: '476 \u2013 c. 1500 CE',
         keywords: 'Islam, feudalism, Mongols.',
         description: 'An era of transformation, not darkness. The rise of Islam, Byzantine continuity, feudal Europe, the Mongol Empire, the Crusades, and the first universities \u2014 from Rome\'s fall to the reconnection of the world.',
-        color: '#A0522D', iconType: 'medieval',
+        color: '#B06A30', iconType: 'medieval',
     },
     earlymodern: {
         title: 'The Early Modern Period',
         subtitle: 'c. 1500 \u2013 1789',
         keywords: 'Exploration, Reformation, science.',
         description: 'Exploration, colonization, the Renaissance, Reformation, Scientific Revolution, and Enlightenment \u2014 from a fragmented world to an interconnected one, ending when Enlightenment ideals erupted into revolution.',
-        color: '#65774A', iconType: 'earlymodern',
+        color: '#9A8528', iconType: 'earlymodern',
     },
     modern: {
         title: 'The Modern World',
         subtitle: '1789 \u2013 Present',
         keywords: 'Industry, world wars, digital.',
         description: 'More change in two centuries than in the previous two millennia. Industrialization, world wars, decolonization, the Cold War, and the digital revolution. The defining theme is acceleration.',
-        color: '#8B4157', iconType: 'modern',
+        color: '#B09035', iconType: 'modern',
     },
 };
 
@@ -926,7 +926,7 @@ export default function LessonFlow({ lesson, onComplete }) {
         return (
             <div className="lesson-flow-container animate-fade-in">
                 <div className="flex-1 min-h-0 overflow-y-auto">
-                    <div className="text-center py-4 relative">
+                    <div className="text-center pt-8 pb-4 relative">
                         {/* Faint lesson icon behind title */}
                         <div className="absolute inset-x-0 flex justify-center pointer-events-none select-none" style={{ opacity: 0.06, top: '88px' }}>
                             <LessonIcon index={lessonIconIndex} size={120} color="var(--color-ink)" />

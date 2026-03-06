@@ -5,6 +5,26 @@ Format follows [Keep a Changelog](https://keepachangelog.com/) and [Semantic Ver
 
 Use the version entries from the last playstore push to the most recent version for Play Store "What's New" text.
 
+## [1.7.6] - 2026-03-06
+
+### Changed
+- **Unified era colors** — Prologue era cards, lesson flow, placement quiz, and timeline now all use the same warm-hue palette as the Learn page chapters
+- **Challenger Mode background** — doubled the tint opacity for a more visible burgundy hue
+- **Challenger Mode tier emojis** — removed parchment backdrop so emoji colors stay vibrant
+- **Challenge quiz: curated Beginner & Amateur pools** — Beginner (17 questions) and Amateur (21 questions) now draw from hand-picked pools instead of random events; category-sort uses ambiguous titles, true/false tests actual content with plausible false statements and correction text, date MCQ distractors spread by tier
+- **Challenge quiz: category-sort** — only shows event title, no description
+- **Challenge quiz: T/F correction text** — false statements now show an explanation when answered
+
+## [1.7.5] - 2026-03-05
+
+### Fixed
+- **Date scoring tolerances** — rewrote `scoreByDiff()` with magnitude-based thresholds: prehistoric dates scale by order of magnitude (millions ±1M, 100Ks ±100K, 10Ks ±10K), ancient BCE ±200/±500, classical ±100/±300, medieval ±50/±150 (unchanged). Modern (post-1800) and early modern (1501–1800) now require **exact year** for green, with yellow only ±3 or ±5 years respectively. Previously, entering "3" for a 300,000-year-old event scored as correct
+- **Range event tolerance** — answers outside a date range now get a 25% span bonus before scoring, so wider ranges (e.g., 1M-year spans) are more forgiving for near-misses
+- **Lesson summary overlap** — increased top padding so the summary card no longer overlaps with the mascot/logo
+
+### Changed
+- **Challenger Mode stats background** — stats card backgrounds now use the same tint as the header gradient's lightest color, linked via a shared `CHALLENGE_TINT` constant so changing one updates both
+
 ## [1.7.4] - 2026-03-05
 
 ### Fixed

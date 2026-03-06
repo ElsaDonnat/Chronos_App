@@ -158,11 +158,7 @@ function MCQLayout({ question, selected, answered, onSelect }) {
                     {question.context}
                 </p>
             )}
-            {question.description && question.type === 'categorySort' && (
-                <p style={{ fontSize: '0.8rem', color: 'var(--color-ink-muted)', textAlign: 'center', lineHeight: 1.4, maxHeight: 60, overflow: 'hidden' }}>
-                    {question.description}
-                </p>
-            )}
+            {/* No description for categorySort — title alone should be enough */}
             <div style={{
                 display: 'grid',
                 gridTemplateColumns: isGrid ? '1fr 1fr' : '1fr',
@@ -419,9 +415,9 @@ function TrueOrFalseLayout({ question, selected, answered, onSelect }) {
                     );
                 })}
             </div>
-            {answered && !question.isTrue && question.correctDetail && (
+            {answered && !question.isTrue && (question.correction || question.correctDetail) && (
                 <p style={{ fontSize: '0.78rem', color: 'var(--color-ink-muted)', textAlign: 'center', fontStyle: 'italic' }}>
-                    Correct {question.swappedDetail}: {question.correctDetail}
+                    {question.correction || `Correct ${question.swappedDetail}: ${question.correctDetail}`}
                 </p>
             )}
         </div>
@@ -583,6 +579,9 @@ function TierTransition({ tier, onContinue }) {
 }
 
 // ─── Main ChallengePage ──────────────────────────────────────
+
+// Shared tint — used for header gradient endpoint + stats card backgrounds
+const CHALLENGE_TINT = 'rgba(139, 65, 87, 0.36)';
 
 export default function ChallengePage({ onSessionChange, registerBackHandler }) {
     const { state, dispatch } = useApp();
@@ -932,7 +931,7 @@ export default function ChallengePage({ onSessionChange, registerBackHandler }) 
             <div style={{ padding: '0 0 16px' }} className="animate-fade-in">
                 {/* Arena header */}
                 <div style={{
-                    background: 'linear-gradient(180deg, rgba(100, 40, 60, 0.83) 0%, rgba(139, 65, 87, 0.18) 100%)',
+                    background: `linear-gradient(180deg, rgba(100, 40, 60, 0.83) 0%, ${CHALLENGE_TINT} 100%)`,
                     borderRadius: '0 0 20px 20px',
                     margin: '-16px -16px 0',
                     padding: '20px 16px 22px',
@@ -1001,12 +1000,10 @@ export default function ChallengePage({ onSessionChange, registerBackHandler }) 
                                         </span>
                                         <span style={{
                                             fontSize: '1.03rem', lineHeight: 1,
-                                            background: 'rgba(250, 246, 240, 0.85)',
                                             borderRadius: '50%',
                                             width: 30, height: 30,
                                             display: 'flex', alignItems: 'center', justifyContent: 'center',
                                             opacity: reached ? 1 : 0.75,
-                                            boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
                                         }}>
                                             {tier.icon}
                                         </span>
@@ -1098,7 +1095,7 @@ export default function ChallengePage({ onSessionChange, registerBackHandler }) 
                 {/* Stats */}
                 {(ch.soloGamesPlayed > 0 || ch.multiplayerGamesPlayed > 0 || allTimeAccuracy !== null) && (
                     <div style={{
-                        background: 'rgba(139, 65, 87, 0.04)',
+                        background: CHALLENGE_TINT,
                         borderRadius: 12,
                         padding: '14px 16px',
                         display: 'flex',
@@ -1534,7 +1531,7 @@ export default function ChallengePage({ onSessionChange, registerBackHandler }) 
                     <div style={{
                         display: 'flex',
                         justifyContent: 'space-around',
-                        background: 'rgba(139, 65, 87, 0.04)',
+                        background: CHALLENGE_TINT,
                         borderRadius: 12,
                         padding: '14px 12px',
                         marginBottom: 20,

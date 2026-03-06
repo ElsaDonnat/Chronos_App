@@ -10,6 +10,196 @@
 import { ALL_EVENTS, CATEGORY_CONFIG, ERA_RANGES, getEraForYear, isLevel2Event } from './events';
 import { shuffle, generateDateMCQOptions, generateLocationOptions } from './quiz';
 
+// ─── Curated question pools for Beginner & Amateur ──────────
+
+/**
+ * Each spec: { type, eventId, ...typeSpecificFields }
+ * Built into full question objects by buildCuratedQuestion().
+ */
+const BEGINNER_QUESTIONS = [
+    // categorySort — title is ambiguous about category
+    { type: 'categorySort', eventId: 'f2' },   // Cooking Revolution → Science
+    { type: 'categorySort', eventId: 'f30' },  // Black Death → Science
+    { type: 'categorySort', eventId: 'f40' },  // Enlightenment → Culture
+    { type: 'categorySort', eventId: 'f20' },  // Edict of Milan → Politics
+    { type: 'categorySort', eventId: 'f31' },  // Fall of Constantinople → War
+
+    // eraDetective — era not obvious from title
+    { type: 'eraDetective', eventId: 'f24' },  // Founding of Islam → Medieval
+    { type: 'eraDetective', eventId: 'f6' },   // Neolithic Revolution → Prehistory
+    { type: 'eraDetective', eventId: 'f32' },  // Gutenberg Printing Press → Medieval
+    { type: 'eraDetective', eventId: 'f19' },  // Life & Crucifixion of Jesus → Ancient
+    { type: 'eraDetective', eventId: 'f8' },   // Unification of Egypt → Ancient
+
+    // trueOrFalse — content-based, not category-based
+    { type: 'trueOrFalse', eventId: 'f29',
+        statement: 'The Mongol Empire was the largest contiguous land empire in history',
+        isTrue: true },
+    { type: 'trueOrFalse', eventId: 'f15',
+        statement: 'Alexander the Great conquered territories stretching from Greece to India',
+        isTrue: true },
+    { type: 'trueOrFalse', eventId: 'f5',
+        statement: 'Early humans left Africa by crossing the Bering Land Bridge',
+        isTrue: false, correction: 'They migrated via the Arabian Peninsula. The Bering Land Bridge was used later to reach the Americas.' },
+    { type: 'trueOrFalse', eventId: 'f34',
+        statement: 'The Renaissance began in France before spreading across Europe',
+        isTrue: false, correction: 'It began in Italy, particularly in Florence.' },
+    { type: 'trueOrFalse', eventId: 'f46',
+        statement: 'The Industrial Revolution began in France',
+        isTrue: false, correction: 'It began in Britain.' },
+    { type: 'trueOrFalse', eventId: 'f9',
+        statement: 'The earliest known writing system was Egyptian hieroglyphics',
+        isTrue: false, correction: 'It was Sumerian cuneiform, developed in Mesopotamia.' },
+    { type: 'trueOrFalse', eventId: 'f7',
+        statement: 'The first cities in history were built along the Nile in Egypt',
+        isTrue: false, correction: 'They emerged in Mesopotamia (modern Iraq).' },
+];
+
+const AMATEUR_QUESTIONS = [
+    // categorySort — harder ambiguity
+    { type: 'categorySort', eventId: 'f14' },  // Axial Age → Culture
+    { type: 'categorySort', eventId: 'f26' },  // Islamic Golden Age → Science
+    { type: 'categorySort', eventId: 'f39' },  // Atlantic Slave Trade → Politics
+
+    // eraDetective — trickier era placement
+    { type: 'eraDetective', eventId: 'f10' },  // Code of Hammurabi → Ancient
+    { type: 'eraDetective', eventId: 'f22' },  // Plague of Justinian → Medieval
+    { type: 'eraDetective', eventId: 'f37' },  // Thirty Years' War → Early Modern
+    { type: 'eraDetective', eventId: 'f38' },  // Scientific Revolution → Early Modern
+    { type: 'eraDetective', eventId: 'f44' },  // Napoleon → Modern
+
+    // trueOrFalse — harder content questions
+    { type: 'trueOrFalse', eventId: 'f110',
+        statement: "Mansa Musa\u2019s pilgrimage to Mecca was so lavish it crashed Egypt\u2019s gold economy",
+        isTrue: true },
+    { type: 'trueOrFalse', eventId: 'f62',
+        statement: 'The Haitian Revolution was the only successful large-scale slave revolt in history',
+        isTrue: true },
+    { type: 'trueOrFalse', eventId: 'f45',
+        statement: 'The Congress of Vienna was held to reshape Europe after World War I',
+        isTrue: false, correction: 'It was held after Napoleon\u2019s defeat. The WWI peace conference was the Treaty of Versailles.' },
+    { type: 'trueOrFalse', eventId: 'f36',
+        statement: 'The Protestant Reformation was started by French theologian John Calvin',
+        isTrue: false, correction: 'It was started by German monk Martin Luther in Wittenberg.' },
+
+    // hardMCQ/location — non-obvious but fair
+    { type: 'hardMCQ', subType: 'location', eventId: 'f12',
+        options: [
+            { label: 'Olympia, Greece', isCorrect: true },
+            { label: 'Athens, Greece', isCorrect: false },
+            { label: 'Rome, Italy', isCorrect: false },
+            { label: 'Sparta, Greece', isCorrect: false },
+        ] },
+    { type: 'hardMCQ', subType: 'location', eventId: 'f33',
+        options: [
+            { label: 'The Caribbean', isCorrect: true },
+            { label: 'North America', isCorrect: false },
+            { label: 'Brazil', isCorrect: false },
+            { label: 'Mexico', isCorrect: false },
+        ] },
+    { type: 'hardMCQ', subType: 'location', eventId: 'f50',
+        options: [
+            { label: 'St. Petersburg, Russia', isCorrect: true },
+            { label: 'Moscow, Russia', isCorrect: false },
+            { label: 'Warsaw, Poland', isCorrect: false },
+            { label: 'Berlin, Germany', isCorrect: false },
+        ] },
+
+    // hardMCQ/date — distractors spread out
+    { type: 'hardMCQ', subType: 'date', eventId: 'f35',
+        prompt: 'When did the Magellan-Elcano circumnavigation set sail?',
+        options: [
+            { label: '1453', isCorrect: false },
+            { label: '1492', isCorrect: false },
+            { label: '1519', isCorrect: true },
+            { label: '1588', isCorrect: false },
+        ] },
+    { type: 'hardMCQ', subType: 'date', eventId: 'f25',
+        prompt: 'When did the Tang Dynasty begin?',
+        options: [
+            { label: '220 CE', isCorrect: false },
+            { label: '618 CE', isCorrect: true },
+            { label: '1100 CE', isCorrect: false },
+            { label: '1500 CE', isCorrect: false },
+        ] },
+    { type: 'hardMCQ', subType: 'date', eventId: 'f62',
+        prompt: 'When did the Haitian Revolution begin?',
+        options: [
+            { label: '1650', isCorrect: false },
+            { label: '1791', isCorrect: true },
+            { label: '1860', isCorrect: false },
+            { label: '1920', isCorrect: false },
+        ] },
+    { type: 'hardMCQ', subType: 'date', eventId: 'f22',
+        prompt: 'When did the Plague of Justinian strike?',
+        options: [
+            { label: '100 BCE', isCorrect: false },
+            { label: '541 CE', isCorrect: true },
+            { label: '1100 CE', isCorrect: false },
+            { label: '1347 CE', isCorrect: false },
+        ] },
+];
+
+/** Build a full question object from a curated spec. */
+function buildCuratedQuestion(spec) {
+    const event = ALL_EVENTS.find(e => e.id === spec.eventId);
+    if (!event) return null;
+
+    switch (spec.type) {
+        case 'categorySort': {
+            const options = Object.entries(CATEGORY_CONFIG).map(([key, cfg]) => ({
+                label: cfg.label, color: cfg.color, bg: cfg.bg,
+                isCorrect: key === event.category,
+            }));
+            return {
+                type: 'categorySort', event,
+                prompt: 'What category does this event belong to?',
+                context: event.title,
+                options, correctIndex: options.findIndex(o => o.isCorrect),
+                masteryDimension: 'what', xpValue: 10,
+            };
+        }
+        case 'eraDetective': {
+            const correctEra = getEraForYear(event.year);
+            const desc = (event.quizDescription || event.description)
+                .replace(/\d{3,}/g, '???').replace(/\b(BCE|CE|AD|BC)\b/g, '');
+            const options = ERA_RANGES.map(era => ({
+                label: era.label, isCorrect: era.id === correctEra.id,
+            }));
+            return {
+                type: 'eraDetective', event, description: desc,
+                prompt: 'Which era does this event belong to?',
+                context: `"${event.title}"`,
+                options, correctIndex: options.findIndex(o => o.isCorrect),
+                masteryDimension: 'date', xpValue: 10,
+            };
+        }
+        case 'trueOrFalse': {
+            return {
+                type: 'trueOrFalse', event,
+                statement: spec.statement, isTrue: spec.isTrue,
+                correction: spec.correction || null,
+                prompt: 'True or false?',
+                masteryDimension: 'what', xpValue: 10,
+            };
+        }
+        case 'hardMCQ': {
+            const options = shuffle([...spec.options]);
+            const prompts = {
+                location: `Where did "${event.title}" happen?`,
+                date: spec.prompt || `When did "${event.title}" happen?`,
+            };
+            return {
+                type: 'hardMCQ', subType: spec.subType, event,
+                prompt: prompts[spec.subType] || spec.prompt,
+                options, correctIndex: options.findIndex(o => o.isCorrect),
+                masteryDimension: spec.subType, xpValue: 10 * (event.difficulty || 1),
+            };
+        }
+        default: return null;
+    }
+}
+
 // ─── Tier system ─────────────────────────────────────────────
 
 export const CHALLENGE_TIERS = [
@@ -464,6 +654,23 @@ function generateCategorySort(event) {
  */
 export function generateTieredChallengeQuestion(pool, questionIndex, usedEventIds = new Set(), recentLevels = [], recentTypes = []) {
     const { tier } = getTierProgress(questionIndex);
+
+    // Beginner & Amateur: use curated question pools
+    if (tier.id === 'beginner' || tier.id === 'amateur') {
+        const curatedPool = tier.id === 'beginner' ? BEGINNER_QUESTIONS : AMATEUR_QUESTIONS;
+        // Filter to questions whose event hasn't been used yet
+        const available = curatedPool.filter(spec => !usedEventIds.has(spec.eventId));
+        if (available.length > 0) {
+            const spec = shuffle(available)[0];
+            const q = buildCuratedQuestion(spec);
+            if (q) {
+                q.tier = tier;
+                q.level = isLevel2Event(q.event) ? 2 : 1;
+                return q;
+            }
+        }
+        // Fallback: if all curated questions exhausted, use dynamic generation below
+    }
 
     // Determine which pool to use based on level mixing
     const poolObj = Array.isArray(pool) ? { level1: pool, level2: [], all: pool } : pool;
