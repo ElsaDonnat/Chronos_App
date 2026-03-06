@@ -5,6 +5,15 @@ Format follows [Keep a Changelog](https://keepachangelog.com/) and [Semantic Ver
 
 Use the version entries from the last playstore push to the most recent version for Play Store "What's New" text.
 
+## [1.7.8] - 2026-03-06
+
+### Fixed
+- **Lesson summary overlap** — increased top padding so the summary card no longer overlaps with the mascot/logo
+
+### Changed
+- **Challenger Mode stats background** — stats card backgrounds now share the same tint as the header gradient's lightest color via a shared `CHALLENGE_TINT` constant
+- **Challenger Mode tier ladder** — dotted line is now beige, dots are white (unreached), line spans exactly from first to last dot, tier abbreviations use the same dark brown as the subtitle
+
 ## [1.7.7] - 2026-03-06
 
 ### Fixed

@@ -951,30 +951,30 @@ export default function ChallengePage({ onSessionChange, registerBackHandler }) 
                     </p>
 
                     {/* Tier progression ladder */}
-                    <div style={{ position: 'relative', display: 'flex', justifyContent: 'center', padding: '0 8px' }}>
-                        {/* Dotted connector line — centered through circles */}
-                        <div style={{
-                            position: 'absolute',
-                            top: 6,
-                            left: '15%',
-                            right: '15%',
-                            height: 0,
-                            borderTop: '2px dotted rgba(139, 65, 87, 0.35)',
-                            zIndex: 0,
-                        }} />
-                        {/* Solid progress line — up to best tier reached */}
-                        {bestTierReached >= 0 && (
+                    <div style={{ display: 'flex', justifyContent: 'center', padding: '0 8px' }}>
+                        <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', width: '85%', maxWidth: 280, position: 'relative' }}>
+                            {/* Dotted connector line — spans exactly from first to last dot center */}
                             <div style={{
                                 position: 'absolute',
                                 top: 6,
-                                left: '15%',
-                                width: `${(bestTierReached / (CHALLENGE_TIERS.length - 1)) * 70}%`,
+                                left: `${100 / (2 * CHALLENGE_TIERS.length)}%`,
+                                right: `${100 / (2 * CHALLENGE_TIERS.length)}%`,
                                 height: 0,
-                                borderTop: '2px solid var(--color-burgundy)',
+                                borderTop: '2px dotted rgba(250, 246, 240, 0.5)',
                                 zIndex: 0,
                             }} />
-                        )}
-                        <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', width: '85%', maxWidth: 280, position: 'relative', zIndex: 1 }}>
+                            {/* Solid progress line — up to best tier reached */}
+                            {bestTierReached >= 0 && (
+                                <div style={{
+                                    position: 'absolute',
+                                    top: 6,
+                                    left: `${100 / (2 * CHALLENGE_TIERS.length)}%`,
+                                    width: `${(bestTierReached / (CHALLENGE_TIERS.length - 1)) * (100 - 100 / CHALLENGE_TIERS.length)}%`,
+                                    height: 0,
+                                    borderTop: '2px solid var(--color-burgundy)',
+                                    zIndex: 0,
+                                }} />
+                            )}
                             {CHALLENGE_TIERS.map((tier, i) => {
                                 const reached = i <= bestTierReached;
                                 const isBest = i === bestTierReached;
@@ -985,14 +985,14 @@ export default function ChallengePage({ onSessionChange, registerBackHandler }) 
                                             width: dotSize,
                                             height: dotSize,
                                             borderRadius: '50%',
-                                            background: reached ? 'var(--color-burgundy)' : 'var(--color-parchment)',
-                                            border: `2px solid ${reached ? 'var(--color-burgundy)' : 'rgba(139, 65, 87, 0.4)'}`,
+                                            background: reached ? 'var(--color-burgundy)' : 'white',
+                                            border: `2px solid ${reached ? 'var(--color-burgundy)' : 'rgba(255, 255, 255, 0.6)'}`,
                                             boxShadow: isBest ? '0 0 8px rgba(139, 65, 87, 0.4)' : 'none',
                                             transition: 'all 0.3s',
                                         }} />
                                         <span style={{
                                             fontSize: '0.65rem',
-                                            color: reached ? 'var(--color-burgundy)' : 'var(--color-ink-muted)',
+                                            color: reached ? 'var(--color-burgundy)' : '#3E2723',
                                             fontWeight: isBest ? 700 : 600,
                                             letterSpacing: '0.02em',
                                         }}>
