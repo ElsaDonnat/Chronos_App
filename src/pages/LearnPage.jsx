@@ -883,20 +883,20 @@ export default function LearnPage({ onSessionChange, registerBackHandler, onTabC
 
                                                 {/* Skip-ahead quiz at bottom of era */}
                                                 {canSkip && (
-                                                    <div className="ml-3 animate-fade-in flex items-center gap-2 px-3 py-1.5 rounded-lg"
-                                                        style={{ backgroundColor: 'rgba(var(--color-ink-rgb), 0.03)' }}>
+                                                    <div className="ml-3 animate-fade-in flex items-center gap-1.5 px-2.5 py-1 rounded-lg"
+                                                        style={{ backgroundColor: 'rgba(139, 65, 87, 0.06)' }}>
                                                         <span className="text-[10px]" style={{ color: 'var(--color-ink-faint)' }}>
                                                             Know this already? Take the{' '}
                                                         </span>
                                                         {skipUnlocked ? (
                                                             <button onClick={() => setShowPlacement(era.id)}
                                                                 className="text-[10px] font-medium px-2 py-0.5 rounded-full cursor-pointer"
-                                                                style={{ backgroundColor: 'rgba(var(--color-ink-rgb), 0.06)', color: 'var(--color-ink-secondary)' }}>
+                                                                style={{ backgroundColor: 'rgba(139, 65, 87, 0.12)', color: 'var(--color-burgundy)' }}>
                                                                 quiz
                                                             </button>
                                                         ) : (
                                                             <span className="text-[10px] font-medium px-2 py-0.5 rounded-full"
-                                                                style={{ backgroundColor: 'rgba(var(--color-ink-rgb), 0.04)', color: 'var(--color-ink-faint)' }}>
+                                                                style={{ backgroundColor: 'rgba(139, 65, 87, 0.08)', color: 'rgba(139, 65, 87, 0.5)' }}>
                                                                 quiz
                                                             </span>
                                                         )}

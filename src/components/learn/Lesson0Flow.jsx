@@ -375,8 +375,8 @@ export default function Lesson0Flow({ lesson, onComplete }) {
 
         return (
             <div className="lesson-flow-container animate-fade-in">
-                <div className="flex-shrink-0 pt-4">
-                    <div className="flex items-center justify-between mb-4">
+                <div className="flex-shrink-0 pt-2">
+                    <div className="flex items-center justify-between mb-2">
                         <button onClick={onComplete} className="text-sm flex items-center gap-1" style={{ color: 'var(--color-ink-muted)' }}>
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="15 18 9 12 15 6" /></svg>
                             Exit
@@ -388,7 +388,7 @@ export default function Lesson0Flow({ lesson, onComplete }) {
 
                     <ProgressBar value={cardIndex + 1} max={PERIODS.length} />
 
-                    <div className="text-center mt-2 mb-1">
+                    <div className="text-center mt-1.5 mb-0.5">
                         <span className="text-[10px] uppercase tracking-widest font-bold px-2 py-0.5 rounded-full"
                             style={{ backgroundColor: 'var(--color-burgundy-soft)', color: 'var(--color-burgundy)' }}>
                             Study — Era {cardIndex + 1} of {PERIODS.length}
@@ -396,20 +396,20 @@ export default function Lesson0Flow({ lesson, onComplete }) {
                     </div>
                 </div>
 
-                <div className="flex-1 min-h-0 overflow-y-auto mt-3" key={period.id}>
+                <div className="flex-1 min-h-0 overflow-y-auto mt-1.5" key={period.id}>
                     <div className="animate-slide-in-right">
                         <Card className="era-card-content" style={{ borderLeft: `4px solid ${period.color}`, overflow: 'hidden' }}>
-                            <div className="text-center mb-2 sm:mb-4">
-                                <span className="era-card-icon"><EraIcon type={period.iconType} size={42} /></span>
+                            <div className="text-center mb-1">
+                                <span className="era-card-icon"><EraIcon type={period.iconType} size={36} /></span>
                             </div>
                             <h2 className="era-card-title font-bold text-center mb-1" style={{ fontFamily: 'var(--font-serif)', color: 'var(--color-ink)' }}>
                                 {period.title}
                             </h2>
-                            <p className="text-sm font-semibold text-center mb-2 sm:mb-4" style={{ color: period.color }}>
+                            <p className="text-sm font-semibold text-center mb-1.5" style={{ color: period.color }}>
                                 {period.subtitle}
                             </p>
                             <Divider />
-                            <ExpandableText lines={3} className="text-sm leading-relaxed mt-4" style={{ color: 'var(--color-ink-secondary)' }}>
+                            <ExpandableText lines={3} className="text-sm leading-relaxed mt-3" style={{ color: 'var(--color-ink-secondary)' }}>
                                 <strong style={{ color: 'var(--color-ink)' }}>{period.keywords}</strong><span className="keyword-sep" aria-hidden="true" />{period.description}
                             </ExpandableText>
 
@@ -451,7 +451,7 @@ export default function Lesson0Flow({ lesson, onComplete }) {
                     </div>
                 </div>
 
-                <div className="flex-shrink-0 flex gap-3 pt-4 pb-2">
+                <div className="flex-shrink-0 flex gap-3 pt-2 pb-2">
                     {cardIndex > 0 && (
                         <Button variant="secondary" onClick={() => setCardIndex(i => i - 1)}>
                             ← Back

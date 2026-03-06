@@ -5,6 +5,12 @@ Format follows [Keep a Changelog](https://keepachangelog.com/) and [Semantic Ver
 
 Use the version entries from the last playstore push to the most recent version for Play Store "What's New" text.
 
+## [1.7.7] - 2026-03-06
+
+### Fixed
+- **Welcome Back modal** — changed title to "Welcome!" and default message to avoid repetition
+- **Web vertical spacing** — reduced padding in lesson/quiz flows so content fits without scrolling on web
+
 ## [1.7.6] - 2026-03-06
 
 ### Changed

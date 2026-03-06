@@ -1008,11 +1008,14 @@ input, textarea, [contenteditable] {
 }
 
 
-/* Reduce bottom padding when tab bar is hidden during sessions */
+/* Reduce padding when tab bar is hidden during sessions */
 @media (max-width: 899px) {
   .main-content-inner.in-session {
     padding-bottom: 16px;
   }
+}
+.main-content-inner.in-session {
+  padding-top: 12px;
 }
 
 /* Responsive font scaling for major text elements */

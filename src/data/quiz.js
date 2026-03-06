@@ -42,8 +42,14 @@ export function scoreDateAnswer(userYear, userEra, event) {
         if (userSigned >= lo && userSigned <= hi) return "green";
 
         // Distance to nearest edge of range
-        const diff = Math.min(Math.abs(userSigned - lo), Math.abs(userSigned - hi));
-        return scoreByDiff(diff, lo);
+        const nearestEdge = userSigned < lo ? lo : hi;
+        const diff = Math.abs(userSigned - nearestEdge);
+
+        // Bonus tolerance: 25% of range span, so wider ranges are more forgiving
+        const span = hi - lo;
+        const bonus = Math.floor(span * 0.25);
+        const adjustedDiff = Math.max(0, diff - bonus);
+        return scoreByDiff(adjustedDiff, nearestEdge);
     }
 
     // Single-date event — score by distance
@@ -51,25 +57,58 @@ export function scoreDateAnswer(userYear, userEra, event) {
     return scoreByDiff(diff, start);
 }
 
-// Shared scoring thresholds by era
+// Shared scoring thresholds — magnitude-based for prehistoric, strict for modern
 function scoreByDiff(diff, referenceYear) {
-    if (referenceYear < -100000) {
-        if (diff <= 500000) return "green";
-        if (diff <= 2000000) return "yellow";
+    const abs = Math.abs(referenceYear);
+
+    // Prehistoric: magnitude-based thresholds
+    if (abs >= 1000000) {
+        if (diff <= 1000000) return "green";
+        if (diff <= 3000000) return "yellow";
         return "red";
     }
-    if (referenceYear < 0) {
+    if (abs >= 100000) {
+        if (diff <= 100000) return "green";
+        if (diff <= 500000) return "yellow";
+        return "red";
+    }
+    if (abs >= 10000) {
+        if (diff <= 10000) return "green";
+        if (diff <= 50000) return "yellow";
+        return "red";
+    }
+
+    // Ancient BCE (1000+ BCE)
+    if (referenceYear < -500) {
         if (diff <= 200) return "green";
         if (diff <= 500) return "yellow";
         return "red";
     }
+
+    // Classical antiquity (500 BCE – 1 BCE)
+    if (referenceYear < 0) {
+        if (diff <= 100) return "green";
+        if (diff <= 300) return "yellow";
+        return "red";
+    }
+
+    // Medieval (0–1500 CE)
     if (referenceYear <= 1500) {
         if (diff <= 50) return "green";
         if (diff <= 150) return "yellow";
         return "red";
     }
-    if (diff <= 10) return "green";
-    if (diff <= 30) return "yellow";
+
+    // Early modern (1501–1800 CE) — exact for green
+    if (referenceYear <= 1800) {
+        if (diff === 0) return "green";
+        if (diff <= 5) return "yellow";
+        return "red";
+    }
+
+    // Modern (post-1800) — exact for green, very tight yellow
+    if (diff === 0) return "green";
+    if (diff <= 3) return "yellow";
     return "red";
 }
 

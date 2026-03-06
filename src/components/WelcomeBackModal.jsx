@@ -4,7 +4,7 @@ import { Button } from './shared';
 function getMessage(days) {
   if (days >= 7) return "It's been a while! I really missed you. Ready to pick up where we left off?";
   if (days >= 4) return "I missed you! Let's learn something new together.";
-  return "Welcome back! I was waiting for you.";
+  return "I'm glad you're back, I was waiting for you.";
 }
 
 export default function WelcomeBackModal({ daysAway, onDismiss }) {
@@ -26,7 +26,7 @@ export default function WelcomeBackModal({ daysAway, onDismiss }) {
           className="text-xl font-bold mb-2"
           style={{ fontFamily: 'var(--font-serif)', color: 'var(--color-ink)' }}
         >
-          Welcome back!
+          Welcome!
         </h2>
         <p
           className="text-sm mb-5"

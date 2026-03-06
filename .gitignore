@@ -26,3 +26,6 @@ dist-ssr
 # Android release keystore
 *.keystore
 *.jks
+
+# Claude worktrees
+.claude/worktrees/
