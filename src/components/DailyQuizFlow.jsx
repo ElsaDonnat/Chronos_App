@@ -87,7 +87,7 @@ export default function DailyQuizFlow({ onComplete }) {
                         </p>
 
                         <div className="daily-quiz-bonus-pill">
-                            {'2\× XP BONUS'}
+                            {'2× XP BONUS'}
                         </div>
 
                         <div className="mt-4 space-y-3 px-4">
@@ -177,7 +177,7 @@ export default function DailyQuizFlow({ onComplete }) {
                             Quiz
                         </span>
                         <div className="flex items-center gap-2">
-                            <span className="daily-quiz-bonus-pill-sm">{'2\× XP'}</span>
+                            <span className="daily-quiz-bonus-pill-sm">{'2× XP'}</span>
                             <span className="text-sm font-medium" style={{ color: 'var(--color-ink-muted)' }}>
                                 {quizIndex + 1} / {totalEvents}
                             </span>
@@ -235,11 +235,11 @@ export default function DailyQuizFlow({ onComplete }) {
                             <div className="mt-4 pt-3 text-sm text-center animate-fade-in">
                                 {options[selectedOption]?.isCorrect ? (
                                     <p className="font-semibold" style={{ color: 'var(--color-success)' }}>
-                                        {'\✓'} Correct! +{DAILY_QUIZ_XP_PER_CORRECT} XP
+                                        {'✓'} Correct! +{DAILY_QUIZ_XP_PER_CORRECT} XP
                                     </p>
                                 ) : (
                                     <p className="font-semibold" style={{ color: 'var(--color-error)' }}>
-                                        {'\✗'} Not quite!
+                                        {'✗'} Not quite!
                                     </p>
                                 )}
                             </div>
@@ -300,7 +300,7 @@ export default function DailyQuizFlow({ onComplete }) {
 
                         {xpEarned > 0 && (
                             <div className="daily-quiz-xp-result animate-pop-in">
-                                <span className="daily-quiz-bonus-pill mr-2">{'2\× BONUS'}</span>
+                                <span className="daily-quiz-bonus-pill mr-2">{'2× BONUS'}</span>
                                 <span className="text-xl font-bold" style={{ color: '#B8860B' }}>+{xpEarned} XP</span>
                             </div>
                         )}
@@ -321,7 +321,7 @@ export default function DailyQuizFlow({ onComplete }) {
                                                     color: results[i] === 'correct' ? 'var(--color-success)' : 'var(--color-error)',
                                                 }}
                                             >
-                                                {results[i] === 'correct' ? '\✓' : '\✗'}
+                                                {results[i] === 'correct' ? '✓' : '✗'}
                                             </div>
                                             <div className="flex-1 min-w-0">
                                                 <div className="flex items-center gap-2 mb-1">

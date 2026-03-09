@@ -14,7 +14,7 @@ const CORE_EVENTS = [
         category: "science",
         difficulty: 1,
         controversyNotes: {
-            date: "The human\–chimpanzee split is estimated at roughly 5\–10 million years ago, though methods disagree. Molecular clocks, fossil evidence, and genetic analyses give different results, and the divergence was likely gradual rather than a single event.",
+            date: "The human\u2013chimpanzee split is estimated at roughly 5\u201310 million years ago, though methods disagree. Molecular clocks, fossil evidence, and genetic analyses give different results, and the divergence was likely gradual rather than a single event.",
         }
     },
     {
@@ -296,7 +296,7 @@ const CORE_EVENTS = [
         category: "war",
         difficulty: 1,
         controversyNotes: {
-            date: "476 CE (deposition of Romulus Augustulus) is the traditional date, but the 'fall' was a gradual process. Some historians prefer 410 (Visigoth sack of Rome), 455 (Vandal sack), or argue there was no single fall \— Roman institutions simply dissolved over generations.",
+            date: "476 CE (deposition of Romulus Augustulus) is the traditional date, but the 'fall' was a gradual process. Some historians prefer 410 (Visigoth sack of Rome), 455 (Vandal sack), or argue there was no single fall \u2014 Roman institutions simply dissolved over generations.",
         }
     },
     {
