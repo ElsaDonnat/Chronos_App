@@ -14,23 +14,16 @@
 
 The map is intended to become a flagship feature of Chronos — visually rich, scalable to hundreds of events, and eventually extractable as a standalone component. This roadmap covers everything from foundational architectural changes to polish. Items are ordered by dependency (foundations first, features second, polish last).
 
-**Current state (as of v1.6.6):** Natural Earth I projection, 800×500 SVG viewBox, 5 continent path blobs (no country borders), 11 sub-regions, grid-based pin clustering, CSS pinch-zoom, fullscreen mode. See CLAUDE.md "Map System" section for full architecture docs.
+**Current state (as of v1.7.23):** Natural Earth I projection, 800×500 SVG viewBox, per-country SVG paths (177 countries grouped by continent), 11 sub-regions, grid-based pin clustering, CSS pinch-zoom + desktop wheel zoom, fullscreen mode with region auto-scroll, animated pin entrance. See CLAUDE.md "Map System" section for full architecture docs.
 
 ---
 
-### Foundation — Per-country SVG paths (REQUIRED FIRST)
+### ~~Foundation — Per-country SVG paths~~ ✅ Done (2026-03-09)
 
-**Why:** The single biggest architectural limitation. Countries are currently merged into continent blobs — you can't highlight France when selecting a French event, can't show internal borders, can't do country-level interaction. Every ambitious feature below benefits from this.
-
-**What to do:**
-- Update `scripts/write-map-data.mjs` to output individual country `<path>` elements grouped by continent, instead of merging all paths per continent into one string
-- Each country path needs its ISO code so it can be targeted (e.g., highlight on event hover/select)
-- Maintain continent `<g>` groups for continent-level highlighting (the current behavior)
-- Add a `countryCode` field to event locations so the map knows which country to highlight
-- Expect ~3-5× increase in SVG data size (from ~40KB to ~120-200KB); acceptable for a bundled SPA
-- Consider 50m resolution instead of 110m for cleaner coastlines when zoomed — test both and compare file size vs. visual quality
-
-**Files:** `scripts/write-map-data.mjs`, `src/data/mapPaths.js`, `src/data/events.js` (add `countryCode`), `src/components/MapView.jsx`
+Per-country SVG paths now stored individually with ISO code + name, grouped by continent. MapView renders ~177 `<path>` elements instead of 5 blobs. Bundle size impact: +2KB gzipped. Remaining follow-up items:
+- Add `countryCode` field to event locations for country-level highlighting
+- Consider 50m resolution for cleaner coastlines when zoomed
+- Implement country highlighting on event selection (now unblocked)
 
 ---
 
@@ -230,3 +223,4 @@ Add more events per era, deeper non-Western history coverage, and new lessons be
 - **P2 — Map improvements batch 4: Natural Earth projection** (2026-03-03): Replaced equirectangular projection with Natural Earth I — continents now have familiar, properly-shaped proportions (Greenland, Scandinavia, northern regions no longer squished/distorted). SVG paths regenerated from world-atlas 110m data via d3-geo with `geoNaturalEarth1()`. ViewBox updated to 800×500. `projectToSVG()` reimplemented using Natural Earth I polynomial coefficients (scale 143.3071, translate [400, 250]). Close button moved from lost-above-map to sticky translucent overlay. Graticule lines rendered as projected polylines matching the curved projection. All REGION_CENTERS recalculated for new projection. Generation script at `scripts/generate-map-paths.mjs`.
 - **P4 — Level 2 Chapter: Science That Changed Everything** (2026-03-09): 4-lesson chapter with 11 new events (f127–f137) tracing breakthroughs from Hippocrates to the Higgs boson. Reuses f38 (Scientific Revolution). Teal theme, telescope icon, new atom icon (index 44). Hand-crafted distractors and controversy notes for all events.
 - **UX — Map improvements batch 5: interaction & animation** (2026-03-09): Desktop wheel zoom (onWheel handler, ±0.15 per scroll step, 1–4× range). Region auto-scroll in fullscreen (selecting a region chip smoothly scrolls the viewport to center on that region via REGION_CENTERS). Animated pin entrance (staggered scale+fade pop-in, 30ms delay per pin).
+- **Foundation — Per-country SVG paths** (2026-03-09): Replaced continent-merged path blobs with individual per-country SVG paths (177 countries, each with ISO code + name). Countries grouped by continent for rendering. MapView renders individual `<path>` elements with `data-country` attributes. Bundle size impact: +2KB gzipped (91KB uncompressed vs 81KB). Unblocks country highlighting, hover states, and semantic zoom.

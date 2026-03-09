@@ -1,6 +1,6 @@
 import { useState, useMemo, useRef, useCallback, useEffect } from 'react';
 import { CATEGORY_CONFIG, isDiHEvent } from '../data/events';
-import { MAP_REGIONS, REGION_CENTERS, projectToSVG, normalizeRegion, regionToContinent } from '../data/mapPaths';
+import { MAP_REGIONS, REGION_CENTERS, projectToSVG, normalizeRegion, regionToContinent, EVENT_COUNTRY_MAP } from '../data/mapPaths';
 import { Card, CategoryTag, ImportanceTag, MasteryDots, ExpandableText } from './shared';
 const CLUSTER_GRID = 25; // SVG units per grid cell
 
@@ -16,6 +16,7 @@ const MAP_COLORS = {
     pinMuted: 'var(--color-map-pin-muted, #C9B896)',
     label: 'var(--color-map-label, #A8A29E)',
     labelActive: 'var(--color-map-label-active, #8B4157)',
+    countryHighlight: 'var(--color-map-country-highlight, #C9A96E)',
 };
 
 function clusterPins(events, learnedIds) {
@@ -212,6 +213,7 @@ function usePanZoom() {
 // The SVG map content — shared between normal and fullscreen modes
 function MapSVG({ visibleEvents, pins, learnedIds, selectedRegion, selectedPin, selectedEventId, selectedClusterXY, handlePinClick, handleMapBgClick, svgStyle, svgClassName, viewBox }) {
     const highlightedContinent = selectedRegion ? regionToContinent(selectedRegion) : null;
+    const highlightedCountryCode = selectedEventId ? EVENT_COUNTRY_MAP[selectedEventId] : null;
 
     return (
         <svg viewBox={viewBox || "0 0 800 500"} className={svgClassName} style={svgStyle}
@@ -222,21 +224,25 @@ function MapSVG({ visibleEvents, pins, learnedIds, selectedRegion, selectedPin, 
             {/* Graticule grid */}
             <Graticule />
 
-            {/* Continent paths */}
+            {/* Country paths (grouped by continent) */}
             {Object.entries(MAP_REGIONS).map(([continentName, data]) => {
                 const isHighlighted = highlightedContinent === continentName;
                 const hasEvents = visibleEvents.some(e => regionToContinent(e.location.region) === continentName);
                 return (
                     <g key={continentName} style={{ cursor: 'default' }}>
-                        {data.paths.map((d, i) => (
-                            <path key={i} d={d}
-                                fill={isHighlighted ? MAP_COLORS.landActive : MAP_COLORS.land}
-                                stroke={isHighlighted ? MAP_COLORS.borderActive : MAP_COLORS.border}
-                                strokeWidth={isHighlighted ? 1.5 : 0.5}
-                                opacity={hasEvents || !selectedRegion ? 1 : 0.35}
-                                style={{ transition: 'fill 0.2s, stroke 0.2s, opacity 0.2s' }}
-                            />
-                        ))}
+                        {data.countries.map((country) => {
+                            const isCountryHighlighted = highlightedCountryCode === country.code;
+                            return (
+                                <path key={country.code} d={country.d}
+                                    fill={isCountryHighlighted ? MAP_COLORS.countryHighlight : (isHighlighted ? MAP_COLORS.landActive : MAP_COLORS.land)}
+                                    stroke={isCountryHighlighted ? MAP_COLORS.borderActive : (isHighlighted ? MAP_COLORS.borderActive : MAP_COLORS.border)}
+                                    strokeWidth={isCountryHighlighted ? 1.5 : (isHighlighted ? 1.5 : 0.5)}
+                                    opacity={hasEvents || !selectedRegion ? 1 : 0.35}
+                                    data-country={country.code}
+                                    style={{ transition: 'fill 0.3s, stroke 0.3s, opacity 0.2s' }}
+                                />
+                            );
+                        })}
                         <text x={data.labelPos.x} y={data.labelPos.y}
                             textAnchor="middle" fill={isHighlighted ? MAP_COLORS.labelActive : MAP_COLORS.label}
                             fontSize="11" fontWeight="600" opacity={0.6}
