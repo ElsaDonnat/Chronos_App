@@ -130,6 +130,50 @@ Description questions use hand-crafted distractors from `src/data/descriptionDis
 
 When modifying quiz difficulty logic, update this table and the changelog.
 
+### Challenge Mode (`src/data/challengeQuiz.js` + `src/pages/ChallengePage.jsx`)
+
+Two modes: **Solo Challenge** (tiered progression, 35 questions) and **Multiplayer** (pass-the-phone, 1-5 players).
+
+**Question types** (no `categorySort` — removed because categories are editorial, not historical facts):
+
+| Type | Description | Tests |
+|------|-------------|-------|
+| whichCameFirst | Two events, pick the earlier one. Prefers same-era pairs. | date |
+| eraDetective | Given event title, guess which of 5 eras. Description stripped of years/era keywords. | date |
+| trueOrFalse | Conceptual misconceptions only (NOT database field swaps). Shows correction text for false. Uses `CURATED_TF_POOL` (20 questions). | what |
+| hardMCQ | 4 subtypes: location (same-region distractors), date (tight era-adjacent), what (same-category+era titles), description (same-category+era). | varies |
+| oddOneOut | 4 events, 3 share a trait (category/era/region), find the outlier. | what |
+| causeAndEffect | "What was a direct consequence of X?" using `EVENT_CONNECTIONS`. Fallback when T/F pool exhausted. | what |
+| chronologicalOrder | (God tier only) Arrange 5 events earliest to latest. Prefers same-era events. | date |
+
+**Solo tiers** (types available per tier):
+
+| Tier | Questions | Types |
+|------|-----------|-------|
+| Beginner | 5 | whichCameFirst, eraDetective, trueOrFalse |
+| Amateur | 7 | eraDetective, whichCameFirst, trueOrFalse, hardMCQ |
+| Advanced | 8 | hardMCQ, trueOrFalse, whichCameFirst, oddOneOut |
+| Historian | 8 | whichCameFirst, oddOneOut, hardMCQ, trueOrFalse |
+| Expert | 5 | whichCameFirst, oddOneOut, hardMCQ |
+| God | 2 | chronologicalOrder |
+
+**Curated vs dynamic:** Beginner & Amateur use hand-picked question pools (`BEGINNER_QUESTIONS`, `AMATEUR_QUESTIONS`) with specific events and carefully crafted distractors. Advanced+ use dynamic generation with `filterPoolForTier()` to select difficulty-appropriate events.
+
+**Pool building:** `buildChallengePool(seenEventIds)` creates 70/30 unseen/seen split, sorted by difficulty. Pools split into `level1` (core events) and `level2` (chapter events f61+). From question 3, ~1-in-3 questions draw from Level 2; never 3+ consecutive from the same level.
+
+**Hearts:** Start with 3, bonus heart at tier transitions entering Advanced+ (max 5). Game over at 0 hearts.
+
+**Near-miss feedback:** Date MCQ wrong answers within ~15% of correct year (or ≤50 years) show "Close!" badge + `feedback.close()` sound.
+
+**Multiplayer:** Difficulty ramps from 70/30 easy/hard to 30/70 as game progresses. 60% of T/F pulls from `CURATED_TF_POOL`. Type repetition prevention (no 3+ in a row). XP only counts the "me" player's score.
+
+**Design principles for new questions:**
+- T/F: conceptual misconceptions only, false statements must sound plausible, always include `correction` text
+- hardMCQ/location: same-region/country distractors (not just same continent)
+- hardMCQ/date: tight distractors in same era (eliminate pure guessing)
+- whichCameFirst: pair events where order is genuinely surprising
+- No event should repeat between tiers (usedEventIds prevents this)
+
 ### Design System
 
 Defined in `src/index.css` via `@theme` block. Key colors: parchment (#FAF6F0), burgundy (#8B4157), ink (#1C1917). Fonts: "Libre Baskerville" (serif/display), "DM Sans" (body). Mobile-first layout capped at 440px width, 850px height with phone-like frame on desktop.

@@ -7,6 +7,19 @@ import Mascot from '../components/Mascot';
 import * as feedback from '../services/feedback';
 import StreakCelebration from '../components/StreakCelebration';
 
+/** Parse a date MCQ label like "1519", "541 CE", "100 BCE" into a numeric year. */
+function parseYearLabel(label) {
+    if (!label) return null;
+    const cleaned = label.trim();
+    const bceMatch = cleaned.match(/^(\d+)\s*BCE?$/i);
+    if (bceMatch) return -parseInt(bceMatch[1], 10);
+    const ceMatch = cleaned.match(/^(\d+)\s*CE?$/i);
+    if (ceMatch) return parseInt(ceMatch[1], 10);
+    const plainMatch = cleaned.match(/^(\d+)$/);
+    if (plainMatch) return parseInt(plainMatch[1], 10);
+    return null;
+}
+
 // SVG tier icons — replace emoji to avoid rendering issues on Android
 const TierIcon = ({ tierId, size = 24, color = '#666' }) => {
     const s = { width: size, height: size, viewBox: '0 0 24 24', fill: 'none', stroke: color, strokeWidth: '1.8', strokeLinecap: 'round', strokeLinejoin: 'round' };
@@ -52,6 +65,7 @@ function Hearts({ current, max = MAX_HEARTS, losingIndex = -1 }) {
 function ChallengeQuestion({ question, onAnswer }) {
     const [selected, setSelected] = useState(null);
     const [answered, setAnswered] = useState(false);
+    const [nearMiss, setNearMiss] = useState(false);
     // No useEffect needed — parent uses `key` prop to remount on new question
 
     if (!question) return null;
@@ -61,21 +75,38 @@ function ChallengeQuestion({ question, onAnswer }) {
         feedback.select();
         setSelected(index);
         setAnswered(true);
+
+        // Near-miss detection for date MCQ questions
+        let isNearMiss = false;
+        if (!isCorrect && question.type === 'hardMCQ' && question.subType === 'date') {
+            const selectedLabel = question.options[index]?.label || '';
+            const correctLabel = question.options.find(o => o.isCorrect)?.label || '';
+            const selectedYear = parseYearLabel(selectedLabel);
+            const correctYear = parseYearLabel(correctLabel);
+            if (selectedYear !== null && correctYear !== null) {
+                const diff = Math.abs(selectedYear - correctYear);
+                const magnitude = Math.abs(correctYear);
+                // Near miss: within ~15% of the era's typical spread or ≤50 years for historical dates
+                isNearMiss = magnitude > 1000 ? diff <= magnitude * 0.15 : diff <= 50;
+            }
+        }
+
         if (isCorrect) feedback.correct();
+        else if (isNearMiss) { feedback.close(); setNearMiss(true); }
         else feedback.wrong();
-        // Delay to let user see the result
-        setTimeout(() => onAnswer(isCorrect), 1200);
+        // Delay to let user see the result (longer for near-miss to read message)
+        setTimeout(() => onAnswer(isCorrect), isNearMiss ? 1800 : 1200);
     };
 
     switch (question.type) {
         case 'hardMCQ':
         case 'eraDetective':
-        case 'categorySort':
             return (
                 <MCQLayout
                     question={question}
                     selected={selected}
                     answered={answered}
+                    nearMiss={nearMiss}
                     onSelect={handleSelect}
                 />
             );
@@ -142,23 +173,31 @@ function ChallengeQuestion({ question, onAnswer }) {
     }
 }
 
-// ─── MCQ Layout (hardMCQ, eraDetective, categorySort) ────────
+// ─── MCQ Layout (hardMCQ, eraDetective) ─────────────────────
 
-function MCQLayout({ question, selected, answered, onSelect }) {
+function MCQLayout({ question, selected, answered, nearMiss, onSelect }) {
     const isGrid = question.type === 'hardMCQ' && (question.subType === 'location' || question.subType === 'date');
-    const isCategorySort = question.type === 'categorySort';
 
     return (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
             <p style={{ fontSize: '0.95rem', fontWeight: 600, color: 'var(--color-ink)', fontFamily: 'var(--font-serif)', textAlign: 'center' }}>
                 {question.prompt}
             </p>
+            {answered && nearMiss && (
+                <p style={{
+                    textAlign: 'center', fontSize: '0.85rem', fontWeight: 600,
+                    color: '#D97706', fontFamily: 'var(--font-sans)',
+                    padding: '4px 12px', background: 'rgba(217, 119, 6, 0.1)',
+                    borderRadius: 8, margin: '0 auto',
+                }}>
+                    Close! You were in the right ballpark.
+                </p>
+            )}
             {question.context && (
                 <p style={{ fontSize: '0.85rem', color: 'var(--color-ink-secondary)', textAlign: 'center', fontStyle: 'italic', lineHeight: 1.5 }}>
                     {question.context}
                 </p>
             )}
-            {/* No description for categorySort — title alone should be enough */}
             <div style={{
                 display: 'grid',
                 gridTemplateColumns: isGrid ? '1fr 1fr' : '1fr',
@@ -192,7 +231,7 @@ function MCQLayout({ question, selected, answered, onSelect }) {
                             onClick={() => onSelect(i, isCorrect)}
                             disabled={answered}
                             style={{
-                                background: isCategorySort && !answered ? opt.bg : bg,
+                                background: bg,
                                 border,
                                 borderRadius: 10,
                                 padding: isGrid ? '12px 10px' : '12px 16px',
@@ -200,7 +239,7 @@ function MCQLayout({ question, selected, answered, onSelect }) {
                                 textAlign: 'left',
                                 fontSize: question.subType === 'description' ? '0.78rem' : '0.88rem',
                                 fontFamily: 'var(--font-sans)',
-                                color: isCategorySort && !answered ? opt.color : color,
+                                color,
                                 fontWeight: (isSelected || (answered && isCorrect)) ? 600 : 400,
                                 lineHeight: 1.4,
                                 transition: 'all 0.15s ease',
@@ -668,9 +707,13 @@ export default function ChallengePage({ onSessionChange, registerBackHandler }) 
         sessionStartTime.current = Date.now();
         sessionRecorded.current = false;
 
-        const q = generateChallengeQuestion(pool, 0, new Set());
+        const q = generateChallengeQuestion(pool, 0, new Set(), []);
         setCurrentQuestion(q);
-        if (q?.event) setUsedEventIds(new Set([q.event.id]));
+        const newUsed = new Set();
+        if (q?.events) q.events.forEach(e => newUsed.add(e.id));
+        else if (q?.event) newUsed.add(q.event.id);
+        setUsedEventIds(newUsed);
+        setRecentTypes(q?.type ? [q.type] : []);
         setView(VIEW.PASS_PHONE);
     }, [state.seenEvents, players]);
 
@@ -687,10 +730,10 @@ export default function ChallengePage({ onSessionChange, registerBackHandler }) 
             sessionRecorded.current = true;
         }
 
-        // Calculate total correct for the current/solo player
+        // Calculate correct count: solo = player score, multiplayer = only "me" player's score
         const totalCorrect = mode === 'solo'
             ? players[0]?.score || 0
-            : players.reduce((sum, p) => sum + p.score, 0);
+            : (mePlayerName ? (players.find(p => p.name === mePlayerName)?.score || 0) : 0);
 
         // Check if "me" won in multiplayer
         let isVictory = false;
@@ -734,7 +777,7 @@ export default function ChallengePage({ onSessionChange, registerBackHandler }) 
 
         feedback.gameOver();
         setView(VIEW.RESULTS);
-    }, [dispatch, mode, players, questionIndex, bestStreak, state.lastActiveDate, state.currentStreak]);
+    }, [dispatch, mode, players, questionIndex, bestStreak, mePlayerName, state.lastActiveDate, state.currentStreak]);
 
     const advanceQuestion = useCallback(() => {
         const nextIdx = questionIndex + 1;
@@ -743,7 +786,7 @@ export default function ChallengePage({ onSessionChange, registerBackHandler }) 
         setReactorMood('happy');
         const q = mode === 'solo'
             ? generateTieredChallengeQuestion(questionPool, nextIdx, usedEventIds, recentLevels, recentTypes)
-            : generateChallengeQuestion(questionPool, nextIdx, usedEventIds);
+            : generateChallengeQuestion(questionPool, nextIdx, usedEventIds, recentTypes);
         setCurrentQuestion(q);
         if (q?.events) {
             setUsedEventIds(prev => { const s = new Set(prev); q.events.forEach(e => s.add(e.id)); return s; });
@@ -789,7 +832,17 @@ export default function ChallengePage({ onSessionChange, registerBackHandler }) 
                 const currentTier = getTierForQuestion(questionIndex);
                 const nextTier = getTierForQuestion(questionIndex + 1);
                 if (nextTier.id !== currentTier.id) {
+                    // Award a bonus heart at tier transitions (max 5 hearts)
+                    // Earned by completing a tier with full hearts, or at harder tiers
+                    const updated = [...prevPlayers];
+                    const player = updated[0];
+                    const atFullHearts = player.hearts === MAX_HEARTS;
+                    const enteringHardTier = ['advanced', 'historian', 'expert', 'god'].includes(nextTier.id);
+                    if ((atFullHearts || enteringHardTier) && player.hearts < 5) {
+                        updated[0] = { ...player, hearts: player.hearts + 1 };
+                    }
                     setTierTransition(nextTier);
+                    return updated;
                 } else {
                     advanceQuestion();
                 }
@@ -1327,7 +1380,7 @@ export default function ChallengePage({ onSessionChange, registerBackHandler }) 
                 <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.4rem', fontWeight: 700, color: 'var(--color-ink)' }}>
                     Pass to {currentPlayer?.name}!
                 </h2>
-                <Hearts current={currentPlayer?.hearts || 0} />
+                <Hearts current={currentPlayer?.hearts || 0} max={Math.max(MAX_HEARTS, currentPlayer?.hearts || 0)} />
                 <p style={{ fontSize: '0.82rem', color: 'var(--color-ink-muted)' }}>
                     Score: {currentPlayer?.score || 0}
                 </p>
@@ -1380,7 +1433,7 @@ export default function ChallengePage({ onSessionChange, registerBackHandler }) 
 
                 {/* Top bar: hearts + score + streak */}
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-                    <Hearts current={currentPlayer?.hearts || 0} />
+                    <Hearts current={currentPlayer?.hearts || 0} max={Math.max(MAX_HEARTS, currentPlayer?.hearts || 0)} />
                     <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
                         {mode === 'multiplayer' && (
                             <span style={{ fontSize: '0.78rem', fontWeight: 600, color: 'var(--color-burgundy)' }}>

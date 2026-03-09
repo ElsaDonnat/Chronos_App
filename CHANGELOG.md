@@ -5,6 +5,26 @@ Format follows [Keep a Changelog](https://keepachangelog.com/) and [Semantic Ver
 
 Use the version entries from the last playstore push to the most recent version for Play Store "What's New" text.
 
+## [1.7.16] - 2026-03-09
+
+### Changed
+- **Challenge quiz: killed categorySort** — removed entirely because categories are editorial decisions, not historical facts. Replaced all categorySort slots with whichCameFirst (tests real chronological knowledge)
+- **Challenge quiz: curated T/F pool** — dynamic T/F no longer swaps database fields (location/date/category). Now uses `CURATED_TF_POOL` of 20 conceptual misconception questions. Falls back to cause-and-effect questions using `EVENT_CONNECTIONS`
+- **Challenge quiz: fixed eraDetective** — removed obvious picks, added genuinely ambiguous events. Era-revealing keywords stripped from descriptions
+- **Challenge quiz: fixed hardMCQ distractors** — date distractors now use tight same-era spacing. Location distractors use same-region cities
+- **Challenge quiz: multiplayer improvements** — curated T/F content, type repetition prevention, same-category/same-era distractor logic
+- **Challenge quiz: bonus hearts** — awards +1 heart at tier transitions entering Advanced+ (max 5)
+
+### Added
+- **Curated question pools for all tiers** — Beginner (21 specs), Amateur (18), Advanced (24), Historian (25), Expert (17). Unified `CURATED_POOLS` wiring in `generateTieredChallengeQuestion`. Only God tier remains dynamic
+- **Near-miss feedback for date questions** — wrong answers within ~15% of correct year show "Close!" badge and play `close()` sound
+- **Cause-and-effect questions** — new question type using `EVENT_CONNECTIONS` as T/F fallback
+- **oddOneOut question handler** in `buildCuratedQuestion` for curated pools
+
+### Fixed
+- **Multiplayer XP bug** — was summing ALL players' scores; now only counts "me" player
+- **Cross-tier duplicate whichCameFirst pairs** — Expert tier no longer reuses pairs from Advanced
+
 ## [1.7.15] - 2026-03-09
 
 ### Changed
