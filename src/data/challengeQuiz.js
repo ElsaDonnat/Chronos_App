@@ -35,6 +35,8 @@ const BEGINNER_QUESTIONS = [
     { type: 'eraDetective', eventId: 'f27' },  // Reign of Charlemagne → Medieval (many think Early Modern)
     { type: 'eraDetective', eventId: 'f32' },  // Gutenberg Printing Press → Medieval (most think Early Modern)
     { type: 'eraDetective', eventId: 'f24' },  // Founding of Islam → Medieval (many think Ancient)
+    { type: 'eraDetective', eventId: 'f23' },  // Rise of the Maya Classical Period → Ancient (sounds Greco-Roman)
+    { type: 'eraDetective', eventId: 'f28' },  // The Viking Age → Medieval (many think much older era)
 
     // trueOrFalse — conceptual misconceptions, not database drills
     { type: 'trueOrFalse', eventId: 'f15',
@@ -58,6 +60,15 @@ const BEGINNER_QUESTIONS = [
     { type: 'trueOrFalse', eventId: 'f31',
         statement: 'Constantinople was conquered by the Arabs during the Islamic expansion',
         isTrue: false, correction: 'It was conquered by the Ottoman Turks in 1453.' },
+    { type: 'trueOrFalse', eventId: 'f17',
+        statement: 'Julius Caesar was the first Emperor of Rome',
+        isTrue: false, correction: 'Caesar was declared Dictator, not Emperor. His adopted heir Augustus (Octavian) became the first Emperor.' },
+    { type: 'trueOrFalse', eventId: 'f53',
+        statement: 'World War II ended when Germany surrendered; Japan had already surrendered earlier',
+        isTrue: false, correction: 'Germany surrendered in May 1945 (V-E Day). Japan surrendered later, in August 1945 (V-J Day), after the atomic bombings.' },
+    { type: 'trueOrFalse', eventId: 'f13',
+        statement: 'The Roman Republic was founded after overthrowing a monarchy',
+        isTrue: true },
 ];
 
 const AMATEUR_QUESTIONS = [
@@ -372,6 +383,91 @@ const HISTORIAN_QUESTIONS = [
         outlierEventId: 'f116', sharedTrait: 'All art & culture movements' },  // African Independence is the outlier among art movements
     { type: 'oddOneOut', events: ['f100', 'f103', 'f101', 'f84'],
         outlierEventId: 'f84', sharedTrait: 'All medical breakthroughs' },  // Stonewall is the outlier among medical discoveries
+];
+
+// ─── Curated pool for Expert ─────────────────────────────────
+// NO eraDetective — too easy at this level.
+// Focuses on L2 events, extremely tight distractors, close-date pairs.
+
+const EXPERT_QUESTIONS = [
+    // whichCameFirst — pairs with dates <20 years apart
+    { type: 'whichCameFirst', eventIdA: 'f64', eventIdB: 'f50' },   // WWI (1914) vs Russian Revolution (1917) — 3 years apart
+    { type: 'whichCameFirst', eventIdA: 'f92', eventIdB: 'f30' },   // Ottoman Empire's Rise (1299) vs Black Death (1347) — 48 years
+    { type: 'whichCameFirst', eventIdA: 'f89', eventIdB: 'f16' },   // Maurya Empire (-322) vs Qin Dynasty (-221) — ~100 years
+    { type: 'whichCameFirst', eventIdA: 'f72', eventIdB: 'f83' },   // Transistor (1947) vs Apartheid (1948) — 1 year apart
+    { type: 'whichCameFirst', eventIdA: 'f113', eventIdB: 'f31' },  // Kingdom of Benin (1440) vs Fall of Constantinople (1453) — 13 years
+    { type: 'whichCameFirst', eventIdA: 'f51', eventIdB: 'f81' },   // Treaty of Versailles (1919) vs Indian Independence & Gandhi (1920) — 1 year
+
+    // oddOneOut — subtle shared traits
+    { type: 'oddOneOut',
+        events: ['f88', 'f92', 'f96', 'f109'],
+        outlierEventId: 'f109', sharedTrait: 'All Asian empires' },
+    { type: 'oddOneOut',
+        events: ['f97', 'f99', 'f101', 'f70'],
+        outlierEventId: 'f70', sharedTrait: 'All epidemics or plagues' },
+    { type: 'oddOneOut',
+        events: ['f119', 'f120', 'f121', 'f103'],
+        outlierEventId: 'f103', sharedTrait: 'All arts & culture milestones' },
+    { type: 'oddOneOut',
+        events: ['f107', 'f108', 'f115', 'f98'],
+        outlierEventId: 'f98', sharedTrait: 'All East African events' },
+
+    // hardMCQ/location — same-country/same-region distractors
+    { type: 'hardMCQ', subType: 'location', eventId: 'f93',
+        options: [
+            { label: 'Beijing, China', isCorrect: true },
+            { label: 'Nanjing, China', isCorrect: false },
+            { label: 'Hangzhou, China', isCorrect: false },
+            { label: 'Xi\u2019an, China', isCorrect: false },
+        ] },  // Ming Dynasty
+    { type: 'hardMCQ', subType: 'location', eventId: 'f88',
+        options: [
+            { label: 'Persepolis, Persia', isCorrect: true },
+            { label: 'Babylon, Mesopotamia', isCorrect: false },
+            { label: 'Susa, Persia', isCorrect: false },
+            { label: 'Ecbatana, Persia', isCorrect: false },
+        ] },  // Achaemenid Empire
+    { type: 'hardMCQ', subType: 'location', eventId: 'f112',
+        options: [
+            { label: 'Gao / Timbuktu, Mali', isCorrect: true },
+            { label: 'Koumbi Saleh, Mauritania', isCorrect: false },
+            { label: 'Niani, Mali', isCorrect: false },
+            { label: 'Benin City, Nigeria', isCorrect: false },
+        ] },  // Songhai Empire
+
+    // hardMCQ/date — extremely tight distractors (within 10-30 years)
+    { type: 'hardMCQ', subType: 'date', eventId: 'f102',
+        prompt: 'When did the Spanish Flu pandemic begin?',
+        options: [
+            { label: '1914', isCorrect: false },
+            { label: '1918', isCorrect: true },
+            { label: '1929', isCorrect: false },
+            { label: '1936', isCorrect: false },
+        ] },
+    { type: 'hardMCQ', subType: 'date', eventId: 'f111',
+        prompt: 'When did Great Zimbabwe reach its peak?',
+        options: [
+            { label: '800 CE', isCorrect: false },
+            { label: '1100 CE', isCorrect: true },
+            { label: '1235 CE', isCorrect: false },
+            { label: '1350 CE', isCorrect: false },
+        ] },
+    { type: 'hardMCQ', subType: 'date', eventId: 'f91',
+        prompt: 'When did the Gupta Golden Age begin?',
+        options: [
+            { label: '250 CE', isCorrect: false },
+            { label: '320 CE', isCorrect: true },
+            { label: '476 CE', isCorrect: false },
+            { label: '541 CE', isCorrect: false },
+        ] },
+    { type: 'hardMCQ', subType: 'date', eventId: 'f116',
+        prompt: 'When did Ghana become the first sub-Saharan African country to gain independence?',
+        options: [
+            { label: '1945', isCorrect: false },
+            { label: '1951', isCorrect: false },
+            { label: '1957', isCorrect: true },
+            { label: '1963', isCorrect: false },
+        ] },
 ];
 
 /** Build a full question object from a curated spec. */
@@ -902,35 +998,19 @@ function generateEraDetective(event) {
 export function generateTieredChallengeQuestion(pool, questionIndex, usedEventIds = new Set(), recentLevels = [], recentTypes = []) {
     const { tier } = getTierProgress(questionIndex);
 
-    // Beginner & Amateur: use curated question pools
-    if (tier.id === 'beginner' || tier.id === 'amateur') {
-        const curatedPool = tier.id === 'beginner' ? BEGINNER_QUESTIONS : AMATEUR_QUESTIONS;
-        // Filter to questions whose event hasn't been used yet
+    // All curated tiers: Beginner through Expert
+    const CURATED_POOLS = {
+        beginner: BEGINNER_QUESTIONS,
+        amateur: AMATEUR_QUESTIONS,
+        advanced: ADVANCED_QUESTIONS,
+        historian: HISTORIAN_QUESTIONS,
+        expert: EXPERT_QUESTIONS,
+    };
+    if (CURATED_POOLS[tier.id]) {
+        const curatedPool = CURATED_POOLS[tier.id];
         const available = curatedPool.filter(spec => {
             if (spec.eventIdA) return !usedEventIds.has(spec.eventIdA) && !usedEventIds.has(spec.eventIdB);
-            return !usedEventIds.has(spec.eventId);
-        });
-        if (available.length > 0) {
-            const spec = shuffle(available)[0];
-            const q = buildCuratedQuestion(spec);
-            if (q) {
-                q.tier = tier;
-                q.level = isLevel2Event(q.event) ? 2 : 1;
-                return q;
-            }
-        }
-        // Fallback: if all curated questions exhausted, use dynamic generation below
-    }
-
-    // Advanced & Historian: use curated question pools (with whichCameFirst/oddOneOut support)
-    if (tier.id === 'advanced' || tier.id === 'historian') {
-        const curatedPool = tier.id === 'advanced' ? ADVANCED_QUESTIONS : HISTORIAN_QUESTIONS;
-        const available = curatedPool.filter(spec => {
-            // whichCameFirst uses eventIdA/eventIdB
-            if (spec.eventIdA) return !usedEventIds.has(spec.eventIdA) && !usedEventIds.has(spec.eventIdB);
-            // oddOneOut uses events array
             if (spec.events) return !spec.events.some(id => usedEventIds.has(id));
-            // All other types use eventId
             return !usedEventIds.has(spec.eventId);
         });
         if (available.length > 0) {
