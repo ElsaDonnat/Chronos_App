@@ -184,10 +184,6 @@ These are independent of each other and can be done in any order:
 9. **Search on map** — important as event count grows
 10. **Component extraction prep** — ongoing, enforce clean interfaces throughout
 
-## P2 — Star events from lesson summary result cards
-
-After completing a lesson, the summary screen lets users tap each result dot to view the event card (correct/incorrect). Currently there is no way to star (favourite) an event from this view. Add a star/bookmark button to the event detail card shown in this post-lesson result modal, so users can immediately save events they found interesting or want to revisit — without having to navigate to the Timeline.
-
 ## P5 — Themed collections (remaining)
 
 Cross-cutting study paths like "Women in History", "Scientific Breakthroughs". Groups existing events by theme rather than chronology. Accessible from the Practice page hub as additional collection tiles. Lower priority now that Level 2 thematic chapters exist.
@@ -226,6 +222,7 @@ Add more events per era, deeper non-Western history coverage, and new lessons be
 - **P4 — Level 2 Chapter: Empires Rise & Fall** (2026-03-03): 4-lesson chapter with 9 new events (f88–f96) tracing empires from Persia to decolonization. Achaemenid Persia, Maurya & Ashoka, Han Dynasty, Gupta Golden Age, Ottoman Empire, Ming Dynasty, Mughal Empire, British Empire, Fall of the Ottomans. Reuses f15 (Alexander), f18 (Pax Romana), f56 (Decolonization). Purple theme, temple columns icon. Strong non-Western coverage.
 - **P4 — Level 2 Chapter: Plagues & Pandemics** (2026-03-03): 4-lesson chapter with 10 new events (f97–f106) tracing disease from ancient Rome to COVID-19. Antonine Plague, Smallpox & Aztecs, Great Plague of London, Jenner & vaccination, cholera & epidemiology, Spanish Flu, penicillin, smallpox eradication, HIV/AIDS, COVID-19 & mRNA. Reuses f22 (Plague of Justinian) and f30 (Black Death). Dark crimson theme, skull icon.
 - **P4 — Dark mode** (2026-03-03): Full dark theme via `html[data-theme="dark"]` CSS variable overrides. Warm dark palette (parchment #1A1816, card #23201D, ink #E8E4DF). 3-mode toggle in Settings (Light/Dark/Auto) with system `prefers-color-scheme` support. Added `--color-ink-rgb`/`--color-parchment-rgb` variables and replaced ~93 hardcoded rgba values across CSS and 11 JSX files. Meta theme-color updates dynamically.
+- **P2 — Star events from result cards** (2026-03-09): StarButton already present in LessonFlow result dot modal and PracticePage results. Added StarButton to DailyQuizFlow result cards for consistency across all quiz result screens.
 - **P2 — Map improvements batch 1** (2026-03-03): Pinch-to-zoom (up to 4x) and drag-to-pan, larger pins (6px/10px) with 18px hit areas and drop shadows, selected-pin pulse animation, distinct ocean color, graticule grid lines, collapsible category legend, event description in popup, full dark mode via CSS custom properties.
 - **P2 — Sub-region system** (2026-03-03): Expanded from 5 broad regions to 11 sub-regions (Europe, Middle East, North Africa, West Africa, East Africa, Southern Africa, South Asia, East Asia, North America, Central America, South America). All 126 events reclassified. Map chips filter by sub-region with continent SVG highlighting. Quiz distractors use sub-regions for smarter same-region options. Region labels updated across all UI (lesson cards, practice, quiz feedback).
 - **P3 — Map improvements batch 2** (2026-03-03): Cropped SVG viewBox from 800×450 to 800×370, removing empty Antarctica/southern ocean so northern hemisphere events fill more of the visible map. Added "Loca" region filter dropdown to Timeline filter bar — works in both list and map views, persisted to localStorage, syncs with map region chips.

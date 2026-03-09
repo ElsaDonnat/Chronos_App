@@ -5,6 +5,11 @@ Format follows [Keep a Changelog](https://keepachangelog.com/) and [Semantic Ver
 
 Use the version entries from the last playstore push to the most recent version for Play Store "What's New" text.
 
+## [1.7.21] - 2026-03-09
+
+### Changed
+- **Star events from daily quiz results** — added StarButton to each event card in the DailyQuizFlow results screen, so users can bookmark interesting daily quiz events without navigating to the Timeline. Consistent with existing StarButton in lesson summary result cards and practice results.
+
 ## [1.7.20] - 2026-03-09
 
 ### Changed

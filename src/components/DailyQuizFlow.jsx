@@ -2,7 +2,7 @@ import { useState, useRef, useEffect, useMemo } from 'react';
 import { useApp } from '../context/AppContext';
 import { getTodaysDailyQuiz, DAILY_QUIZ_XP_PER_CORRECT } from '../data/dailyQuiz';
 import { getEventsByIds } from '../data/events';
-import { Card, Button, ProgressBar, DiHBadge } from './shared';
+import { Card, Button, ProgressBar, DiHBadge, StarButton } from './shared';
 import Mascot from './Mascot';
 import { shareText, buildDailyQuizShareText } from '../services/share';
 import * as feedback from '../services/feedback';
@@ -332,6 +332,11 @@ export default function DailyQuizFlow({ onComplete }) {
                                                     {dailyData.dateLabel}, {event.year} {'·'} {event.location.place}
                                                 </p>
                                             </div>
+                                            <StarButton
+                                                isStarred={(state.starredEvents || []).includes(event.id)}
+                                                onClick={() => dispatch({ type: 'TOGGLE_STAR', eventId: event.id })}
+                                                size={16}
+                                            />
                                         </div>
                                     </Card>
                                 ))}
