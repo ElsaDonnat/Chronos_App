@@ -5,6 +5,14 @@ Format follows [Keep a Changelog](https://keepachangelog.com/) and [Semantic Ver
 
 Use the version entries from the last playstore push to the most recent version for Play Store "What's New" text.
 
+## [1.8.2] - 2026-03-10
+
+### Changed
+- **Fun Facts moved to Challenge tab** — Fun Facts quiz mode relocated from Practice hub to Challenge hub, where it fits better thematically alongside Solo Challenge and Multiplayer.
+- **Per-country map paths** — map now renders 177 individual country paths (with ISO codes) instead of 5 merged continent blobs. Foundation for country-level interactions.
+- **Country highlighting on event selection** — selecting an event on the map now highlights its country with a gold color, making geographic context clearer.
+- **Updated app icon and splash screen assets**
+
 ## [1.8.1] - 2026-03-09
 
 ### Added
