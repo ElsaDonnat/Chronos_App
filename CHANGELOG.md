@@ -5,6 +5,13 @@ Format follows [Keep a Changelog](https://keepachangelog.com/) and [Semantic Ver
 
 Use the version entries from the last playstore push to the most recent version for Play Store "What's New" text.
 
+## [1.7.22] - 2026-03-09
+
+### Added
+- **Desktop wheel zoom on map** — mouse wheel scrolling now zooms the map in/out (±0.15 per scroll step, 1\u20134\u00d7 range). Works in both inline and fullscreen modes. Previously only touch pinch-zoom was supported.
+- **Region auto-scroll in fullscreen map** — selecting a region chip while in fullscreen mode smoothly scrolls the viewport to center on that region, using pre-calculated region center coordinates.
+- **Animated pin entrance** — map pins now pop in with a staggered scale+fade animation (30ms delay between each pin) when the map loads or filters change.
+
 ## [1.7.21] - 2026-03-09
 
 ### Changed

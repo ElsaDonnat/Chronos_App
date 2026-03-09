@@ -1,6 +1,6 @@
 import { useState, useMemo, useRef, useCallback, useEffect } from 'react';
 import { CATEGORY_CONFIG, isDiHEvent } from '../data/events';
-import { MAP_REGIONS, projectToSVG, normalizeRegion, regionToContinent } from '../data/mapPaths';
+import { MAP_REGIONS, REGION_CENTERS, projectToSVG, normalizeRegion, regionToContinent } from '../data/mapPaths';
 import { Card, CategoryTag, ImportanceTag, MasteryDots, ExpandableText } from './shared';
 const CLUSTER_GRID = 25; // SVG units per grid cell
 
@@ -186,6 +186,16 @@ function usePanZoom() {
         gestureRef.current = null;
     }, []);
 
+    const onWheel = useCallback((e) => {
+        e.preventDefault();
+        const delta = e.deltaY > 0 ? -0.15 : 0.15;
+        setScale(prev => {
+            const next = Math.min(Math.max(prev + delta, 1), 4);
+            if (next === 1) setPanOffset({ x: 0, y: 0 });
+            return next;
+        });
+    }, []);
+
     const resetZoom = useCallback(() => {
         setScale(1);
         setPanOffset({ x: 0, y: 0 });
@@ -196,7 +206,7 @@ function usePanZoom() {
         ? `translate(${panOffset.x}%, ${panOffset.y}%) scale(${scale})`
         : 'none';
 
-    return { mapContainerRef, cssTransform, isZoomed, onTouchStart, onTouchMove, onTouchEnd, resetZoom };
+    return { mapContainerRef, cssTransform, isZoomed, onTouchStart, onTouchMove, onTouchEnd, onWheel, resetZoom };
 }
 
 // The SVG map content — shared between normal and fullscreen modes
@@ -263,7 +273,8 @@ function MapSVG({ visibleEvents, pins, learnedIds, selectedRegion, selectedPin, 
                 const r = pin.cluster ? 10 : 6;
 
                 return (
-                    <g key={i} onClick={(e) => handlePinClick(pin, e)} style={{ cursor: 'pointer' }}>
+                    <g key={i} onClick={(e) => handlePinClick(pin, e)}
+                       style={{ cursor: 'pointer', animation: `mapPinEntrance 0.4s ease-out ${i * 30}ms both` }}>
                         <circle cx={pin.x} cy={pin.y} r={18} fill="transparent" />
                         <circle cx={pin.x} cy={pin.y + 1} r={r} fill="rgba(0,0,0,0.12)" />
                         <circle cx={pin.x} cy={pin.y} r={r}
@@ -382,7 +393,7 @@ export default function MapView({ events, learnedIds, hideUnknown, eventMastery,
     const [isFullscreen, setIsFullscreen] = useState(false);
     const fullscreenScrollRef = useRef(null);
     const hasScrolledRef = useRef(false);
-    const { mapContainerRef, cssTransform, isZoomed, onTouchStart, onTouchMove, onTouchEnd, resetZoom } = usePanZoom();
+    const { mapContainerRef, cssTransform, isZoomed, onTouchStart, onTouchMove, onTouchEnd, onWheel, resetZoom } = usePanZoom();
 
     const visibleEvents = useMemo(() => {
         let evts = events.filter(e => learnedIds.has(e.id));
@@ -435,6 +446,22 @@ export default function MapView({ events, learnedIds, hideUnknown, eventMastery,
             });
         }
     }, [isFullscreen]);
+
+    // Auto-scroll fullscreen map to selected region
+    useEffect(() => {
+        if (!isFullscreen || !selectedRegion || !fullscreenScrollRef.current) return;
+        const center = REGION_CENTERS[selectedRegion];
+        if (!center) return;
+        const container = fullscreenScrollRef.current;
+        const mapWidth = container.scrollWidth;
+        const mapHeight = container.scrollHeight;
+        // REGION_CENTERS are in 800×500 SVG coords → convert to fraction of map dimensions
+        const fracX = center.x / 800;
+        const fracY = center.y / 500;
+        const targetLeft = Math.max(0, mapWidth * fracX - container.clientWidth / 2);
+        const targetTop = Math.max(0, mapHeight * fracY - container.clientHeight / 2);
+        container.scrollTo({ left: targetLeft, top: targetTop, behavior: 'smooth' });
+    }, [isFullscreen, selectedRegion]);
 
     const selectedEvent = selectedPin?.event;
     const clusterEvents = selectedPin?.events;
@@ -495,6 +522,7 @@ export default function MapView({ events, learnedIds, hideUnknown, eventMastery,
                         onTouchStart={onTouchStart}
                         onTouchMove={onTouchMove}
                         onTouchEnd={onTouchEnd}
+                        onWheel={onWheel}
                         style={{
                             width: '280%',
                             marginTop: '-44px', // pull map up behind the sticky controls
@@ -574,6 +602,7 @@ export default function MapView({ events, learnedIds, hideUnknown, eventMastery,
                         onTouchStart={onTouchStart}
                         onTouchMove={onTouchMove}
                         onTouchEnd={onTouchEnd}
+                        onWheel={onWheel}
                         style={{
                             width: '200%',
                             overflow: 'hidden',
