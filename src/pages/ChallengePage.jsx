@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useApp } from '../context/AppContext';
 import { buildChallengePool, generateChallengeQuestion, generateTieredChallengeQuestion, CHALLENGE_TIERS, TOTAL_CHALLENGE_QUESTIONS, getTierForQuestion, getTierProgress } from '../data/challengeQuiz';
 import { CATEGORY_CONFIG } from '../data/events';
@@ -6,6 +6,8 @@ import { Button } from '../components/shared';
 import Mascot from '../components/Mascot';
 import * as feedback from '../services/feedback';
 import StreakCelebration from '../components/StreakCelebration';
+import FunFactsFlow from '../components/FunFactsFlow';
+import { getFunFactsForSeenEvents } from '../data/funFacts';
 
 /** Parse a date MCQ label like "1519", "541 CE", "100 BCE" into a numeric year. */
 function parseYearLabel(label) {
@@ -35,7 +37,7 @@ const TierIcon = ({ tierId, size = 24, color = '#666' }) => {
 };
 
 // ─── Views ───────────────────────────────────────────────────
-const VIEW = { HUB: 'hub', SETUP_MULTI: 'setup_multi', GAME: 'game', PASS_PHONE: 'pass_phone', RESULTS: 'results' };
+const VIEW = { HUB: 'hub', SETUP_MULTI: 'setup_multi', GAME: 'game', PASS_PHONE: 'pass_phone', RESULTS: 'results', FUN_FACTS: 'fun_facts' };
 const MAX_HEARTS = 3;
 
 // ─── Hearts Component ────────────────────────────────────────
@@ -929,6 +931,8 @@ export default function ChallengePage({ onSessionChange, registerBackHandler }) 
                 setView(VIEW.HUB);
             } else if (view === VIEW.RESULTS) {
                 setView(VIEW.HUB);
+            } else if (view === VIEW.FUN_FACTS) {
+                setView(VIEW.HUB);
             }
         });
         return unregister;
@@ -951,6 +955,11 @@ export default function ChallengePage({ onSessionChange, registerBackHandler }) 
     // ─── Derived data ────────────────────────────────
 
     const ch = state.challenge || {};
+    const availableFunFacts = useMemo(() => getFunFactsForSeenEvents(state.seenEvents), [state.seenEvents]);
+    const seenFunFactCount = useMemo(() => {
+        const availableIds = new Set(availableFunFacts.map(f => f.id));
+        return (state.seenFunFacts || []).filter(id => availableIds.has(id)).length;
+    }, [state.seenFunFacts, availableFunFacts]);
     const currentPlayer = players[currentPlayerIndex];
     const isNewHighScore = mode === 'solo' && (players[0]?.score || 0) > (ch.soloHighScore || 0);
     const tierInfo = mode === 'solo' ? getTierProgress(questionIndex) : null;
@@ -973,6 +982,10 @@ export default function ChallengePage({ onSessionChange, registerBackHandler }) 
     })();
 
     // ─── Render ──────────────────────────────────────
+
+    if (view === VIEW.FUN_FACTS) {
+        return <FunFactsFlow onExit={() => setView(VIEW.HUB)} />;
+    }
 
     if (view === VIEW.HUB) {
         // Determine best tier reached from solo high score
@@ -1144,6 +1157,49 @@ export default function ChallengePage({ onSessionChange, registerBackHandler }) 
                         </svg>
                     </button>
                 </div>
+
+                {/* Fun Facts */}
+                <button
+                    onClick={availableFunFacts.length > 0 ? () => setView(VIEW.FUN_FACTS) : undefined}
+                    style={{
+                        background: 'var(--color-card)',
+                        border: '1.5px solid var(--color-ink-faint, #E7E5E4)',
+                        borderRadius: 14,
+                        padding: '20px 16px',
+                        cursor: availableFunFacts.length > 0 ? 'pointer' : 'default',
+                        textAlign: 'left',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 14,
+                        transition: 'all 0.15s ease',
+                        opacity: availableFunFacts.length > 0 ? 1 : 0.5,
+                        width: '100%',
+                    }}
+                >
+                    <div style={{ flexShrink: 0 }}>
+                        <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="var(--color-burgundy)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M9 18h6" />
+                            <path d="M10 22h4" />
+                            <path d="M12 2a7 7 0 0 0-4 12.7V17h8v-2.3A7 7 0 0 0 12 2z" />
+                        </svg>
+                    </div>
+                    <div>
+                        <p style={{ fontFamily: 'var(--font-serif)', fontWeight: 700, fontSize: '1rem', color: 'var(--color-ink)', marginBottom: 2 }}>
+                            Fun Facts
+                        </p>
+                        <p style={{ fontSize: '0.78rem', color: 'var(--color-ink-muted)' }}>
+                            {availableFunFacts.length > 0
+                                ? `Surprising trivia \u00B7 ${seenFunFactCount}/${availableFunFacts.length} discovered`
+                                : 'Learn events to unlock fun facts'
+                            }
+                        </p>
+                    </div>
+                    {availableFunFacts.length > 0 && (
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--color-ink-muted)" strokeWidth="2" style={{ marginLeft: 'auto' }}>
+                            <polyline points="9 18 15 12 9 6" />
+                        </svg>
+                    )}
+                </button>
 
                 {/* Stats */}
                 {(ch.soloGamesPlayed > 0 || ch.multiplayerGamesPlayed > 0 || allTimeAccuracy !== null) && (
