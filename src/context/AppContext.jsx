@@ -76,6 +76,9 @@ const defaultState = {
     totalStudyTime: 0,       // cumulative seconds
     studySessions: [],       // [{ date, duration, type, questionsAnswered }] — last 50
 
+    // ─── Fun Facts ───
+    seenFunFacts: [],  // IDs of fun facts the user has answered
+
     // ─── Challenge Mode ───
     challenge: {
         soloHighScore: 0,
@@ -214,6 +217,12 @@ function reducer(state, action) {
                 }
             });
             return { ...state, seenEvents: newSeen, srSchedule: newSr };
+        }
+
+        case 'MARK_FUN_FACT_SEEN': {
+            const ffId = action.funFactId;
+            if (state.seenFunFacts.includes(ffId)) return state;
+            return { ...state, seenFunFacts: [...state.seenFunFacts, ffId] };
         }
 
         case 'UPDATE_EVENT_MASTERY': {

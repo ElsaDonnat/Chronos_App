@@ -9,6 +9,8 @@ import Mascot from '../components/Mascot';
 import * as feedback from '../services/feedback';
 import { shareText, buildPracticeShareText } from '../services/share';
 import StreakCelebration from '../components/StreakCelebration';
+import FunFactsFlow from '../components/FunFactsFlow';
+import { getFunFactsForSeenEvents } from '../data/funFacts';
 
 // ─── Matching colors (same palette as Lesson0Flow) ───
 const MATCH_COLORS = [
@@ -22,6 +24,7 @@ const VIEW = {
     LESSON_PICKER: 'lesson_picker',
     SESSION: 'session',
     RESULTS: 'results',
+    FUN_FACTS: 'fun_facts',
 };
 
 export default function PracticePage({ onSessionChange, registerBackHandler }) {
@@ -305,6 +308,13 @@ export default function PracticePage({ onSessionChange, registerBackHandler }) {
                 </p>
             </div>
         );
+    }
+
+    // ═══════════════════════════════════════════════════
+    // FUN FACTS
+    // ═══════════════════════════════════════════════════
+    if (view === VIEW.FUN_FACTS) {
+        return <FunFactsFlow onExit={() => setView(VIEW.HUB)} />;
     }
 
     // ═══════════════════════════════════════════════════
@@ -724,6 +734,7 @@ export default function PracticePage({ onSessionChange, registerBackHandler }) {
                     onStartFavorites={startFavorites}
                     onOpenLessonPicker={() => setView(VIEW.LESSON_PICKER)}
                     onStartByImportance={startByImportance}
+                    onStartFunFacts={() => setView(VIEW.FUN_FACTS)}
                     learnedEvents={learnedEvents}
                     learnedCount={learnedEvents.length}
                 />
@@ -746,8 +757,14 @@ export default function PracticePage({ onSessionChange, registerBackHandler }) {
 // ═══════════════════════════════════════════════════════
 // HUB VIEW — Practice mode cards
 // ═══════════════════════════════════════════════════════
-function HubView({ starredEvents, weakEvents, statusTiers, dueCount, state, dispatch, onStartSpacedReview, onStartQuickDates, onStartFavorites, onOpenLessonPicker, onStartByImportance, learnedEvents, learnedCount }) {
+function HubView({ starredEvents, weakEvents, statusTiers, dueCount, state, dispatch, onStartSpacedReview, onStartQuickDates, onStartFavorites, onOpenLessonPicker, onStartByImportance, onStartFunFacts, learnedEvents, learnedCount }) {
     const [showClearStarsConfirm, setShowClearStarsConfirm] = useState(false);
+
+    const availableFunFacts = useMemo(() => getFunFactsForSeenEvents(state.seenEvents), [state.seenEvents]);
+    const seenFunFactCount = useMemo(() => {
+        const availableIds = new Set(availableFunFacts.map(f => f.id));
+        return (state.seenFunFacts || []).filter(id => availableIds.has(id)).length;
+    }, [state.seenFunFacts, availableFunFacts]);
 
     return (
         <div className="space-y-3">
@@ -806,6 +823,34 @@ function HubView({ starredEvents, weakEvents, statusTiers, dueCount, state, disp
                         </p>
                     </div>
                     {learnedCount >= 3 && (
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-ink-faint)" strokeWidth="2" className="mt-2 flex-shrink-0">
+                            <polyline points="9 18 15 12 9 6" />
+                        </svg>
+                    )}
+                </div>
+            </Card>
+
+            {/* Fun Facts */}
+            <Card
+                onClick={availableFunFacts.length > 0 ? onStartFunFacts : undefined}
+                className="lesson-card-row p-4"
+                style={{ opacity: availableFunFacts.length > 0 ? 1 : 0.5 }}
+            >
+                <div className="flex items-start gap-3">
+                    <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
+                        style={{ backgroundColor: 'rgba(234, 179, 8, 0.1)' }}>
+                        <span className="text-lg">💡</span>
+                    </div>
+                    <div className="flex-1 min-w-0">
+                        <h3 className="text-sm font-bold" style={{ fontFamily: 'var(--font-serif)' }}>Fun Facts</h3>
+                        <p className="text-xs mt-0.5" style={{ color: 'var(--color-ink-muted)' }}>
+                            {availableFunFacts.length > 0
+                                ? `Surprising trivia \u00B7 ${seenFunFactCount}/${availableFunFacts.length} discovered`
+                                : 'Learn events to unlock fun facts'
+                            }
+                        </p>
+                    </div>
+                    {availableFunFacts.length > 0 && (
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-ink-faint)" strokeWidth="2" className="mt-2 flex-shrink-0">
                             <polyline points="9 18 15 12 9 6" />
                         </svg>
