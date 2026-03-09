@@ -14,16 +14,17 @@
 
 The map is intended to become a flagship feature of Chronos — visually rich, scalable to hundreds of events, and eventually extractable as a standalone component. This roadmap covers everything from foundational architectural changes to polish. Items are ordered by dependency (foundations first, features second, polish last).
 
-**Current state (as of v1.7.23):** Natural Earth I projection, 800×500 SVG viewBox, per-country SVG paths (177 countries grouped by continent), 11 sub-regions, grid-based pin clustering, CSS pinch-zoom + desktop wheel zoom, fullscreen mode with region auto-scroll, animated pin entrance. See CLAUDE.md "Map System" section for full architecture docs.
+**Current state (as of v1.7.23):** Natural Earth I projection, 800×500 SVG viewBox, per-country SVG paths (177 countries grouped by continent) with country highlighting on event selection, 11 sub-regions, grid-based pin clustering, CSS pinch-zoom + desktop wheel zoom, fullscreen mode with region auto-scroll, animated pin entrance. See CLAUDE.md "Map System" section for full architecture docs.
 
 ---
 
 ### ~~Foundation — Per-country SVG paths~~ ✅ Done (2026-03-09)
 
-Per-country SVG paths now stored individually with ISO code + name, grouped by continent. MapView renders ~177 `<path>` elements instead of 5 blobs. Bundle size impact: +2KB gzipped. Remaining follow-up items:
-- Add `countryCode` field to event locations for country-level highlighting
-- Consider 50m resolution for cleaner coastlines when zoomed
-- Implement country highlighting on event selection (now unblocked)
+Per-country SVG paths now stored individually with ISO code + name, grouped by continent. MapView renders ~177 `<path>` elements instead of 5 blobs. Bundle size impact: +2KB gzipped.
+
+### ~~Feature — Country highlighting on event selection~~ ✅ Done (2026-03-09)
+
+Selecting an event pin highlights the country where it happened with a distinct fill + gold stroke. Uses coordinate-based point-in-polygon matching at runtime (no `countryCode` field needed on events). Smooth CSS transitions on highlight/unhighlight.
 
 ---
 
@@ -74,19 +75,6 @@ Per-country SVG paths now stored individually with ISO code + name, grouped by c
 
 ---
 
-### Feature — Country highlighting on event selection
-
-**Why:** With per-country paths (see Foundation above), selecting a pin should light up the country where it happened. Makes the geographic context immediately visible.
-
-**What to do:**
-- When a pin is tapped, highlight its `countryCode` path with a distinct fill/stroke
-- For events spanning multiple countries or regions (e.g., "Napoleonic Wars — Europe"), highlight the primary country and optionally outline the broader region
-- Smooth transition animation on highlight
-
-**Files:** `src/components/MapView.jsx`, `src/data/events.js` (needs `countryCode` per event)
-
----
-
 ### UX — Interaction improvements
 
 These are independent of each other and can be done in any order:
@@ -95,7 +83,7 @@ These are independent of each other and can be done in any order:
 - **Double-tap to zoom** — standard mobile gesture. Double-tap zooms to 2× centered on tap point; double-tap again resets. Must coexist with single-tap pin selection (use a brief delay or distance threshold).
 - **Swipe-down to dismiss fullscreen** — more discoverable than the small Close button. Pull-down gesture closes the fullscreen overlay.
 - ~~**Desktop wheel zoom**~~ ✅ Done (2026-03-09)
-- **Hover states (desktop)** — subtle glow/scale on pin hover, country path highlight on hover (requires per-country paths).
+- **Hover states (desktop)** — subtle glow/scale on pin hover, country path highlight on hover (per-country paths now ready).
 - **Cluster drill-down** — tapping a cluster auto-zooms to that area so individual pins spread out, instead of the current flat list popup.
 
 **Files:** `src/components/MapView.jsx`
@@ -109,7 +97,7 @@ These are independent of each other and can be done in any order:
 **What to do:**
 - **Dynamic cluster recalculation** — `CLUSTER_GRID = 25` is fixed. Recompute clusters based on current zoom level: at 2×, use grid size 12; at 4×, use grid size 6. Pins should spread out as you zoom in.
 - **Pin labels on zoom** — when zoomed >2×, show event title text next to pins for identification without tapping.
-- **Level-of-detail rendering** — at base zoom, show simplified continent shapes. At 2×+, show country borders (requires per-country paths). At 4×+, show region labels and pin titles.
+- **Level-of-detail rendering** — at base zoom, show simplified continent shapes. At 2×+, show country borders (per-country paths now ready). At 4×+, show region labels and pin titles.
 - Replace CSS `transform: scale()` with actual SVG viewBox manipulation for crisper rendering at all zoom levels.
 
 **Files:** `src/components/MapView.jsx`
@@ -166,16 +154,17 @@ These are independent of each other and can be done in any order:
 
 ### Implementation order (suggested)
 
-1. **Per-country SVG paths** — unblocks country highlighting, semantic zoom, visual quality
-2. **Region audit** — small, low-risk, unblocks concurrent view's region axis
-3. **UX interaction improvements** — independent quick wins (double-tap zoom, wheel zoom, auto-scroll)
-4. **Time slider on map** — high-impact standalone feature
-5. **Concurrent events view** — the biggest new feature, benefits from time slider and region system
-6. **Country highlighting** — leverages per-country paths
-7. **Semantic zoom** — significant UX leap, requires per-country paths
-8. **Visual polish** — connection arcs, animations, era coloring
-9. **Search on map** — important as event count grows
-10. **Component extraction prep** — ongoing, enforce clean interfaces throughout
+~~1. **Per-country SVG paths** ✅~~
+~~2. **Country highlighting on event selection** ✅~~
+~~3. **UX: wheel zoom, region auto-scroll, pin animations** ✅~~
+4. **UX interaction improvements** — remaining quick wins (double-tap zoom, swipe-down fullscreen dismiss, hover states, cluster drill-down)
+5. **Region audit** — small, low-risk, unblocks concurrent view's region axis
+6. **Time slider on map** — high-impact standalone feature
+7. **Concurrent events view** — the biggest new feature, benefits from time slider and region system
+8. **Semantic zoom** — significant UX leap, zoom-adaptive clustering + viewBox manipulation
+9. **Visual polish** — connection arcs, era coloring, region label fading, higher resolution
+10. **Search on map** — important as event count grows
+11. **Component extraction prep** — ongoing, enforce clean interfaces throughout
 
 ## P5 — Themed collections (remaining)
 
@@ -224,3 +213,4 @@ Add more events per era, deeper non-Western history coverage, and new lessons be
 - **P4 — Level 2 Chapter: Science That Changed Everything** (2026-03-09): 4-lesson chapter with 11 new events (f127–f137) tracing breakthroughs from Hippocrates to the Higgs boson. Reuses f38 (Scientific Revolution). Teal theme, telescope icon, new atom icon (index 44). Hand-crafted distractors and controversy notes for all events.
 - **UX — Map improvements batch 5: interaction & animation** (2026-03-09): Desktop wheel zoom (onWheel handler, ±0.15 per scroll step, 1–4× range). Region auto-scroll in fullscreen (selecting a region chip smoothly scrolls the viewport to center on that region via REGION_CENTERS). Animated pin entrance (staggered scale+fade pop-in, 30ms delay per pin).
 - **Foundation — Per-country SVG paths** (2026-03-09): Replaced continent-merged path blobs with individual per-country SVG paths (177 countries, each with ISO code + name). Countries grouped by continent for rendering. MapView renders individual `<path>` elements with `data-country` attributes. Bundle size impact: +2KB gzipped (91KB uncompressed vs 81KB). Unblocks country highlighting, hover states, and semantic zoom.
+- **Feature — Country highlighting on event selection** (2026-03-09): Selecting an event pin highlights the country where it happened with a distinct fill + gold stroke. Uses coordinate-based point-in-polygon matching at runtime. Smooth CSS transitions on highlight/unhighlight.
