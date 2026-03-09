@@ -16,6 +16,7 @@ A beautiful, interactive web app for learning the major events of human history.
 - **Challenge Mode**: 35-question gauntlet across 6 progressive tiers (Beginner → God Mode) with 6 creative question types (Category Sort, Era Detective, True/False, Hard MCQ, Which Came First, Odd One Out). Solo and multiplayer support
 - **Daily Quick Quiz**: "This Day in History" — 3 real events per day, learn-then-test flow, double XP, cycling through 10 days of content (30 exclusive events)
 - **Quick 5 Dates**: rapid 6-question date practice mode
+- **Fun Facts**: endless casual trivia MCQ — surprising facts tied to event cards, with "Did you know?" explanations
 
 ### Progression
 - **4-Dimension Mastery System**: each event scored on Location, Date, What, and Description (0–12 points total) — influences practice difficulty

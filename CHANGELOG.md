@@ -5,6 +5,15 @@ Format follows [Keep a Changelog](https://keepachangelog.com/) and [Semantic Ver
 
 Use the version entries from the last playstore push to the most recent version for Play Store "What's New" text.
 
+## [1.8.0] - 2026-03-09
+
+### Added
+- **Fun Facts quiz mode** — new endless casual quiz in the Practice hub. 10 hand-crafted trivia MCQs tied to iconic event cards (f1, f2, f8, f12, f15, f32, f33, f43, f46, f57). Each question shows which card it relates to, reveals a "Did you know?" explanation after answering, and tracks discovery progress (X/Y discovered). Facts cover surprising details NOT found in the card descriptions. Unlocked per-event as the user learns them.
+
+### Files added
+- `src/data/funFacts.js` — fun fact data + helpers (`getFunFactsForSeenEvents`, `getNextFunFact`)
+- `src/components/FunFactsFlow.jsx` — self-contained quiz UI component
+
 ## [1.7.21] - 2026-03-09
 
 ### Changed

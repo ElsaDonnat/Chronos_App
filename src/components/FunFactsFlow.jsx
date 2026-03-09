@@ -1,6 +1,6 @@
 import { useState, useMemo, useCallback } from 'react';
 import { useApp } from '../context/AppContext';
-import { FUN_FACTS, getFunFactsForSeenEvents, getNextFunFact } from '../data/funFacts';
+import { getFunFactsForSeenEvents, getNextFunFact } from '../data/funFacts';
 import { getEventById } from '../data/events';
 import { Button, CategoryTag } from './shared';
 import * as feedback from '../services/feedback';
