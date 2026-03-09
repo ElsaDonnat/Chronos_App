@@ -392,8 +392,8 @@ const HISTORIAN_QUESTIONS = [
 const EXPERT_QUESTIONS = [
     // whichCameFirst — pairs with dates <20 years apart
     { type: 'whichCameFirst', eventIdA: 'f64', eventIdB: 'f50' },   // WWI (1914) vs Russian Revolution (1917) — 3 years apart
-    { type: 'whichCameFirst', eventIdA: 'f92', eventIdB: 'f30' },   // Ottoman Empire's Rise (1299) vs Black Death (1347) — 48 years
-    { type: 'whichCameFirst', eventIdA: 'f89', eventIdB: 'f16' },   // Maurya Empire (-322) vs Qin Dynasty (-221) — ~100 years
+    { type: 'whichCameFirst', eventIdA: 'f59', eventIdB: 'f57' },   // Fall of Berlin Wall (1989) vs Fall of Soviet Union (1991) — 2 years, constantly confused
+    { type: 'whichCameFirst', eventIdA: 'f44', eventIdB: 'f45' },   // Napoleon (1799) vs Congress of Vienna (1815) — 16 years, causally linked
     { type: 'whichCameFirst', eventIdA: 'f72', eventIdB: 'f83' },   // Transistor (1947) vs Apartheid (1948) — 1 year apart
     { type: 'whichCameFirst', eventIdA: 'f113', eventIdB: 'f31' },  // Kingdom of Benin (1440) vs Fall of Constantinople (1453) — 13 years
     { type: 'whichCameFirst', eventIdA: 'f51', eventIdB: 'f81' },   // Treaty of Versailles (1919) vs Indian Independence & Gandhi (1920) — 1 year
