@@ -5,8 +5,8 @@ A beautiful, interactive web app for learning the major events of human history.
 ## Features
 
 ### Learning
-- **49 Lessons** across two progression levels: 21 core lessons (Level 1) covering 60 events from prehistory to the modern era, plus 7 thematic Level 2 chapters (28 lessons) with 36 additional events
-- **126 Historical Events** across 5 categories (Politics, Science, Culture, War, Revolution) and 5 eras (Prehistory, Ancient, Medieval, Early Modern, Modern)
+- **53 Lessons** across two progression levels: 21 core lessons (Level 1) covering 60 events from prehistory to the modern era, plus 8 thematic Level 2 chapters (32 lessons) with 47 additional events
+- **137 Historical Events** across 5 categories (Politics, Science, Culture, War, Revolution) and 5 eras (Prehistory, Ancient, Medieval, Early Modern, Modern)
 - **8-Phase Lesson Flow**: Intro → Period Intro → (Learn Card → Learn Quiz) × 3 → Recap Transition → Recap → Final Review → Summary
 - **6 Question Types**: Where?, When?, What happened?, Description MCQ (with 3 difficulty tiers), Era Matching, and Date free-input
 - **Context-Aware Difficulty**: description questions scale from easy (lesson learn phase) to very subtle (high-mastery practice) with hand-crafted distractors for 126+ events
@@ -123,7 +123,7 @@ Warm antiquity palette — aged parchment, terracotta, bronze. Clean museum-exhi
 src/
 ├── data/
 │   ├── events.js              # 126 historical events with full metadata
-│   ├── lessons.js             # 49 lesson definitions (Level 1 + Level 2)
+│   ├── lessons.js             # 53 lesson definitions (Level 1 + Level 2)
 │   ├── quiz.js                # Scoring logic and MCQ generation
 │   ├── dailyQuiz.js           # 10 days of "This Day in History" content
 │   ├── challengeQuiz.js       # Challenge mode question generation

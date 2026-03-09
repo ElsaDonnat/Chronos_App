@@ -5,6 +5,71 @@ Format follows [Keep a Changelog](https://keepachangelog.com/) and [Semantic Ver
 
 Use the version entries from the last playstore push to the most recent version for Play Store "What's New" text.
 
+## [1.7.15] - 2026-03-09
+
+### Changed
+- **Card content review (Level 1 core events, batch 1)** — reviewed 10 cards (f1–f10); 4 edits made:
+  - **f4 (Behavioral Modernity):** location "Herto, Ethiopia" → "Africa" — Herto's famous fossils (~160 Kya, *Homo sapiens idaltu*) are associated with *anatomical* modernity, not behavioral modernity at 70–50 Kya. Key behavioral modernity evidence comes from Blombos Cave (South Africa) and various East African sites.
+  - **f5 (Migration Out of Africa):** "led to the extinction of other hominid species" → added Neanderthal/Denisovan interbreeding (1–4% Neanderthal DNA in non-Africans; Pääbo's 2022 Nobel Prize). Too significant and well-established to omit from this card. Softened extinction framing.
+  - **f8 (Unification of Egypt):** "creating a state stable for nearly 3,000 years" → "creating a civilization that endured for nearly 3,000 years" — Egypt suffered multiple periods of fragmentation (First, Second, and Third Intermediate Periods) so "stable" overstates continuity.
+  - **f10 (Code of Hammurabi):** "written social contract" → "written legal code" — "social contract" is an anachronistic Enlightenment concept (Hobbes/Locke/Rousseau); Hammurabi's code was a royal decree. Also fixed quizDescription: "the first written legal code" → "the ancient world's most complete legal code" — the Code of Ur-Nammu (~2100 BCE) predates Hammurabi by ~300 years. Updated matching hardCorrect in descriptionDistractors.
+- Cards f1, f2, f3, f6, f7, f9 reviewed and confirmed accurate — no changes needed.
+
+## [1.7.14] - 2026-03-09
+
+### Changed
+- **Card content review (Science That Changed Everything)** — reviewed 11 cards (f127–f137); 2 edits made:
+  - **f132 (Lavoisier):** "transformed alchemy into a science" → "transformed chemistry into a modern, quantitative science" — by the 1770s, chemistry was already a distinct discipline from alchemy (Boyle's *The Sceptical Chymist* was published in 1661). Lavoisier's revolution was within chemistry, not from alchemy.
+  - **f133 (Darwin):** "developed the idea 20 years earlier during his voyage on HMS Beagle" → "begun developing the idea two decades earlier, inspired by observations from his voyage" — Darwin collected observations on the Beagle (1831–1836), but his natural selection insight came in 1838 after reading Malthus, back in England.
+- Cards f127, f128, f129, f130, f131, f134, f135, f136, f137 reviewed and confirmed accurate — no changes needed.
+
+## [1.7.13] - 2026-03-09
+
+### Added
+- **Level 2 Chapter: Science That Changed Everything** — 4-lesson chapter with 11 new events (f127\u2013f137) tracing scientific breakthroughs from ancient Greece to the Higgs boson. Hippocrates & rational medicine, Euclid's Elements, Archimedes, Galileo & the telescope, Newton's Principia, Lavoisier & modern chemistry, Darwin & natural selection, Marie Curie & radioactivity, Einstein & relativity, DNA double helix, and the Higgs boson at CERN. Reuses f38 (Scientific Revolution). Teal theme (#0891B2), telescope icon. New atom icon (index 44) for the final lesson. Hand-crafted description distractors (3 tiers) and controversy notes for all 11 events. Rich event connections linking to existing events (Islamic Golden Age, French Revolution, WWII). Strong coverage of scientific ethics controversies (Franklin/DNA, Curie/sexism, Newton/Leibniz, Wallace/Darwin).
+
+## [1.7.12] - 2026-03-09
+
+### Changed
+- **Card content review (Art That Changed the World)** — reviewed 9 cards (f118–f126); 4 edits made:
+  - **f118 (Islamic Golden Age):** "invented algebra" → "pioneered algebra" — Al-Khwarizmi systematized algebra into a distinct discipline, but earlier algebraic work existed (Diophantus, Brahmagupta). Consistent with the f91 correction pattern.
+  - **f119 (Renaissance Masters):** "pioneered anatomy, perspective" → "mastered anatomy and perspective" — perspective was pioneered by Brunelleschi (~1413) and codified by Alberti (1435), decades before Leonardo and Michelangelo.
+  - **f120 (Shakespeare):** "invented over 1,700 English words" → "coined or popularized" — modern scholarship shows many words attributed to Shakespeare were already in spoken use; he was the first to record them in surviving texts. Updated description, quizDescription, and hardCorrect.
+  - **f124 (Cinema's Golden Age):** removed "from a novelty" (silent cinema was already a major art form by 1927); changed "every human being on the planet simultaneously" → "audiences across the entire planet" (films were distributed over weeks/months, not simultaneously). Updated description and hardCorrect.
+- Cards f121, f122, f123, f125, f126 reviewed and confirmed accurate — no changes needed.
+
+## [1.7.11] - 2026-03-09
+
+### Changed
+- **Card content review (Kingdoms of Africa + Homer)** — reviewed 10 cards (f108–f117); 7 edits made:
+  - **f108 (Aksumite Empire):** "before Rome made it official" → "before Rome made it the state religion" — the Edict of Milan (313 CE) legalized Christianity before Ezana's conversion (~330 CE), but Rome's state religion declaration (380 CE) came after. The original was ambiguous.
+  - **f109 (Ghana Empire):** "Ghana's capital at Koumbi Saleh" → "Its probable capital at Koumbi Saleh" — recent scholarship increasingly questions the identification of Koumbi Saleh ruins as Ghana's capital.
+  - **f110 (Mali Empire):** yearEnd 1400 → 1600, date "c. 1235–1400 CE" → "c. 1235–1600 CE" — the Mali Empire survived in diminished form until c. 1600, not 1400.
+  - **f112 (Songhai Empire):** "largest empire in African history" → "largest empire in West African history" — North African empires (Umayyad, Fatimid territories) were larger.
+  - **f113 (Kingdom of Benin):** added "Founded centuries earlier, the Kingdom of Benin reached its peak under Oba Ewuare the Great" — the kingdom existed from c. 1100–1200, but the card's 1440 date marks the imperial era.
+  - **f114 (Zulu Kingdom):** softened Mfecane attribution — replaced "displacing millions and creating new kingdoms" with note that historians debate Shaka's role vs. broader pressures (drought, trade disruption). The Cobbing Controversy (1988+) challenged the Zulu-centric explanation.
+  - **f117 (Homer):** "invented the idea of the journey as a metaphor for life" → "crystallized" — the Epic of Gilgamesh (c. 2100 BCE) used the journey-quest metaphor over a millennium earlier.
+- Cards f111, f115, f116 reviewed and confirmed accurate — no changes needed.
+
+## [1.7.10] - 2026-03-09
+
+### Changed
+- **Card content review (Plagues & Pandemics + f107)** — reviewed 10 cards (f98–f107); 4 edits made:
+  - **f98 (Smallpox & the Aztecs):** keyword "Biological warfare" → "Columbian Exchange" — the 1520 epidemic was unintentional disease transmission, not deliberate biological warfare.
+  - **f100 (Edward Jenner):** "launched the science of immunology" → "launched the science of vaccination" — immunology as a discipline came decades later with Pasteur, Metchnikoff, and Ehrlich. Jenner had no concept of the immune system.
+  - **f101 (Cholera & Epidemiology):** quizDescription "invented epidemiology" → "pioneered modern epidemiology" — earlier epidemiological work by Hippocrates, William Farr, and others.
+  - **f106 (COVID-19):** added controversy note about death toll discrepancy — confirmed WHO count (7M) vs. excess mortality estimates (15–25M).
+- Cards f99, f102, f103, f104, f105, f107 reviewed and confirmed accurate — no changes needed.
+
+## [1.7.9] - 2026-03-09
+
+### Changed
+- **Card content review (Empires Rise & Fall + f97)** — reviewed 10 cards (f88–f97); 3 edits made:
+  - **f91 (Gupta Golden Age):** "invented the concept of zero" → "developed zero as a true number" — Babylonians had zero as a placeholder; India's contribution was treating it as a number with arithmetic operations. Added controversy note. Updated `hardCorrect` in descriptionDistractors.
+  - **f93 (Ming Dynasty):** "world's most advanced civilization" → "one of the world's most advanced civilizations". Added controversy note about the "turn inward" narrative (some historians argue it was a rational fiscal decision, not a missed opportunity).
+  - **f94 (British Empire):** "the first truly global empire" → "the largest empire in history" — the Spanish Empire preceded it as a global empire.
+- Cards f88, f89, f90, f92, f95, f96, f97 reviewed and confirmed accurate — no changes needed.
+
 ## [1.7.8] - 2026-03-06
 
 ### Fixed

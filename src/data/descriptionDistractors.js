@@ -96,7 +96,7 @@ export const DESCRIPTION_DISTRACTORS = {
         ]
     },
     f10: {
-        hardCorrect: "The code shifted justice from the arbitrary whim of kings to a standardized written social contract covering family, property, and criminal offenses.",
+        hardCorrect: "The code shifted justice from the arbitrary whim of kings to a standardized written legal code covering family, property, and criminal offenses.",
         distractors: [
             { text: "Hammurabi established the first democratic assembly to create laws by popular vote.", d: 1 },
             { text: "The code primarily regulated trade routes and commercial agreements between city-states.", d: 1 },
@@ -908,7 +908,7 @@ export const DESCRIPTION_DISTRACTORS = {
         ]
     },
     f91: {
-        hardCorrect: "Gupta mathematicians independently invented zero and the decimal system that the entire world uses today.",
+        hardCorrect: "Gupta mathematicians developed zero as a true number \u2014 with its own arithmetic operations \u2014 and the decimal system the world uses today.",
         distractors: [
             { text: "The concept of zero was brought to India by Greek scholars during Alexander's conquests.", d: 1 },
             { text: "The Gupta period was primarily an era of military expansion with little cultural achievement.", d: 1 },
@@ -1080,7 +1080,7 @@ export const DESCRIPTION_DISTRACTORS = {
         ]
     },
     f108: {
-        hardCorrect: "King Ezana converted to Christianity in the 4th century, making Aksum one of the first states to adopt the faith \u2014 decades before Rome.",
+        hardCorrect: "King Ezana converted to Christianity in the 4th century, making Aksum one of the first states to adopt the faith \u2014 decades before Rome made it the state religion.",
         distractors: [
             { text: "Aksum adopted Christianity centuries after the Roman Empire made it the official religion.", d: 1 },
             { text: "The Aksumite Empire was a small, isolated kingdom with no international trade connections.", d: 1 },
@@ -1171,7 +1171,7 @@ export const DESCRIPTION_DISTRACTORS = {
     },
     // ─── Art & Culture ───────────────────────────────────
     f117: {
-        hardCorrect: "Homer's Odyssey invented the journey as a metaphor for life itself, and every subsequent Western writer has worked in his shadow.",
+        hardCorrect: "Homer's Odyssey crystallized the journey as a metaphor for life itself, and every subsequent Western writer has worked in his shadow.",
         distractors: [
             { text: "Homer was a well-documented historical figure whose biography is thoroughly recorded.", d: 1 },
             { text: "The Iliad and Odyssey were written down by Homer himself using the Greek alphabet.", d: 1 },
@@ -1201,7 +1201,7 @@ export const DESCRIPTION_DISTRACTORS = {
         ]
     },
     f120: {
-        hardCorrect: "Shakespeare invented over 1,700 English words still used today and created characters with unprecedented psychological depth.",
+        hardCorrect: "Shakespeare coined or popularized over 1,700 English words still used today and created characters with unprecedented psychological depth.",
         distractors: [
             { text: "Shakespeare wrote his plays for the royal court and they were never performed for common audiences.", d: 1 },
             { text: "Shakespeare's plays were considered great literature in his time but were never staged as performances.", d: 1 },
@@ -1241,7 +1241,7 @@ export const DESCRIPTION_DISTRACTORS = {
         ]
     },
     f124: {
-        hardCorrect: "Synchronized sound in 1927 transformed cinema from a novelty into the dominant art form, capable of reaching every person on the planet.",
+        hardCorrect: "Synchronized sound in 1927 transformed cinema into the dominant art form, capable of reaching audiences across the entire planet.",
         distractors: [
             { text: "Silent films were never commercially successful and attracted only small audiences.", d: 1 },
             { text: "The first sound film was produced in the 1940s, not the 1920s.", d: 1 },
@@ -1571,6 +1571,118 @@ export const DESCRIPTION_DISTRACTORS = {
             { text: "The first cases appeared in a European field hospital and the pandemic killed about 10 million.", d: 2 },
             { text: "The pandemic began in a naval base and primarily affected populations in Europe.", d: 2 },
             { text: "The first cases appeared at a US Army camp; the virus infected a quarter of the world's population and killed around 20 million.", d: 3 },
+        ]
+    },
+
+    // ─── Level 2: Science That Changed Everything ─────────────────────
+    f127: {
+        hardCorrect: "The Hippocratic school argued that disease comes from diet, environment, and lifestyle \u2014 not divine punishment.",
+        distractors: [
+            { text: "Hippocrates discovered that diseases are caused by bacteria and viruses.", d: 1 },
+            { text: "Hippocrates invented surgery and performed the first known operations in Greece.", d: 1 },
+            { text: "Hippocrates personally wrote the Hippocratic Oath that all doctors still swear today.", d: 2 },
+            { text: "The Hippocratic school discovered that bloodletting cures most diseases.", d: 2 },
+            { text: "Hippocrates established that diseases have natural causes, and he personally authored all 60 texts in the Hippocratic Corpus.", d: 3 },
+        ]
+    },
+    f128: {
+        hardCorrect: "Euclid\u2019s axiomatic method \u2014 starting from self-evident postulates and proving everything step by step \u2014 became the model for all scientific reasoning.",
+        distractors: [
+            { text: "Euclid discovered pi and the Pythagorean theorem.", d: 1 },
+            { text: "Euclid invented algebra and used it to solve engineering problems in Alexandria.", d: 1 },
+            { text: "Euclid\u2019s Elements was the first book ever printed on Gutenberg\u2019s press.", d: 2 },
+            { text: "Euclid\u2019s Elements was the standard textbook for 500 years before being replaced by Arabic mathematics.", d: 2 },
+            { text: "Euclid independently originated all the proofs in the Elements rather than compiling earlier Greek mathematicians\u2019 work.", d: 3 },
+        ]
+    },
+    f129: {
+        hardCorrect: "Archimedes proved that a sphere\u2019s volume is exactly two-thirds of its circumscribed cylinder \u2014 and asked for this diagram on his tombstone.",
+        distractors: [
+            { text: "Archimedes invented the steam engine and used it to power ships.", d: 1 },
+            { text: "Archimedes designed the Colosseum in Rome using his mathematical principles.", d: 1 },
+            { text: "Archimedes calculated pi exactly and published the definitive value still used today.", d: 2 },
+            { text: "Archimedes\u2019 death ray mirrors were his greatest military invention, proven effective by modern experiments.", d: 2 },
+            { text: "Archimedes discovered buoyancy through a controlled experiment rather than the famous bathtub moment described by a later author.", d: 3 },
+        ]
+    },
+    f130: {
+        hardCorrect: "Galileo observed mountains on the Moon, moons orbiting Jupiter, and the phases of Venus \u2014 each contradicting the Church-backed geocentric model.",
+        distractors: [
+            { text: "Galileo invented the telescope and was the first person to look at the sky through one.", d: 1 },
+            { text: "Galileo discovered that the Sun orbits the Earth faster than previously thought.", d: 1 },
+            { text: "Galileo was imprisoned for life by the Inquisition and died in a dungeon.", d: 2 },
+            { text: "Galileo\u2019s main achievement was proving that the Earth is round, which the Church denied.", d: 2 },
+            { text: "Galileo turned a newly invented telescope to the sky and was convicted by the Inquisition primarily for his scientific claims rather than for personally insulting the Pope.", d: 3 },
+        ]
+    },
+    f131: {
+        hardCorrect: "Newton unified terrestrial and celestial physics \u2014 showing that the same mathematical laws govern both falling apples and orbiting planets.",
+        distractors: [
+            { text: "Newton discovered gravity when an apple fell on his head, immediately inspiring the Principia.", d: 1 },
+            { text: "Newton\u2019s laws proved that the Earth is the center of the solar system.", d: 1 },
+            { text: "Newton single-handedly invented calculus; Leibniz later copied his work.", d: 2 },
+            { text: "Newton\u2019s Principia described four laws of motion that are still used unchanged today.", d: 2 },
+            { text: "Newton published three laws of motion and universal gravitation that explained the physical universe completely, with no corrections needed until quantum mechanics.", d: 3 },
+        ]
+    },
+    f132: {
+        hardCorrect: "Lavoisier established the law of conservation of mass by carefully weighing substances before and after chemical reactions.",
+        distractors: [
+            { text: "Lavoisier discovered the periodic table of elements.", d: 1 },
+            { text: "Lavoisier proved that water is an element, not a compound.", d: 1 },
+            { text: "Lavoisier was executed during the French Revolution specifically because the Republic opposed science.", d: 2 },
+            { text: "Lavoisier discovered oxygen independently without any knowledge of Priestley\u2019s prior work.", d: 2 },
+            { text: "Lavoisier proved combustion requires oxygen and independently discovered the gas without input from Priestley\u2019s parallel research.", d: 3 },
+        ]
+    },
+    f133: {
+        hardCorrect: "Darwin delayed publishing his theory for 20 years, fearing controversy \u2014 and was finally prompted by Alfred Russel Wallace\u2019s independent discovery of the same idea.",
+        distractors: [
+            { text: "Darwin proposed that humans descended directly from chimpanzees.", d: 1 },
+            { text: "Darwin\u2019s theory was immediately accepted by the scientific community without debate.", d: 1 },
+            { text: "Darwin developed his theory entirely during the Beagle voyage and published it immediately upon return.", d: 2 },
+            { text: "Darwin\u2019s Origin of Species argued that evolution is driven by random chance rather than environmental pressures.", d: 2 },
+            { text: "Darwin independently conceived natural selection with no other scientist reaching the same conclusion, and published his theory in 1859 after decades of solitary research.", d: 3 },
+        ]
+    },
+    f134: {
+        hardCorrect: "Curie coined the term \u2018radioactivity\u2019 and became the first person to win Nobel Prizes in two different sciences.",
+        distractors: [
+            { text: "Marie Curie discovered X-rays and used them to treat cancer patients.", d: 1 },
+            { text: "Curie was the first scientist to split the atom using radium.", d: 1 },
+            { text: "Curie won both Nobel Prizes on her own without sharing them with any other scientist.", d: 2 },
+            { text: "Curie discovered radioactivity itself, rather than extending Henri Becquerel\u2019s earlier discovery.", d: 2 },
+            { text: "Curie discovered polonium and radium and was immediately recognized by the Nobel committee without any initial resistance to honoring a woman.", d: 3 },
+        ]
+    },
+    f135: {
+        hardCorrect: "General relativity revealed that gravity is not a force but the curvature of spacetime caused by mass.",
+        distractors: [
+            { text: "Einstein proved that nothing can travel faster than sound.", d: 1 },
+            { text: "Einstein\u2019s theory showed that time always flows at the same rate everywhere in the universe.", d: 1 },
+            { text: "Einstein developed relativity over a single year of intense work in 1905.", d: 2 },
+            { text: "Einstein\u2019s E=mc\u00B2 was immediately used to build nuclear reactors.", d: 2 },
+            { text: "Einstein published special relativity in 1905 and general relativity in 1915, developing both theories entirely without building on any other physicist\u2019s prior work.", d: 3 },
+        ]
+    },
+    f136: {
+        hardCorrect: "Watson and Crick\u2019s discovery relied critically on Rosalind Franklin\u2019s X-ray crystallography images, shown to them without her knowledge.",
+        distractors: [
+            { text: "Watson and Crick discovered DNA itself, proving for the first time that it carries genetic information.", d: 1 },
+            { text: "DNA was discovered by looking at it under a simple optical microscope.", d: 1 },
+            { text: "Rosalind Franklin chose to share her X-ray data with Watson and Crick as part of a formal collaboration.", d: 2 },
+            { text: "The double helix structure was predicted mathematically before any experimental evidence was found.", d: 2 },
+            { text: "Watson and Crick discovered the double helix using Franklin\u2019s data and she was publicly acknowledged as an equal contributor during her lifetime.", d: 3 },
+        ]
+    },
+    f137: {
+        hardCorrect: "The Higgs field gives other fundamental particles their mass \u2014 without it, electrons would be massless and atoms could not form.",
+        distractors: [
+            { text: "The Higgs boson was discovered using the Hubble Space Telescope.", d: 1 },
+            { text: "Peter Higgs built the Large Hadron Collider himself to prove his theory.", d: 1 },
+            { text: "The Higgs boson was found exactly when Peter Higgs first predicted it would be, in the 1970s.", d: 2 },
+            { text: "Peter Higgs was the sole physicist to propose the Higgs mechanism, with no other independent proposals.", d: 2 },
+            { text: "The Higgs boson was discovered at CERN in 2012, confirming a prediction made 48 years earlier solely by Peter Higgs.", d: 3 },
         ]
     },
 };

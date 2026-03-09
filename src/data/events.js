@@ -58,7 +58,7 @@ const CORE_EVENTS = [
         keywords: "Language · Abstract thought · Symbolic culture",
         description: "Evidence of modern cognitive behaviors accumulated gradually, with a notable acceleration during this period. Complex language and abstract thought allowed cooperation in much larger groups than any other species, enabling art, music, and symbolic culture.",
         quizDescription: "Complex language enabled large-scale cooperation and symbolic culture.",
-        location: { lat: 9.6, lng: 40.5, region: "East Africa", place: "Herto, Ethiopia" },
+        location: { lat: 9.6, lng: 40.5, region: "East Africa", place: "Africa" },
         category: "culture",
         difficulty: 2,
         controversyNotes: {
@@ -72,7 +72,7 @@ const CORE_EVENTS = [
         year: -70000,
         yearEnd: -15000,
         keywords: "Bering Land Bridge · Hominid extinction · Global dispersal",
-        description: "Small groups left Africa via the Arabian Peninsula, eventually reaching the Americas via the Bering Land Bridge and possibly coastal routes. This led to the extinction of other hominid species and development of distinct cultures worldwide.",
+        description: "Small groups left Africa via the Arabian Peninsula, eventually reaching the Americas via the Bering Land Bridge and possibly coastal routes. They encountered and interbred with Neanderthals and Denisovans \u2014 whose DNA survives in us today \u2014 though these species eventually disappeared. Distinct cultures developed worldwide.",
         quizDescription: "Humans left Africa and spread across every continent.",
         location: { lat: 15, lng: 45, region: "East Africa", place: "Global (from East Africa)" },
         category: "science",
@@ -116,7 +116,7 @@ const CORE_EVENTS = [
         date: "c. 3100 BCE",
         year: -3100,
         keywords: "Pharaoh · Pyramids · Centralized state",
-        description: "Upper and Lower Egypt merged under a single divine 'God-King' ruler and centralized bureaucracy capable of massive projects like the Pyramids, creating a state stable for nearly 3,000 years.",
+        description: "Upper and Lower Egypt merged under a single divine 'God-King' ruler and centralized bureaucracy capable of massive projects like the Pyramids, creating a civilization that endured for nearly 3,000 years.",
         quizDescription: "Upper and Lower Egypt merged under a divine ruler.",
         location: { lat: 26, lng: 31.5, region: "North Africa", place: "Nile River Valley, Egypt" },
         category: "politics",
@@ -143,8 +143,8 @@ const CORE_EVENTS = [
         date: "c. 1750 BCE",
         year: -1750,
         keywords: "Written law · Social contract · Standardized justice",
-        description: "282 laws inscribed on stone that established standardized justice. It shifted power from the 'whim of the king' to a written social contract covering family, property, and criminal offenses. Its most famous principle \u2014 'an eye for an eye' \u2014 was revolutionary: punishment had to be proportional, not arbitrary.",
-        quizDescription: "282 laws on stone created the first written legal code.",
+        description: "282 laws inscribed on stone that established standardized justice. It shifted power from the 'whim of the king' to a written legal code covering family, property, and criminal offenses. Its most famous principle \u2014 'an eye for an eye' \u2014 was revolutionary: punishment had to be proportional, not arbitrary.",
+        quizDescription: "282 laws on stone created the ancient world's most complete legal code.",
         location: { lat: 32.5, lng: 44.4, region: "Middle East", place: "Babylon, Mesopotamia" },
         category: "politics",
         difficulty: 2
@@ -1222,11 +1222,14 @@ const CORE_EVENTS = [
         year: 320,
         yearEnd: 550,
         keywords: "Zero \u00B7 Sanskrit literature \u00B7 Hindu renaissance",
-        description: "Under the Gupta Dynasty, India experienced a flowering of art, science, and philosophy. Mathematicians invented the concept of zero and the decimal system that the world uses today. Kalidasa wrote masterpieces of Sanskrit literature, and Hindu temple architecture reached new heights \u2014 making this era India\u2019s classical golden age.",
-        quizDescription: "Gupta India invented zero, the decimal system, and experienced a cultural golden age.",
+        description: "Under the Gupta Dynasty, India experienced a flowering of art, science, and philosophy. Mathematicians developed zero as a true number \u2014 not just a placeholder but something you could add, subtract, and calculate with \u2014 along with the decimal system the world uses today. Kalidasa wrote masterpieces of Sanskrit literature, and Hindu temple architecture reached new heights \u2014 making this era India\u2019s classical golden age.",
+        quizDescription: "Gupta India developed zero as a true number and experienced a cultural golden age.",
         location: { lat: 25.3, lng: 83.0, region: "South Asia", place: "Northern India" },
         category: "culture",
-        difficulty: 2
+        difficulty: 2,
+        controversyNotes: {
+            what: "The Babylonians used a placeholder zero centuries earlier, and Mayan mathematicians independently developed zero around the same period as the Gupta. The Indian contribution was specifically treating zero as a number in its own right \u2014 with defined arithmetic operations \u2014 a conceptual leap that, via Arab mathematicians, gave the world the modern numeral system.",
+        }
     },
     {
         id: "f92",
@@ -1248,11 +1251,14 @@ const CORE_EVENTS = [
         year: 1368,
         yearEnd: 1644,
         keywords: "Zheng He \u00B7 Forbidden City \u00B7 Great Wall rebuilt",
-        description: "After driving out the Mongols, the Ming Dynasty rebuilt China into the world\u2019s most advanced civilization. Admiral Zheng He commanded enormous treasure fleets that reached Africa decades before Columbus crossed the Atlantic. But China then turned inward, dismantling its fleet \u2014 one of history\u2019s great \u2018what ifs\u2019 that left the Age of Exploration to Europe.",
+        description: "After driving out the Mongols, the Ming Dynasty rebuilt China into one of the world\u2019s most advanced civilizations. Admiral Zheng He commanded enormous treasure fleets that reached Africa decades before Columbus crossed the Atlantic. But China then turned inward, dismantling its fleet \u2014 one of history\u2019s great \u2018what ifs\u2019 that left the Age of Exploration to Europe.",
         quizDescription: "Ming China sent treasure fleets to Africa, then turned inward \u2014 leaving exploration to Europe.",
         location: { lat: 39.9, lng: 116.4, region: "East Asia", place: "Beijing, China" },
         category: "politics",
-        difficulty: 2
+        difficulty: 2,
+        controversyNotes: {
+            what: "The \u2018China turned inward\u2019 narrative is debated. Some historians argue the fleet\u2019s dismantling was a rational fiscal decision \u2014 the treasure voyages were enormously expensive and yielded little trade revenue. Others point to factional politics: Confucian bureaucrats opposed the eunuch-led maritime program. The idea that China \u2018missed\u2019 the Age of Exploration projects European values onto Chinese priorities.",
+        }
     },
     {
         id: "f94",
@@ -1261,7 +1267,7 @@ const CORE_EVENTS = [
         year: 1815,
         yearEnd: 1914,
         keywords: "Pax Britannica \u00B7 Quarter of the globe \u00B7 Industrial might",
-        description: "After Napoleon\u2019s defeat, Britain came to rule a quarter of the world\u2019s land and people. Industrial supremacy, the Royal Navy, and the telegraph created the first truly global empire. It spread railways, law, and the English language \u2014 but also extraction, famine, and racial hierarchies that scarred colonies for generations.",
+        description: "After Napoleon\u2019s defeat, Britain came to rule a quarter of the world\u2019s land and people \u2014 the largest empire in history. Industrial supremacy, the Royal Navy, and the telegraph held it together. It spread railways, law, and the English language \u2014 but also extraction, famine, and racial hierarchies that scarred colonies for generations.",
         quizDescription: "Britain ruled a quarter of the world, spreading industry and exploitation alike.",
         location: { lat: 51.5, lng: -0.1, region: "Europe", place: "London (global reach)" },
         category: "politics",
@@ -1317,7 +1323,7 @@ const CORE_EVENTS = [
         date: "1519\u20131521 CE",
         year: 1519,
         yearEnd: 1521,
-        keywords: "Cort\u00E9s \u00B7 Tenochtitl\u00E1n \u00B7 Biological warfare",
+        keywords: "Cort\u00E9s \u00B7 Tenochtitl\u00E1n \u00B7 Columbian Exchange",
         description: "When Hern\u00E1n Cort\u00E9s arrived in Mexico with 500 soldiers, smallpox arrived with him. The disease \u2014 to which Indigenous peoples had no immunity \u2014 killed an estimated 5\u20138 million Aztecs, far more than any battle. The great city of Tenochtitl\u00E1n fell not to Spanish swords but to an invisible enemy, setting the pattern for colonial conquest across the Americas.",
         quizDescription: "Smallpox killed millions of Aztecs and destroyed their empire more than Spanish swords.",
         location: { lat: 19.4, lng: -99.1, region: "Central America", place: "Tenochtitl\u00E1n (Mexico City)" },
@@ -1346,7 +1352,7 @@ const CORE_EVENTS = [
         date: "1796 CE",
         year: 1796,
         keywords: "Cowpox \u00B7 Smallpox prevention \u00B7 Immunology",
-        description: "Country doctor Edward Jenner noticed that milkmaids who caught cowpox never got smallpox. He tested his theory by inoculating a boy with cowpox pus, then exposing him to smallpox \u2014 the boy was immune. This single experiment launched the science of immunology and would eventually lead to the complete eradication of smallpox, saving more lives than any other medical innovation in history.",
+        description: "Country doctor Edward Jenner noticed that milkmaids who caught cowpox never got smallpox. He tested his theory by inoculating a boy with cowpox pus, then exposing him to smallpox \u2014 the boy was immune. This single experiment launched the science of vaccination and would eventually lead to the complete eradication of smallpox, saving more lives than any other medical innovation in history.",
         quizDescription: "Jenner\u2019s cowpox experiment launched vaccination and would eventually eradicate smallpox.",
         location: { lat: 51.7, lng: -2.2, region: "Europe", place: "Berkeley, Gloucestershire, England" },
         category: "science",
@@ -1359,7 +1365,7 @@ const CORE_EVENTS = [
         year: 1854,
         keywords: "John Snow \u00B7 Broad Street pump \u00B7 Germ theory",
         description: "During a cholera outbreak in London\u2019s Soho, physician John Snow mapped the cases and traced the source to a single contaminated water pump on Broad Street. His detective work \u2014 and the famous removal of the pump handle \u2014 helped end the outbreak and founded the field of epidemiology. His work proved that disease spread through contaminated water, not \u2018bad air,\u2019 revolutionizing public health.",
-        quizDescription: "John Snow traced cholera to a water pump and invented epidemiology.",
+        quizDescription: "John Snow traced cholera to a water pump and pioneered modern epidemiology.",
         location: { lat: 51.5, lng: -0.14, region: "Europe", place: "Soho, London, England" },
         category: "science",
         difficulty: 2
@@ -1428,7 +1434,10 @@ const CORE_EVENTS = [
         quizDescription: "COVID-19 killed millions; mRNA vaccines were developed in record time.",
         location: { lat: 30.6, lng: 114.3, region: "East Asia", place: "Wuhan, China (spreading globally)" },
         category: "science",
-        difficulty: 1
+        difficulty: 1,
+        controversyNotes: {
+            what: "The official WHO confirmed death toll is over 7 million, but excess mortality studies (by WHO, The Economist, and The Lancet) estimate 15\u201325 million actual deaths \u2014 more than double the confirmed count. Many deaths went unrecorded, especially in low-income countries with limited testing.",
+        }
     },
 
     // --- Level 2: Kingdoms of Africa Chapter ---
@@ -1452,7 +1461,7 @@ const CORE_EVENTS = [
         year: 100,
         yearEnd: 940,
         keywords: "Aksum \u00B7 Obelisks \u00B7 Ezana \u00B7 Ark of the Covenant",
-        description: "The Aksumite Empire in modern-day Ethiopia and Eritrea was one of the ancient world\u2019s great trading powers, minting its own coins and trading with Rome, India, and Arabia. In the 4th century, King Ezana converted to Christianity, making Aksum one of the first states to adopt the faith \u2014 decades before Rome made it official. The towering stone obelisks of Aksum still stand as monuments to African engineering.",
+        description: "The Aksumite Empire in modern-day Ethiopia and Eritrea was one of the ancient world\u2019s great trading powers, minting its own coins and trading with Rome, India, and Arabia. In the 4th century, King Ezana converted to Christianity, making Aksum one of the first states to adopt the faith \u2014 decades before Rome made it the state religion. The towering stone obelisks of Aksum still stand as monuments to African engineering.",
         quizDescription: "Aksum adopted Christianity before Rome and traded across three continents.",
         location: { lat: 14.1, lng: 38.7, region: "East Africa", place: "Aksum, Ethiopia" },
         category: "culture",
@@ -1465,7 +1474,7 @@ const CORE_EVENTS = [
         year: 300,
         yearEnd: 1200,
         keywords: "Wagadu \u00B7 Gold \u00B7 Salt trade \u00B7 Koumbi Saleh",
-        description: "The Ghana Empire (also called Wagadu) controlled the trans-Saharan gold-salt trade, taxing every ounce that crossed its territory. Arab geographers called its ruler \u2018the richest king on the face of the earth.\u2019 Ghana\u2019s capital at Koumbi Saleh was a cosmopolitan city where Muslim merchants and traditional African rulers coexisted. Its wealth and trade networks laid the foundation for the even greater empires that followed.",
+        description: "The Ghana Empire (also called Wagadu) controlled the trans-Saharan gold-salt trade, taxing every ounce that crossed its territory. Arab geographers called its ruler \u2018the richest king on the face of the earth.\u2019 Its probable capital at Koumbi Saleh was a cosmopolitan city where Muslim merchants and traditional African rulers coexisted. Its wealth and trade networks laid the foundation for the even greater empires that followed.",
         quizDescription: "Ghana controlled the gold-salt trade and was called the richest kingdom on earth.",
         location: { lat: 15.8, lng: -7.9, region: "West Africa", place: "Koumbi Saleh, Mauritania" },
         category: "politics",
@@ -1474,9 +1483,9 @@ const CORE_EVENTS = [
     {
         id: "f110",
         title: "Mali Empire & Mansa Musa",
-        date: "c. 1235\u20131400 CE",
+        date: "c. 1235\u20131600 CE",
         year: 1235,
-        yearEnd: 1400,
+        yearEnd: 1600,
         keywords: "Mansa Musa \u00B7 Timbuktu \u00B7 Hajj \u00B7 Gold",
         description: "The Mali Empire absorbed Ghana\u2019s territory and became the largest empire in West African history. Its most famous ruler, Mansa Musa, made a pilgrimage to Mecca in 1324, distributing so much gold along the way that he crashed the Egyptian economy for a decade. He built the great mosques of Timbuktu and Djenn\u00E9, turning Mali into a center of Islamic learning. By some measures, Mansa Musa was the richest person who ever lived.",
         quizDescription: "Mansa Musa\u2019s gold crashed Egypt\u2019s economy; he may be history\u2019s richest person.",
@@ -1507,7 +1516,7 @@ const CORE_EVENTS = [
         year: 1464,
         yearEnd: 1591,
         keywords: "Sunni Ali \u00B7 Askia Muhammad \u00B7 University of Sankore",
-        description: "The Songhai Empire conquered Mali and became the largest empire in African history, stretching across modern-day Mali, Niger, Nigeria, and Senegal. Under Askia Muhammad, Timbuktu became one of the world\u2019s great intellectual centers \u2014 the University of Sankore housed 25,000 students and hundreds of thousands of manuscripts. The empire fell in 1591 when Moroccan invaders with gunpowder defeated Songhai\u2019s cavalry.",
+        description: "The Songhai Empire conquered Mali and became the largest empire in West African history, stretching across modern-day Mali, Niger, Nigeria, and Senegal. Under Askia Muhammad, Timbuktu became one of the world\u2019s great intellectual centers \u2014 the University of Sankore housed 25,000 students and hundreds of thousands of manuscripts. The empire fell in 1591 when Moroccan invaders with gunpowder defeated Songhai\u2019s cavalry.",
         quizDescription: "Songhai made Timbuktu a world-class university city with 25,000 students.",
         location: { lat: 16.8, lng: 0.0, region: "West Africa", place: "Gao / Timbuktu, Mali" },
         category: "culture",
@@ -1523,7 +1532,7 @@ const CORE_EVENTS = [
         year: 1440,
         yearEnd: 1897,
         keywords: "Benin Bronzes \u00B7 Oba \u00B7 Edo people \u00B7 Lost-wax casting",
-        description: "The Kingdom of Benin (in modern Nigeria) produced some of history\u2019s most sophisticated metal art using lost-wax casting techniques that astonished Europeans. The Benin Bronzes \u2014 thousands of plaques, sculptures, and heads \u2014 recorded royal history and ritual life with stunning realism. When the British sacked Benin City in 1897, they looted these treasures, scattering them across Western museums. Today, the Bronzes are at the center of the world\u2019s largest repatriation debate.",
+        description: "Founded centuries earlier, the Kingdom of Benin (in modern Nigeria) reached its peak under Oba Ewuare the Great and produced some of history\u2019s most sophisticated metal art using lost-wax casting techniques that astonished Europeans. The Benin Bronzes \u2014 thousands of plaques, sculptures, and heads \u2014 recorded royal history and ritual life with stunning realism. When the British sacked Benin City in 1897, they looted these treasures, scattering them across Western museums. Today, the Bronzes are at the center of the world\u2019s largest repatriation debate.",
         quizDescription: "Benin\u2019s lost-wax bronzes astonished Europe; their return is now a global debate.",
         location: { lat: 6.3, lng: 5.6, region: "West Africa", place: "Benin City, Nigeria" },
         category: "culture",
@@ -1536,7 +1545,7 @@ const CORE_EVENTS = [
         year: 1816,
         yearEnd: 1828,
         keywords: "Shaka Zulu \u00B7 Mfecane \u00B7 Military revolution",
-        description: "Shaka kaSenzangakhona transformed a small Zulu clan into the most powerful military force in southern Africa. He revolutionized warfare with the short stabbing spear (iklwa), the cowhide shield, and disciplined regiment tactics. The resulting upheaval \u2014 the Mfecane \u2014 reshaped the entire region, displacing millions and creating new kingdoms. Shaka\u2019s military innovations made the Zulu a force that would later fight the British Empire to a standstill at Isandlwana.",
+        description: "Shaka kaSenzangakhona transformed a small Zulu clan into the most powerful military force in southern Africa. He revolutionized warfare with the short stabbing spear (iklwa), the cowhide shield, and disciplined regiment tactics. The resulting upheaval \u2014 the Mfecane \u2014 reshaped the entire region, though historians debate how much was driven by Zulu expansion versus broader pressures like drought and trade disruption. Shaka\u2019s military innovations made the Zulu a force that would later fight the British Empire to a standstill at Isandlwana.",
         quizDescription: "Shaka\u2019s military revolution made the Zulu the dominant force in southern Africa.",
         location: { lat: -28.5, lng: 31.0, region: "Southern Africa", place: "KwaZulu-Natal, South Africa" },
         category: "war",
@@ -1578,7 +1587,7 @@ const CORE_EVENTS = [
         date: "c. 750 BCE",
         year: -750,
         keywords: "Iliad \u00B7 Odyssey \u00B7 Oral tradition \u00B7 Greek literature",
-        description: "A blind poet \u2014 or perhaps a tradition of poets \u2014 composed the Iliad and the Odyssey, the founding works of Western literature. These epics gave the Greeks their shared identity, their moral vocabulary, and their understanding of heroism, fate, and the gods. Every subsequent Western writer, from Virgil to James Joyce, has written in Homer\u2019s shadow. The Odyssey invented the idea of the journey as a metaphor for life itself.",
+        description: "A blind poet \u2014 or perhaps a tradition of poets \u2014 composed the Iliad and the Odyssey, the founding works of Western literature. These epics gave the Greeks their shared identity, their moral vocabulary, and their understanding of heroism, fate, and the gods. Every subsequent Western writer, from Virgil to James Joyce, has written in Homer\u2019s shadow. The Odyssey crystallized the idea of the journey as a metaphor for life itself.",
         quizDescription: "Homer\u2019s Iliad and Odyssey became the foundation of Western literature.",
         location: { lat: 38.4, lng: 27.1, region: "Europe", place: "Ionia, Greece" },
         category: "culture",
@@ -1591,8 +1600,8 @@ const CORE_EVENTS = [
         year: 786,
         yearEnd: 1258,
         keywords: "House of Wisdom \u00B7 Algebra \u00B7 Arabesque \u00B7 Calligraphy",
-        description: "Under the Abbasid caliphs, Baghdad\u2019s House of Wisdom became the intellectual center of the world. Scholars translated Greek, Persian, and Indian texts, preserving knowledge that Europe had lost. Al-Khwarizmi invented algebra, Ibn Sina wrote the medical canon used for 600 years, and Islamic artists developed the arabesque \u2014 transforming geometric patterns into a spiritual art form. Without this golden age, the European Renaissance would have had nothing to rediscover.",
-        quizDescription: "Baghdad\u2019s scholars preserved ancient knowledge and invented algebra.",
+        description: "Under the Abbasid caliphs, Baghdad\u2019s House of Wisdom became the intellectual center of the world. Scholars translated Greek, Persian, and Indian texts, preserving knowledge that Europe had lost. Al-Khwarizmi pioneered algebra, Ibn Sina wrote the medical canon used for 600 years, and Islamic artists developed the arabesque \u2014 transforming geometric patterns into a spiritual art form. Without this golden age, the European Renaissance would have had nothing to rediscover.",
+        quizDescription: "Baghdad\u2019s scholars preserved ancient knowledge and pioneered algebra.",
         location: { lat: 33.3, lng: 44.4, region: "Middle East", place: "Baghdad, Iraq" },
         category: "culture",
         difficulty: 2
@@ -1604,7 +1613,7 @@ const CORE_EVENTS = [
         year: 1480,
         yearEnd: 1520,
         keywords: "Mona Lisa \u00B7 Sistine Chapel \u00B7 Perspective \u00B7 Humanism",
-        description: "In Florence and Rome, Leonardo da Vinci and Michelangelo Buonarroti redefined what art could be. Leonardo\u2019s Mona Lisa captured the inner life of a human being for the first time; Michelangelo\u2019s Sistine Chapel ceiling turned a room into a universe. They pioneered anatomy, perspective, and the idea that the artist was not a craftsman but a genius. Their rivalry pushed both to heights that still define the word \u2018masterpiece.\u2019",
+        description: "In Florence and Rome, Leonardo da Vinci and Michelangelo Buonarroti redefined what art could be. Leonardo\u2019s Mona Lisa captured the inner life of a human being for the first time; Michelangelo\u2019s Sistine Chapel ceiling turned a room into a universe. They mastered anatomy and perspective, and the idea that the artist was not a craftsman but a genius. Their rivalry pushed both to heights that still define the word \u2018masterpiece.\u2019",
         quizDescription: "Leonardo and Michelangelo redefined art with the Mona Lisa and the Sistine Chapel.",
         location: { lat: 43.8, lng: 11.3, region: "Europe", place: "Florence & Rome, Italy" },
         category: "culture",
@@ -1617,8 +1626,8 @@ const CORE_EVENTS = [
         year: 1590,
         yearEnd: 1613,
         keywords: "Globe Theatre \u00B7 Hamlet \u00B7 Sonnets \u00B7 English language",
-        description: "William Shakespeare wrote 37 plays that explored the full range of human experience \u2014 jealousy, ambition, love, madness, and mortality \u2014 with a psychological depth no writer had achieved before. He invented over 1,700 English words still used today and created characters so vivid they feel like real people four centuries later. The Globe Theatre democratized art: groundlings and lords watched the same plays, side by side.",
-        quizDescription: "Shakespeare invented 1,700 English words and explored the full range of human psychology.",
+        description: "William Shakespeare wrote 37 plays that explored the full range of human experience \u2014 jealousy, ambition, love, madness, and mortality \u2014 with a psychological depth no writer had achieved before. He coined or popularized over 1,700 English words still used today and created characters so vivid they feel like real people four centuries later. The Globe Theatre democratized art: groundlings and lords watched the same plays, side by side.",
+        quizDescription: "Shakespeare coined or popularized 1,700 English words and explored the full range of human psychology.",
         location: { lat: 51.5, lng: -0.1, region: "Europe", place: "London, England" },
         category: "culture",
         difficulty: 1
@@ -1668,7 +1677,7 @@ const CORE_EVENTS = [
         year: 1927,
         yearEnd: 1960,
         keywords: "Talkies \u00B7 Hollywood \u00B7 Chaplin \u00B7 Hitchcock \u00B7 Mass entertainment",
-        description: "The arrival of synchronized sound in 1927 (\u2018The Jazz Singer\u2019) transformed cinema from a novelty into the dominant art form of the 20th century. Hollywood\u2019s studio system produced Chaplin\u2019s social commentary, Disney\u2019s animation, Hitchcock\u2019s suspense, and Casablanca\u2019s romance. Cinema shaped how billions of people understood love, war, heroism, and villainy. For the first time in history, a single story could reach every human being on the planet simultaneously.",
+        description: "The arrival of synchronized sound in 1927 (\u2018The Jazz Singer\u2019) transformed cinema into the dominant art form of the 20th century. Hollywood\u2019s studio system produced Chaplin\u2019s social commentary, Disney\u2019s animation, Hitchcock\u2019s suspense, and Casablanca\u2019s romance. Cinema shaped how billions of people understood love, war, heroism, and villainy. For the first time in history, a single story could reach audiences across the entire planet.",
         quizDescription: "Sound films made cinema the 20th century\u2019s dominant art form.",
         location: { lat: 34.1, lng: -118.3, region: "North America", place: "Hollywood, USA" },
         category: "culture",
@@ -1698,6 +1707,179 @@ const CORE_EVENTS = [
         location: { lat: 37.4, lng: -122.1, region: "North America", place: "Global" },
         category: "culture",
         difficulty: 1
+    },
+
+    // ─── Level 2: Science That Changed Everything ─────────────────────
+    {
+        id: "f127",
+        title: "Hippocrates & Rational Medicine",
+        date: "c. 460\u2013370 BCE",
+        year: -460,
+        yearEnd: -370,
+        keywords: "Natural causes \u00B7 Hippocratic Oath \u00B7 Clinical observation \u00B7 Ethics",
+        description: "Hippocrates of Kos is traditionally called the \u2018Father of Medicine\u2019 for insisting that diseases have natural causes, not divine punishments. The Hippocratic school rejected supernatural explanations and instead observed patients, recorded symptoms, and sought patterns. The Hippocratic Oath \u2014 though likely composed by later followers \u2014 established medicine as an ethical profession. By arguing that sickness comes from diet, environment, and lifestyle rather than angry gods, Hippocrates laid the foundation for evidence-based medicine.",
+        quizDescription: "Hippocrates argued that diseases have natural causes, not divine origins.",
+        location: { lat: 36.9, lng: 27.0, region: "Europe", place: "Kos, Greece" },
+        category: "science",
+        difficulty: 2,
+        controversyNotes: {
+            what: "Modern historians doubt that any single person wrote the 60+ texts in the \u2018Hippocratic Corpus\u2019 \u2014 they span different writing styles and centuries. The Oath itself may date from the 4th century BCE or later. Hippocrates was likely a real physician, but much of what we attribute to him was the work of an entire school.",
+        }
+    },
+    {
+        id: "f128",
+        title: "Euclid\u2019s Elements",
+        date: "c. 300 BCE",
+        year: -300,
+        keywords: "Geometry \u00B7 Axioms \u00B7 Proofs \u00B7 Alexandria \u00B7 Mathematical reasoning",
+        description: "Around 300 BCE, Euclid compiled and systematized Greek mathematical knowledge into the \u2018Elements\u2019 \u2014 13 books of definitions, postulates, and proofs covering plane geometry, number theory, and solid geometry. It became the second most printed book in history after the Bible, and remained the standard mathematics textbook for over two thousand years. Abraham Lincoln taught himself logic by studying the Elements. Euclid\u2019s method \u2014 start with self-evident axioms, then prove everything step by step \u2014 became the model for all scientific reasoning.",
+        quizDescription: "Euclid compiled Greek mathematics into a textbook used for over 2,000 years.",
+        location: { lat: 31.2, lng: 29.9, region: "North Africa", place: "Alexandria, Egypt" },
+        category: "science",
+        difficulty: 2,
+        controversyNotes: {
+            what: "Almost nothing is known about Euclid\u2019s life. Some ancient sources suggest \u2018Euclid\u2019 may have been a team of scholars rather than one person. The Elements compiled and organized earlier Greek mathematicians\u2019 work (Eudoxus, Theaetetus, Pythagoras) rather than originating all the proofs.",
+        }
+    },
+    {
+        id: "f129",
+        title: "Archimedes & Applied Mathematics",
+        date: "c. 287\u2013212 BCE",
+        year: -287,
+        yearEnd: -212,
+        keywords: "Buoyancy \u00B7 Pi \u00B7 Eureka \u00B7 War machines \u00B7 Lever",
+        description: "Archimedes of Syracuse was the ancient world\u2019s greatest mathematician and engineer. He discovered the principle of buoyancy (reputedly shouting \u2018Eureka!\u2019 in his bath), calculated pi with remarkable accuracy, and famously declared \u2018Give me a lever long enough and I shall move the world.\u2019 He designed war machines \u2014 giant claws and focused mirrors \u2014 that held off Roman armies for two years. He proved that a sphere\u2019s volume is exactly two-thirds of its circumscribed cylinder, and loved this result so much he asked for the diagram on his tombstone. Killed by a Roman soldier during the siege of Syracuse, Archimedes showed that pure mathematics has real-world power.",
+        quizDescription: "Archimedes discovered buoyancy, calculated pi, and designed war machines using mathematics.",
+        location: { lat: 37.1, lng: 15.3, region: "Europe", place: "Syracuse, Sicily" },
+        category: "science",
+        difficulty: 2,
+        controversyNotes: {
+            what: "The \u2018Eureka\u2019 bathtub story comes from Vitruvius, writing two centuries later, and is likely apocryphal. The \u2018death ray\u2019 mirrors are almost certainly legend \u2014 modern experiments (including a MythBusters test) have failed to replicate them. Archimedes\u2019 mathematical achievements, however, are well attested.",
+        }
+    },
+    {
+        id: "f130",
+        title: "Galileo & the Telescope",
+        date: "1609\u20131633 CE",
+        year: 1609,
+        yearEnd: 1633,
+        keywords: "Telescope \u00B7 Moons of Jupiter \u00B7 Heliocentrism \u00B7 Inquisition \u00B7 Experiment",
+        description: "In 1609, Galileo Galilei turned a newly invented telescope to the sky and saw what no human had seen before: mountains on the Moon, four moons orbiting Jupiter, and the phases of Venus. Each observation contradicted the Church-backed Ptolemaic model of a perfect, Earth-centered cosmos. Galileo\u2019s public advocacy for the Copernican heliocentric model led to his trial by the Roman Inquisition in 1633, where he was forced to recant and spent his remaining years under house arrest. Legend says he muttered \u2018And yet it moves\u2019 \u2014 whether or not he did, science had permanently escaped the control of authority.",
+        quizDescription: "Galileo\u2019s telescope observations proved the Earth-centered model of the cosmos was wrong.",
+        location: { lat: 43.8, lng: 11.3, region: "Europe", place: "Florence & Rome, Italy" },
+        category: "science",
+        difficulty: 2,
+        controversyNotes: {
+            what: "Galileo did not invent the telescope \u2014 Hans Lippershey patented the design in 1608. The \u2018Eppur si muove\u2019 (\u2018And yet it moves\u2019) quote is likely a later invention; no contemporary source records it. His conflict with the Church was also partly personal \u2014 he satirized Pope Urban VIII, a former supporter, in his Dialogue.",
+        }
+    },
+    {
+        id: "f131",
+        title: "Newton\u2019s Principia",
+        date: "1687 CE",
+        year: 1687,
+        keywords: "Gravity \u00B7 Laws of motion \u00B7 Calculus \u00B7 Principia \u00B7 Universal laws",
+        description: "In 1687, Isaac Newton published the \u2018Principia Mathematica\u2019 \u2014 three laws of motion and a universal law of gravitation that explained everything from falling apples to orbiting planets in a single mathematical framework. He co-invented calculus to do the calculations, simultaneously with Leibniz \u2014 sparking one of history\u2019s bitterest priority disputes. Newton unified terrestrial and celestial physics for the first time, showing that the same laws govern both the heavens and the Earth. For over two centuries, Newtonian mechanics seemed to describe reality completely \u2014 until Einstein came along.",
+        quizDescription: "Newton\u2019s laws of motion and universal gravitation explained the physical universe.",
+        location: { lat: 52.2, lng: 0.1, region: "Europe", place: "Cambridge, England" },
+        category: "science",
+        difficulty: 3,
+        controversyNotes: {
+            date: "The Newton\u2013Leibniz calculus priority dispute was one of the most acrimonious in science history. Both developed calculus independently in the 1660s\u20131670s, but Newton used his position as Royal Society president to stack the investigative committee against Leibniz. Modern historians credit both with independent invention.",
+        }
+    },
+    {
+        id: "f132",
+        title: "Lavoisier & the Chemical Revolution",
+        date: "1770s\u20131794 CE",
+        year: 1775,
+        yearEnd: 1794,
+        keywords: "Oxygen \u00B7 Conservation of mass \u00B7 Phlogiston \u00B7 Chemical nomenclature",
+        description: "Antoine Lavoisier demolished the ancient theory of phlogiston and replaced it with modern chemistry. By carefully weighing substances before and after chemical reactions, he proved that combustion requires oxygen, not a mysterious \u2018fire element.\u2019 He named oxygen and hydrogen, wrote the first modern chemistry textbook, and established the law of conservation of mass. Tragically, Lavoisier was guillotined during the French Revolution in 1794 \u2014 executed primarily for his role as a tax collector. In a single lifetime, he transformed chemistry into a modern, quantitative science.",
+        quizDescription: "Lavoisier disproved the phlogiston theory and founded modern chemistry.",
+        location: { lat: 48.9, lng: 2.3, region: "Europe", place: "Paris, France" },
+        category: "science",
+        difficulty: 2,
+        controversyNotes: {
+            what: "The famous quote \u2018the Republic has no need for scientists\u2019 is likely apocryphal \u2014 no contemporary source records it. Lavoisier was executed for his role as a \u2018fermier g\u00E9n\u00E9ral\u2019 (tax farmer), not for his science. Joseph Priestley independently discovered oxygen around the same time, and some historians argue Lavoisier\u2019s contribution was more in systematizing chemistry than in discovering oxygen itself.",
+        }
+    },
+    {
+        id: "f133",
+        title: "Darwin & the Origin of Species",
+        date: "1859 CE",
+        year: 1859,
+        keywords: "Natural selection \u00B7 Evolution \u00B7 HMS Beagle \u00B7 Adaptation \u00B7 Common descent",
+        description: "In 1859, Charles Darwin published \u2018On the Origin of Species,\u2019 arguing that all life evolves through natural selection \u2014 organisms with traits better suited to their environment survive and reproduce, gradually changing species over millions of years. Darwin had begun developing the idea two decades earlier, inspired by observations from his voyage on HMS Beagle, but delayed publication for years, fearing the controversy. He was right to worry: the idea that humans share ancestry with apes outraged Victorian society. Yet natural selection elegantly explained the diversity of life without divine design, and remains the foundation of modern biology.",
+        quizDescription: "Darwin proposed that all life evolves through natural selection.",
+        location: { lat: 51.4, lng: 0.0, region: "Europe", place: "London, England" },
+        category: "science",
+        difficulty: 2,
+        controversyNotes: {
+            what: "Alfred Russel Wallace independently conceived natural selection and sent Darwin his paper in 1858, prompting the joint presentation at the Linnean Society. Wallace received far less credit despite developing the same theory. The scientific debate was largely settled by the 1870s, though religious opposition continues in some communities today.",
+        }
+    },
+    {
+        id: "f134",
+        title: "Marie Curie & Radioactivity",
+        date: "1898\u20131911 CE",
+        year: 1898,
+        yearEnd: 1911,
+        keywords: "Radioactivity \u00B7 Polonium \u00B7 Radium \u00B7 Nobel Prize \u00B7 Radiation",
+        description: "Marie Curie discovered two new elements \u2014 polonium and radium \u2014 by painstakingly processing tonnes of uranium ore in a leaky shed. She coined the term \u2018radioactivity\u2019 and became the first woman to win a Nobel Prize (1903, Physics), then the first person ever to win Nobel Prizes in two different sciences (1911, Chemistry). Despite revolutionary contributions, she faced persistent sexism: the French Academy of Sciences refused her membership, and tabloids attacked her personal life. She died in 1934 from aplastic anemia caused by years of radiation exposure \u2014 her notebooks remain too radioactive to handle without protection.",
+        quizDescription: "Marie Curie discovered polonium and radium, winning two Nobel Prizes.",
+        location: { lat: 48.9, lng: 2.3, region: "Europe", place: "Paris, France" },
+        category: "science",
+        difficulty: 2,
+        controversyNotes: {
+            what: "Pierre Curie shared the 1903 Nobel, and the committee initially planned to exclude Marie entirely \u2014 only Pierre\u2019s insistence got her added. Henri Becquerel discovered radioactivity first (1896); the Curies extended his work. Some historians debate whether key conceptual breakthroughs came from Marie or Pierre, though her solo second Nobel settled the question of her independent brilliance.",
+        }
+    },
+    {
+        id: "f135",
+        title: "Einstein & Relativity",
+        date: "1905\u20131915 CE",
+        year: 1905,
+        yearEnd: 1915,
+        keywords: "E=mc\u00B2 \u00B7 Spacetime \u00B7 General relativity \u00B7 Special relativity \u00B7 Gravity",
+        description: "In 1905, a 26-year-old patent clerk named Albert Einstein published four papers that rewrote physics. Special relativity showed that time and space are not absolute but depend on the observer\u2019s motion, and that mass and energy are interchangeable (E=mc\u00B2). Ten years later, general relativity revealed that gravity is not a force but the curvature of spacetime caused by mass. These ideas predicted black holes, gravitational waves, and the expansion of the universe \u2014 all confirmed decades later. Einstein did not just correct Newton \u2014 he showed that reality itself is stranger than anyone had imagined.",
+        quizDescription: "Einstein\u2019s relativity revealed that time, space, and gravity are not what they seem.",
+        location: { lat: 46.9, lng: 7.4, region: "Europe", place: "Bern & Berlin" },
+        category: "science",
+        difficulty: 3,
+        controversyNotes: {
+            what: "Einstein\u2019s first wife, Mileva Mari\u0107, was a physicist, and some historians argue she contributed to the 1905 papers. The evidence is inconclusive \u2014 she is listed on none of the publications and Einstein\u2019s correspondence is ambiguous. Henri Poincar\u00E9 and Hendrik Lorentz independently developed ideas close to special relativity around the same time.",
+        }
+    },
+    {
+        id: "f136",
+        title: "DNA & the Secret of Life",
+        date: "1953 CE",
+        year: 1953,
+        keywords: "Double helix \u00B7 Rosalind Franklin \u00B7 Genetics \u00B7 Heredity \u00B7 Molecular biology",
+        description: "In 1953, James Watson and Francis Crick announced the double helix structure of DNA \u2014 the molecule that carries the genetic instructions for all known life. Their discovery relied critically on X-ray crystallography images taken by Rosalind Franklin, whose contribution was long underrecognized. The double helix revealed how heredity works: DNA copies itself by unzipping and rebuilding each strand. This single insight launched modern genetics and made possible everything from forensic science and genome sequencing to CRISPR gene editing.",
+        quizDescription: "Watson and Crick discovered DNA\u2019s double helix, using Rosalind Franklin\u2019s X-ray data.",
+        location: { lat: 52.2, lng: 0.1, region: "Europe", place: "Cambridge, England" },
+        category: "science",
+        difficulty: 2,
+        controversyNotes: {
+            what: "Rosalind Franklin\u2019s crucial X-ray photograph (\u2018Photo 51\u2019) was shown to Watson without her knowledge or consent by her colleague Maurice Wilkins. Franklin died of ovarian cancer in 1958, possibly caused by radiation exposure, and was not included in the 1962 Nobel Prize (which cannot be awarded posthumously). The extent of her intellectual contribution beyond the photograph remains actively debated.",
+        }
+    },
+    {
+        id: "f137",
+        title: "The Higgs Boson",
+        date: "July 4, 2012",
+        year: 2012,
+        keywords: "CERN \u00B7 Large Hadron Collider \u00B7 Particle physics \u00B7 Standard Model \u00B7 Mass",
+        description: "On July 4, 2012, scientists at CERN announced the discovery of the Higgs boson \u2014 a particle predicted 48 years earlier by Peter Higgs and others. The Higgs field gives other fundamental particles their mass; without it, electrons would be massless, atoms could not form, and neither could you. Finding the Higgs required the largest machine ever built (a 27-kilometer underground ring), billions of dollars, and thousands of scientists from over 100 countries. Peter Higgs, 83 years old at the announcement, wept at the press conference. It was the greatest confirmation of theoretical physics since relativity.",
+        quizDescription: "CERN discovered the Higgs boson, the particle that explains why matter has mass.",
+        location: { lat: 46.2, lng: 6.1, region: "Europe", place: "CERN, Geneva, Switzerland" },
+        category: "science",
+        difficulty: 3,
+        controversyNotes: {
+            what: "Six physicists independently proposed the Higgs mechanism in 1964: Peter Higgs, Fran\u00E7ois Englert, Robert Brout, Gerald Guralnik, C. R. Hagen, and Tom Kibble. Only Higgs and Englert received the 2013 Nobel Prize (Brout had died in 2011). The nickname \u2018God Particle\u2019 was coined by publisher Leon Lederman and is widely disliked by physicists, including Higgs himself.",
+        }
     }
 ];
 
@@ -2413,6 +2595,75 @@ for (const [eventId, connections] of Object.entries(LEVEL2_ART_CONNECTIONS)) {
     }
 }
 
+// --- Level 2: Science That Changed Everything connections ---
+const LEVEL2_SCIENCE_CONNECTIONS = {
+    f127: [
+        { id: "f128", label: "Greek rational inquiry inspired Euclid\u2019s axiomatic method" },
+        { id: "f129", label: "Hippocratic observation influenced Archimedes\u2019 empirical approach" },
+    ],
+    f128: [
+        { id: "f127", label: "Built on the Greek tradition of rational inquiry Hippocrates pioneered" },
+        { id: "f129", label: "Archimedes extended Euclid\u2019s geometry into engineering and physics" },
+        { id: "f26", label: "Islamic scholars preserved and extended Euclid\u2019s Elements" },
+    ],
+    f129: [
+        { id: "f128", label: "Built directly on Euclid\u2019s geometric foundations" },
+        { id: "f131", label: "Newton\u2019s calculus completed what Archimedes began with infinitesimals" },
+    ],
+    f130: [
+        { id: "f38", label: "Galileo was a central figure in the Scientific Revolution" },
+        { id: "f131", label: "Galileo\u2019s observations provided the data Newton\u2019s laws explained" },
+    ],
+    f131: [
+        { id: "f130", label: "Built on Galileo\u2019s observations and Kepler\u2019s laws" },
+        { id: "f129", label: "Calculus fulfilled Archimedes\u2019 early work with infinitesimals" },
+        { id: "f38", label: "The Principia was the culmination of the Scientific Revolution" },
+        { id: "f135", label: "Newton\u2019s laws reigned supreme until Einstein rewrote them" },
+    ],
+    f132: [
+        { id: "f43", label: "Lavoisier was guillotined during the French Revolution he witnessed" },
+        { id: "f134", label: "Modern chemistry enabled Curie\u2019s work on radioactive elements" },
+    ],
+    f133: [
+        { id: "f136", label: "DNA confirmed Darwin\u2019s theory by revealing the mechanism of heredity" },
+    ],
+    f134: [
+        { id: "f132", label: "Chemistry\u2019s foundations enabled research into radioactive elements" },
+        { id: "f135", label: "Radioactivity research fed into the nuclear physics Einstein theorized" },
+    ],
+    f135: [
+        { id: "f131", label: "Einstein corrected Newton\u2019s laws after two centuries of dominance" },
+        { id: "f134", label: "Curie\u2019s radioactivity work opened the atomic world Einstein theorized about" },
+        { id: "f137", label: "Relativity and quantum mechanics led to the Standard Model and the Higgs" },
+        { id: "f53", label: "E=mc\u00B2 made the atomic bomb possible" },
+    ],
+    f136: [
+        { id: "f133", label: "DNA provided the physical mechanism Darwin\u2019s natural selection needed" },
+    ],
+    f137: [
+        { id: "f135", label: "The Standard Model combined relativity and quantum mechanics" },
+    ],
+    // Cross-connections: append to existing events
+    f26: [
+        { id: "f128", label: "Islamic scholars translated and extended Euclid\u2019s geometry" },
+    ],
+    f38: [
+        { id: "f130", label: "Galileo\u2019s telescope observations were a turning point in the Scientific Revolution" },
+        { id: "f131", label: "Newton\u2019s Principia was the Scientific Revolution\u2019s crowning achievement" },
+    ],
+    f43: [
+        { id: "f132", label: "The Revolution executed Lavoisier, France\u2019s greatest scientist" },
+    ],
+};
+
+for (const [eventId, connections] of Object.entries(LEVEL2_SCIENCE_CONNECTIONS)) {
+    if (EVENT_CONNECTIONS[eventId]) {
+        EVENT_CONNECTIONS[eventId].push(...connections);
+    } else {
+        EVENT_CONNECTIONS[eventId] = connections;
+    }
+}
+
 // Attach connections to each core event
 for (const event of CORE_EVENTS) {
     if (EVENT_CONNECTIONS[event.id]) {
@@ -2445,6 +2696,7 @@ const IMPORTANCE_MAP = {
     f88: 'major', f89: 'major', f90: 'major', f92: 'major', f94: 'major',
     f95: 'major', f98: 'major', f102: 'major', f103: 'major', f104: 'major',
     f105: 'major', f110: 'major', f116: 'major', f117: 'major', f118: 'major',
+    f128: 'major', f131: 'major', f133: 'major', f135: 'major', f136: 'major',
     // ── Notable ── historically significant; everything else defaults here
 };
 
@@ -2457,7 +2709,7 @@ export const ALL_EVENTS = [
     ...DAILY_QUIZ_EVENTS.map(e => ({ ...e, importance: e.importance || 'minor' })),
 ];
 
-export const CORE_EVENT_COUNT = CORE_EVENTS.length; // 126 (60 Level 1 + 66 Level 2)
+export const CORE_EVENT_COUNT = CORE_EVENTS.length; // 137 (60 Level 1 + 77 Level 2)
 
 /** Level 1 events are f1–f60; Level 2 events are f61+. */
 export function isLevel2Event(event) {
