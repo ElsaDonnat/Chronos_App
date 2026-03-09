@@ -656,6 +656,11 @@ input, textarea, [contenteditable] {
   animation: mapPinPulse 1.5s ease-in-out infinite;
 }
 
+@keyframes mapPinEntrance {
+  from { opacity: 0; transform: scale(0) translateY(4px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
 @keyframes slideFromRight {
   from { opacity: 0.5; transform: translateX(40px); }
   to { opacity: 1; transform: translateX(0); }

@@ -5,10 +5,17 @@ Format follows [Keep a Changelog](https://keepachangelog.com/) and [Semantic Ver
 
 Use the version entries from the last playstore push to the most recent version for Play Store "What's New" text.
 
+## [1.8.1] - 2026-03-09
+
+### Added
+- **Desktop wheel zoom on map** — mouse wheel scrolling now zooms the map in/out (±0.15 per scroll step, 1–4× range). Works in both inline and fullscreen modes. Previously only touch pinch-zoom was supported.
+- **Region auto-scroll in fullscreen map** — selecting a region chip while in fullscreen mode smoothly scrolls the viewport to center on that region, using pre-calculated region center coordinates.
+- **Animated pin entrance** — map pins now pop in with a staggered scale+fade animation (30ms delay between each pin) when the map loads or filters change.
+
 ## [1.8.0] - 2026-03-09
 
 ### Added
-- **Fun Facts quiz mode** — new endless casual quiz in the Practice hub. 10 hand-crafted trivia MCQs tied to iconic event cards (f1, f2, f8, f12, f15, f32, f33, f43, f46, f57). Each question shows which card it relates to, reveals a "Did you know?" explanation after answering, and tracks discovery progress (X/Y discovered). Facts cover surprising details NOT found in the card descriptions. Unlocked per-event as the user learns them.
+- **Fun Facts quiz mode** — new endless casual quiz in the Practice hub. 10 hand-crafted trivia MCQs tied to iconic event cards (f1, f2, f8, f12, f15, f32, f33, f43, f46, f57). Each question shows which card it relates to, reveals a “Did you know?” explanation after answering, and tracks discovery progress (X/Y discovered). Facts cover surprising details NOT found in the card descriptions. Unlocked per-event as the user learns them.
 
 ### Files added
 - `src/data/funFacts.js` — fun fact data + helpers (`getFunFactsForSeenEvents`, `getNextFunFact`)

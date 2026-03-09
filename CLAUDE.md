@@ -84,8 +84,9 @@ No router — `App.jsx` uses `activeTab` state (`'learn'` | `'timeline'` | `'pra
 - Continent shapes as `<path>`, graticule grid as `<polyline>`
 - Event pins placed via `projectToSVG(lat, lng)` — same Natural Earth I polynomial at runtime as at build time
 - Grid-based clustering: 25 SVG-unit cells group nearby pins; cluster pins show count badge
-- Pinch-zoom via CSS `transform: scale()` + custom touch pan handler (max 4×)
-- Fullscreen mode: 280% width SVG inside a scrollable container, centered on Europe/Middle East
+- Pinch-zoom via CSS `transform: scale()` + custom touch pan handler (max 4×); desktop wheel zoom via `onWheel`
+- Fullscreen mode: 280% width SVG inside a scrollable container, centered on Europe/Middle East; auto-scrolls to selected region
+- Animated pin entrance: staggered scale+fade pop-in (30ms per pin) via CSS `mapPinEntrance` keyframes
 
 **Region system**: 11 sub-regions (Europe, Middle East, N/W/E/S Africa, S/E Asia, N/C/S America) → 5 continent SVG groups. Events use sub-regions; the map highlights/dims the parent continent.
 
@@ -98,8 +99,8 @@ No router — `App.jsx` uses `activeTab` state (`'learn'` | `'timeline'` | `'pra
 - 110m resolution — coastlines look chunky when zoomed; would need 50m or 10m for detail
 - Clustering doesn't adapt to zoom level — fixed grid regardless of scale
 - CSS-only zoom — just scales the SVG, no re-render at higher detail (no semantic zoom)
-- Region selection dims other continents rather than panning/zooming to the selected area
-- No desktop wheel zoom or hover states on map features
+- Region selection dims other continents rather than panning/zooming to the selected area (fullscreen auto-scrolls to selected region)
+- No hover states on map features
 
 ### Lesson Flow (`src/components/learn/LessonFlow.jsx`)
 

@@ -98,10 +98,10 @@ The map is intended to become a flagship feature of Chronos — visually rich, s
 
 These are independent of each other and can be done in any order:
 
-- **Region auto-scroll in fullscreen** — tapping a region chip/dropdown should scroll the fullscreen map to center on that region. Currently chips filter pins but don't navigate the viewport. Use `REGION_CENTERS` to calculate scroll target.
+- ~~**Region auto-scroll in fullscreen**~~ ✅ Done (2026-03-09)
 - **Double-tap to zoom** — standard mobile gesture. Double-tap zooms to 2× centered on tap point; double-tap again resets. Must coexist with single-tap pin selection (use a brief delay or distance threshold).
 - **Swipe-down to dismiss fullscreen** — more discoverable than the small Close button. Pull-down gesture closes the fullscreen overlay.
-- **Desktop wheel zoom** — `onWheel` handler that adjusts scale. Currently only touch pinch-zoom works.
+- ~~**Desktop wheel zoom**~~ ✅ Done (2026-03-09)
 - **Hover states (desktop)** — subtle glow/scale on pin hover, country path highlight on hover (requires per-country paths).
 - **Cluster drill-down** — tapping a cluster auto-zooms to that area so individual pins spread out, instead of the current flat list popup.
 
@@ -126,7 +126,7 @@ These are independent of each other and can be done in any order:
 ### Visual — Map aesthetics
 
 - **Event connection arcs** — draw faint curved lines between related events on the map. Data already exists in `EVENT_CONNECTIONS`. Togglable via a button or auto-shown when a connected pin is selected.
-- **Animated pin entrance** — pins pop in with staggered animation when the map loads or filters change.
+- ~~**Animated pin entrance**~~ ✅ Done (2026-03-09)
 - **Era coloring mode** — toggle to color pins by era (Prehistory/Ancient/Medieval/Early Modern/Modern) instead of category. Gives a temporal view of geographic spread.
 - **Region labels fade near pins** — the static continent name labels can overlap event pins. Fade them when pins are nearby or when zoomed in.
 - **Higher resolution map data** — switch from 110m to 50m (or 10m for fullscreen) for cleaner coastlines. Test bundle size impact. Could lazy-load the high-res version only for fullscreen.
@@ -229,3 +229,4 @@ Add more events per era, deeper non-Western history coverage, and new lessons be
 - **P3 — Map improvements batch 3** (2026-03-03): Fixed fullscreen map appearing as a tiny horizontal strip. Fullscreen now uses 280% oversized map in a scrollable container with auto-centering on Europe/Middle East. Simplified usePanZoom to use native scroll at base zoom and CSS transforms only when pinch-zoomed. Inline mode uses 200% width with 2:1 aspect ratio container.
 - **P2 — Map improvements batch 4: Natural Earth projection** (2026-03-03): Replaced equirectangular projection with Natural Earth I — continents now have familiar, properly-shaped proportions (Greenland, Scandinavia, northern regions no longer squished/distorted). SVG paths regenerated from world-atlas 110m data via d3-geo with `geoNaturalEarth1()`. ViewBox updated to 800×500. `projectToSVG()` reimplemented using Natural Earth I polynomial coefficients (scale 143.3071, translate [400, 250]). Close button moved from lost-above-map to sticky translucent overlay. Graticule lines rendered as projected polylines matching the curved projection. All REGION_CENTERS recalculated for new projection. Generation script at `scripts/generate-map-paths.mjs`.
 - **P4 — Level 2 Chapter: Science That Changed Everything** (2026-03-09): 4-lesson chapter with 11 new events (f127–f137) tracing breakthroughs from Hippocrates to the Higgs boson. Reuses f38 (Scientific Revolution). Teal theme, telescope icon, new atom icon (index 44). Hand-crafted distractors and controversy notes for all events.
+- **UX — Map improvements batch 5: interaction & animation** (2026-03-09): Desktop wheel zoom (onWheel handler, ±0.15 per scroll step, 1–4× range). Region auto-scroll in fullscreen (selecting a region chip smoothly scrolls the viewport to center on that region via REGION_CENTERS). Animated pin entrance (staggered scale+fade pop-in, 30ms delay per pin).
