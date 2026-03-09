@@ -5,6 +5,11 @@ Format follows [Keep a Changelog](https://keepachangelog.com/) and [Semantic Ver
 
 Use the version entries from the last playstore push to the most recent version for Play Store "What's New" text.
 
+## [1.7.23] - 2026-03-09
+
+### Changed
+- **Per-country SVG paths** — map now renders individual country `<path>` elements (177 countries) instead of 5 merged continent blobs. Each country has its ISO code and name, grouped by continent. Bundle size impact: +2KB gzipped. Foundation for country highlighting, hover states, and semantic zoom.
+
 ## [1.7.22] - 2026-03-09
 
 ### Added

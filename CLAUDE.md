@@ -75,13 +75,13 @@ No router — `App.jsx` uses `activeTab` state (`'learn'` | `'timeline'` | `'pra
 **Data pipeline** (`scripts/write-map-data.mjs`):
 - Reads `world-atlas/countries-110m.json` (TopoJSON, Natural Earth 110m resolution)
 - Uses `d3-geo`'s Natural Earth I projection to convert GeoJSON country polygons → SVG path strings
-- Merges all countries **per continent** into 5 giant SVG `<path>` strings (Europe, Middle East, Africa, Asia, Americas) — individual country boundaries are lost
-- Outputs `src/data/mapPaths.js` (~40KB) containing `MAP_REGIONS`, `SUB_REGIONS`, `REGION_CENTERS`, and `projectToSVG()`
+- Groups countries **by continent** (Europe, Middle East, Africa, Asia, Americas) with individual per-country SVG paths preserved (ISO code + name + path string per country)
+- Outputs `src/data/mapPaths.js` (~91KB) containing `MAP_REGIONS`, `SUB_REGIONS`, `REGION_CENTERS`, and `projectToSVG()`
 - Regenerate with: `node scripts/write-map-data.mjs`
 
 **Rendering** (`src/components/MapView.jsx`):
 - Pure inline SVG, 800×500 viewBox, zero external map libraries
-- Continent shapes as `<path>`, graticule grid as `<polyline>`
+- Per-country `<path>` elements grouped by continent, graticule grid as `<polyline>`
 - Event pins placed via `projectToSVG(lat, lng)` — same Natural Earth I polynomial at runtime as at build time
 - Grid-based clustering: 25 SVG-unit cells group nearby pins; cluster pins show count badge
 - Pinch-zoom via CSS `transform: scale()` + custom touch pan handler (max 4×); desktop wheel zoom via `onWheel`
@@ -95,7 +95,7 @@ No router — `App.jsx` uses `activeTab` state (`'learn'` | `'timeline'` | `'pra
 **Strengths**: zero runtime map deps, offline-capable, deterministic projection, fast render, clean regeneration pipeline.
 
 **Known limitations for future expansion**:
-- No country-level shapes — countries merged into continents, can't highlight or interact with individual countries
+- Individual country paths exist but no country-level interaction yet (highlighting, hover) — foundation is ready
 - 110m resolution — coastlines look chunky when zoomed; would need 50m or 10m for detail
 - Clustering doesn't adapt to zoom level — fixed grid regardless of scale
 - CSS-only zoom — just scales the SVG, no re-render at higher detail (no semantic zoom)

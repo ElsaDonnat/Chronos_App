@@ -104,9 +104,9 @@ projection.translate([WIDTH / 2 - cx + WIDTH / 2, HEIGHT / 2 - cy + HEIGHT / 2])
 const finalPath = geoPath(projection);
 
 // ─── Group countries by continent and generate paths ───
-const continentPaths = {};
+const continentCountries = {};
 for (const [continent] of Object.entries(CONTINENT_MAP)) {
-    continentPaths[continent] = [];
+    continentCountries[continent] = [];
 }
 
 for (const country of countries.features) {
@@ -114,7 +114,13 @@ for (const country of countries.features) {
     const continent = getContinent(code);
     if (!continent) continue;
     const d = finalPath(country);
-    if (d) continentPaths[continent].push(d);
+    if (d) {
+        continentCountries[continent].push({
+            code: String(code),
+            name: country.properties?.name || '',
+            d: roundPath(d),
+        });
+    }
 }
 
 // Round path coordinates to integers
@@ -124,8 +130,8 @@ function roundPath(d) {
 
 // ─── Calculate label positions ───
 const labelPositions = {};
-for (const [continent, paths] of Object.entries(continentPaths)) {
-    if (paths.length === 0) continue;
+for (const [continent, ctries] of Object.entries(continentCountries)) {
+    if (ctries.length === 0) continue;
     let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
     for (const country of countries.features) {
         const code = country.id || country.properties?.iso_n3;
@@ -206,13 +212,14 @@ output += `// Scale: ${scale.toFixed(4)}, Translate: [${projTranslate.map(v => M
 output += `\n`;
 output += `export const MAP_REGIONS = {\n`;
 
-for (const [continent, paths] of Object.entries(continentPaths)) {
-    if (paths.length === 0) continue;
+for (const [continent, ctries] of Object.entries(continentCountries)) {
+    if (ctries.length === 0) continue;
     const label = labelPositions[continent];
-    const rounded = roundPath(paths.join(''));
     output += `    ${JSON.stringify(continent)}: {\n`;
-    output += `        paths: [\n`;
-    output += `            ${JSON.stringify(rounded)},\n`;
+    output += `        countries: [\n`;
+    for (const c of ctries) {
+        output += `            { code: ${JSON.stringify(c.code)}, name: ${JSON.stringify(c.name)}, d: ${JSON.stringify(c.d)} },\n`;
+    }
     output += `        ],\n`;
     output += `        labelPos: { x: ${label.x}, y: ${label.y} },\n`;
     output += `    },\n`;

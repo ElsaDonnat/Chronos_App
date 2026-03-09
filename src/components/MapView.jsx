@@ -222,18 +222,19 @@ function MapSVG({ visibleEvents, pins, learnedIds, selectedRegion, selectedPin, 
             {/* Graticule grid */}
             <Graticule />
 
-            {/* Continent paths */}
+            {/* Country paths (grouped by continent) */}
             {Object.entries(MAP_REGIONS).map(([continentName, data]) => {
                 const isHighlighted = highlightedContinent === continentName;
                 const hasEvents = visibleEvents.some(e => regionToContinent(e.location.region) === continentName);
                 return (
                     <g key={continentName} style={{ cursor: 'default' }}>
-                        {data.paths.map((d, i) => (
-                            <path key={i} d={d}
+                        {data.countries.map((country) => (
+                            <path key={country.code} d={country.d}
                                 fill={isHighlighted ? MAP_COLORS.landActive : MAP_COLORS.land}
                                 stroke={isHighlighted ? MAP_COLORS.borderActive : MAP_COLORS.border}
                                 strokeWidth={isHighlighted ? 1.5 : 0.5}
                                 opacity={hasEvents || !selectedRegion ? 1 : 0.35}
+                                data-country={country.code}
                                 style={{ transition: 'fill 0.2s, stroke 0.2s, opacity 0.2s' }}
                             />
                         ))}
