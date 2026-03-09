@@ -5,6 +5,24 @@ Format follows [Keep a Changelog](https://keepachangelog.com/) and [Semantic Ver
 
 Use the version entries from the last playstore push to the most recent version for Play Store "What's New" text.
 
+## [1.7.9] - 2026-03-09
+
+### Changed
+- **Challenge quiz: killed categorySort** — removed entirely because categories are editorial decisions, not historical facts. Replaced all categorySort slots with whichCameFirst (tests real chronological knowledge)
+- **Challenge quiz: curated T/F pool** — dynamic T/F no longer swaps database fields (location/date/category). Now uses `CURATED_TF_POOL` of 20 conceptual misconception questions (e.g., "The earliest writing was hieroglyphics" — false, it was cuneiform). Falls back to cause-and-effect questions using `EVENT_CONNECTIONS`
+- **Challenge quiz: fixed eraDetective** — removed obvious picks (Neolithic Revolution, Unification of Egypt, Jesus). Added genuinely ambiguous events (Bronze Age Collapse, Charlemagne, Gutenberg). Era-revealing keywords stripped from descriptions
+- **Challenge quiz: fixed hardMCQ distractors** — date distractors now use tight same-era spacing (e.g., Haitian Revolution: 1776/1789/1791/1804 instead of 1650/1791/1860/1920). Location distractors use same-region cities (Russian Revolution: St. Petersburg/Moscow/Vladivostok/Kiev instead of Warsaw/Berlin)
+- **Challenge quiz: multiplayer improvements** — multiplayer now uses curated T/F content, type repetition prevention (no 3+ in a row), and same-category/same-era distractor logic
+- **Challenge quiz: bonus hearts** — awards +1 heart at tier transitions entering Advanced+ (max 5), addressing 91% accuracy requirement being too harsh for harder tiers
+
+### Added
+- **Near-miss feedback for date questions** — wrong date MCQ answers within ~15% of correct year (or ≤50 years) show "Close! You were in the right ballpark" badge and play `close()` sound instead of `wrong()`
+- **Cause-and-effect questions** — new question type using `EVENT_CONNECTIONS`: "What was a direct consequence of X?" Used as fallback when curated T/F pool is exhausted
+
+### Fixed
+- **Multiplayer XP bug** — was summing ALL players' correct answers and awarding XP to logged-in user. Now only counts the "me" player's score
+- **Beginner T/F too easy** — replaced "Alexander conquered from Greece to India" (universally known) with "Alexander was tutored by Aristotle" (creates genuine doubt). Moved "Mongol Empire largest contiguous" to Amateur
+
 ## [1.7.8] - 2026-03-06
 
 ### Fixed

@@ -2478,6 +2478,8 @@ export function getEventsByIds(ids) {
     return ids.map(id => ALL_EVENTS.find(e => e.id === id)).filter(Boolean);
 }
 
+export { EVENT_CONNECTIONS };
+
 export function getRelatedEvents(eventId, seenEventIds) {
     const event = getEventById(eventId);
     if (!event?.relatedEvents) return [];
