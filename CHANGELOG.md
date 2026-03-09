@@ -5,6 +5,37 @@ Format follows [Keep a Changelog](https://keepachangelog.com/) and [Semantic Ver
 
 Use the version entries from the last playstore push to the most recent version for Play Store "What's New" text.
 
+## [1.7.20] - 2026-03-09
+
+### Changed
+- **Card content review (Level 1 core events, batch 6)** — reviewed 10 cards (f51–f60); 0 edits made. All cards confirmed accurate — no changes needed.
+- **Card content review (Level 1 core events, batch 5)** — reviewed 10 cards (f41–f50); 2 edits made:
+  - **f42 (The American Revolution):** fixed conflation of the Declaration of Independence with the US Constitution — "the first large-scale implementation of Enlightenment ideals into a written constitution" reads as if the Declaration IS the Constitution. These are distinct documents (1776 and 1787–88). Changed to "the first large-scale implementation of Enlightenment ideals, later formalized in the US Constitution" (matching the card's own hardCorrect).
+  - **f43 (The French Revolution):** fixed chronological ordering — the description implied the execution of Louis XVI (1793) and Reign of Terror (1793–94) "led to" the Declaration of the Rights of Man, but the Declaration was adopted in August 1789, years before those events. Reordered so the Bastille leads to the Declaration, execution, and Terror in correct sequence.
+- Cards f41, f44, f45, f46, f47, f48, f49, f50 reviewed and confirmed accurate — no changes needed.
+
+## [1.7.19] - 2026-03-09
+
+### Changed
+- **Card content review (Level 1 core events, batch 4)** — reviewed 10 cards (f31–f40); 1 edit made:
+  - **f35 (Magellan-Elcano Circumnavigation):** removed "providing the first proof by circumnavigation that the Earth was round" — educated Europeans already knew the Earth was spherical (Eratosthenes calculated its circumference c. 240 BCE; Columbus's voyage was premised on it). The card's own d:3 distractor correctly identifies "disproving the flat Earth theory" as false, yet the main description implied the same thing. Replaced with the voyage's actual revelation: the Pacific Ocean was far vaster than anyone imagined. Also updated quizDescription to match.
+- Cards f31, f32, f33, f34, f36, f37, f38, f39, f40 reviewed and confirmed accurate — no changes needed.
+
+## [1.7.18] - 2026-03-09
+
+### Changed
+- **Card content review (Level 1 core events, batch 3)** — reviewed 10 cards (f21–f30); 1 edit made:
+  - **f26 (The Islamic Golden Age):** "invented Algebra" → "pioneered algebra" — Al-Khwarizmi systematized algebra into a distinct discipline, but earlier algebraic work existed (Diophantus, Brahmagupta). This is the same correction already applied to f118 (Level 2 card) in v1.7.12; f26 (Level 1 card) was missed. Also updated quizDescription to match.
+- Cards f21, f22, f23, f24, f25, f27, f28, f29, f30 reviewed and confirmed accurate — no changes needed.
+
+## [1.7.17] - 2026-03-09
+
+### Changed
+- **Card content review (Level 1 core events, batch 2)** — reviewed 10 cards (f11–f20); 2 edits made:
+  - **f14 (Axial Age):** added the Hebrew prophetic tradition to the description — Jaspers' original Axial Age concept lists four centers (Greece, India, China, Israel/Judea), but the card only mentioned three. Also changed "global" → "cross-civilizational" (more precise — the concept doesn't cover Africa, the Americas, or Southeast Asia) and "simultaneously" → "independently" (the key insight is independent emergence, not just timing). Updated hardCorrect in descriptionDistractors to match.
+  - **f20 (Edict of Milan):** fixed conflation of two events 17 years apart — the card was dated 313 CE but described both the Edict of Milan (313) and the founding of Constantinople (330) without any temporal distinction. A user would incorrectly infer both happened in 313. Added "later" and "(330 CE)" to separate the events. Changed "moved the capital" → "founded Constantinople as a new eastern capital" (more precise — Constantinople was a new foundation on the site of Byzantium, not a simple relocation).
+- Cards f11, f12, f13, f15, f16, f17, f18, f19 reviewed and confirmed accurate — no changes needed.
+
 ## [1.7.16] - 2026-03-09
 
 ### Changed

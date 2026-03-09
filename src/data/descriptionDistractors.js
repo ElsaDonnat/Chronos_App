@@ -136,7 +136,7 @@ export const DESCRIPTION_DISTRACTORS = {
         ]
     },
     f14: {
-        hardCorrect: "Greek rationalism, Buddhism, and Confucianism emerged independently across different civilizations during the same era.",
+        hardCorrect: "Greek philosophy, the Hebrew prophetic tradition, Buddhism, and Confucianism emerged independently across different civilizations during the same era.",
         distractors: [
             { text: "A single philosopher traveled the ancient world spreading ethical ideas through trade routes.", d: 1 },
             { text: "These philosophies emerged as direct responses to military threats from the Persian Empire.", d: 1 },
