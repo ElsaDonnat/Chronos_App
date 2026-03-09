@@ -5,6 +5,14 @@ Format follows [Keep a Changelog](https://keepachangelog.com/) and [Semantic Ver
 
 Use the version entries from the last playstore push to the most recent version for Play Store "What's New" text.
 
+## [1.8.3] - 2026-03-10
+
+### Added
+- **10 new fun facts** — expanded from 10 to 20 curated trivia questions. New facts cover: Homo Sapiens coexisting species, Neolithic health decline, first Sumerian writing, Caesar's assassination details, Mongol postal system, Black Death remedies, Leonardo's mirror writing, American Revolution support split, duct tape's WWII origins, and the Berlin Wall's accidental opening.
+
+### Changed
+- **Fun Facts no longer gated by learned events** — all 20 fun facts are available from the start without needing to learn the associated event cards first.
+
 ## [1.8.2] - 2026-03-10
 
 ### Changed

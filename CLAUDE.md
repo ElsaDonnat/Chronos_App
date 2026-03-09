@@ -133,9 +133,9 @@ When modifying quiz difficulty logic, update this table and the changelog.
 
 ### Fun Facts (`src/data/funFacts.js` + `src/components/FunFactsFlow.jsx`)
 
-Casual endless MCQ quiz in the Challenge hub. 10 curated trivia questions tied to specific event cards. Each fun fact has a question, 4 options (1 correct + 3 wrong), and a "Did you know?" explanation. Facts cover surprising details NOT found in card descriptions.
+Casual endless MCQ quiz in the Challenge hub. 20 curated trivia questions tied to specific event cards. Each fun fact has a question, 4 options (1 correct + 3 wrong), and a "Did you know?" explanation. Facts cover surprising details NOT found in card descriptions.
 
-**Key behavior:** Facts unlock per-event (only shows facts for events in `seenEvents`). Unseen facts are shown first; once all discovered, cycles randomly. State tracked via `seenFunFacts` array in AppContext. The hub card shows "X/Y discovered" progress.
+**Key behavior:** All facts are available from the start (not gated by learned events). Unseen facts are shown first; once all discovered, cycles randomly. State tracked via `seenFunFacts` array in AppContext. The hub card shows "X/Y discovered" progress.
 
 **Adding a new fun fact:** Add to `FUN_FACTS` array in `src/data/funFacts.js` with id format `'ffXX'`, must include `eventId` referencing an existing event. Ensure the fact content doesn't duplicate the event's `description` or `quizDescription`.
 
