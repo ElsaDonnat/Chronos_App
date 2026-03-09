@@ -171,6 +171,209 @@ const CURATED_TF_POOL = [
     { eventId: 'f65', statement: 'The Chinese Communist Revolution ended with Mao\u2019s forces defeating the Japanese', isTrue: false, correction: 'Mao defeated the Chinese Nationalists (Kuomintang) under Chiang Kai-shek. Japan had already surrendered in WWII.' },
 ];
 
+// ─── Curated pools for Advanced & Historian ──────────────────
+
+const ADVANCED_QUESTIONS = [
+    // ── whichCameFirst — same-era, close dates ──────────────────────
+    { type: 'whichCameFirst', eventIdA: 'f88', eventIdB: 'f13' },  // Achaemenid Persia (-550) vs Roman Republic (-509) — both ancient, ~40 yrs
+    { type: 'whichCameFirst', eventIdA: 'f16', eventIdB: 'f89' },  // Qin unification (-221) vs Maurya Empire (-322) — both Asian empires, ~100 yrs
+    { type: 'whichCameFirst', eventIdA: 'f92', eventIdB: 'f30' },  // Ottoman rise (1299) vs Black Death (1347) — both medieval, ~50 yrs
+    { type: 'whichCameFirst', eventIdA: 'f61', eventIdB: 'f37' },  // English Civil War (1642) vs Thirty Years' War (1618) — both 17th-c. European conflicts
+    { type: 'whichCameFirst', eventIdA: 'f102', eventIdB: 'f51' },  // Spanish Flu (1918) vs Treaty of Versailles (1919) — same era, 1 yr apart
+    { type: 'whichCameFirst', eventIdA: 'f63', eventIdB: 'f48' },  // Latin American independence (1808) vs Global Abolition (1807) — 1 yr apart
+
+    // ── trueOrFalse — subtle misconceptions ─────────────────────────
+    { type: 'trueOrFalse', eventId: 'f93',
+        statement: 'China\u2019s Ming Dynasty sent treasure fleets that reached the coast of East Africa',
+        isTrue: true },  // Zheng He's fleets really did reach Africa
+    { type: 'trueOrFalse', eventId: 'f96',
+        statement: 'The Mughal Empire was founded by a descendant of Genghis Khan',
+        isTrue: true },  // Babur descended from both Genghis Khan and Timur
+    { type: 'trueOrFalse', eventId: 'f89',
+        statement: 'Emperor Ashoka converted to Buddhism after witnessing the devastation of his own conquest',
+        isTrue: true },  // Ashoka converted after the Kalinga war
+    { type: 'trueOrFalse', eventId: 'f97',
+        statement: 'The Antonine Plague was caused by the bubonic plague bacterium',
+        isTrue: false, correction: 'It was most likely smallpox or measles, not bubonic plague. The bubonic plague (Yersinia pestis) caused the later Plague of Justinian and Black Death.' },
+    { type: 'trueOrFalse', eventId: 'f102',
+        statement: 'The Spanish Flu originated in Spain, which is how it got its name',
+        isTrue: false, correction: 'It likely originated in the United States or France. Spain reported it openly because it was neutral in WWI and had no wartime censorship.' },
+    { type: 'trueOrFalse', eventId: 'f70',
+        statement: 'Alan Turing\u2019s theoretical work came after the invention of the first electronic computer',
+        isTrue: false, correction: 'Turing\u2019s 1936 paper on the Universal Machine preceded ENIAC (1945) by nearly a decade.' },
+    { type: 'trueOrFalse', eventId: 'f94',
+        statement: 'At its peak, the British Empire controlled roughly a quarter of the world\u2019s land surface',
+        isTrue: true },  // Genuinely surprising scope
+
+    // ── hardMCQ/date — tight distractors within 30-50 years ─────────
+    { type: 'hardMCQ', subType: 'date', eventId: 'f92',
+        prompt: 'When did the Ottoman Empire begin its rise?',
+        options: [
+            { label: '1206', isCorrect: false },    // Mongol Empire
+            { label: '1299', isCorrect: true },
+            { label: '1347', isCorrect: false },    // Black Death
+            { label: '1368', isCorrect: false },     // Ming Dynasty
+        ] },
+    { type: 'hardMCQ', subType: 'date', eventId: 'f61',
+        prompt: 'When did the English Civil War begin?',
+        options: [
+            { label: '1618', isCorrect: false },    // Thirty Years' War
+            { label: '1642', isCorrect: true },
+            { label: '1665', isCorrect: false },    // Great Plague of London
+            { label: '1685', isCorrect: false },     // Enlightenment
+        ] },
+    { type: 'hardMCQ', subType: 'date', eventId: 'f103',
+        prompt: 'When did Alexander Fleming discover penicillin?',
+        options: [
+            { label: '1918', isCorrect: false },    // Spanish Flu
+            { label: '1928', isCorrect: true },
+            { label: '1936', isCorrect: false },    // Turing's paper
+            { label: '1945', isCorrect: false },     // ENIAC
+        ] },
+    { type: 'hardMCQ', subType: 'date', eventId: 'f49',
+        prompt: 'When was the Berlin Conference (Scramble for Africa)?',
+        options: [
+            { label: '1848', isCorrect: false },    // Revolutions of 1848
+            { label: '1871', isCorrect: false },    // German unification
+            { label: '1884', isCorrect: true },
+            { label: '1914', isCorrect: false },     // WWI
+        ] },
+
+    // ── hardMCQ/location — same-country/region distractors ──────────
+    { type: 'hardMCQ', subType: 'location', eventId: 'f99',
+        options: [
+            { label: 'London, England', isCorrect: true },
+            { label: 'Bristol, England', isCorrect: false },
+            { label: 'Edinburgh, Scotland', isCorrect: false },
+            { label: 'Oxford, England', isCorrect: false },
+        ] },  // Great Plague of London — all British cities
+    { type: 'hardMCQ', subType: 'location', eventId: 'f73',
+        options: [
+            { label: 'Hanover, New Hampshire', isCorrect: true },
+            { label: 'Cambridge, Massachusetts', isCorrect: false },
+            { label: 'Princeton, New Jersey', isCorrect: false },
+            { label: 'Palo Alto, California', isCorrect: false },
+        ] },  // Dartmouth Conference — all US university towns
+    { type: 'hardMCQ', subType: 'location', eventId: 'f85',
+        options: [
+            { label: 'Beijing, China', isCorrect: true },
+            { label: 'Shanghai, China', isCorrect: false },
+            { label: 'Nanjing, China', isCorrect: false },
+            { label: 'Hong Kong, China', isCorrect: false },
+        ] },  // Tiananmen Square — all Chinese cities
+
+    // ── oddOneOut — 3 share a trait, 1 is the outlier ───────────────
+    { type: 'oddOneOut', events: ['f97', 'f22', 'f30', 'f49'],
+        outlierEventId: 'f49', sharedTrait: 'All major plagues/pandemics' },  // Berlin Conference is the outlier among plagues
+    { type: 'oddOneOut', events: ['f88', 'f90', 'f93', 'f34'],
+        outlierEventId: 'f34', sharedTrait: 'All Asian empires/dynasties' },  // Renaissance is the outlier among Asian empires
+    { type: 'oddOneOut', events: ['f68', 'f70', 'f71', 'f101'],
+        outlierEventId: 'f101', sharedTrait: 'All computing pioneers/milestones' },  // Cholera/epidemiology is the outlier among computing
+    { type: 'oddOneOut', events: ['f81', 'f82', 'f83', 'f52'],
+        outlierEventId: 'f52', sharedTrait: 'All civil rights/freedom movements' },  // Great Depression is the outlier among rights movements
+];
+
+const HISTORIAN_QUESTIONS = [
+    // ── whichCameFirst — same-era, very close dates (<50 yrs) ───────
+    { type: 'whichCameFirst', eventIdA: 'f107', eventIdB: 'f117' },  // Kingdom of Kush (-1070) vs Homer (-750) — both ancient, ~320 yrs but non-obvious order
+    { type: 'whichCameFirst', eventIdA: 'f91', eventIdB: 'f108' },  // Gupta Golden Age (320) vs Aksumite Empire (100) — both ancient, Aksum earlier
+    { type: 'whichCameFirst', eventIdA: 'f110', eventIdB: 'f92' },  // Mali Empire (1235) vs Ottoman rise (1299) — both medieval, ~64 yrs
+    { type: 'whichCameFirst', eventIdA: 'f119', eventIdB: 'f113' },  // Renaissance Masters (1480) vs Kingdom of Benin (1440) — both medieval, ~40 yrs
+    { type: 'whichCameFirst', eventIdA: 'f120', eventIdB: 'f98' },  // Shakespeare (1590) vs Smallpox/Aztec (1519) — both early modern, ~70 yrs
+    { type: 'whichCameFirst', eventIdA: 'f121', eventIdB: 'f63' },  // Beethoven (1800) vs Latin Am. independence (1808) — modern, 8 yrs apart
+    { type: 'whichCameFirst', eventIdA: 'f122', eventIdB: 'f115' },  // Impressionism (1874) vs Battle of Adwa (1896) — both late 19th c., ~22 yrs
+
+    // ── trueOrFalse — expert-level misconceptions ───────────────────
+    { type: 'trueOrFalse', eventId: 'f109',
+        statement: 'The Ghana Empire was located in modern-day Ghana',
+        isTrue: false, correction: 'The Ghana Empire was centered in modern Mauritania and Mali, far north of present-day Ghana. Modern Ghana took the name as a tribute when it gained independence in 1957.' },
+    { type: 'trueOrFalse', eventId: 'f112',
+        statement: 'Timbuktu was primarily a military fortress in the Songhai Empire',
+        isTrue: false, correction: 'Timbuktu was a renowned center of learning and trade, home to Sankore University and thousands of manuscripts, not a military outpost.' },
+    { type: 'trueOrFalse', eventId: 'f100',
+        statement: 'Edward Jenner\u2019s smallpox vaccine used a weakened form of the smallpox virus itself',
+        isTrue: false, correction: 'Jenner used cowpox, a related but less dangerous virus that provided cross-immunity to smallpox. Using weakened smallpox (variolation) was the older, riskier practice.' },
+    { type: 'trueOrFalse', eventId: 'f90',
+        statement: 'The Han Dynasty invented paper and opened the Silk Road',
+        isTrue: true },  // Both are accurate Han achievements
+    { type: 'trueOrFalse', eventId: 'f111',
+        statement: 'Great Zimbabwe was built by foreign traders, not local African peoples',
+        isTrue: false, correction: 'Great Zimbabwe was built by the ancestors of the Shona people. Colonial-era claims of foreign builders were racist myths designed to deny African architectural achievement.' },
+    { type: 'trueOrFalse', eventId: 'f95',
+        statement: 'The Ottoman Empire fell primarily because of internal revolution, not World War I',
+        isTrue: false, correction: 'While internal tensions (Young Turks movement) played a role, entering WWI on the losing side was the decisive blow that led to the empire\u2019s dissolution.' },
+    { type: 'trueOrFalse', eventId: 'f114',
+        statement: 'Shaka Zulu\u2019s military innovations included the short stabbing spear and the \u201Cbull horn\u201D formation',
+        isTrue: true },  // These are well-documented Zulu military innovations
+
+    // ── hardMCQ/date — very tight distractors within 30-50 years ────
+    { type: 'hardMCQ', subType: 'date', eventId: 'f107',
+        prompt: 'When did the Kingdom of Kush emerge?',
+        options: [
+            { label: '1200 BCE', isCorrect: false },   // Bronze Age Collapse
+            { label: '1070 BCE', isCorrect: true },
+            { label: '776 BCE', isCorrect: false },     // Olympics
+            { label: '550 BCE', isCorrect: false },      // Achaemenid Persia
+        ] },
+    { type: 'hardMCQ', subType: 'date', eventId: 'f115',
+        prompt: 'When was the Battle of Adwa?',
+        options: [
+            { label: '1884', isCorrect: false },    // Berlin Conference
+            { label: '1896', isCorrect: true },
+            { label: '1908', isCorrect: false },    // Ottoman fall begins
+            { label: '1914', isCorrect: false },     // WWI
+        ] },
+    { type: 'hardMCQ', subType: 'date', eventId: 'f116',
+        prompt: 'When did the African Independence Wave begin?',
+        options: [
+            { label: '1945', isCorrect: false },    // End of WWII
+            { label: '1948', isCorrect: false },    // Apartheid begins
+            { label: '1957', isCorrect: true },
+            { label: '1969', isCorrect: false },     // Stonewall
+        ] },
+    { type: 'hardMCQ', subType: 'date', eventId: 'f119',
+        prompt: 'When were Renaissance Masters Leonardo & Michelangelo at their peak?',
+        options: [
+            { label: '1440', isCorrect: false },    // Gutenberg
+            { label: '1453', isCorrect: false },    // Fall of Constantinople
+            { label: '1480', isCorrect: true },
+            { label: '1517', isCorrect: false },     // Protestant Reformation
+        ] },
+
+    // ── hardMCQ/location — same-region distractors ──────────────────
+    { type: 'hardMCQ', subType: 'location', eventId: 'f96',
+        options: [
+            { label: 'Agra, India', isCorrect: true },
+            { label: 'Pataliputra, India', isCorrect: false },
+            { label: 'Calcutta, India', isCorrect: false },
+            { label: 'Varanasi, India', isCorrect: false },
+        ] },  // Mughal Empire — all Indian cities
+    { type: 'hardMCQ', subType: 'location', eventId: 'f88',
+        options: [
+            { label: 'Persepolis, Persia', isCorrect: true },
+            { label: 'Babylon, Mesopotamia', isCorrect: false },
+            { label: 'Susa, Persia', isCorrect: false },
+            { label: 'Damascus, Syria', isCorrect: false },
+        ] },  // Achaemenid Persia — all Middle Eastern cities
+    { type: 'hardMCQ', subType: 'location', eventId: 'f75',
+        options: [
+            { label: 'New York City, USA', isCorrect: true },
+            { label: 'San Jose, California', isCorrect: false },
+            { label: 'Boston, Massachusetts', isCorrect: false },
+            { label: 'Philadelphia, Pennsylvania', isCorrect: false },
+        ] },  // Deep Blue vs Kasparov — all US cities
+
+    // ── oddOneOut — trickier groupings ──────────────────────────────
+    { type: 'oddOneOut', events: ['f109', 'f110', 'f112', 'f92'],
+        outlierEventId: 'f92', sharedTrait: 'All West African empires' },  // Ottoman Empire is the outlier among African empires
+    { type: 'oddOneOut', events: ['f107', 'f108', 'f114', 'f96'],
+        outlierEventId: 'f96', sharedTrait: 'All East/Southern African kingdoms' },  // Mughal Empire is the outlier among African kingdoms
+    { type: 'oddOneOut', events: ['f119', 'f121', 'f122', 'f116'],
+        outlierEventId: 'f116', sharedTrait: 'All art & culture movements' },  // African Independence is the outlier among art movements
+    { type: 'oddOneOut', events: ['f100', 'f103', 'f101', 'f84'],
+        outlierEventId: 'f84', sharedTrait: 'All medical breakthroughs' },  // Stonewall is the outlier among medical discoveries
+];
+
 /** Build a full question object from a curated spec. */
 function buildCuratedQuestion(spec) {
     if (spec.type === 'whichCameFirst') {
@@ -225,6 +428,20 @@ function buildCuratedQuestion(spec) {
                 prompt: prompts[spec.subType] || spec.prompt,
                 options, correctIndex: options.findIndex(o => o.isCorrect),
                 masteryDimension: spec.subType, xpValue: 10 * (event.difficulty || 1),
+            };
+        }
+        case 'oddOneOut': {
+            const events = spec.events.map(id => ALL_EVENTS.find(e => e.id === id)).filter(Boolean);
+            if (events.length !== 4) return null;
+            const outlier = events.find(e => e.id === spec.outlierEventId);
+            if (!outlier) return null;
+            return {
+                type: 'oddOneOut', event: outlier,
+                events: shuffle([...events]),
+                outlierEventId: outlier.id,
+                sharedTrait: spec.sharedTrait,
+                prompt: 'One of these doesn\'t belong. Find the odd one out!',
+                masteryDimension: 'what', xpValue: 15,
             };
         }
         default: return null;
@@ -691,6 +908,29 @@ export function generateTieredChallengeQuestion(pool, questionIndex, usedEventId
         // Filter to questions whose event hasn't been used yet
         const available = curatedPool.filter(spec => {
             if (spec.eventIdA) return !usedEventIds.has(spec.eventIdA) && !usedEventIds.has(spec.eventIdB);
+            return !usedEventIds.has(spec.eventId);
+        });
+        if (available.length > 0) {
+            const spec = shuffle(available)[0];
+            const q = buildCuratedQuestion(spec);
+            if (q) {
+                q.tier = tier;
+                q.level = isLevel2Event(q.event) ? 2 : 1;
+                return q;
+            }
+        }
+        // Fallback: if all curated questions exhausted, use dynamic generation below
+    }
+
+    // Advanced & Historian: use curated question pools (with whichCameFirst/oddOneOut support)
+    if (tier.id === 'advanced' || tier.id === 'historian') {
+        const curatedPool = tier.id === 'advanced' ? ADVANCED_QUESTIONS : HISTORIAN_QUESTIONS;
+        const available = curatedPool.filter(spec => {
+            // whichCameFirst uses eventIdA/eventIdB
+            if (spec.eventIdA) return !usedEventIds.has(spec.eventIdA) && !usedEventIds.has(spec.eventIdB);
+            // oddOneOut uses events array
+            if (spec.events) return !spec.events.some(id => usedEventIds.has(id));
+            // All other types use eventId
             return !usedEventIds.has(spec.eventId);
         });
         if (available.length > 0) {
