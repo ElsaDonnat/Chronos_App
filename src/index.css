@@ -66,6 +66,7 @@
   --color-map-land-active: #DDD0BB;
   --color-map-border: #C9B896;
   --color-map-border-active: #8B4157;
+  --color-map-country-highlight: #C9A96E;
   --color-map-graticule: rgba(0, 0, 0, 0.04);
   --color-map-pin-stroke: #FFFDF9;
   --color-map-pin-muted: #C9B896;
@@ -136,6 +137,7 @@ html[data-theme="dark"] {
   --color-map-land-active: #433E38;
   --color-map-border: #544E47;
   --color-map-border-active: #C4748A;
+  --color-map-country-highlight: #8B7744;
   --color-map-graticule: rgba(255, 255, 255, 0.06);
   --color-map-pin-stroke: #35312C;
   --color-map-pin-muted: #544E47;
