@@ -5,6 +5,11 @@ Format follows [Keep a Changelog](https://keepachangelog.com/) and [Semantic Ver
 
 Use the version entries from the last playstore push to the most recent version for Play Store "What's New" text.
 
+## [1.8.4] - 2026-03-10
+
+### Added
+- **30 new fun facts** — expanded from 20 to 50 curated trivia questions. New facts span ancient through modern history: Hammurabi's builder punishment, Qin book burning, Augustus's deathbed quote, the ironic name of Rome's last emperor, Viking etymology, Ottoman ships dragged overland, Magellan's death mid-voyage, Luther's nailing myth, Napoleon's real height, Versailles Hall of Mirrors revenge, Arkhipov preventing nuclear war, the internet's first crashed message, Haiti causing the Louisiana Purchase, the 1914 Christmas Truce, Turing's persecution, ENIAC's women programmers, Kasparov's cheating accusation, Tubman's 13 missions, Rosa Parks as trained activist, Mandela's prison law degree, Taj Mahal's 22-year build, "vaccine" meaning "from cows," Mansa Musa's 60,000-person caravan, Shakespeare's second-best bed, and more.
+
 ## [1.8.3] - 2026-03-10
 
 ### Added
