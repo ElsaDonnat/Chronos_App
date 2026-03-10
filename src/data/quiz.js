@@ -57,24 +57,15 @@ export function scoreDateAnswer(userYear, userEra, event) {
     return scoreByDiff(diff, start);
 }
 
-// Shared scoring thresholds — magnitude-based for prehistoric, strict for modern
+// Shared scoring thresholds — proportional for prehistoric, strict for modern
 function scoreByDiff(diff, referenceYear) {
     const abs = Math.abs(referenceYear);
 
-    // Prehistoric: magnitude-based thresholds
-    if (abs >= 1000000) {
-        if (diff <= 1000000) return "green";
-        if (diff <= 3000000) return "yellow";
-        return "red";
-    }
-    if (abs >= 100000) {
-        if (diff <= 100000) return "green";
-        if (diff <= 500000) return "yellow";
-        return "red";
-    }
+    // Prehistoric/deep history (10,000+ years): proportional thresholds
+    // Green = within 25% of magnitude, Yellow = within 60%
     if (abs >= 10000) {
-        if (diff <= 10000) return "green";
-        if (diff <= 50000) return "yellow";
+        if (diff <= abs * 0.25) return "green";
+        if (diff <= abs * 0.6) return "yellow";
         return "red";
     }
 

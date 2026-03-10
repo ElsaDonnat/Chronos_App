@@ -851,60 +851,60 @@ export default function LessonFlow({ lesson, onComplete }) {
     }
 
     // ════════════════════════════════════════════════════
-    // FINAL REVIEW
+    // FINAL REVIEW — all cards shown at once
     // ════════════════════════════════════════════════════
     if (phase === PHASE.FINAL_REVIEW) {
         const hardEvents = [...new Set(hardResults.map(r => r.eventId))]
             .map(id => events.find(e => e.id === id))
             .filter(Boolean);
 
-        if (reviewIndex < hardEvents.length) {
-            const event = hardEvents[reviewIndex];
-            const eventResults = hardResults.filter(r => r.eventId === event.id);
-            const worstScore = eventResults.some(r => r.firstScore === 'red') ? 'red' : 'yellow';
-            const borderColor = worstScore === 'red' ? 'var(--color-error)' : 'var(--color-warning)';
+        const hasRed = hardResults.some(r => r.firstScore === 'red');
 
-            return (
-                <div className="lesson-flow-container animate-fade-in">
-                    <div className="flex-shrink-0 text-center mb-4 pt-4">
-                        <Mascot mood={worstScore === 'red' ? 'surprised' : 'thinking'} size={50} />
-                        <p className="text-sm font-semibold mt-2" style={{ color: borderColor }}>
-                            {worstScore === 'red' ? "Let's review this one" : "Almost had it"}
-                        </p>
-                        <span className="text-xs" style={{ color: 'var(--color-ink-muted)' }}>
-                            Review {reviewIndex + 1} of {hardEvents.length}
-                        </span>
-                    </div>
-                    <div className="flex-1 min-h-0 overflow-y-auto">
-                        <Card className="animate-slide-in-right" style={{ borderLeft: `3px solid ${borderColor}` }}>
-                            <CategoryTag category={event.category} />
-                            <h2 className="text-xl font-bold mt-3 mb-2" style={{ fontFamily: 'var(--font-serif)' }}>{event.title}</h2>
-                            <p className="text-lg font-semibold mb-3" style={{ color: 'var(--color-burgundy)' }}>{event.date}</p>
-                            <ExpandableText lines={3} className="text-sm leading-relaxed mb-3" style={{ color: 'var(--color-ink-secondary)' }}>
-                                {event.keywords && <><strong style={{ color: 'var(--color-ink)' }}>{event.keywords}</strong><span className="keyword-sep" aria-hidden="true" /></>}{event.description}
-                            </ExpandableText>
-                            <div className="flex items-center gap-2 text-xs" style={{ color: 'var(--color-ink-muted)' }}>
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" /><circle cx="12" cy="10" r="3" />
-                                </svg>
-                                {event.location.place}
-                            </div>
-                        </Card>
-                    </div>
-                    <div className="flex-shrink-0 flex gap-3 pt-4 pb-2">
-                        {reviewIndex > 0 && (
-                            <Button variant="secondary" onClick={() => setReviewIndex(i => i - 1)}>← Back</Button>
-                        )}
-                        <Button className="flex-1" onClick={() => setReviewIndex(i => i + 1)}>
-                            {reviewIndex < hardEvents.length - 1 ? 'Next Review →' : 'See Results →'}
-                        </Button>
-                    </div>
+        return (
+            <div className="lesson-flow-container animate-fade-in">
+                <div className="flex-shrink-0 text-center mb-3 pt-4">
+                    <Mascot mood={hasRed ? 'surprised' : 'thinking'} size={50} />
+                    <p className="text-sm font-semibold mt-2" style={{ color: hasRed ? 'var(--color-error)' : 'var(--color-warning)' }}>
+                        {hasRed ? "Let's review these" : "Almost had them"}
+                    </p>
                 </div>
-            );
-        }
+                <div className="flex-1 min-h-0 overflow-y-auto space-y-2.5">
+                    {hardEvents.map((event, i) => {
+                        const eventResults = hardResults.filter(r => r.eventId === event.id);
+                        const worstScore = eventResults.some(r => r.firstScore === 'red') ? 'red' : 'yellow';
+                        const borderColor = worstScore === 'red' ? 'var(--color-error)' : 'var(--color-warning)';
+                        const catConfig = CATEGORY_CONFIG[event.category];
 
-        setPhase(PHASE.SUMMARY);
-        return null;
+                        return (
+                            <Card key={event.id} className="animate-fade-in" style={{
+                                borderLeft: `3px solid ${borderColor}`,
+                                animationDelay: `${i * 100}ms`,
+                                animationFillMode: 'backwards',
+                            }}>
+                                <div className="flex items-start gap-2.5">
+                                    <div className="w-2 h-2 rounded-full mt-1.5 flex-shrink-0" style={{ backgroundColor: catConfig?.color || '#999' }} />
+                                    <div className="flex-1 min-w-0">
+                                        <h3 className="text-sm font-bold leading-tight" style={{ fontFamily: 'var(--font-serif)' }}>{event.title}</h3>
+                                        <p className="text-xs font-medium mt-0.5" style={{ color: 'var(--color-burgundy)' }}>{event.date}</p>
+                                        <p className="text-xs leading-relaxed mt-1 line-clamp-2" style={{ color: 'var(--color-ink-secondary)' }}>
+                                            {event.description}
+                                        </p>
+                                        <p className="text-[10px] mt-1" style={{ color: 'var(--color-ink-faint)' }}>
+                                            {event.location.place}
+                                        </p>
+                                    </div>
+                                </div>
+                            </Card>
+                        );
+                    })}
+                </div>
+                <div className="flex-shrink-0 pt-4 pb-2">
+                    <Button className="w-full" onClick={() => setPhase(PHASE.SUMMARY)}>
+                        See Results \u2192
+                    </Button>
+                </div>
+            </div>
+        );
     }
 
     // ════════════════════════════════════════════════════
