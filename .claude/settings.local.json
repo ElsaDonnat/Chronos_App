@@ -43,7 +43,8 @@
       "Bash(CAPACITOR_BUILD=true npm run build)",
       "Bash(sed -i 's|{/\\\\* Clock badge — upper-right, dark brown, 15% larger \\\\*/}|{/* Clock badge — upper-right, dark brown, 40% larger, white shadow */}|' src/components/StreakFlame.jsx)",
       "Bash(sed -i 's|<g transform=\"\"translate\\(17.5, 4\\) scale\\(1.15\\)\"\">|<g transform=\"\"translate\\(17.5, 4\\) scale\\(1.4\\)\"\" filter=\"\"url\\(#clockShadow\\)\"\">|' src/components/StreakFlame.jsx)",
-      "Read(//c/Users/elsad/.claude/projects/c--Users-elsad-chronos/5683edf2-c541-423a-9f32-3603eb80507c/tool-results/**)"
+      "Read(//c/Users/elsad/.claude/projects/c--Users-elsad-chronos/5683edf2-c541-423a-9f32-3603eb80507c/tool-results/**)",
+      "mcp__Claude_Preview__preview_start"
     ]
   }
 }

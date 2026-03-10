@@ -5,6 +5,11 @@ Format follows [Keep a Changelog](https://keepachangelog.com/) and [Semantic Ver
 
 Use the version entries from the last playstore push to the most recent version for Play Store "What's New" text.
 
+## [1.9.11] - 2026-03-10
+
+### Fixed
+- **Fun facts shuffle** — fun facts now use a deterministic shuffle so unseen facts appear in a varied order instead of always cycling through the same sequence.
+
 ## [1.9.10] - 2026-03-10
 
 ### Added

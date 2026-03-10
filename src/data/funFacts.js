@@ -424,10 +424,20 @@ export function getNextFunFact(seenFunFactIds, availableFacts, index) {
     const seenSet = new Set(seenFunFactIds || []);
     const unseen = availableFacts.filter(ff => !seenSet.has(ff.id));
 
+    // Shuffle using index as seed for deterministic-per-session but random-feeling order
+    const shuffle = (arr) => {
+        const a = [...arr];
+        for (let i = a.length - 1; i > 0; i--) {
+            const j = ((index * 2654435761 + i * 40503) >>> 0) % (i + 1);
+            [a[i], a[j]] = [a[j], a[i]];
+        }
+        return a;
+    };
+
     if (unseen.length > 0) {
-        return unseen[index % unseen.length];
+        return shuffle(unseen)[index % unseen.length];
     }
 
-    // All seen — pick a random one (use index as seed for variety)
-    return availableFacts[index % availableFacts.length];
+    // All seen — pick a random one
+    return shuffle(availableFacts)[index % availableFacts.length];
 }

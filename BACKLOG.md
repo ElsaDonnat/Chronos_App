@@ -78,7 +78,7 @@ Scale-compensated rendering: all SVG attributes (pin radii, stroke widths, hit a
 - ~~**Event connection arcs**~~ ✅ Done (2026-03-10) — faint curved bezier arcs between related events when a connected pin is selected. Category-colored, solid for learned, dashed for unlearned.
 - ~~**Animated pin entrance**~~ ✅ Done (2026-03-09)
 - ~~**Era coloring mode**~~ ✅ Done (2026-03-10) — Topic/Era toggle in Legend dropdown. Era mode colors pins by historical period (5 eras). Persists to localStorage.
-- **Region labels fade near pins** — the static continent name labels can overlap event pins. Fade them when pins are nearby or when zoomed in.
+- ~~**Region labels fade near pins**~~ ✅ Done (2026-03-10) — continent labels fade out between 1\u2013 2× zoom (part of semantic zoom). Pin-proximity fading not needed since labels disappear before pin labels appear.
 - **Higher resolution map data** — switch from 110m to 50m (or 10m for fullscreen) for cleaner coastlines. Test bundle size impact. Could lazy-load the high-res version only for fullscreen.
 
 ---
