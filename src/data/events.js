@@ -1880,6 +1880,163 @@ const CORE_EVENTS = [
         controversyNotes: {
             what: "Six physicists independently proposed the Higgs mechanism in 1964: Peter Higgs, Fran\u00E7ois Englert, Robert Brout, Gerald Guralnik, C. R. Hagen, and Tom Kibble. Only Higgs and Englert received the 2013 Nobel Prize (Brout had died in 2011). The nickname \u2018God Particle\u2019 was coined by publisher Leon Lederman and is widely disliked by physicists, including Higgs himself.",
         }
+    },
+
+    // ─── Level 2 Chapter: Money & Trade ──────────────────────────────
+    {
+        id: "f147",
+        title: "The Invention of Coinage",
+        date: "c. 600 BCE",
+        year: -600,
+        keywords: "Electrum \u00B7 Lydia \u00B7 Standardized currency \u00B7 Trade",
+        description: "Around 600 BCE, the kingdom of Lydia in western Anatolia began minting the world\u2019s first standardized coins from electrum, a natural gold-silver alloy. Before coins, trade relied on barter or weighed metal \u2014 clumsy systems that slowed commerce and bred mistrust. Lydian coins bore a lion\u2019s head stamp guaranteeing their weight and purity, creating trust between strangers. The idea spread rapidly to Greece, Persia, and India, transforming economies from local barter networks into interconnected trading systems.",
+        quizDescription: "Lydia minted the first standardized coins, replacing barter with trusted currency.",
+        location: { lat: 38.5, lng: 28.0, region: "Middle East", place: "Sardis, Lydia (modern Turkey)" },
+        category: "culture",
+        difficulty: 1,
+        controversyNotes: {
+            date: "China and India may have developed coin-like objects around the same time. Chinese bronze spade and knife money appeared by the 7th century BCE, and Indian punch-marked coins date to roughly the 6th century BCE. Whether Lydian coins were truly \u2018first\u2019 depends on how strictly one defines \u2018coin.\u2019",
+        }
+    },
+    {
+        id: "f148",
+        title: "The Silk Road Opens",
+        date: "c. 130 BCE \u2013 1450 CE",
+        year: -130,
+        yearEnd: 1450,
+        keywords: "Zhang Qian \u00B7 East-West trade \u00B7 Caravans \u00B7 Cultural exchange",
+        description: "In 138 BCE, Chinese emperor Wu of Han sent diplomat Zhang Qian westward to forge alliances against nomadic raiders. The mission failed diplomatically but revealed a 6,500-kilometer web of trade routes connecting China to the Mediterranean. Silk, spices, paper, and gunpowder flowed west; gold, glass, and horses traveled east. The Silk Road was not a single path but a shifting network of oases, mountain passes, and caravanserais where goods changed hands many times \u2014 with middlemen at each stop adding markups and cultural exchange.",
+        quizDescription: "Zhang Qian\u2019s diplomatic mission opened trade routes connecting China to the Mediterranean.",
+        location: { lat: 40, lng: 65, region: "Central Asia", place: "Central Asia (China to Rome)" },
+        category: "culture",
+        difficulty: 2,
+        controversyNotes: {
+            what: "The name \u2018Silk Road\u2019 was coined by German geographer Ferdinand von Richthofen in 1877 \u2014 ancient traders never used it. Some scholars argue the term overemphasizes a single commodity and a single route, when in reality it was a complex web of many routes trading many goods over many centuries.",
+        }
+    },
+    {
+        id: "f149",
+        title: "Indian Ocean Trade Network",
+        date: "c. 800\u20131500 CE",
+        year: 800,
+        yearEnd: 1500,
+        keywords: "Monsoon winds \u00B7 Swahili coast \u00B7 Maritime trade \u00B7 Dhows",
+        description: "For centuries, monsoon winds powered a vast maritime trading network linking East Africa, Arabia, India, Southeast Asia, and China. Swahili port cities like Kilwa and Mombasa grew wealthy exporting gold, ivory, and enslaved people in exchange for Chinese porcelain, Indian textiles, and Persian glass. Unlike later European colonial trade, this was a multicultural system \u2014 Arab dhows, Chinese junks, and Indian merchants all participated as relative equals. The network\u2019s reach was staggering: medieval African rulers dined off Chinese celadon plates, while Indonesian spices flavored Middle Eastern cuisine.",
+        quizDescription: "Monsoon-powered maritime trade linked East Africa, Arabia, India, and China for centuries.",
+        location: { lat: -6, lng: 39, region: "East Africa", place: "Kilwa, East Africa (Indian Ocean)" },
+        category: "culture",
+        difficulty: 2,
+        controversyNotes: {
+            location: "The Indian Ocean network had no single center \u2014 Kilwa, Calicut, Malacca, Guangzhou, and Aden were all major hubs at different times. The choice of Kilwa highlights often-overlooked African participation, but the network was truly pan-oceanic.",
+        }
+    },
+    {
+        id: "f150",
+        title: "Paper Money in China",
+        date: "1024 CE",
+        year: 1024,
+        keywords: "Song Dynasty \u00B7 Jiaozi \u00B7 Fiat currency \u00B7 Inflation",
+        description: "In 1024, the Song Dynasty government took over the issuance of jiaozi \u2014 paper promissory notes that Sichuan merchants had been using privately for decades. These became the world\u2019s first government-backed paper currency. The innovation was born of necessity: copper coins were too heavy for large transactions, and Sichuan was chronically short of metal. The system worked brilliantly for generations, enabling sophisticated commerce across China\u2019s vast territory. But later dynasties printed too much, causing devastating inflation \u2014 a cautionary tale that would repeat whenever governments discovered how easy it was to create money from paper.",
+        quizDescription: "The Song Dynasty issued the first government paper currency, revolutionizing commerce.",
+        location: { lat: 30.6, lng: 104.1, region: "East Asia", place: "Chengdu, China" },
+        category: "culture",
+        difficulty: 2,
+        controversyNotes: {
+            date: "Private jiaozi notes circulated in Sichuan from around 997 CE. The 1024 date marks when the Song government established a monopoly on their issuance. Some historians date the true beginning of paper money to these earlier private notes rather than the government takeover.",
+        }
+    },
+    {
+        id: "f151",
+        title: "The Hanseatic League",
+        date: "c. 1241\u20131669",
+        year: 1241,
+        yearEnd: 1669,
+        keywords: "L\u00FCbeck \u00B7 Merchant confederation \u00B7 Baltic trade \u00B7 Commercial law",
+        description: "Beginning with an alliance between L\u00FCbeck and Hamburg in 1241, the Hanseatic League grew into a confederation of nearly 200 merchant cities stretching from London to Novgorod. In an era of feudal lords and constant warfare, the League offered something revolutionary: a zone of commercial law, standardized weights, and mutual defense for traders. Hanseatic merchants controlled the Baltic herring trade, Russian furs, and Scandinavian timber, making them richer than many kings. The League proved that economic power could rival military might \u2014 a merchant republic before the age of republics.",
+        quizDescription: "A confederation of merchant cities dominated Northern European trade for four centuries.",
+        location: { lat: 53.9, lng: 10.7, region: "Europe", place: "L\u00FCbeck, Northern Europe" },
+        category: "politics",
+        difficulty: 2,
+        controversyNotes: {
+            what: "Whether the Hanseatic League was a formal political entity or a loose commercial network is debated. It had no constitution, no permanent officials, and no standing army. Some historians describe it as the world\u2019s first multinational corporation; others insist it was merely a set of bilateral trade agreements.",
+        }
+    },
+    {
+        id: "f152",
+        title: "The Medici Bank",
+        date: "1397\u20131494",
+        year: 1397,
+        yearEnd: 1494,
+        keywords: "Florence \u00B7 Double-entry bookkeeping \u00B7 Renaissance patronage \u00B7 Banking",
+        description: "Founded by Giovanni di Bicci de\u2019 Medici in 1397, the Medici Bank became Europe\u2019s most powerful financial institution by perfecting innovations still central to banking: letters of credit, branch networks across major cities, and meticulous double-entry bookkeeping. The bank\u2019s real genius was disguising interest charges (forbidden by the Church as usury) as currency exchange fees. Medici wealth funded the Renaissance \u2014 Botticelli, Michelangelo, and Brunelleschi all depended on Medici patronage. The family\u2019s rise from merchants to rulers of Florence and popes of Rome demonstrated how financial power could reshape politics and culture alike.",
+        quizDescription: "The Medici Bank pioneered modern banking practices and funded the Italian Renaissance.",
+        location: { lat: 43.77, lng: 11.25, region: "Europe", place: "Florence, Italy" },
+        category: "culture",
+        difficulty: 2,
+        controversyNotes: {
+            description: "Double-entry bookkeeping was not invented by the Medici \u2014 it was already in use by Italian merchants in the 13th century and was systematized by Luca Pacioli in 1494. The Medici Bank perfected and scaled these practices rather than originating them.",
+        }
+    },
+    {
+        id: "f153",
+        title: "The Dutch East India Company",
+        date: "1602\u20131799",
+        year: 1602,
+        yearEnd: 1799,
+        keywords: "VOC \u00B7 Stock exchange \u00B7 Spice trade \u00B7 Corporate imperialism",
+        description: "Chartered in 1602, the Vereenigde Oostindische Compagnie (VOC) was the world\u2019s first publicly traded company \u2014 and arguably the most powerful corporation in history. It could wage war, negotiate treaties, establish colonies, and mint its own coins. At its peak, the VOC controlled the global spice trade, employed 50,000 people, and commanded 40 warships. Its Amsterdam stock exchange created the first modern financial market, complete with speculation and short-selling. The VOC was also ruthlessly exploitative, enslaving populations and destroying entire ecosystems to maintain spice monopolies.",
+        quizDescription: "The world\u2019s first publicly traded company controlled the global spice trade from Amsterdam.",
+        location: { lat: 52.37, lng: 4.9, region: "Europe", place: "Amsterdam, Netherlands" },
+        category: "politics",
+        difficulty: 2,
+        controversyNotes: {
+            what: "Some scholars argue the English East India Company (founded 1600) or earlier Italian joint-stock ventures deserve the \u2018first corporation\u2019 title. The VOC\u2019s claim rests on being the first to issue freely tradable shares on a public exchange, but the definition of \u2018corporation\u2019 and \u2018stock exchange\u2019 is debated.",
+        }
+    },
+    {
+        id: "f154",
+        title: "The South Sea Bubble",
+        date: "1720",
+        year: 1720,
+        keywords: "Speculation \u00B7 Financial crash \u00B7 Isaac Newton \u00B7 Market regulation",
+        description: "In 1720, shares in the South Sea Company \u2014 which held a monopoly on British trade with South America \u2014 surged from \u00A3128 to over \u00A31,000 in months, driven by wild speculation and insider manipulation. Nobles, scholars, and servants alike mortgaged everything to buy shares. When the bubble burst, fortunes evaporated overnight. Isaac Newton reportedly lost \u00A320,000 and lamented he could calculate the motions of heavenly bodies but not the madness of people. The crash led to Britain\u2019s first financial regulations and proved a truth that would haunt markets for centuries: speculative fever is as old as markets themselves.",
+        quizDescription: "Britain\u2019s first great financial crash wiped out fortunes and led to early market regulations.",
+        location: { lat: 51.5, lng: -0.1, region: "Europe", place: "London, England" },
+        category: "politics",
+        difficulty: 2,
+        controversyNotes: {
+            what: "Newton\u2019s famous quote about \u2018calculating the madness of people\u2019 is likely apocryphal \u2014 the earliest source is an 1855 biography. That he lost money in the crash is well documented, but the exact amount and his emotional reaction are less certain.",
+        }
+    },
+    {
+        id: "f155",
+        title: "The Bretton Woods Conference",
+        date: "July 1944",
+        year: 1944,
+        keywords: "IMF \u00B7 World Bank \u00B7 Gold standard \u00B7 Keynes \u00B7 Post-war order",
+        description: "In July 1944, delegates from 44 Allied nations gathered at a New Hampshire resort to design a new global financial system from the ruins of two world wars and a devastating depression. The agreements created the International Monetary Fund, the World Bank, and pegged world currencies to the US dollar, which was tied to gold. British economist John Maynard Keynes clashed bitterly with American negotiator Harry Dexter White over the design \u2014 but both agreed that unregulated markets had nearly destroyed civilization and that international cooperation was the only path forward.",
+        quizDescription: "Allied nations created the IMF, World Bank, and dollar-based monetary system.",
+        location: { lat: 44.26, lng: -71.44, region: "North America", place: "Bretton Woods, New Hampshire" },
+        category: "politics",
+        difficulty: 2,
+        controversyNotes: {
+            what: "Harry Dexter White, the American chief negotiator, was later accused of being a Soviet agent. Declassified evidence from the Venona project suggests he did pass information to Soviet intelligence, though whether this influenced the Bretton Woods agreements remains debated.",
+        }
+    },
+    {
+        id: "f156",
+        title: "The Rise of Globalization",
+        date: "1995",
+        year: 1995,
+        keywords: "WTO \u00B7 Free trade \u00B7 Supply chains \u00B7 Inequality \u00B7 Container shipping",
+        description: "On January 1, 1995, the World Trade Organization replaced the postwar GATT system with a permanent institution governing global commerce. Combined with the explosion of container shipping, the internet, and the fall of the Soviet bloc, this accelerated a transformation already underway: by 2000, a T-shirt\u2019s cotton might be grown in India, spun in Bangladesh, sewn in Vietnam, and sold in New York. Global trade tripled in a decade. Hundreds of millions escaped poverty, especially in China and Southeast Asia. But globalization also hollowed out manufacturing in the developed world, widened inequality, and made supply chains vulnerable to shocks \u2014 tensions that fueled populist movements in the 2010s.",
+        quizDescription: "The WTO\u2019s founding accelerated global trade, lifting millions from poverty while disrupting economies.",
+        location: { lat: 46.2, lng: 6.15, region: "Europe", place: "Geneva, Switzerland" },
+        category: "politics",
+        difficulty: 3,
+        controversyNotes: {
+            what: "Whether globalization\u2019s net effect is positive or negative remains one of the most contested questions in economics. Proponents point to billions lifted from poverty; critics highlight rising inequality, environmental destruction, and the vulnerability of long supply chains exposed by COVID-19.",
+        }
     }
 ];
 
@@ -2664,6 +2821,78 @@ for (const [eventId, connections] of Object.entries(LEVEL2_SCIENCE_CONNECTIONS))
     }
 }
 
+// --- Level 2: Money & Trade chapter connections ---
+const LEVEL2_TRADE_CONNECTIONS = {
+    f147: [
+        { id: "f148", label: "Standardized money made long-distance trade like the Silk Road feasible" },
+        { id: "f150", label: "Coins were the first step in money\u2019s evolution toward paper currency" },
+    ],
+    f148: [
+        { id: "f147", label: "Coins made trade across the Silk Road practical" },
+        { id: "f149", label: "Overland Silk Road routes inspired the search for maritime alternatives" },
+        { id: "f29", label: "The Mongol Empire later unified and protected Silk Road trade" },
+    ],
+    f149: [
+        { id: "f148", label: "Maritime routes complemented overland Silk Road trade" },
+        { id: "f110", label: "Great Zimbabwe\u2019s gold wealth came from Indian Ocean trade" },
+        { id: "f150", label: "Chinese trade wealth across the Indian Ocean drove financial innovation back home" },
+    ],
+    f150: [
+        { id: "f147", label: "Paper money evolved from the same need that created coins: easier trade" },
+        { id: "f152", label: "Chinese monetary innovation foreshadowed European banking" },
+    ],
+    f151: [
+        { id: "f153", label: "Hanseatic merchant confederation modeled collective commercial power for later companies" },
+        { id: "f152", label: "Northern merchant cities and Italian banks competed to dominate European trade" },
+    ],
+    f152: [
+        { id: "f34", label: "Medici wealth directly funded the Italian Renaissance" },
+        { id: "f151", label: "Italian banking and Northern merchant leagues were rivals for European commercial dominance" },
+        { id: "f153", label: "Italian banking innovations were adopted by Dutch trading companies" },
+    ],
+    f153: [
+        { id: "f152", label: "Built on Italian financial innovations like shares and branch banking" },
+        { id: "f33", label: "Portuguese and Spanish voyages opened the sea routes the VOC exploited" },
+        { id: "f39", label: "Colonial trading companies fueled the Atlantic slave trade" },
+        { id: "f154", label: "Stock market speculation pioneered by the VOC led to the first bubbles" },
+    ],
+    f154: [
+        { id: "f153", label: "The VOC\u2019s stock market created the conditions for speculative mania" },
+        { id: "f52", label: "The South Sea Bubble foreshadowed the Great Depression\u2019s speculative excess" },
+        { id: "f155", label: "Recurring financial crashes eventually demanded international regulation" },
+    ],
+    f155: [
+        { id: "f52", label: "The Great Depression proved unregulated markets could destroy economies" },
+        { id: "f53", label: "World War II\u2019s destruction created urgency for a new financial order" },
+        { id: "f156", label: "Bretton Woods institutions evolved into the WTO and modern global trade" },
+    ],
+    f156: [
+        { id: "f155", label: "Built on the post-war financial institutions created at Bretton Woods" },
+        { id: "f58", label: "The internet enabled the borderless commerce globalization depends on" },
+    ],
+    // Cross-connections: append to existing events
+    f9: [
+        { id: "f147", label: "Writing was originally a bookkeeping tool; coins formalized what scribes tracked" },
+    ],
+    f15: [
+        { id: "f148", label: "Alexander\u2019s conquests opened East-West contacts that became the Silk Road" },
+    ],
+    f29: [
+        { id: "f148", label: "Mongol peace protected Silk Road merchants and boosted transcontinental trade" },
+    ],
+    f34: [
+        { id: "f152", label: "The Renaissance was bankrolled by Medici money" },
+    ],
+};
+
+for (const [eventId, connections] of Object.entries(LEVEL2_TRADE_CONNECTIONS)) {
+    if (EVENT_CONNECTIONS[eventId]) {
+        EVENT_CONNECTIONS[eventId].push(...connections);
+    } else {
+        EVENT_CONNECTIONS[eventId] = connections;
+    }
+}
+
 // Attach connections to each core event
 for (const event of CORE_EVENTS) {
     if (EVENT_CONNECTIONS[event.id]) {
@@ -2697,6 +2926,7 @@ const IMPORTANCE_MAP = {
     f95: 'major', f98: 'major', f102: 'major', f103: 'major', f104: 'major',
     f105: 'major', f110: 'major', f116: 'major', f117: 'major', f118: 'major',
     f128: 'major', f131: 'major', f133: 'major', f135: 'major', f136: 'major',
+    f147: 'major', f148: 'major', f149: 'major', f153: 'major', f155: 'major',
     // ── Notable ── historically significant; everything else defaults here
 };
 
@@ -2709,7 +2939,7 @@ export const ALL_EVENTS = [
     ...DAILY_QUIZ_EVENTS.map(e => ({ ...e, importance: e.importance || 'minor' })),
 ];
 
-export const CORE_EVENT_COUNT = CORE_EVENTS.length; // 137 (60 Level 1 + 77 Level 2)
+export const CORE_EVENT_COUNT = CORE_EVENTS.length; // 147 (60 Level 1 + 87 Level 2)
 
 /** Level 1 events are f1–f60; Level 2 events are f61+. */
 export function isLevel2Event(event) {

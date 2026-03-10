@@ -1685,4 +1685,106 @@ export const DESCRIPTION_DISTRACTORS = {
             { text: "The Higgs boson was discovered at CERN in 2012, confirming a prediction made 48 years earlier solely by Peter Higgs.", d: 3 },
         ]
     },
+
+    // ─── Level 2 Chapter: Money & Trade ──────────────────────────────
+    f147: {
+        hardCorrect: "Lydian coins bore a lion\u2019s head stamp guaranteeing weight and purity, creating trust between strangers.",
+        distractors: [
+            { text: "The first coins were made of pure gold, making them extremely valuable from the start.", d: 1 },
+            { text: "Coins were invented in ancient Egypt as a replacement for the pharaoh\u2019s treasury.", d: 1 },
+            { text: "The Lydian coins were primarily used for religious offerings rather than everyday trade.", d: 2 },
+            { text: "Coinage spread slowly over many centuries, only reaching Greece around 200 BCE.", d: 2 },
+            { text: "Lydia minted the first standardized coins from electrum, and the concept spread to Greece within a few decades, though India and China developed their own coin systems independently and possibly earlier.", d: 3 },
+        ]
+    },
+    f148: {
+        hardCorrect: "Goods changed hands many times along the route \u2014 most merchants only traveled a segment, with middlemen adding markups at each stop.",
+        distractors: [
+            { text: "The Silk Road was a single well-paved highway stretching from Beijing to Rome.", d: 1 },
+            { text: "The route was primarily used to transport soldiers rather than trade goods.", d: 1 },
+            { text: "Zhang Qian successfully forged the military alliance he was sent to negotiate, and trade was a bonus.", d: 2 },
+            { text: "Silk was the only commodity traded along the route, giving it its name.", d: 2 },
+            { text: "Zhang Qian\u2019s diplomatic mission failed but revealed trade routes connecting China to the Mediterranean \u2014 routes that had never been used for any trade before his journey.", d: 3 },
+        ]
+    },
+    f149: {
+        hardCorrect: "Medieval African rulers dined off Chinese celadon plates, while Indonesian spices flavored Middle Eastern cuisine.",
+        distractors: [
+            { text: "Indian Ocean trade was controlled entirely by Arab merchants who excluded other cultures.", d: 1 },
+            { text: "The network only connected India and China, with no significant African participation.", d: 1 },
+            { text: "European merchants dominated Indian Ocean trade well before the Age of Exploration.", d: 2 },
+            { text: "Swahili port cities mainly exported manufactured goods rather than raw materials.", d: 2 },
+            { text: "The Indian Ocean network was a multicultural system where Arab, Chinese, and Indian merchants participated as equals, and it remained entirely free of any involvement in the slave trade.", d: 3 },
+        ]
+    },
+    f150: {
+        hardCorrect: "The innovation was born of necessity \u2014 copper coins were too heavy for large transactions and Sichuan was short of metal.",
+        distractors: [
+            { text: "Paper money was invented in Europe during the Renaissance by Italian bankers.", d: 1 },
+            { text: "The Song Dynasty created paper money as a way to fund its space exploration program.", d: 1 },
+            { text: "The Chinese government immediately regulated paper money from its inception, never allowing private issuance.", d: 2 },
+            { text: "Paper currency was so successful in China that it never experienced inflation problems.", d: 2 },
+            { text: "In 1024, the Song Dynasty issued the first government paper currency; these jiaozi were backed by the full gold reserves of the imperial treasury.", d: 3 },
+        ]
+    },
+    f151: {
+        hardCorrect: "The League proved that economic power could rival military might \u2014 a merchant republic before the age of republics.",
+        distractors: [
+            { text: "The Hanseatic League was a military alliance created to fight the Ottoman Empire.", d: 1 },
+            { text: "The League was based in Venice and controlled Mediterranean shipping lanes.", d: 1 },
+            { text: "At its peak, the League had a formal constitution and a permanent standing army.", d: 2 },
+            { text: "The Hanseatic League was founded by monarchs to regulate trade between their kingdoms.", d: 2 },
+            { text: "Beginning with L\u00FCbeck and Hamburg, the League grew to nearly 200 cities and created Europe\u2019s first unified legal code governing all aspects of civic and commercial life.", d: 3 },
+        ]
+    },
+    f152: {
+        hardCorrect: "The bank disguised interest charges \u2014 forbidden by the Church as usury \u2014 as currency exchange fees.",
+        distractors: [
+            { text: "The Medici Bank was founded by the Pope to fund Vatican construction projects.", d: 1 },
+            { text: "The Medici family made their fortune through military conquest of neighboring city-states.", d: 1 },
+            { text: "The Medici Bank invented double-entry bookkeeping, which no one had used before.", d: 2 },
+            { text: "The Catholic Church openly supported and encouraged the Medici\u2019s lending practices.", d: 2 },
+            { text: "The Medici Bank became Europe\u2019s most powerful by perfecting innovations like letters of credit and branch networks, and the Church fully endorsed their lending as a legitimate public service.", d: 3 },
+        ]
+    },
+    f153: {
+        hardCorrect: "The VOC could wage war, negotiate treaties, establish colonies, and mint its own coins \u2014 a state within a state.",
+        distractors: [
+            { text: "The Dutch East India Company was a charitable organization dedicated to spreading Christianity in Asia.", d: 1 },
+            { text: "The VOC only traded in tulips, which is why the Dutch became famous for flowers.", d: 1 },
+            { text: "The VOC was the first company to employ workers but never issued tradable shares to the public.", d: 2 },
+            { text: "The company operated peacefully and never used military force to protect its trade monopolies.", d: 2 },
+            { text: "Chartered in 1602, the VOC was the world\u2019s first publicly traded company, though it operated under strict government oversight that prevented it from acting independently in matters of war or diplomacy.", d: 3 },
+        ]
+    },
+    f154: {
+        hardCorrect: "Isaac Newton reportedly lost \u00A320,000 and lamented he could calculate heavenly bodies but not the madness of people.",
+        distractors: [
+            { text: "The South Sea Bubble happened in the Mediterranean, crashing fishing and olive oil markets.", d: 1 },
+            { text: "Only wealthy aristocrats were affected; ordinary people had no access to shares.", d: 1 },
+            { text: "The crash was caused by an actual discovery that South America had no valuable resources.", d: 2 },
+            { text: "The South Sea Company went bankrupt because its ships were lost at sea in a storm.", d: 2 },
+            { text: "Shares surged from \u00A3128 to over \u00A31,000 in months, and the crash that followed led immediately to the abolition of all public stock trading in Britain for a century.", d: 3 },
+        ]
+    },
+    f155: {
+        hardCorrect: "Keynes and White clashed bitterly over the system\u2019s design but agreed that unregulated markets had nearly destroyed civilization.",
+        distractors: [
+            { text: "The Bretton Woods Conference established the European Union as a trade bloc.", d: 1 },
+            { text: "The conference was held in London and attended only by European nations.", d: 1 },
+            { text: "The system pegged all currencies to the British pound, which was then tied to silver.", d: 2 },
+            { text: "Keynes and White agreed on every detail of the new financial system without conflict.", d: 2 },
+            { text: "Delegates from 44 nations created the IMF and World Bank, pegging currencies to the dollar, and this system remained completely unchanged through the end of the 20th century.", d: 3 },
+        ]
+    },
+    f156: {
+        hardCorrect: "By 2000, a T-shirt\u2019s cotton might be grown in India, spun in Bangladesh, sewn in Vietnam, and sold in New York.",
+        distractors: [
+            { text: "The WTO was founded in 1945 as part of the original United Nations charter.", d: 1 },
+            { text: "Globalization only affected wealthy nations and had no impact on developing countries.", d: 1 },
+            { text: "The WTO succeeded the International Monetary Fund as the primary global trade organization.", d: 2 },
+            { text: "Globalization uniformly benefited all countries and social classes equally, with no significant opposition.", d: 2 },
+            { text: "The WTO\u2019s founding in 1995, combined with container shipping and the internet, tripled global trade in a decade and lifted hundreds of millions from poverty without any significant downsides.", d: 3 },
+        ]
+    },
 };
