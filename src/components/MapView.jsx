@@ -227,6 +227,20 @@ function MapSVG({ pins, learnedIds, selectedRegion, selectedPin, selectedEventId
             {/* Graticule grid */}
             <Graticule />
 
+            {/* Continent outlines — black strokes drawn behind fills for visible coastlines */}
+            {Object.entries(MAP_REGIONS).map(([continentName, data]) => (
+                <g key={`outline-${continentName}`} style={{ pointerEvents: 'none' }}>
+                    {data.countries.map((country) => (
+                        <path key={country.code} d={country.d}
+                            fill="none"
+                            stroke="rgba(0,0,0,0.45)"
+                            strokeWidth="1"
+                            strokeLinejoin="round"
+                        />
+                    ))}
+                </g>
+            ))}
+
             {/* Country paths (grouped by continent) — colored by sub-region */}
             {Object.entries(MAP_REGIONS).map(([continentName, data]) => (
                 <g key={continentName}>

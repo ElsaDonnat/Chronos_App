@@ -137,8 +137,8 @@ export default function TimelinePage() {
                 />
             </div>
 
-            {/* Compact filter row — scrollable on narrow screens */}
-            <div className="flex items-center gap-2 mb-6 overflow-x-auto no-scrollbar">
+            {/* Compact filter row */}
+            <div className="flex items-center gap-2 mb-6 flex-wrap">
                 <FilterDropdown
                     value={selectedImportance}
                     onChange={updateImportance}
