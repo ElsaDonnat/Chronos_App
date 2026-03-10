@@ -72,18 +72,16 @@ Expanded from 11 to 14 sub-regions by splitting "East Asia" into East Asia (Chin
 
 ---
 
-### UX — Interaction improvements
+### ~~UX — Interaction improvements~~ ✅ Done (2026-03-10)
 
-These are independent of each other and can be done in any order:
+All sub-items completed:
 
 - ~~**Region auto-scroll in fullscreen**~~ ✅ Done (2026-03-09)
-- **Double-tap to zoom** — standard mobile gesture. Double-tap zooms to 2× centered on tap point; double-tap again resets. Must coexist with single-tap pin selection (use a brief delay or distance threshold).
-- **Swipe-down to dismiss fullscreen** — more discoverable than the small Close button. Pull-down gesture closes the fullscreen overlay.
+- ~~**Double-tap to zoom**~~ ✅ Done (2026-03-10)
+- ~~**Swipe-down to dismiss fullscreen**~~ ✅ Done (2026-03-10)
 - ~~**Desktop wheel zoom**~~ ✅ Done (2026-03-09)
-- **Hover states (desktop)** — subtle glow/scale on pin hover, country path highlight on hover (per-country paths now ready).
-- **Cluster drill-down** — tapping a cluster auto-zooms to that area so individual pins spread out, instead of the current flat list popup.
-
-**Files:** `src/components/MapView.jsx`
+- ~~**Hover states (desktop)**~~ ✅ Done (2026-03-10)
+- ~~**Cluster drill-down**~~ ✅ Done (2026-03-10) — zoom-aware clustering with debounced recalculation
 
 ---
 
@@ -156,7 +154,7 @@ These are independent of each other and can be done in any order:
 ~~3. **UX: wheel zoom, region auto-scroll, pin animations** ✅~~
 ~~4. **Sub-region map interaction** ✅~~
 ~~5. **Region audit** ✅~~
-6. **UX interaction improvements** — double-tap zoom, swipe-down fullscreen dismiss, hover states, cluster drill-down
+~~6. **UX interaction improvements** ✅~~ — double-tap zoom, swipe-down fullscreen dismiss, hover states, cluster drill-down
 7. **Time slider on map** — high-impact standalone feature
 8. **Concurrent events view** — the biggest new feature, benefits from time slider and region system
 9. **Semantic zoom** — zoom-adaptive clustering + viewBox manipulation
@@ -214,3 +212,4 @@ Add more events per era, deeper non-Western history coverage, and new lessons be
 - **Feature — Country highlighting on event selection** (2026-03-09): Selecting an event pin highlights the country where it happened with a distinct fill + gold stroke. Uses coordinate-based point-in-polygon matching at runtime. Smooth CSS transitions on highlight/unhighlight.
 - **Feature — Sub-region map interaction** (2026-03-10): Each sub-region filled with distinct pastel color (watercolor atlas look). Tapping a country selects its sub-region (vibrant saturated color), other regions dim to 0.4 opacity. `COUNTRY_TO_SUBREGION` mapping (~170 ISO codes → 11 sub-regions) and `REGION_COLORS` (pastel/vibrant pairs via CSS custom properties) added to `mapPaths.js`. 22 CSS variables for light mode + 22 for dark mode. `RegionEventList` component shows learned events for the selected sub-region below the map. Sound feedback via `feedback.tap()`. All learned events always visible on map regardless of region filter.
 - **Foundation — Region system audit** (2026-03-10): Expanded from 11 to 14 sub-regions. Split "East Asia" into East Asia (China, Taiwan, Japan, Korea), Southeast Asia (Philippines, Malaysia, Cambodia, Thailand, etc.), Central Asia (Mongolia, Kazakhstan, etc.), and Oceania (Papua New Guinea, Fiji, etc.). Added 6 new CSS variable pairs (light + dark). Re-tagged Mongol Empire (f29) to Central Asia. Updated generation script for consistency.
+- **UX — Interaction improvements** (2026-03-10): Four improvements: (1) Double-tap to zoom — double-tapping background zooms to 2× centered on tap, double-tap again resets. (2) Swipe-down to dismiss fullscreen — pull-down gesture with visual feedback pill and rubber-band physics. (3) Hover states — desktop-only brightness boost on country paths and drop-shadow glow on pins. (4) Cluster drill-down — tapping a cluster auto-zooms to separate pins via zoom-aware clustering (grid size inversely scales with zoom level, debounced at 150ms).

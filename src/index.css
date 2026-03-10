@@ -723,6 +723,24 @@ input, textarea, [contenteditable] {
   to { opacity: 1; transform: scale(1) translateY(0); }
 }
 
+/* Desktop hover states for map */
+@media (hover: hover) {
+  .map-country-hover:hover {
+    filter: brightness(1.08);
+  }
+  .map-pin-hover:hover circle:last-of-type {
+    filter: drop-shadow(0 0 4px currentColor);
+  }
+  .map-pin-hover:hover {
+    filter: drop-shadow(0 0 3px rgba(139, 65, 87, 0.35));
+  }
+}
+
+/* Fullscreen pull-down dismiss */
+.map-fullscreen-pull {
+  transition: transform 0.2s ease-out, opacity 0.2s ease-out;
+}
+
 @keyframes slideFromRight {
   from { opacity: 0.5; transform: translateX(40px); }
   to { opacity: 1; transform: translateX(0); }

@@ -5,6 +5,18 @@ Format follows [Keep a Changelog](https://keepachangelog.com/) and [Semantic Ver
 
 Use the version entries from the last playstore push to the most recent version for Play Store "What's New" text.
 
+## [1.9.2] - 2026-03-10
+
+### Added
+- **Double-tap to zoom** — double-tapping the map background zooms to 2\u00d7 centered on the tap point; double-tapping again resets to 1\u00d7. Works on both mobile (touch) and desktop (click). Coexists with single-tap pin/region selection.
+- **Swipe-down to dismiss fullscreen** — pulling down on the fullscreen map overlay dismisses it. Visual feedback shows a "Pull down to close" / "Release to close" hint pill with rubber-band physics. More discoverable than the small Close button.
+- **Hover states (desktop)** — on pointer-capable devices, country paths subtly brighten on hover (`brightness(1.08)`) and event pins get a soft glow (`drop-shadow`). Both use `@media (hover: hover)` to avoid sticky hover on touch devices.
+- **Cluster drill-down** — tapping a cluster pin now auto-zooms into the cluster area instead of showing a flat list. Clustering is zoom-aware: grid cell size scales inversely with zoom level (`CLUSTER_GRID / zoom`), so pins naturally separate as you zoom in. At 3\u00d7+ zoom, if a cluster persists, the flat list popup is shown as fallback. Uses debounced scale (150ms) to avoid expensive recalculation during pinch gestures.
+
+### Changed
+- `usePanZoom` hook now exposes `scale`, `zoomToPoint(clientX, clientY, targetScale)`, and `lastTapRef` for double-tap detection
+- `clusterPins()` accepts an optional `zoom` parameter for zoom-adaptive grid sizing
+
 ## [1.9.1] - 2026-03-10
 
 ### Changed

@@ -17,7 +17,8 @@ const MAP_COLORS = {
     labelActive: 'var(--color-map-label-active, #8B4157)',
 };
 
-function clusterPins(events, learnedIds) {
+function clusterPins(events, learnedIds, zoom = 1) {
+    const gridSize = CLUSTER_GRID / Math.max(zoom, 1);
     const projected = events.map(e => {
         const pos = projectToSVG(e.location.lat, e.location.lng, normalizeRegion(e.location.region));
         return { event: e, x: pos.x, y: pos.y, learned: learnedIds.has(e.id) };
@@ -25,7 +26,7 @@ function clusterPins(events, learnedIds) {
 
     const grid = {};
     for (const pin of projected) {
-        const key = `${Math.floor(pin.x / CLUSTER_GRID)},${Math.floor(pin.y / CLUSTER_GRID)}`;
+        const key = `${Math.floor(pin.x / gridSize)},${Math.floor(pin.y / gridSize)}`;
         if (!grid[key]) grid[key] = [];
         grid[key].push(pin);
     }
@@ -134,12 +135,27 @@ function Legend({ visible, onToggle, className }) {
     );
 }
 
-// Touch/mouse pinch-zoom handler
+// Touch/mouse pinch-zoom handler with double-tap zoom
 function usePanZoom() {
     const [scale, setScale] = useState(1);
     const [panOffset, setPanOffset] = useState({ x: 0, y: 0 });
     const gestureRef = useRef(null);
     const mapContainerRef = useRef(null);
+    const lastTapRef = useRef({ time: 0, x: 0, y: 0 });
+
+    const zoomToPoint = useCallback((clientX, clientY, targetScale) => {
+        const el = mapContainerRef.current;
+        if (!el) return;
+        const rect = el.getBoundingClientRect();
+        const xFrac = (clientX - rect.left) / rect.width;
+        const yFrac = (clientY - rect.top) / rect.height;
+        const maxPan = ((targetScale - 1) / 2) * 100;
+        setScale(targetScale);
+        setPanOffset({
+            x: Math.min(Math.max((0.5 - xFrac) * 100 * (targetScale - 1), -maxPan), maxPan),
+            y: Math.min(Math.max((0.5 - yFrac) * 100 * (targetScale - 1), -maxPan), maxPan),
+        });
+    }, []);
 
     const onTouchStart = useCallback((e) => {
         if (e.touches.length === 2) {
@@ -201,7 +217,7 @@ function usePanZoom() {
         ? `translate(${panOffset.x}%, ${panOffset.y}%) scale(${scale})`
         : 'none';
 
-    return { mapContainerRef, cssTransform, isZoomed, onTouchStart, onTouchMove, onTouchEnd, onWheel, resetZoom };
+    return { mapContainerRef, cssTransform, isZoomed, scale, onTouchStart, onTouchMove, onTouchEnd, onWheel, resetZoom, zoomToPoint, lastTapRef };
 }
 
 // Get fill color for a country based on its sub-region and selection state
@@ -246,9 +262,10 @@ function MapSVG({ pins, learnedIds, selectedRegion, selectedPin, selectedEventId
                                 strokeWidth={isCountryHighlighted ? 1.5 : 0.3}
                                 opacity={isDimmed ? 0.4 : 1}
                                 data-country={country.code}
+                                className={subRegion ? 'map-country-hover' : undefined}
                                 style={{
                                     cursor: subRegion ? 'pointer' : 'default',
-                                    transition: 'fill 0.3s, stroke 0.3s, opacity 0.3s',
+                                    transition: 'fill 0.3s, stroke 0.3s, opacity 0.3s, filter 0.15s',
                                 }}
                                 onClick={(e) => {
                                     if (subRegion) {
@@ -295,7 +312,8 @@ function MapSVG({ pins, learnedIds, selectedRegion, selectedPin, selectedEventId
 
                 return (
                     <g key={i} onClick={(e) => handlePinClick(pin, e)}
-                       style={{ cursor: 'pointer', animation: `mapPinEntrance 0.4s ease-out ${i * 30}ms both` }}>
+                       className="map-pin-hover"
+                       style={{ cursor: 'pointer', animation: `mapPinEntrance 0.4s ease-out ${i * 30}ms both`, transition: 'filter 0.15s' }}>
                         <circle cx={pin.x} cy={pin.y} r={18} fill="transparent" />
                         <circle cx={pin.x} cy={pin.y + 1} r={r} fill="rgba(0,0,0,0.12)" />
                         <circle cx={pin.x} cy={pin.y} r={r}
@@ -469,16 +487,25 @@ export default function MapView({ events, learnedIds, eventMastery, selectedRegi
     const [clusterExpanded, setClusterExpanded] = useState(false);
     const [legendVisible, setLegendVisible] = useState(false);
     const [isFullscreen, setIsFullscreen] = useState(false);
+    const [pullDown, setPullDown] = useState(0);
     const fullscreenScrollRef = useRef(null);
     const hasScrolledRef = useRef(false);
-    const { mapContainerRef, cssTransform, isZoomed, onTouchStart, onTouchMove, onTouchEnd, onWheel, resetZoom } = usePanZoom();
+    const pullStartRef = useRef(null);
+    const { mapContainerRef, cssTransform, isZoomed, scale, onTouchStart, onTouchMove, onTouchEnd, onWheel, resetZoom, zoomToPoint, lastTapRef } = usePanZoom();
+
+    // Debounced scale for zoom-aware clustering (avoids recalc during pinch gesture)
+    const [clusterScale, setClusterScale] = useState(1);
+    useEffect(() => {
+        const timer = setTimeout(() => setClusterScale(scale), 150);
+        return () => clearTimeout(timer);
+    }, [scale]);
 
     // Show all learned events on the map (pins), but filter by region only for the event list
     const allLearnedEvents = useMemo(() =>
         events.filter(e => learnedIds.has(e.id)),
     [events, learnedIds]);
 
-    const pins = useMemo(() => clusterPins(allLearnedEvents, learnedIds), [allLearnedEvents, learnedIds]);
+    const pins = useMemo(() => clusterPins(allLearnedEvents, learnedIds, clusterScale), [allLearnedEvents, learnedIds, clusterScale]);
 
     const selectedEventId = selectedPin?.event?.id;
     const selectedClusterXY = selectedPin?.events ? `${selectedPin.x},${selectedPin.y}` : null;
@@ -486,8 +513,24 @@ export default function MapView({ events, learnedIds, eventMastery, selectedRegi
     const handlePinClick = (pin, e) => {
         e.stopPropagation();
         if (pin.cluster) {
-            setSelectedPin({ events: pin.events, x: pin.x, y: pin.y });
-            setClusterExpanded(true);
+            // Cluster drill-down: zoom in to separate pins, or show list at max zoom
+            if (scale < 3) {
+                const el = mapContainerRef.current;
+                if (el) {
+                    const rect = el.getBoundingClientRect();
+                    // Convert SVG coords to client coords
+                    const svgWidth = 800, svgHeight = 500;
+                    const clientX = rect.left + (pin.x / svgWidth) * rect.width;
+                    const clientY = rect.top + (pin.y / svgHeight) * rect.height;
+                    zoomToPoint(clientX, clientY, Math.min(scale < 1.5 ? 2 : scale + 1.5, 4));
+                }
+                setSelectedPin(null);
+                setClusterExpanded(false);
+            } else {
+                // At high zoom, show flat list as fallback
+                setSelectedPin({ events: pin.events, x: pin.x, y: pin.y });
+                setClusterExpanded(true);
+            }
         } else {
             setSelectedPin({ event: pin.event });
             setClusterExpanded(false);
@@ -503,15 +546,58 @@ export default function MapView({ events, learnedIds, eventMastery, selectedRegi
         feedback.tap();
     }, [selectedRegion, onRegionSelect]);
 
-    const handleMapBgClick = () => {
+    // Double-tap detection on map background
+    const handleMapBgClick = useCallback((e) => {
+        const now = Date.now();
+        const last = lastTapRef.current;
+        const dist = Math.hypot(e.clientX - last.x, e.clientY - last.y);
+
+        if (now - last.time < 350 && dist < 30) {
+            // Double-tap: zoom to 2× or reset
+            lastTapRef.current = { time: 0, x: 0, y: 0 };
+            if (scale > 1) {
+                resetZoom();
+            } else {
+                zoomToPoint(e.clientX, e.clientY, 2);
+            }
+            return;
+        }
+        lastTapRef.current = { time: now, x: e.clientX, y: e.clientY };
+
+        // Normal single-click: deselect
         setSelectedPin(null);
         setClusterExpanded(false);
         setLegendVisible(false);
-        // Clicking empty space deselects region
         if (selectedRegion) {
             onRegionSelect('all');
         }
-    };
+    }, [scale, resetZoom, zoomToPoint, lastTapRef, selectedRegion, onRegionSelect]);
+
+    // Swipe-down to dismiss fullscreen
+    const onFullscreenTouchStart = useCallback((e) => {
+        if (e.touches.length === 1) {
+            pullStartRef.current = {
+                y: e.touches[0].clientY,
+                scrollTop: fullscreenScrollRef.current?.scrollTop || 0,
+            };
+        }
+    }, []);
+
+    const onFullscreenTouchMove = useCallback((e) => {
+        if (!pullStartRef.current || e.touches.length !== 1) return;
+        const dy = e.touches[0].clientY - pullStartRef.current.y;
+        if (pullStartRef.current.scrollTop <= 0 && dy > 0) {
+            setPullDown(Math.min(dy * 0.5, 150));
+        }
+    }, []);
+
+    const onFullscreenTouchEnd = useCallback(() => {
+        if (pullDown > 80) {
+            setIsFullscreen(false);
+        }
+        setPullDown(0);
+        pullStartRef.current = null;
+    }, [pullDown]);
 
     // Center fullscreen scroll on Europe/Middle East on first open
     useEffect(() => {
@@ -587,12 +673,30 @@ export default function MapView({ events, learnedIds, eventMastery, selectedRegi
     // ─── Fullscreen overlay ───
     if (isFullscreen) {
         return (
-            <div className="fixed inset-0 z-[999] flex flex-col animate-fade-in"
-                 style={{ backgroundColor: 'var(--color-parchment)' }}>
+            <div className="fixed inset-0 z-[999] flex flex-col animate-fade-in map-fullscreen-pull"
+                 style={{
+                     backgroundColor: 'var(--color-parchment)',
+                     transform: pullDown > 0 ? `translateY(${pullDown}px)` : 'none',
+                     opacity: pullDown > 0 ? Math.max(0.4, 1 - pullDown / 200) : 1,
+                 }}>
+                {/* Pull-down hint */}
+                {pullDown > 10 && (
+                    <div className="absolute top-2 left-1/2 -translate-x-1/2 z-30 text-[10px] font-semibold px-2 py-0.5 rounded-full"
+                         style={{
+                             backgroundColor: pullDown > 80 ? 'var(--color-burgundy)' : 'rgba(var(--color-ink-rgb), 0.08)',
+                             color: pullDown > 80 ? 'white' : 'var(--color-ink-muted)',
+                             transition: 'background-color 0.15s, color 0.15s',
+                         }}>
+                        {pullDown > 80 ? 'Release to close' : 'Pull down to close'}
+                    </div>
+                )}
                 <div
                     ref={fullscreenScrollRef}
                     className="flex-1 overflow-auto relative"
                     style={{ WebkitOverflowScrolling: 'touch' }}
+                    onTouchStart={onFullscreenTouchStart}
+                    onTouchMove={onFullscreenTouchMove}
+                    onTouchEnd={onFullscreenTouchEnd}
                 >
                     <div className="sticky top-0 left-0 right-0 z-20 flex items-center justify-between px-3 pt-3 pb-1"
                          style={{ pointerEvents: 'none' }}>
