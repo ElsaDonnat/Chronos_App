@@ -5,6 +5,11 @@ Format follows [Keep a Changelog](https://keepachangelog.com/) and [Semantic Ver
 
 Use the version entries from the last playstore push to the most recent version for Play Store "What's New" text.
 
+## [1.9.14] - 2026-03-10
+
+### Fixed
+- **Fullscreen hints lint fix** — replaced `useEffect` + `setState` pattern for first-time hints with derived state (`hintsDismissed` + computed `showHints`) to fix `react-hooks/set-state-in-effect` lint error. Backlog updated to mark fullscreen polish (mini-map, gesture tutorial, orientation hint) as complete.
+
 ## [1.9.13] - 2026-03-10
 
 ### Changed

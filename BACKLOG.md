@@ -95,11 +95,13 @@ Shared time slider utilities extracted to `src/utils/timeSlider.js`. MapView and
 
 ---
 
-### Polish — Fullscreen experience
+### ~~Polish — Fullscreen experience~~ ✅ Done (2026-03-10)
 
-- **Mini-map** — small overview rectangle in corner showing which portion of the world map is currently in the viewport.
-- **Orientation lock hint** — on mobile, suggest rotating to landscape for better fullscreen map viewing.
-- **Gesture tutorial** — first time opening fullscreen, show a brief hint about pinch-to-zoom and scroll.
+All sub-items completed:
+
+- ~~**Mini-map**~~ ✅ Done (2026-03-10) — small overview rectangle in bottom-left corner of fullscreen mode. Viewport indicator updates on scroll/zoom. Click to navigate. Accounts for CSS transform zoom.
+- ~~**Orientation lock hint**~~ ✅ Done (2026-03-10) — portrait mode hint included in first-time gesture tutorial overlay.
+- ~~**Gesture tutorial**~~ ✅ Done (2026-03-10) — first-time fullscreen overlay with scroll and pinch-to-zoom hints. Auto-dismisses after 4s or on tap. Stored in localStorage.
 
 ---
 
@@ -117,6 +119,7 @@ Shared time slider utilities extracted to `src/utils/timeSlider.js`. MapView and
 ~~10. **Visual polish** ✅~~ — connection arcs, era coloring (region label fading + higher resolution still TODO)
 ~~11. **Search on map** ✅~~ — search bar overlay with live results
 ~~12. **Component extraction prep** ✅~~ — shared time slider module, prop-based config for MapView/ConcurrentView
+~~13. **Fullscreen polish** ✅~~ — mini-map, gesture tutorial, orientation hint
 
 ## P5 — Themed collections (remaining)
 
@@ -177,3 +180,4 @@ Add more events per era, deeper non-Western history coverage, and new lessons be
 - **Visual — Map search** (2026-03-10): `MapSearch` component overlaid on map with auto-focus input, live filtered results (title, location, year, max 6), category color dots, and click-to-select event highlighting.
 - **Visual — Higher resolution map data** (2026-03-10): Upgraded from Natural Earth 110m to 50m resolution. Path simplification (1-decimal precision, dedup + collinear removal) keeps bundle size manageable (+37%). Fixed missing countries (Australia, NZ, Singapore, 60+ territories). Updated manual event-country overrides for 50m coastlines.
 - **Architecture — Component extraction prep** (2026-03-10): Extracted shared time slider utilities to `src/utils/timeSlider.js` (era segments, slider-to-year mapping, time windows, opacity). MapView and ConcurrentView accept optional `categoryConfig`/`eventConnections` props for clean decoupling. All sub-components receive config via props.
+- **Polish — Fullscreen experience** (2026-03-10): Mini-map overview in bottom-left corner with click-to-navigate and zoom-aware viewport tracking. First-time gesture tutorial overlay (scroll + pinch hints, auto-dismiss 4s). Orientation hint for portrait mode (rotate for wider view). All stored in localStorage.

@@ -970,7 +970,7 @@ export default function MapView({
     const [timeActive, setTimeActive] = useState(false);
     const [timeValue, setTimeValue] = useState(500); // Start at medieval midpoint
     const [searchActive, setSearchActive] = useState(false);
-    const [showHints, setShowHints] = useState(false);
+    const [hintsDismissed, setHintsDismissed] = useState(() => localStorage.getItem('chronos-map-fs-tutorial') === '1');
     const fullscreenScrollRef = useRef(null);
     const hasScrolledRef = useRef(false);
     const pullStartRef = useRef(null);
@@ -1153,17 +1153,10 @@ export default function MapView({
         container.scrollTo({ left: targetLeft, top: targetTop, behavior: 'smooth' });
     }, [isFullscreen, selectedRegion]);
 
-    // Show first-time fullscreen hints
-    useEffect(() => {
-        if (isFullscreen && !localStorage.getItem('chronos-map-fs-tutorial')) {
-            setShowHints(true);
-        } else if (!isFullscreen) {
-            setShowHints(false);
-        }
-    }, [isFullscreen]);
-
+    // First-time fullscreen hints (derived from isFullscreen + dismissal state)
+    const showHints = isFullscreen && !hintsDismissed;
     const dismissHints = useCallback(() => {
-        setShowHints(false);
+        setHintsDismissed(true);
         localStorage.setItem('chronos-map-fs-tutorial', '1');
     }, []);
 
