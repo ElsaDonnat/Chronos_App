@@ -40,19 +40,9 @@ Expanded from 11 to 14 sub-regions by splitting "East Asia" into East Asia (Chin
 
 ---
 
-### Feature — Concurrent Events view (new Timeline tab)
+### ~~Feature — Concurrent Events view (new Timeline tab)~~ ✅ Done (2026-03-10)
 
-**Why:** A core educational insight in world history is understanding what was happening simultaneously in different places. The user saw an attempt at this (screenshot showed a grid of events by category × time) but it was cluttered and organized by event type. The right axis is **region**, not category — "While Rome was falling, what was happening in China?"
-
-**What to do:**
-- Add a third tab to the Timeline page: `Timeline | Map | Sync` (or "Concurrent" / "World View" — name TBD)
-- Layout: vertical axis = regions (grouped by continent), horizontal axis = time. Each row shows events for that region, positioned by year
-- Time navigation: **era buttons** for quick jumps (Ancient, Medieval, etc.) + a **draggable time slider** within each era for fine-grained scrubbing. The slider defines a time window (e.g., ±50 years around the cursor) and shows events within that window
-- Visual: clean horizontal swim lanes per region. Events appear as small titled cards or dots. Vertical "now" line shows the selected year. Fade events outside the time window
-- Only show learned events (consistent with map behavior)
-- Consider linking to map: tapping an event in the concurrent view could highlight it on the map, and vice versa
-
-**Files:** New component `src/components/ConcurrentView.jsx` (or similar), `src/pages/TimelinePage.jsx` (add tab)
+"Sync" tab on Timeline page with regional swim lanes grouped by continent, piecewise-linear time slider with era quick-jumps (showing event counts), smart default position, opacity fade for temporal proximity, tappable expandable event cards, and guided empty state with jump-to-era buttons. Component: `src/components/ConcurrentView.jsx`.
 
 ---
 
@@ -146,7 +136,7 @@ All sub-items completed:
 ~~5. **Region audit** ✅~~
 ~~6. **UX interaction improvements** ✅~~ — double-tap zoom, swipe-down fullscreen dismiss, hover states, cluster drill-down
 ~~7. **Time slider on map** ✅~~
-8. **Concurrent events view** — the biggest new feature, benefits from time slider and region system
+~~8. **Concurrent events view** ✅~~
 9. **Semantic zoom** — zoom-adaptive clustering + viewBox manipulation
 10. **Visual polish** — connection arcs, era coloring, region label fading, higher resolution
 11. **Search on map** — important as event count grows
@@ -204,3 +194,4 @@ Add more events per era, deeper non-Western history coverage, and new lessons be
 - **Foundation — Region system audit** (2026-03-10): Expanded from 11 to 14 sub-regions. Split "East Asia" into East Asia (China, Taiwan, Japan, Korea), Southeast Asia (Philippines, Malaysia, Cambodia, Thailand, etc.), Central Asia (Mongolia, Kazakhstan, etc.), and Oceania (Papua New Guinea, Fiji, etc.). Added 6 new CSS variable pairs (light + dark). Re-tagged Mongol Empire (f29) to Central Asia. Updated generation script for consistency.
 - **UX — Interaction improvements** (2026-03-10): Four improvements: (1) Double-tap to zoom — double-tapping background zooms to 2× centered on tap, double-tap again resets. (2) Swipe-down to dismiss fullscreen — pull-down gesture with visual feedback pill and rubber-band physics. (3) Hover states — desktop-only brightness boost on country paths and drop-shadow glow on pins. (4) Cluster drill-down — tapping a cluster auto-zooms to separate pins via zoom-aware clustering (grid size inversely scales with zoom level, debounced at 150ms).
 - **Feature — Time slider on map** (2026-03-10): Piecewise-linear slider (each era gets equal space) with clock toggle button on inline + fullscreen modes. Era-aware time windows (25% for Prehistory, 12–15% for others). Smart era quick-jump buttons snap to median learned event year. Pin opacity transitions (0.3s). Range event support for yearEnd spans. Styled range input with era boundary tick marks and backdrop blur panel.
+- **Feature — Concurrent Events view** (2026-03-10): "Sync" tab on Timeline page with regional swim lanes (4 continent groups, 14 sub-regions), piecewise-linear time slider with era quick-jump buttons showing event counts, smart default position (auto-starts at densest era), opacity-based temporal proximity fade, expandable event cards with category colors/mastery dots, and guided empty state with jump-to-era buttons.

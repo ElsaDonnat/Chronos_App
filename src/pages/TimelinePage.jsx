@@ -3,6 +3,7 @@ import { useApp } from '../context/AppContext';
 import { ALL_EVENTS, CORE_EVENT_COUNT, CATEGORY_CONFIG, IMPORTANCE_CONFIG, IMPORTANCE_ORDER, ERA_RANGES, ERA_BOUNDARY_EVENTS, getEraForYear, getEventById, isDiHEvent } from '../data/events';
 import { Card, CategoryTag, ImportanceTag, DiHBadge, MasteryDots, Divider, ExpandableText, EventConnections, TabSelector } from '../components/shared';
 import MapView from '../components/MapView';
+import ConcurrentView from '../components/ConcurrentView';
 import { SUB_REGIONS } from '../data/mapPaths';
 import Mascot from '../components/Mascot';
 
@@ -131,7 +132,7 @@ export default function TimelinePage() {
             {/* View toggle */}
             <div className="mb-4">
                 <TabSelector
-                    tabs={[{ id: 'list', label: 'Timeline' }, { id: 'map', label: 'Map' }]}
+                    tabs={[{ id: 'list', label: 'Timeline' }, { id: 'map', label: 'Map' }, { id: 'sync', label: 'Sync' }]}
                     activeTab={viewMode}
                     onChange={updateViewMode}
                 />
@@ -204,6 +205,12 @@ export default function TimelinePage() {
                     eventMastery={state.eventMastery}
                     selectedRegion={selectedRegion}
                     onRegionSelect={updateRegion}
+                />
+            ) : viewMode === 'sync' ? (
+                <ConcurrentView
+                    events={sortedEvents}
+                    learnedIds={learnedIds}
+                    eventMastery={state.eventMastery}
                 />
             ) : listFilteredEvents.length === 0 ? (
                 <div className="text-center py-16 animate-fade-in">

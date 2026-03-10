@@ -60,7 +60,7 @@ Key actions: `COMPLETE_LESSON`, `UPDATE_EVENT_MASTERY`, `ADD_XP`, `MARK_EVENTS_S
 
 ### Routing
 
-No router — `App.jsx` uses `activeTab` state (`'learn'` | `'timeline'` | `'practice'`) to switch pages. Pages manage their own internal view states (e.g., PracticePage has hub/collection/session/results views).
+No router — `App.jsx` uses `activeTab` state (`'learn'` | `'timeline'` | `'practice'`) to switch pages. Pages manage their own internal view states (e.g., PracticePage has hub/collection/session/results views). TimelinePage has 3 sub-views: `list` (chronological timeline), `map` (MapView), `sync` (ConcurrentView) — toggled via TabSelector, persisted to localStorage.
 
 ### Data Layer (`src/data/`)
 
@@ -102,6 +102,20 @@ No router — `App.jsx` uses `activeTab` state (`'learn'` | `'timeline'` | `'pra
 - 110m resolution — coastlines look chunky when zoomed; would need 50m or 10m for detail
 - CSS-only zoom — just scales the SVG, no re-render at higher detail (no semantic zoom)
 - No pin labels at zoom — event titles not shown next to pins when zoomed in
+
+### Concurrent Events View (`src/components/ConcurrentView.jsx`)
+
+"Sync" tab on the Timeline page — shows what was happening simultaneously across different regions. Third tab alongside Timeline (list) and Map views.
+
+**Layout**: Vertical swim lanes grouped by 4 continent groups (Europe; Middle East & Africa; Asia & Oceania; Americas), each containing sub-region buckets when multiple regions have events. Events appear as tappable cards with category color dots, titles, dates, and mastery dots.
+
+**Time navigation**: Same piecewise-linear slider as the map (each of 5 eras gets equal slider space). Era quick-jump buttons show learned event count badges. Smart default: slider auto-starts at the era with the most learned events (computed from `learnedEvents`).
+
+**Opacity system**: `getEventOpacity()` computes visibility based on temporal proximity — events within the time window show at full opacity, fade zone events at 0.4–0.7, distant events hidden. Window size is era-proportional (same `getTimeWindow()` as map).
+
+**Interaction**: Tapping an event card expands it to show `quizDescription` (or `description`) and location. Outside-tap dismisses. Sound feedback via `feedback.tap()`.
+
+**Empty state**: When no events are near the slider position, shows "Jump to [era] (count)" quick-jump buttons for eras that have learned events.
 
 ### Lesson Flow (`src/components/learn/LessonFlow.jsx`)
 

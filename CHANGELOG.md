@@ -5,6 +5,20 @@ Format follows [Keep a Changelog](https://keepachangelog.com/) and [Semantic Ver
 
 Use the version entries from the last playstore push to the most recent version for Play Store "What's New" text.
 
+## [1.9.8] - 2026-03-10
+
+### Added
+- **Concurrent Events view ("Sync" tab)** — new third tab on the Timeline page showing what was happening simultaneously across different regions of the world. Features:
+  - **Regional swim lanes** — events grouped by continent (Europe, Middle East & Africa, Asia & Oceania, Americas) with sub-region labels when multiple regions are active
+  - **Time slider with era quick-jumps** — same piecewise-linear slider as the map, with era buttons showing learned event counts per era
+  - **Smart default position** — slider auto-starts at the era with the most learned events (not hardcoded medieval)
+  - **Opacity fade** — events further from the selected year fade out proportionally to the era's time window
+  - **Tappable event cards** — tap to expand and see description, location, and mastery dots. Category-colored borders on selection.
+  - **Guided empty state** — when no events are near the current time, shows "Jump to [era]" buttons with event counts
+
+### Changed
+- **Map visual polish** — stronger country borders (0.3→0.5 stroke width), added coastline outlines behind country fills for better land/water contrast. New `--color-map-coastline` CSS variable for light + dark mode.
+
 ## [1.9.7] - 2026-03-10
 
 ### Changed
@@ -15,6 +29,7 @@ Use the version entries from the last playstore push to the most recent version 
   - **f142 (Vasco da Gama):** "half his crew died of scurvy" → "two-thirds" — of ~170 original crew, only 54 survived the round trip (~68% mortality).
 - Cards f139, f141, f143, f144, f145, f146 reviewed and confirmed accurate — no changes needed.
 - Updated CLAUDE.md event count to 156 (60 L1 + 96 L2) and chapter count to 10 (40 lessons).
+- **QA check**: both builds (Capacitor + GitHub Pages) pass, cap sync OK, no merge conflict markers. Lint has 173 pre-existing issues (mostly `no-useless-escape` for Unicode chars in data files) + 1 new low-severity unused import (`getEraForYear`) in untracked WIP file `ConcurrentView.jsx`. 3 uncommitted modified files (MapView.jsx, index.css, TimelinePage.jsx) — likely in-progress work. No issues found.
 
 ## [1.9.6] - 2026-03-10
 

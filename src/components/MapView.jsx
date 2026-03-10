@@ -84,7 +84,8 @@ function getActiveEraId(sliderValue) {
 const MAP_COLORS = {
     ocean: 'var(--color-map-ocean, #D6CFC4)',
     land: 'var(--color-map-land, #E8E0D2)',
-    border: 'var(--color-map-border, #C9B896)',
+    border: 'var(--color-map-border, #A89878)',
+    coastline: 'var(--color-map-coastline, #8B7D65)',
     graticule: 'var(--color-map-graticule, rgba(0,0,0,0.04))',
     pinStroke: 'var(--color-map-pin-stroke, #FFFDF9)',
     pinMuted: 'var(--color-map-pin-muted, #C9B896)',
@@ -318,6 +319,22 @@ function MapSVG({ pins, learnedIds, selectedRegion, selectedPin, selectedEventId
             {/* Graticule grid */}
             <Graticule />
 
+            {/* Continent coastline outlines — drawn behind country borders for land/water contrast */}
+            {Object.entries(MAP_REGIONS).map(([continentName, data]) => (
+                <g key={`coast-${continentName}`} style={{ pointerEvents: 'none' }}>
+                    {data.countries.map((country) => (
+                        <path key={country.code} d={country.d}
+                            fill="none"
+                            stroke={MAP_COLORS.coastline}
+                            strokeWidth={1.2}
+                            strokeLinejoin="round"
+                            opacity={selectedRegion ? 0.3 : 0.7}
+                            style={{ transition: 'opacity 0.3s' }}
+                        />
+                    ))}
+                </g>
+            ))}
+
             {/* Country paths (grouped by continent) — colored by sub-region */}
             {Object.entries(MAP_REGIONS).map(([continentName, data]) => (
                 <g key={continentName}>
@@ -334,7 +351,7 @@ function MapSVG({ pins, learnedIds, selectedRegion, selectedPin, selectedEventId
                             <path key={country.code} d={country.d}
                                 fill={fill}
                                 stroke={isCountryHighlighted ? MAP_COLORS.labelActive : MAP_COLORS.border}
-                                strokeWidth={isCountryHighlighted ? 1.5 : 0.3}
+                                strokeWidth={isCountryHighlighted ? 1.5 : 0.5}
                                 opacity={isDimmed ? 0.4 : 1}
                                 data-country={country.code}
                                 className={subRegion ? 'map-country-hover' : undefined}
