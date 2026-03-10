@@ -310,6 +310,127 @@ function usePanZoom() {
 }
 
 // Get fill color for a country based on its sub-region and selection state
+
+// ─── ViewBox-based pan/zoom for inline map ───
+// Instead of CSS transform: scale(), this manipulates the SVG viewBox directly.
+// Benefits: pan works at any zoom, crisp rendering, no scale compensation needed.
+const INLINE_DEFAULT_VB = { x: 120, y: 40, w: 560, h: 420 };
+const WORLD_VB = { x: 0, y: 0, w: 800, h: 500 };
+const MIN_VB_W = 100; // Max zoom in (viewBox width)
+const MAX_VB_W = 800; // Max zoom out (full world)
+
+function useViewBoxZoom(defaultVB = INLINE_DEFAULT_VB) {
+    const [vb, setVb] = useState({ ...defaultVB });
+    const gestureRef = useRef(null);
+    const containerRef = useRef(null);
+    const lastTapRef = useRef({ time: 0, x: 0, y: 0 });
+
+    // Clamp viewBox to stay within world bounds
+    const clampVb = useCallback((next) => {
+        const w = Math.min(Math.max(next.w, MIN_VB_W), MAX_VB_W);
+        const h = w * (WORLD_VB.h / WORLD_VB.w); // Maintain aspect ratio
+        const x = Math.min(Math.max(next.x, WORLD_VB.x), WORLD_VB.x + WORLD_VB.w - w);
+        const y = Math.min(Math.max(next.y, WORLD_VB.y), WORLD_VB.y + WORLD_VB.h - h);
+        return { x, y, w, h };
+    }, []);
+
+    const zoomBy = useCallback((factor, cx, cy) => {
+        setVb(prev => {
+            // cx, cy are fractions (0-1) of the container where zoom is centered
+            const newW = prev.w / factor;
+            const newH = prev.h / factor;
+            const dx = (prev.w - newW) * (cx ?? 0.5);
+            const dy = (prev.h - newH) * (cy ?? 0.5);
+            return clampVb({ x: prev.x + dx, y: prev.y + dy, w: newW, h: newH });
+        });
+    }, [clampVb]);
+
+    const onTouchStart = useCallback((e) => {
+        if (e.touches.length === 2) {
+            const t = e.touches;
+            const dist = Math.hypot(t[1].clientX - t[0].clientX, t[1].clientY - t[0].clientY);
+            const mx = (t[0].clientX + t[1].clientX) / 2;
+            const my = (t[0].clientY + t[1].clientY) / 2;
+            gestureRef.current = { type: 'pinch', startDist: dist, startVb: { ...vb }, mx, my };
+        } else if (e.touches.length === 1) {
+            gestureRef.current = {
+                type: 'pan',
+                startX: e.touches[0].clientX,
+                startY: e.touches[0].clientY,
+                startVb: { ...vb },
+                moved: false,
+            };
+        }
+    }, [vb]);
+
+    const onTouchMove = useCallback((e) => {
+        if (!gestureRef.current) return;
+        const g = gestureRef.current;
+        const el = containerRef.current;
+        if (!el) return;
+        const rect = el.getBoundingClientRect();
+
+        if (g.type === 'pinch' && e.touches.length === 2) {
+            e.preventDefault();
+            const t = e.touches;
+            const dist = Math.hypot(t[1].clientX - t[0].clientX, t[1].clientY - t[0].clientY);
+            const factor = dist / g.startDist;
+            const newW = g.startVb.w / factor;
+            const newH = g.startVb.h / factor;
+            // Center zoom on pinch midpoint
+            const cx = (g.mx - rect.left) / rect.width;
+            const cy = (g.my - rect.top) / rect.height;
+            const dx = (g.startVb.w - newW) * cx;
+            const dy = (g.startVb.h - newH) * cy;
+            setVb(clampVb({ x: g.startVb.x + dx, y: g.startVb.y + dy, w: newW, h: newH }));
+        } else if (g.type === 'pan' && e.touches.length === 1) {
+            e.preventDefault();
+            const dx = e.touches[0].clientX - g.startX;
+            const dy = e.touches[0].clientY - g.startY;
+            if (Math.abs(dx) > 3 || Math.abs(dy) > 3) g.moved = true;
+            // Convert pixel movement to viewBox units
+            const svgDx = -(dx / rect.width) * vb.w;
+            const svgDy = -(dy / rect.height) * vb.h;
+            setVb(clampVb({
+                x: g.startVb.x + svgDx,
+                y: g.startVb.y + svgDy,
+                w: g.startVb.w,
+                h: g.startVb.h,
+            }));
+        }
+    }, [vb, clampVb]);
+
+    const onTouchEnd = useCallback(() => {
+        gestureRef.current = null;
+    }, []);
+
+    const onWheel = useCallback((e) => {
+        e.preventDefault();
+        const el = containerRef.current;
+        if (!el) return;
+        const rect = el.getBoundingClientRect();
+        const cx = (e.clientX - rect.left) / rect.width;
+        const cy = (e.clientY - rect.top) / rect.height;
+        const factor = e.deltaY < 0 ? 1.15 : 1 / 1.15;
+        zoomBy(factor, cx, cy);
+    }, [zoomBy]);
+
+    const resetView = useCallback(() => setVb({ ...defaultVB }), [defaultVB]);
+    const showWorld = useCallback(() => setVb(clampVb({ ...WORLD_VB })), [clampVb]);
+
+    const isZoomed = vb.w < defaultVB.w - 10 || Math.abs(vb.x - defaultVB.x) > 10 || Math.abs(vb.y - defaultVB.y) > 10;
+    const isPannedAway = Math.abs(vb.x - defaultVB.x) > 20 || Math.abs(vb.y - defaultVB.y) > 20 || Math.abs(vb.w - defaultVB.w) > 20;
+    const viewBoxStr = `${vb.x.toFixed(1)} ${vb.y.toFixed(1)} ${vb.w.toFixed(1)} ${vb.h.toFixed(1)}`;
+    // Effective scale for semantic zoom (pin sizes, strokes etc.)
+    const effectiveScale = INLINE_DEFAULT_VB.w / vb.w;
+
+    return {
+        containerRef, viewBoxStr, vb, effectiveScale, isZoomed, isPannedAway,
+        onTouchStart, onTouchMove, onTouchEnd, onWheel,
+        zoomBy, resetView, showWorld, lastTapRef, setVb: (fn) => setVb(prev => clampVb(typeof fn === 'function' ? fn(prev) : fn)),
+    };
+}
+
 function getCountryFill(countryCode, selectedRegion) {
     const subRegion = COUNTRY_TO_SUBREGION[countryCode];
     if (!subRegion) return MAP_COLORS.land; // Antarctica or unmapped
@@ -975,14 +1096,18 @@ export default function MapView({
     const fullscreenScrollRef = useRef(null);
     const hasScrolledRef = useRef(false);
     const pullStartRef = useRef(null);
-    const { mapContainerRef, cssTransform, isZoomed, scale, setScale, panOffset, onTouchStart, onTouchMove, onTouchEnd, onWheel, resetZoom, zoomToPoint, lastTapRef } = usePanZoom();
+    // CSS-based zoom for fullscreen mode
+    const { mapContainerRef, cssTransform, isZoomed: fsIsZoomed, scale: fsScale, setScale: fsSetScale, panOffset, onTouchStart: fsOnTouchStart, onTouchMove: fsOnTouchMove, onTouchEnd: fsOnTouchEnd, onWheel: fsOnWheel, resetZoom: fsResetZoom, zoomToPoint: fsZoomToPoint } = usePanZoom();
+    // ViewBox-based zoom for inline mode (crisper, pan at any zoom)
+    const { containerRef: inlineContainerRef, viewBoxStr: inlineViewBox, vb: inlineVb, effectiveScale: inlineScale, isZoomed: inlineIsZoomed, isPannedAway: inlinePannedAway, onTouchStart: inlineOnTouchStart, onTouchMove: inlineOnTouchMove, onTouchEnd: inlineOnTouchEnd, onWheel: inlineOnWheel, zoomBy: inlineZoomBy, resetView: inlineResetView, showWorld: inlineShowWorld, setVb: inlineSetVb } = useViewBoxZoom();
 
     // Debounced scale for zoom-aware clustering (avoids recalc during pinch gesture)
     const [clusterScale, setClusterScale] = useState(1);
+    const currentScale = isFullscreen ? fsScale : inlineScale;
     useEffect(() => {
-        const timer = setTimeout(() => setClusterScale(scale), 150);
+        const timer = setTimeout(() => setClusterScale(currentScale), 150);
         return () => clearTimeout(timer);
-    }, [scale]);
+    }, [currentScale]);
 
     const handleColorModeChange = useCallback((mode) => {
         setColorMode(mode);
@@ -993,9 +1118,9 @@ export default function MapView({
         setSelectedPin({ event: evt });
         setClusterExpanded(false);
         setSearchActive(false);
-        // In fullscreen: auto-scroll to the pin's projected position
+        const pos = projectToSVG(evt.location.lat, evt.location.lng, normalizeRegion(evt.location.region));
         if (isFullscreen && fullscreenScrollRef.current) {
-            const pos = projectToSVG(evt.location.lat, evt.location.lng, normalizeRegion(evt.location.region));
+            // In fullscreen: auto-scroll to the pin's projected position
             const container = fullscreenScrollRef.current;
             const mapWidth = container.scrollWidth;
             const mapHeight = container.scrollHeight;
@@ -1004,8 +1129,15 @@ export default function MapView({
             const targetLeft = Math.max(0, mapWidth * fracX - container.clientWidth / 2);
             const targetTop = Math.max(0, mapHeight * fracY - container.clientHeight / 2);
             container.scrollTo({ left: targetLeft, top: targetTop, behavior: 'smooth' });
+        } else {
+            // In inline mode: center viewBox on the event
+            inlineSetVb(prev => ({
+                ...prev,
+                x: pos.x - prev.w / 2,
+                y: pos.y - prev.h / 2,
+            }));
         }
-    }, [isFullscreen]);
+    }, [isFullscreen, inlineSetVb]);
 
     // Show all learned events on the map (pins), but filter by region only for the event list
     const allLearnedEvents = useMemo(() =>
@@ -1032,16 +1164,27 @@ export default function MapView({
     const handlePinClick = (pin, e) => {
         e.stopPropagation();
         if (pin.cluster) {
+            const effectScale = isFullscreen ? fsScale : inlineScale;
             // Cluster drill-down: zoom in to separate pins, or show list at max zoom
-            if (scale < 3) {
-                const el = mapContainerRef.current;
-                if (el) {
-                    const rect = el.getBoundingClientRect();
-                    // Convert SVG coords to client coords
-                    const svgWidth = 800, svgHeight = 500;
-                    const clientX = rect.left + (pin.x / svgWidth) * rect.width;
-                    const clientY = rect.top + (pin.y / svgHeight) * rect.height;
-                    zoomToPoint(clientX, clientY, Math.min(scale < 1.5 ? 2 : scale + 1.5, 4));
+            if (effectScale < 3) {
+                if (isFullscreen) {
+                    const el = mapContainerRef.current;
+                    if (el) {
+                        const rect = el.getBoundingClientRect();
+                        const svgWidth = 800, svgHeight = 500;
+                        const clientX = rect.left + (pin.x / svgWidth) * rect.width;
+                        const clientY = rect.top + (pin.y / svgHeight) * rect.height;
+                        fsZoomToPoint(clientX, clientY, Math.min(fsScale < 1.5 ? 2 : fsScale + 1.5, 4));
+                    }
+                } else {
+                    // ViewBox zoom: center on cluster and zoom in
+                    const targetW = inlineVb.w / (effectScale < 1.5 ? 2 : 1.8);
+                    inlineSetVb(() => ({
+                        x: pin.x - targetW / 2,
+                        y: pin.y - (targetW * 500 / 800) / 2,
+                        w: targetW,
+                        h: targetW * 500 / 800,
+                    }));
                 }
                 setSelectedPin(null);
                 setClusterExpanded(false);
@@ -1066,22 +1209,34 @@ export default function MapView({
     }, [selectedRegion, onRegionSelect]);
 
     // Double-tap detection on map background
+    const doubleTapRef = useRef({ time: 0, x: 0, y: 0 });
     const handleMapBgClick = useCallback((e) => {
         const now = Date.now();
-        const last = lastTapRef.current;
+        const last = doubleTapRef.current;
         const dist = Math.hypot(e.clientX - last.x, e.clientY - last.y);
 
         if (now - last.time < 350 && dist < 30) {
-            // Double-tap: zoom to 2× or reset
-            lastTapRef.current = { time: 0, x: 0, y: 0 };
-            if (scale > 1) {
-                resetZoom();
+            // Double-tap: zoom or reset
+            doubleTapRef.current = { time: 0, x: 0, y: 0 };
+            if (isFullscreen) {
+                if (fsScale > 1) fsResetZoom();
+                else fsZoomToPoint(e.clientX, e.clientY, 2);
             } else {
-                zoomToPoint(e.clientX, e.clientY, 2);
+                if (inlineIsZoomed) inlineResetView();
+                else {
+                    // Zoom in centered on tap point
+                    const el = inlineContainerRef.current;
+                    if (el) {
+                        const rect = el.getBoundingClientRect();
+                        const cx = (e.clientX - rect.left) / rect.width;
+                        const cy = (e.clientY - rect.top) / rect.height;
+                        inlineZoomBy(2, cx, cy);
+                    }
+                }
             }
             return;
         }
-        lastTapRef.current = { time: now, x: e.clientX, y: e.clientY };
+        doubleTapRef.current = { time: now, x: e.clientX, y: e.clientY };
 
         // Normal single-click: deselect
         setSelectedPin(null);
@@ -1090,7 +1245,7 @@ export default function MapView({
         if (selectedRegion) {
             onRegionSelect('all');
         }
-    }, [scale, resetZoom, zoomToPoint, lastTapRef, selectedRegion, onRegionSelect]);
+    }, [isFullscreen, fsScale, fsResetZoom, fsZoomToPoint, inlineIsZoomed, inlineResetView, inlineZoomBy, inlineContainerRef, selectedRegion, onRegionSelect]);
 
     // Swipe-down to dismiss fullscreen
     const onFullscreenTouchStart = useCallback((e) => {
@@ -1168,7 +1323,7 @@ export default function MapView({
         pins, learnedIds, selectedRegion,
         selectedPin, selectedEventId, selectedClusterXY,
         handlePinClick, handleMapBgClick, handleCountryClick,
-        timeOpacities, scale, colorMode,
+        timeOpacities, colorMode,
         categoryConfig, eventConnections,
     };
 
@@ -1258,9 +1413,9 @@ export default function MapView({
                             Close
                         </button>
                         <div className="flex items-center gap-2" style={{ pointerEvents: 'auto' }}>
-                            {isZoomed && (
+                            {fsIsZoomed && (
                                 <button
-                                    onClick={resetZoom}
+                                    onClick={fsResetZoom}
                                     className="px-2.5 py-1.5 rounded-full text-[11px] font-semibold"
                                     style={{
                                         backgroundColor: 'rgba(var(--color-parchment-rgb, 250, 246, 240), 0.85)',
@@ -1322,20 +1477,21 @@ export default function MapView({
 
                     <div
                         ref={mapContainerRef}
-                        onTouchStart={onTouchStart}
-                        onTouchMove={onTouchMove}
-                        onTouchEnd={onTouchEnd}
-                        onWheel={onWheel}
+                        onTouchStart={fsOnTouchStart}
+                        onTouchMove={fsOnTouchMove}
+                        onTouchEnd={fsOnTouchEnd}
+                        onWheel={fsOnWheel}
                         style={{
                             width: '280%',
                             marginTop: '-44px',
                             transform: cssTransform,
                             transformOrigin: 'center center',
-                            transition: isZoomed ? 'none' : 'transform 0.3s ease-out',
-                            touchAction: isZoomed ? 'none' : 'pan-x pan-y',
+                            transition: fsIsZoomed ? 'none' : 'transform 0.3s ease-out',
+                            touchAction: fsIsZoomed ? 'none' : 'pan-x pan-y',
                         }}
                     >
                         <MapSVG {...sharedSvgProps}
+                            scale={fsScale}
                             viewBox="0 0 800 500"
                             svgClassName="w-full"
                             svgStyle={{ display: 'block' }} />
@@ -1350,7 +1506,7 @@ export default function MapView({
                             const el = mapContainerRef.current;
                             if (el) {
                                 const rect = el.getBoundingClientRect();
-                                zoomToPoint(rect.left + rect.width / 2, rect.top + rect.height / 2, Math.min(scale + 0.5, 4));
+                                fsZoomToPoint(rect.left + rect.width / 2, rect.top + rect.height / 2, Math.min(fsScale + 0.5, 4));
                             }
                         }}
                         className="w-9 h-9 rounded-full flex items-center justify-center"
@@ -1368,9 +1524,9 @@ export default function MapView({
                     </button>
                     <button
                         onClick={() => {
-                            const next = Math.max(scale - 0.5, 1);
-                            if (next === 1) resetZoom();
-                            else setScale(next);
+                            const next = Math.max(fsScale - 0.5, 1);
+                            if (next === 1) fsResetZoom();
+                            else fsSetScale(next);
                         }}
                         className="w-9 h-9 rounded-full flex items-center justify-center"
                         style={{
@@ -1378,7 +1534,7 @@ export default function MapView({
                             color: 'var(--color-ink-muted)',
                             backdropFilter: 'blur(4px)',
                             boxShadow: '0 1px 4px rgba(0,0,0,0.1)',
-                            opacity: scale <= 1 ? 0.4 : 1,
+                            opacity: fsScale <= 1 ? 0.4 : 1,
                         }}
                         title="Zoom out"
                     >
@@ -1392,7 +1548,7 @@ export default function MapView({
                 {!selectedPin && (
                     <div className="absolute z-20 animate-fade-in"
                          style={{ bottom: timeActive ? 108 : 16, left: 12 }}>
-                        <MiniMap scrollRef={fullscreenScrollRef} scale={scale} panOffset={panOffset} />
+                        <MiniMap scrollRef={fullscreenScrollRef} scale={fsScale} panOffset={panOffset} />
                     </div>
                 )}
 
@@ -1414,8 +1570,12 @@ export default function MapView({
     }
 
     // ─── Normal (inline) mode ───
-    // Cropped viewBox: centered on Europe/Middle East/Africa area for a zoomed-in default
-    const inlineViewBox = "120 40 560 420";
+    // ViewBox-based pan/zoom: manipulates the SVG viewBox directly for crisp rendering + pan at any zoom.
+    const btnStyle = {
+        backgroundColor: 'rgba(var(--color-parchment-rgb, 250, 246, 240), 0.85)',
+        color: 'var(--color-ink-muted)',
+        backdropFilter: 'blur(4px)',
+    };
 
     return (
         <div className="relative flex flex-col h-full">
@@ -1429,18 +1589,14 @@ export default function MapView({
             <div className="relative rounded-xl overflow-hidden flex-1 min-h-0"
                 style={{ boxShadow: 'var(--shadow-card)', backgroundColor: 'var(--color-map-ocean, #D6CFC4)' }}>
 
-                {/* Top-left controls: zoom reset + search */}
+                {/* Top-left controls */}
                 <div className="absolute top-2 left-2 z-10 flex items-center gap-1.5">
-                    {isZoomed && (
+                    {inlinePannedAway && (
                         <button
-                            onClick={resetZoom}
+                            onClick={() => { inlineResetView(); feedback.tap(); }}
                             className="w-7 h-7 rounded-full flex items-center justify-center animate-fade-in"
-                            style={{
-                                backgroundColor: 'rgba(var(--color-parchment-rgb, 250, 246, 240), 0.85)',
-                                color: 'var(--color-ink-muted)',
-                                backdropFilter: 'blur(4px)',
-                            }}
-                            title="Reset zoom"
+                            style={btnStyle}
+                            title="Reset view"
                         >
                             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
                                 <path d="M15 3h6v6" /><path d="M9 21H3v-6" /><path d="M21 3l-7 7" /><path d="M3 21l7-7" />
@@ -1448,12 +1604,23 @@ export default function MapView({
                         </button>
                     )}
                     <button
+                        onClick={() => { inlineShowWorld(); feedback.tap(); }}
+                        className="w-7 h-7 rounded-full flex items-center justify-center"
+                        style={btnStyle}
+                        title="World view"
+                    >
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                            <circle cx="12" cy="12" r="10" />
+                            <path d="M2 12h20" /><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+                        </svg>
+                    </button>
+                    <button
                         onClick={() => { setSearchActive(v => !v); feedback.tap(); }}
                         className="w-7 h-7 rounded-full flex items-center justify-center"
                         style={{
-                            backgroundColor: searchActive ? 'var(--color-burgundy)' : 'rgba(var(--color-parchment-rgb, 250, 246, 240), 0.85)',
-                            color: searchActive ? 'white' : 'var(--color-ink-muted)',
-                            backdropFilter: 'blur(4px)',
+                            ...btnStyle,
+                            backgroundColor: searchActive ? 'var(--color-burgundy)' : btnStyle.backgroundColor,
+                            color: searchActive ? 'white' : btnStyle.color,
                         }}
                         title="Search events"
                     >
@@ -1463,7 +1630,7 @@ export default function MapView({
                     </button>
                 </div>
 
-                {/* Top-right: legend + info */}
+                {/* Top-right: legend */}
                 <Legend visible={legendVisible} onToggle={() => setLegendVisible(v => !v)}
                     colorMode={colorMode} onColorModeChange={handleColorModeChange} categoryConfig={categoryConfig} />
 
@@ -1482,9 +1649,9 @@ export default function MapView({
                     onClick={() => { setTimeActive(v => !v); feedback.tap(); }}
                     className="absolute bottom-2 left-2 z-10 w-8 h-8 rounded-full flex items-center justify-center"
                     style={{
-                        backgroundColor: timeActive ? 'var(--color-burgundy)' : 'rgba(var(--color-parchment-rgb, 250, 246, 240), 0.85)',
-                        color: timeActive ? 'white' : 'var(--color-ink-muted)',
-                        backdropFilter: 'blur(4px)',
+                        ...btnStyle,
+                        backgroundColor: timeActive ? 'var(--color-burgundy)' : btnStyle.backgroundColor,
+                        color: timeActive ? 'white' : btnStyle.color,
                     }}
                     title="Time slider"
                 >
@@ -1496,19 +1663,9 @@ export default function MapView({
                 {/* Bottom-right: zoom controls + fullscreen */}
                 <div className="absolute bottom-2 right-2 z-10 flex flex-col items-center gap-1.5">
                     <button
-                        onClick={() => {
-                            const el = mapContainerRef.current;
-                            if (el) {
-                                const rect = el.getBoundingClientRect();
-                                zoomToPoint(rect.left + rect.width / 2, rect.top + rect.height / 2, Math.min(scale + 0.5, 4));
-                            }
-                        }}
+                        onClick={() => { inlineZoomBy(1.5); feedback.tap(); }}
                         className="w-8 h-8 rounded-full flex items-center justify-center"
-                        style={{
-                            backgroundColor: 'rgba(var(--color-parchment-rgb, 250, 246, 240), 0.85)',
-                            color: 'var(--color-ink-muted)',
-                            backdropFilter: 'blur(4px)',
-                        }}
+                        style={btnStyle}
                         title="Zoom in"
                     >
                         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
@@ -1516,18 +1673,9 @@ export default function MapView({
                         </svg>
                     </button>
                     <button
-                        onClick={() => {
-                            const next = Math.max(scale - 0.5, 1);
-                            if (next === 1) resetZoom();
-                            else setScale(next);
-                        }}
+                        onClick={() => { inlineZoomBy(1 / 1.5); feedback.tap(); }}
                         className="w-8 h-8 rounded-full flex items-center justify-center"
-                        style={{
-                            backgroundColor: 'rgba(var(--color-parchment-rgb, 250, 246, 240), 0.85)',
-                            color: 'var(--color-ink-muted)',
-                            backdropFilter: 'blur(4px)',
-                            opacity: scale <= 1 ? 0.4 : 1,
-                        }}
+                        style={{ ...btnStyle, opacity: inlineVb.w >= MAX_VB_W - 5 ? 0.4 : 1 }}
                         title="Zoom out"
                     >
                         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
@@ -1535,13 +1683,9 @@ export default function MapView({
                         </svg>
                     </button>
                     <button
-                        onClick={() => { setIsFullscreen(true); resetZoom(); feedback.tap(); }}
+                        onClick={() => { setIsFullscreen(true); fsResetZoom(); feedback.tap(); }}
                         className="w-8 h-8 rounded-full flex items-center justify-center"
-                        style={{
-                            backgroundColor: 'rgba(var(--color-parchment-rgb, 250, 246, 240), 0.85)',
-                            color: 'var(--color-ink-muted)',
-                            backdropFilter: 'blur(4px)',
-                        }}
+                        style={btnStyle}
                         title="Full screen"
                     >
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
@@ -1550,24 +1694,22 @@ export default function MapView({
                     </button>
                 </div>
 
-                {/* Map content */}
+                {/* Map content — viewBox-based zoom */}
                 <div
-                    ref={mapContainerRef}
-                    onTouchStart={onTouchStart}
-                    onTouchMove={onTouchMove}
-                    onTouchEnd={onTouchEnd}
-                    onWheel={onWheel}
+                    ref={inlineContainerRef}
+                    onTouchStart={inlineOnTouchStart}
+                    onTouchMove={inlineOnTouchMove}
+                    onTouchEnd={inlineOnTouchEnd}
+                    onWheel={inlineOnWheel}
                     style={{
                         width: '100%',
                         height: '100%',
                         overflow: 'hidden',
-                        transform: cssTransform,
-                        transformOrigin: 'center center',
-                        transition: isZoomed ? 'none' : 'transform 0.3s ease-out',
-                        touchAction: isZoomed ? 'none' : 'none',
+                        touchAction: 'none',
                     }}
                 >
                     <MapSVG {...sharedSvgProps}
+                        scale={inlineScale}
                         viewBox={inlineViewBox}
                         svgClassName="w-full h-full"
                         svgStyle={{ display: 'block' }} />
