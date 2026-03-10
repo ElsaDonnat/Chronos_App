@@ -5,6 +5,11 @@ Format follows [Keep a Changelog](https://keepachangelog.com/) and [Semantic Ver
 
 Use the version entries from the last playstore push to the most recent version for Play Store "What's New" text.
 
+## [1.9.2] - 2026-03-10
+
+### Added
+- **Level 2 Chapter: Exploration & Discovery** \u2014 4-lesson chapter with 9 new events (f138\u2013f146) tracing humanity\u2019s journeys from Polynesian star navigation to the Space Race. Polynesian Voyaging, Silk Road Opens, Ibn Battuta\u2019s Odyssey, Zheng He\u2019s Treasure Fleets, Vasco da Gama Reaches India, The Conquistadors, Captain Cook\u2019s Pacific Voyages, Humboldt\u2019s Scientific Expedition, Darwin\u2019s Voyage on the Beagle. Reuses f33 (Columbus), f35 (Magellan), f57 (Space Race). Indigo theme, compass icon. Hand-crafted description distractors, controversy notes, and event connections for all events.
+
 ## [1.9.1] - 2026-03-10
 
 ### Changed

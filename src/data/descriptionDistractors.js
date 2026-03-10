@@ -1685,4 +1685,95 @@ export const DESCRIPTION_DISTRACTORS = {
             { text: "The Higgs boson was discovered at CERN in 2012, confirming a prediction made 48 years earlier solely by Peter Higgs.", d: 3 },
         ]
     },
+    // ─── Level 2: Exploration & Discovery ────────────────────────────────
+    f138: {
+        hardCorrect: "Polynesian navigators used ocean swells, star positions, and bird flight patterns to cross thousands of kilometers of open Pacific.",
+        distractors: [
+            { text: "Polynesians used magnetic compasses imported from China for their ocean voyages.", d: 1 },
+            { text: "Polynesian voyaging was limited to short hops between visible islands.", d: 1 },
+            { text: "Polynesians settled the Pacific rapidly in a single century of expansion from mainland Asia.", d: 2 },
+            { text: "Polynesian navigators relied primarily on written star charts passed between generations.", d: 2 },
+            { text: "Polynesians navigated the Pacific over nearly three millennia, reaching New Zealand around 800 CE using double-hulled canoes and celestial navigation.", d: 3 },
+        ]
+    },
+    f139: {
+        hardCorrect: "Zhang Qian was captured and held prisoner for over a decade before returning with intelligence that opened the Silk Road trade routes.",
+        distractors: [
+            { text: "The Silk Road was a single, well-paved highway connecting Rome directly to Beijing.", d: 1 },
+            { text: "Zhang Qian discovered the Silk Road by accident while fleeing a military defeat.", d: 1 },
+            { text: "The Silk Road was primarily used for transporting silk from China, with little exchange of ideas or religions.", d: 2 },
+            { text: "Zhang Qian\u2019s diplomatic mission succeeded immediately, establishing a formal alliance with Central Asian kingdoms.", d: 2 },
+            { text: "Zhang Qian\u2019s mission for the Han Dynasty in 138 BCE opened the 6,400-kilometer Silk Road, which carried Buddhism into China alongside trade goods.", d: 3 },
+        ]
+    },
+    f140: {
+        hardCorrect: "Ibn Battuta covered an estimated 120,000 kilometers \u2014 three times the distance Marco Polo traveled \u2014 and served as a judge in the Maldives.",
+        distractors: [
+            { text: "Ibn Battuta was a European merchant who traveled to learn Arabic trade practices.", d: 1 },
+            { text: "Ibn Battuta\u2019s travels were limited to the Arabian Peninsula and North Africa.", d: 1 },
+            { text: "Ibn Battuta traveled approximately the same distance as Marco Polo, covering about 40,000 kilometers.", d: 2 },
+            { text: "Ibn Battuta wrote his travel account himself in meticulous daily journals during the journey.", d: 2 },
+            { text: "Ibn Battuta left Tangier at age 21 on a pilgrimage to Mecca and traveled for 29 years, but his account was written by a court scribe, not from his own journals.", d: 3 },
+        ]
+    },
+    f141: {
+        hardCorrect: "The Ming court abruptly ordered Zheng He\u2019s fleets destroyed and overseas voyages banned, turning China inward just decades before European expansion.",
+        distractors: [
+            { text: "Zheng He\u2019s fleet was destroyed in a massive storm, ending Chinese naval exploration.", d: 1 },
+            { text: "Zheng He sailed across the Atlantic Ocean and reached the Americas before Columbus.", d: 1 },
+            { text: "Zheng He\u2019s voyages were primarily military conquests that established Chinese colonies across the Indian Ocean.", d: 2 },
+            { text: "The Ming court ended the voyages because Zheng He\u2019s fleets were defeated by Indian navies.", d: 2 },
+            { text: "Zheng He commanded fleets of up to 300 ships across the Indian Ocean, but the expeditions ended because the ships were too small for longer voyages.", d: 3 },
+        ]
+    },
+    f142: {
+        hardCorrect: "Da Gama\u2019s voyage broke the Muslim and Venetian monopoly on the spice trade and shifted global commerce from overland routes to sea lanes.",
+        distractors: [
+            { text: "Vasco da Gama sailed west across the Atlantic to reach India.", d: 1 },
+            { text: "Da Gama\u2019s crew suffered no losses during the 10-month voyage to India.", d: 1 },
+            { text: "Da Gama\u2019s arrival in India was welcomed by local rulers who eagerly sought European trade partnerships.", d: 2 },
+            { text: "The Portuguese sea route to India strengthened the existing Silk Road overland trade.", d: 2 },
+            { text: "Da Gama reached Calicut in 1498 after rounding the Cape of Good Hope, and the Zamorin of Calicut immediately granted Portugal a trade monopoly.", d: 3 },
+        ]
+    },
+    f143: {
+        hardCorrect: "The conquistadors succeeded through a combination of European diseases, local alliances with subject peoples, and technology gaps in steel and horses.",
+        distractors: [
+            { text: "The Spanish conquered the Aztec and Inca empires using armies of tens of thousands of European soldiers.", d: 1 },
+            { text: "The Aztec and Inca empires collapsed because they had no organized military forces.", d: 1 },
+            { text: "Cort\u00E9s conquered the Aztec Empire single-handedly with 600 men and no help from local allies.", d: 2 },
+            { text: "Disease played only a minor role in the conquest \u2014 the Spanish primarily won through superior military strategy.", d: 2 },
+            { text: "Cort\u00E9s toppled Tenochtitl\u00E1n with around 600 men and allied Indigenous forces, though disease had already decimated the Aztec population before the siege began.", d: 3 },
+        ]
+    },
+    f144: {
+        hardCorrect: "Cook\u2019s voyages carried naturalists, astronomers, and artists who documented species and peoples unknown to European science.",
+        distractors: [
+            { text: "Captain Cook was the first person to ever reach Australia and New Zealand.", d: 1 },
+            { text: "Cook\u2019s voyages were purely military expeditions to claim territory for Britain.", d: 1 },
+            { text: "Cook successfully discovered the great southern continent (Terra Australis) that geographers had predicted.", d: 2 },
+            { text: "Cook\u2019s voyages had no negative consequences for Pacific Island peoples.", d: 2 },
+            { text: "Cook mapped more of Earth\u2019s surface than any previous explorer and was the first European to reach Hawai\u2019i, where he was warmly received on all visits.", d: 3 },
+        ]
+    },
+    f145: {
+        hardCorrect: "Humboldt discovered that altitude affects climate zones exactly like latitude and was the first scientist to warn about the environmental damage of deforestation.",
+        distractors: [
+            { text: "Humboldt was a British naturalist who explored North America\u2019s Pacific coast.", d: 1 },
+            { text: "Humboldt is best known for discovering the theory of continental drift.", d: 1 },
+            { text: "Humboldt explored South America alone without any collaborators or local guides.", d: 2 },
+            { text: "Humboldt\u2019s main contribution was cataloging plant specimens, with little interest in how species related to their environments.", d: 2 },
+            { text: "Humboldt spent five years exploring South America and invented modern ecology, though his French traveling companion Bonpland contributed equally to the scientific findings.", d: 3 },
+        ]
+    },
+    f146: {
+        hardCorrect: "Darwin noticed that Gal\u00E1pagos finches on different islands had different beaks adapted to local food sources, a key observation for natural selection.",
+        distractors: [
+            { text: "Darwin developed his theory of evolution during the voyage and published it immediately upon returning.", d: 1 },
+            { text: "Darwin traveled alone on the Beagle as its captain and navigator.", d: 1 },
+            { text: "Darwin\u2019s theory of natural selection was entirely original, with no other scientist reaching similar conclusions.", d: 2 },
+            { text: "The Beagle voyage lasted two years and visited only the Gal\u00E1pagos Islands.", d: 2 },
+            { text: "Darwin joined the Beagle at age 22 and published On the Origin of Species shortly after returning, based solely on his Gal\u00E1pagos observations.", d: 3 },
+        ]
+    },
 };
