@@ -1057,7 +1057,7 @@ export default function ChallengePage({ onSessionChange, registerBackHandler }) 
                                             transition: 'all 0.3s',
                                         }} />
                                         <span style={{
-                                            fontSize: '0.65rem',
+                                            fontSize: isBest ? '0.72rem' : '0.65rem',
                                             color: reached ? 'var(--color-burgundy)' : '#3E2723',
                                             fontWeight: isBest ? 700 : 600,
                                             letterSpacing: '0.02em',
