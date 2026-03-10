@@ -153,6 +153,51 @@ const AMATEUR_QUESTIONS = [
             { label: '541 CE', isCorrect: true },
             { label: '632 CE', isCorrect: false },
         ] },
+
+    // ── whichCameFirst — surprisingly close pairs ────────────────
+    { type: 'whichCameFirst', eventIdA: 'f24', eventIdB: 'f25' },  // Founding of Islam (610) vs Tang Dynasty (618) — only 8 yrs apart; Islam first
+    { type: 'whichCameFirst', eventIdA: 'f32', eventIdB: 'f31' },  // Gutenberg Press (1440) vs Fall of Constantinople (1453) — 13 yrs; Gutenberg first
+
+    // ── eraDetective — genuinely ambiguous from title ────────────
+    { type: 'eraDetective', eventId: 'f40' },  // The Enlightenment → Early Modern (1685\u20131815; many assume it\u2019s Modern)
+    { type: 'eraDetective', eventId: 'f26' },  // Islamic Golden Age → Medieval (750\u20131258 CE; sounds like Ancient or Early Modern)
+
+    // ── trueOrFalse — conceptual misconceptions ──────────────────
+    { type: 'trueOrFalse', eventId: 'f33',
+        statement: 'Christopher Columbus died without ever setting foot in North America \u2014 all his landings were in the Caribbean, Central America, and South America',
+        isTrue: true },
+    { type: 'trueOrFalse', eventId: 'f38',
+        statement: 'Galileo Galilei was imprisoned for life by the Catholic Church for supporting heliocentrism',
+        isTrue: false, correction: 'Galileo was placed under house arrest at his villa in Arcetri, not imprisoned for life. He continued writing and died at home in 1642.' },
+    { type: 'trueOrFalse', eventId: 'f44',
+        statement: "Napoleon\u2019s first language was not French \u2014 he grew up speaking Corsican and Italian, and spoke French with an accent his whole life",
+        isTrue: true },
+
+    // ── hardMCQ/location — same-region distractors ──────────────
+    { type: 'hardMCQ', subType: 'location', eventId: 'f26',
+        options: [
+            { label: 'Baghdad, Iraq', isCorrect: true },
+            { label: 'Cairo, Egypt', isCorrect: false },
+            { label: 'Damascus, Syria', isCorrect: false },
+            { label: 'Cordoba, Spain', isCorrect: false },
+        ] },  // Islamic Golden Age\u2019s House of Wisdom \u2014 all major Islamic centers in the same broad region
+    { type: 'hardMCQ', subType: 'location', eventId: 'f44',
+        options: [
+            { label: 'Corsica, France', isCorrect: true },
+            { label: 'Normandy, France', isCorrect: false },
+            { label: 'Brittany, France', isCorrect: false },
+            { label: 'Savoy, France', isCorrect: false },
+        ] },  // Napoleon\u2019s birthplace \u2014 all French regions; Corsica was acquired from Genoa just a year before his birth
+
+    // ── hardMCQ/date ─────────────────────────────────────────────
+    { type: 'hardMCQ', subType: 'date', eventId: 'f29',
+        prompt: 'When did Genghis Khan found the Mongol Empire?',
+        options: [
+            { label: '1162', isCorrect: false },  // Genghis Khan\u2019s birth year
+            { label: '1206', isCorrect: true },
+            { label: '1241', isCorrect: false },  // Mongol invasion of Europe (Battle of Legnica)
+            { label: '1279', isCorrect: false },  // Kublai Khan completes conquest of China
+        ] },  // Mongol Empire founded at the Kurultai \u2014 all key dates from Mongol history
 ];
 
 // ─── Curated conceptual T/F pool (used by dynamic generator as fallback) ─
@@ -467,6 +512,58 @@ const EXPERT_QUESTIONS = [
             { label: '1951', isCorrect: false },
             { label: '1957', isCorrect: true },
             { label: '1963', isCorrect: false },
+        ] },
+
+    // ── whichCameFirst — dates <20 years apart, non-obvious order ────
+    { type: 'whichCameFirst', eventIdA: 'f134', eventIdB: 'f135' },  // Marie Curie (1898) vs Einstein (1905) — 7 yrs; many assume they were exact contemporaries, not that Curie came first
+    { type: 'whichCameFirst', eventIdA: 'f125', eventIdB: 'f95' },   // Picasso's Cubism (1907) vs Fall of Ottoman Empire (1908) — 1 yr; revolutionary art began just before the empire crumbled
+    { type: 'whichCameFirst', eventIdA: 'f104', eventIdB: 'f84' },   // WHO Smallpox campaign (1967) vs Stonewall uprising (1969) — 2 yrs; disease eradication and gay liberation were simultaneous
+
+    // ── oddOneOut — subtle shared traits ─────────────────────────────
+    { type: 'oddOneOut', events: ['f78', 'f80', 'f82', 'f86'],
+        outlierEventId: 'f86', sharedTrait: 'All successful civil rights and liberation movements' },  // Rwanda Genocide is an atrocity against an oppressed group, not a liberation movement
+    { type: 'oddOneOut', events: ['f62', 'f65', 'f66', 'f132'],
+        outlierEventId: 'f132', sharedTrait: 'All political revolutions that established new governments' },  // Lavoisier\u2019s \u201CChemical Revolution\u201D overthrew a scientific theory, not a government
+
+    // ── hardMCQ/location — same-country/city distractors ─────────────
+    { type: 'hardMCQ', subType: 'location', eventId: 'f76',
+        options: [
+            { label: 'Toronto, Canada', isCorrect: true },
+            { label: 'Montreal, Canada', isCorrect: false },
+            { label: 'Vancouver, Canada', isCorrect: false },
+            { label: 'Waterloo, Canada', isCorrect: false },
+        ] },  // Deep Learning breakthrough (AlexNet) \u2014 all major Canadian university cities
+    { type: 'hardMCQ', subType: 'location', eventId: 'f128',
+        options: [
+            { label: 'Alexandria, Egypt', isCorrect: true },
+            { label: 'Athens, Greece', isCorrect: false },   // Euclid was Greek, so Athens is plausible misdirection
+            { label: 'Syracuse, Sicily', isCorrect: false },  // Where Archimedes worked \u2014 same era, same culture
+            { label: 'Carthage, North Africa', isCorrect: false },  // North African city like Alexandria
+        ] },  // Euclid\u2019s Elements \u2014 all ancient Mediterranean intellectual centers
+    { type: 'hardMCQ', subType: 'location', eventId: 'f131',
+        options: [
+            { label: 'Cambridge, England', isCorrect: true },
+            { label: 'Oxford, England', isCorrect: false },
+            { label: 'London, England', isCorrect: false },
+            { label: 'Edinburgh, Scotland', isCorrect: false },
+        ] },  // Newton\u2019s Principia \u2014 all major British academic and intellectual cities
+
+    // ── hardMCQ/date — extremely tight distractors ────────────────────
+    { type: 'hardMCQ', subType: 'date', eventId: 'f130',
+        prompt: 'When did Galileo first turn his telescope to the sky?',
+        options: [
+            { label: '1604', isCorrect: false },   // Kepler\u2019s supernova \u2014 Galileo also observed it
+            { label: '1609', isCorrect: true },
+            { label: '1616', isCorrect: false },   // Year the Church officially condemned the Copernican model
+            { label: '1623', isCorrect: false },   // Galileo publishes \u201CThe Assayer\u201D
+        ] },
+    { type: 'hardMCQ', subType: 'date', eventId: 'f136',
+        prompt: 'When did Watson & Crick announce the structure of DNA?',
+        options: [
+            { label: '1944', isCorrect: false },   // Avery proves DNA carries genetic information
+            { label: '1953', isCorrect: true },
+            { label: '1962', isCorrect: false },   // Nobel Prize awarded to Watson, Crick & Wilkins
+            { label: '1966', isCorrect: false },   // Genetic code fully cracked by Nirenberg & Khorana
         ] },
 ];
 

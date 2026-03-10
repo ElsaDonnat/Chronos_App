@@ -5,6 +5,16 @@ Format follows [Keep a Changelog](https://keepachangelog.com/) and [Semantic Ver
 
 Use the version entries from the last playstore push to the most recent version for Play Store "What's New" text.
 
+## [1.9.4] - 2026-03-10
+
+### Changed
+- **Challenge Quiz — Amateur pool expansion**: Added 10 new curated questions to the Amateur tier (2 whichCameFirst, 2 eraDetective, 3 trueOrFalse, 2 hardMCQ/location, 1 hardMCQ/date). New pool size: 28 questions. Highlights: Founding of Islam vs Tang Dynasty (8-year gap), Gutenberg Press vs Fall of Constantinople (13-year gap); eraDetective for The Enlightenment (Early Modern, not Modern) and Islamic Golden Age (Medieval, not Ancient); T/F misconceptions about Columbus never reaching North America, Galileo under house arrest (not imprisoned for life), Napoleon's Corsican/Italian mother tongue; location MCQs for Islamic Golden Age (Baghdad, not Cairo/Damascus/Cordoba) and Napoleon's birthplace (Corsica, not Normandy/Brittany/Savoy); date MCQ for Mongol Empire founding (1206, with Genghis Khan's birth year 1162 as a trap distractor).
+
+## [1.9.3] - 2026-03-10
+
+### Added
+- **Challenge Quiz \u2014 Expert pool expansion**: Added 10 new curated questions to the Expert tier (3 whichCameFirst, 2 oddOneOut, 3 hardMCQ/location, 2 hardMCQ/date). New pool size: 27 questions. Highlights: Marie Curie vs Einstein (7-year gap), Picasso\u2019s Cubism vs Ottoman Fall (1-year gap), WHO Smallpox campaign vs Stonewall (2-year gap); oddOneOut traps using the Rwanda Genocide alongside liberation movements and Lavoisier\u2019s \u201CChemical Revolution\u201D alongside political revolutions; Expert location MCQs for Deep Learning (Toronto), Euclid (Alexandria), Newton (Cambridge); tight date MCQs for Galileo\u2019s telescope (1604\u20131623 window) and Watson & Crick\u2019s DNA (1944\u20131966 window).
+
 ## [1.9.2] - 2026-03-10
 
 ### Added
