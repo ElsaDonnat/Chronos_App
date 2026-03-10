@@ -239,7 +239,7 @@ export function getEraQuizGroup(eraId) {
 export const LEVEL2_CHAPTERS = [
     {
         id: 'ch-revolutions',
-        title: 'Revolutions That Changed the World',
+        title: 'The Age of Revolutions',
         subtitle: 'How one revolution sparked the next',
         description: 'Trace the chain reaction of revolutions from 17th-century England to the Arab Spring.',
         icon: 'revolution',
@@ -569,7 +569,7 @@ export const LEVEL2_CHAPTERS = [
     },
     {
         id: 'ch-art',
-        title: 'Art That Changed the World',
+        title: 'Masterpieces & Movements',
         subtitle: 'When creativity rewrote history',
         description: 'From Homer to YouTube \u2014 how art, literature, and music shaped civilization.',
         icon: 'art',
@@ -624,7 +624,7 @@ export const LEVEL2_CHAPTERS = [
     },
     {
         id: 'ch-science',
-        title: 'Science That Changed Everything',
+        title: 'The Scientific Quest',
         subtitle: 'Breakthroughs that rewrote reality',
         description: 'From ancient geometry to the Higgs boson \u2014 how scientists overturned everything we thought we knew.',
         icon: 'science',
