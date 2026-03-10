@@ -5,6 +5,17 @@ Format follows [Keep a Changelog](https://keepachangelog.com/) and [Semantic Ver
 
 Use the version entries from the last playstore push to the most recent version for Play Store "What's New" text.
 
+## [1.9.7] - 2026-03-10
+
+### Changed
+- **Merged all branches into main** — consolidated `claude/map-ux-improvements` (Map UX, Money & Trade, Challenge pools, Time slider) and `claude/stoic-mirzakhani` (Exploration & Discovery chapter) into one unified version. Cleaned up 10 stale branches and 5 worktrees.
+- **Card content review (Exploration & Discovery)** — reviewed 9 cards (f138–f146); 3 edits made:
+  - **f138 (Polynesian Voyaging):** "Hawai'i by 400 CE" → "by around 1000 CE" — revised high-precision radiocarbon dating (2010+) places Hawaiian settlement at 1000–1200 CE, making the old "long chronology" date of 400 CE outdated. Also updated NZ date from "~1200 CE" to "~1250 CE".
+  - **f140 (Ibn Battuta):** "three times Marco Polo's distance" → "five times" — Ibn Battuta covered ~120,000 km vs. Marco Polo's ~24,000 km, which is approximately 5×, not 3×.
+  - **f142 (Vasco da Gama):** "half his crew died of scurvy" → "two-thirds" — of ~170 original crew, only 54 survived the round trip (~68% mortality).
+- Cards f139, f141, f143, f144, f145, f146 reviewed and confirmed accurate — no changes needed.
+- Updated CLAUDE.md event count to 156 (60 L1 + 96 L2) and chapter count to 10 (40 lessons).
+
 ## [1.9.6] - 2026-03-10
 
 ### Added
