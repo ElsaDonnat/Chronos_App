@@ -282,6 +282,207 @@ export function projectToSVG(lat, lng, region) {
     };
 }
 
+// ISO country code → sub-region mapping
+// Maps each of ~170 countries to one of the 11 sub-regions for color fills.
+export const COUNTRY_TO_SUBREGION = {
+    // ── Europe ──
+    "643": "Europe",   // Russia
+    "578": "Europe",   // Norway
+    "250": "Europe",   // France
+    "752": "Europe",   // Sweden
+    "112": "Europe",   // Belarus
+    "804": "Europe",   // Ukraine
+    "616": "Europe",   // Poland
+    "040": "Europe",   // Austria
+    "348": "Europe",   // Hungary
+    "498": "Europe",   // Moldova
+    "642": "Europe",   // Romania
+    "440": "Europe",   // Lithuania
+    "428": "Europe",   // Latvia
+    "233": "Europe",   // Estonia
+    "276": "Europe",   // Germany
+    "100": "Europe",   // Bulgaria
+    "300": "Europe",   // Greece
+    "008": "Europe",   // Albania
+    "191": "Europe",   // Croatia
+    "756": "Europe",   // Switzerland
+    "442": "Europe",   // Luxembourg
+    "056": "Europe",   // Belgium
+    "528": "Europe",   // Netherlands
+    "620": "Europe",   // Portugal
+    "724": "Europe",   // Spain
+    "372": "Europe",   // Ireland
+    "380": "Europe",   // Italy
+    "208": "Europe",   // Denmark
+    "826": "Europe",   // United Kingdom
+    "352": "Europe",   // Iceland
+    "705": "Europe",   // Slovenia
+    "246": "Europe",   // Finland
+    "703": "Europe",   // Slovakia
+    "203": "Europe",   // Czechia
+    "196": "Europe",   // Cyprus
+    "070": "Europe",   // Bosnia and Herz.
+    "807": "Europe",   // Macedonia
+    "688": "Europe",   // Serbia
+    "499": "Europe",   // Montenegro
+    // ── Middle East ──
+    "051": "Middle East", // Armenia (in Europe SVG group but geographically Caucasus)
+    "376": "Middle East", // Israel
+    "422": "Middle East", // Lebanon
+    "275": "Middle East", // Palestine
+    "400": "Middle East", // Jordan
+    "784": "Middle East", // United Arab Emirates
+    "634": "Middle East", // Qatar
+    "414": "Middle East", // Kuwait
+    "368": "Middle East", // Iraq
+    "512": "Middle East", // Oman
+    "364": "Middle East", // Iran
+    "760": "Middle East", // Syria
+    "792": "Middle East", // Turkey
+    "031": "Middle East", // Azerbaijan
+    "268": "Middle East", // Georgia
+    "887": "Middle East", // Yemen
+    "682": "Middle East", // Saudi Arabia
+    // ── North Africa ──
+    "788": "North Africa", // Tunisia
+    "012": "North Africa", // Algeria
+    "504": "North Africa", // Morocco
+    "818": "North Africa", // Egypt
+    "434": "North Africa", // Libya
+    "732": "North Africa", // W. Sahara
+    // ── West Africa ──
+    "478": "West Africa",  // Mauritania
+    "686": "West Africa",  // Senegal
+    "466": "West Africa",  // Mali
+    "204": "West Africa",  // Benin
+    "562": "West Africa",  // Niger
+    "566": "West Africa",  // Nigeria
+    "120": "West Africa",  // Cameroon
+    "768": "West Africa",  // Togo
+    "288": "West Africa",  // Ghana
+    "384": "West Africa",  // Côte d'Ivoire
+    "324": "West Africa",  // Guinea
+    "624": "West Africa",  // Guinea-Bissau
+    "430": "West Africa",  // Liberia
+    "694": "West Africa",  // Sierra Leone
+    "854": "West Africa",  // Burkina Faso
+    "270": "West Africa",  // Gambia
+    "148": "West Africa",  // Chad
+    // ── East Africa ──
+    "834": "East Africa",  // Tanzania
+    "706": "East Africa",  // Somalia
+    "404": "East Africa",  // Kenya
+    "729": "East Africa",  // Sudan
+    "140": "East Africa",  // Central African Rep.
+    "180": "East Africa",  // Dem. Rep. Congo
+    "178": "East Africa",  // Congo
+    "266": "East Africa",  // Gabon
+    "226": "East Africa",  // Eq. Guinea
+    "231": "East Africa",  // Ethiopia
+    "232": "East Africa",  // Eritrea
+    "262": "East Africa",  // Djibouti
+    "800": "East Africa",  // Uganda
+    "646": "East Africa",  // Rwanda
+    "728": "East Africa",  // S. Sudan
+    "108": "East Africa",  // Burundi
+    // ── Southern Africa ──
+    "710": "Southern Africa", // South Africa
+    "426": "Southern Africa", // Lesotho
+    "716": "Southern Africa", // Zimbabwe
+    "072": "Southern Africa", // Botswana
+    "516": "Southern Africa", // Namibia
+    "748": "Southern Africa", // eSwatini
+    "894": "Southern Africa", // Zambia
+    "454": "Southern Africa", // Malawi
+    "508": "Southern Africa", // Mozambique
+    "024": "Southern Africa", // Angola
+    "450": "Southern Africa", // Madagascar
+    // ── South Asia ──
+    "356": "South Asia",  // India
+    "050": "South Asia",  // Bangladesh
+    "064": "South Asia",  // Bhutan
+    "524": "South Asia",  // Nepal
+    "586": "South Asia",  // Pakistan
+    "004": "South Asia",  // Afghanistan
+    "144": "South Asia",  // Sri Lanka
+    // ── East Asia ──
+    "156": "East Asia",   // China
+    "158": "East Asia",   // Taiwan
+    "392": "East Asia",   // Japan
+    "410": "East Asia",   // South Korea
+    "408": "East Asia",   // North Korea
+    "496": "East Asia",   // Mongolia
+    "608": "East Asia",   // Philippines
+    "458": "East Asia",   // Malaysia
+    "096": "East Asia",   // Brunei
+    "116": "East Asia",   // Cambodia
+    "764": "East Asia",   // Thailand
+    "418": "East Asia",   // Laos
+    "104": "East Asia",   // Myanmar
+    "704": "East Asia",   // Vietnam
+    "360": "East Asia",   // Indonesia
+    "626": "East Asia",   // Timor-Leste
+    "598": "East Asia",   // Papua New Guinea
+    "398": "East Asia",   // Kazakhstan
+    "860": "East Asia",   // Uzbekistan
+    "762": "East Asia",   // Tajikistan
+    "417": "East Asia",   // Kyrgyzstan
+    "795": "East Asia",   // Turkmenistan
+    "242": "East Asia",   // Fiji
+    "548": "East Asia",   // Vanuatu
+    "540": "East Asia",   // New Caledonia
+    // ── North America ──
+    "124": "North America",  // Canada
+    "840": "North America",  // United States
+    "304": "North America",  // Greenland
+    // ── Central America ──
+    "484": "Central America", // Mexico
+    "320": "Central America", // Guatemala
+    "084": "Central America", // Belize
+    "340": "Central America", // Honduras
+    "222": "Central America", // El Salvador
+    "558": "Central America", // Nicaragua
+    "188": "Central America", // Costa Rica
+    "591": "Central America", // Panama
+    "192": "Central America", // Cuba
+    "388": "Central America", // Jamaica
+    "332": "Central America", // Haiti
+    "214": "Central America", // Dominican Rep.
+    "044": "Central America", // Bahamas
+    "630": "Central America", // Puerto Rico
+    "780": "Central America", // Trinidad and Tobago
+    // ── South America ──
+    "076": "South America", // Brazil
+    "032": "South America", // Argentina
+    "152": "South America", // Chile
+    "858": "South America", // Uruguay
+    "600": "South America", // Paraguay
+    "068": "South America", // Bolivia
+    "604": "South America", // Peru
+    "170": "South America", // Colombia
+    "862": "South America", // Venezuela
+    "218": "South America", // Ecuador
+    "328": "South America", // Guyana
+    "740": "South America", // Suriname
+    "238": "South America", // Falkland Is.
+};
+
+// Sub-region color palette — pastel (default) + vibrant (selected)
+// Colors are CSS custom properties with light-mode fallbacks; dark-mode overrides in index.css
+export const REGION_COLORS = {
+    'Europe':          { pastel: 'var(--color-map-region-europe,          #C4D4E8)', vibrant: 'var(--color-map-region-europe-v,          #5B8FC8)' },
+    'Middle East':     { pastel: 'var(--color-map-region-middle-east,     #E4D5BA)', vibrant: 'var(--color-map-region-middle-east-v,     #C49558)' },
+    'North Africa':    { pastel: 'var(--color-map-region-north-africa,    #E4CFBE)', vibrant: 'var(--color-map-region-north-africa-v,    #C48B6C)' },
+    'West Africa':     { pastel: 'var(--color-map-region-west-africa,     #BED8BE)', vibrant: 'var(--color-map-region-west-africa-v,     #5DA85D)' },
+    'East Africa':     { pastel: 'var(--color-map-region-east-africa,     #D1C4DA)', vibrant: 'var(--color-map-region-east-africa-v,     #8B6BA8)' },
+    'Southern Africa': { pastel: 'var(--color-map-region-southern-africa, #DAC0C8)', vibrant: 'var(--color-map-region-southern-africa-v, #B86C80)' },
+    'South Asia':      { pastel: 'var(--color-map-region-south-asia,      #B8D8D0)', vibrant: 'var(--color-map-region-south-asia-v,      #3A9C8C)' },
+    'East Asia':       { pastel: 'var(--color-map-region-east-asia,       #D0D8BA)', vibrant: 'var(--color-map-region-east-asia-v,       #84A84C)' },
+    'North America':   { pastel: 'var(--color-map-region-north-america,   #BCD4E0)', vibrant: 'var(--color-map-region-north-america-v,   #4C98C0)' },
+    'Central America': { pastel: 'var(--color-map-region-central-america, #E0C8BC)', vibrant: 'var(--color-map-region-central-america-v, #C0785C)' },
+    'South America':   { pastel: 'var(--color-map-region-south-america,   #C4D4B8)', vibrant: 'var(--color-map-region-south-america-v,   #6C9C44)' },
+};
+
 // Event ID → ISO 3166-1 numeric country code (generated via geoContains at build time)
 export const EVENT_COUNTRY_MAP = {
     "f1": "404",

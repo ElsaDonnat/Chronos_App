@@ -73,6 +73,30 @@
   --color-map-label: #A8A29E;
   --color-map-label-active: #8B4157;
 
+  /* Map sub-region colors — pastel (default fill) + vibrant (selected) */
+  --color-map-region-europe: #C4D4E8;
+  --color-map-region-europe-v: #5B8FC8;
+  --color-map-region-middle-east: #E4D5BA;
+  --color-map-region-middle-east-v: #C49558;
+  --color-map-region-north-africa: #E4CFBE;
+  --color-map-region-north-africa-v: #C48B6C;
+  --color-map-region-west-africa: #BED8BE;
+  --color-map-region-west-africa-v: #5DA85D;
+  --color-map-region-east-africa: #D1C4DA;
+  --color-map-region-east-africa-v: #8B6BA8;
+  --color-map-region-southern-africa: #DAC0C8;
+  --color-map-region-southern-africa-v: #B86C80;
+  --color-map-region-south-asia: #B8D8D0;
+  --color-map-region-south-asia-v: #3A9C8C;
+  --color-map-region-east-asia: #D0D8BA;
+  --color-map-region-east-asia-v: #84A84C;
+  --color-map-region-north-america: #BCD4E0;
+  --color-map-region-north-america-v: #4C98C0;
+  --color-map-region-central-america: #E0C8BC;
+  --color-map-region-central-america-v: #C0785C;
+  --color-map-region-south-america: #C4D4B8;
+  --color-map-region-south-america-v: #6C9C44;
+
   /* Layout */
   --sidebar-width: 232px;
   --topbar-height: 52px;
@@ -143,6 +167,30 @@ html[data-theme="dark"] {
   --color-map-pin-muted: #544E47;
   --color-map-label: #6A6560;
   --color-map-label-active: #C4748A;
+
+  /* Map sub-region colors — dark mode: muted tones */
+  --color-map-region-europe: #2E3A48;
+  --color-map-region-europe-v: #4A7FB8;
+  --color-map-region-middle-east: #3E3428;
+  --color-map-region-middle-east-v: #B48548;
+  --color-map-region-north-africa: #3C302A;
+  --color-map-region-north-africa-v: #B47B5C;
+  --color-map-region-west-africa: #283A28;
+  --color-map-region-west-africa-v: #4D984D;
+  --color-map-region-east-africa: #322A3C;
+  --color-map-region-east-africa-v: #7B5B98;
+  --color-map-region-southern-africa: #3C282E;
+  --color-map-region-southern-africa-v: #A85C70;
+  --color-map-region-south-asia: #243834;
+  --color-map-region-south-asia-v: #2A8C7C;
+  --color-map-region-east-asia: #323826;
+  --color-map-region-east-asia-v: #74983C;
+  --color-map-region-north-america: #263440;
+  --color-map-region-north-america-v: #3C88B0;
+  --color-map-region-central-america: #3C2E28;
+  --color-map-region-central-america-v: #B0684C;
+  --color-map-region-south-america: #2A3424;
+  --color-map-region-south-america-v: #5C8C34;
 
   color-scheme: dark;
 }

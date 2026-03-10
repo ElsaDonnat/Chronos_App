@@ -1,22 +1,20 @@
 import { useState, useMemo, useRef, useCallback, useEffect } from 'react';
 import { CATEGORY_CONFIG, isDiHEvent } from '../data/events';
-import { MAP_REGIONS, REGION_CENTERS, projectToSVG, normalizeRegion, regionToContinent, EVENT_COUNTRY_MAP } from '../data/mapPaths';
+import { MAP_REGIONS, REGION_CENTERS, projectToSVG, normalizeRegion, EVENT_COUNTRY_MAP, COUNTRY_TO_SUBREGION, REGION_COLORS } from '../data/mapPaths';
 import { Card, CategoryTag, ImportanceTag, MasteryDots, ExpandableText } from './shared';
+import * as feedback from '../services/feedback';
 const CLUSTER_GRID = 25; // SVG units per grid cell
 
 // Map-specific color tokens (light / dark via CSS vars with fallbacks)
 const MAP_COLORS = {
     ocean: 'var(--color-map-ocean, #D6CFC4)',
     land: 'var(--color-map-land, #E8E0D2)',
-    landActive: 'var(--color-map-land-active, #DDD0BB)',
     border: 'var(--color-map-border, #C9B896)',
-    borderActive: 'var(--color-map-border-active, #8B4157)',
     graticule: 'var(--color-map-graticule, rgba(0,0,0,0.04))',
     pinStroke: 'var(--color-map-pin-stroke, #FFFDF9)',
     pinMuted: 'var(--color-map-pin-muted, #C9B896)',
     label: 'var(--color-map-label, #A8A29E)',
     labelActive: 'var(--color-map-label-active, #8B4157)',
-    countryHighlight: 'var(--color-map-country-highlight, #C9A96E)',
 };
 
 function clusterPins(events, learnedIds) {
@@ -55,7 +53,6 @@ function clusterPins(events, learnedIds) {
 // Graticule lines for Natural Earth I projection (approximated as projected polylines)
 function Graticule() {
     const lines = [];
-    // Project a point using the same Natural Earth I formula as projectToSVG
     const DEG2RAD = Math.PI / 180;
     const S = 143.3071, TX = 400, TY = 250;
     const proj = (lat, lng) => {
@@ -66,7 +63,6 @@ function Graticule() {
             y: -S * phi * (1.007226 + p2 * (0.015085 + p2 * (-0.044475 + p4 * (0.028874 + p2 * -0.005916)))) + TY,
         };
     };
-    // Longitude lines (curved in Natural Earth I)
     for (let lng = -150; lng <= 180; lng += 30) {
         const pts = [];
         for (let lat = -80; lat <= 84; lat += 4) {
@@ -75,7 +71,6 @@ function Graticule() {
         }
         lines.push(<polyline key={`lng${lng}`} points={pts.join(' ')} />);
     }
-    // Latitude lines (curved in Natural Earth I)
     for (let lat = -60; lat <= 80; lat += 30) {
         const pts = [];
         for (let lng2 = -180; lng2 <= 180; lng2 += 4) {
@@ -140,7 +135,6 @@ function Legend({ visible, onToggle, className }) {
 }
 
 // Touch/mouse pinch-zoom handler
-// At scale=1, native scroll handles panning. Only applies CSS transform when zoomed.
 function usePanZoom() {
     const [scale, setScale] = useState(1);
     const [panOffset, setPanOffset] = useState({ x: 0, y: 0 });
@@ -210,9 +204,18 @@ function usePanZoom() {
     return { mapContainerRef, cssTransform, isZoomed, onTouchStart, onTouchMove, onTouchEnd, onWheel, resetZoom };
 }
 
+// Get fill color for a country based on its sub-region and selection state
+function getCountryFill(countryCode, selectedRegion) {
+    const subRegion = COUNTRY_TO_SUBREGION[countryCode];
+    if (!subRegion) return MAP_COLORS.land; // Antarctica or unmapped
+    const colors = REGION_COLORS[subRegion];
+    if (!colors) return MAP_COLORS.land;
+    if (selectedRegion === subRegion) return colors.vibrant;
+    return colors.pastel;
+}
+
 // The SVG map content — shared between normal and fullscreen modes
-function MapSVG({ visibleEvents, pins, learnedIds, selectedRegion, selectedPin, selectedEventId, selectedClusterXY, handlePinClick, handleMapBgClick, svgStyle, svgClassName, viewBox }) {
-    const highlightedContinent = selectedRegion ? regionToContinent(selectedRegion) : null;
+function MapSVG({ pins, learnedIds, selectedRegion, selectedPin, selectedEventId, selectedClusterXY, handlePinClick, handleMapBgClick, handleCountryClick, svgStyle, svgClassName, viewBox }) {
     const highlightedCountryCode = selectedEventId ? EVENT_COUNTRY_MAP[selectedEventId] : null;
 
     return (
@@ -224,34 +227,46 @@ function MapSVG({ visibleEvents, pins, learnedIds, selectedRegion, selectedPin, 
             {/* Graticule grid */}
             <Graticule />
 
-            {/* Country paths (grouped by continent) */}
-            {Object.entries(MAP_REGIONS).map(([continentName, data]) => {
-                const isHighlighted = highlightedContinent === continentName;
-                const hasEvents = visibleEvents.some(e => regionToContinent(e.location.region) === continentName);
-                return (
-                    <g key={continentName} style={{ cursor: 'default' }}>
-                        {data.countries.map((country) => {
-                            const isCountryHighlighted = highlightedCountryCode === country.code;
-                            return (
-                                <path key={country.code} d={country.d}
-                                    fill={isCountryHighlighted ? MAP_COLORS.countryHighlight : (isHighlighted ? MAP_COLORS.landActive : MAP_COLORS.land)}
-                                    stroke={isCountryHighlighted ? MAP_COLORS.borderActive : (isHighlighted ? MAP_COLORS.borderActive : MAP_COLORS.border)}
-                                    strokeWidth={isCountryHighlighted ? 1.5 : (isHighlighted ? 1.5 : 0.5)}
-                                    opacity={hasEvents || !selectedRegion ? 1 : 0.35}
-                                    data-country={country.code}
-                                    style={{ transition: 'fill 0.3s, stroke 0.3s, opacity 0.2s' }}
-                                />
-                            );
-                        })}
-                        <text x={data.labelPos.x} y={data.labelPos.y}
-                            textAnchor="middle" fill={isHighlighted ? MAP_COLORS.labelActive : MAP_COLORS.label}
-                            fontSize="11" fontWeight="600" opacity={0.6}
-                            style={{ pointerEvents: 'none', transition: 'fill 0.2s' }}>
-                            {continentName}
-                        </text>
-                    </g>
-                );
-            })}
+            {/* Country paths (grouped by continent) — colored by sub-region */}
+            {Object.entries(MAP_REGIONS).map(([continentName, data]) => (
+                <g key={continentName}>
+                    {data.countries.map((country) => {
+                        const subRegion = COUNTRY_TO_SUBREGION[country.code];
+                        const isSelected = selectedRegion && selectedRegion === subRegion;
+                        const isCountryHighlighted = highlightedCountryCode === country.code;
+                        const isDimmed = selectedRegion && !isSelected;
+                        const fill = isCountryHighlighted
+                            ? 'var(--color-map-country-highlight, #C9A96E)'
+                            : getCountryFill(country.code, selectedRegion);
+
+                        return (
+                            <path key={country.code} d={country.d}
+                                fill={fill}
+                                stroke={isCountryHighlighted ? MAP_COLORS.labelActive : MAP_COLORS.border}
+                                strokeWidth={isCountryHighlighted ? 1.5 : 0.3}
+                                opacity={isDimmed ? 0.4 : 1}
+                                data-country={country.code}
+                                style={{
+                                    cursor: subRegion ? 'pointer' : 'default',
+                                    transition: 'fill 0.3s, stroke 0.3s, opacity 0.3s',
+                                }}
+                                onClick={(e) => {
+                                    if (subRegion) {
+                                        e.stopPropagation();
+                                        handleCountryClick(subRegion);
+                                    }
+                                }}
+                            />
+                        );
+                    })}
+                    <text x={data.labelPos.x} y={data.labelPos.y}
+                        textAnchor="middle" fill={MAP_COLORS.label}
+                        fontSize="11" fontWeight="600" opacity={selectedRegion ? 0.3 : 0.6}
+                        style={{ pointerEvents: 'none', transition: 'opacity 0.3s' }}>
+                        {continentName}
+                    </text>
+                </g>
+            ))}
 
             {/* Selected pin highlight ring */}
             {selectedPin && (
@@ -391,8 +406,65 @@ function ClusterPopup({ events, learnedIds, onSelectEvent, onClose }) {
     );
 }
 
+// Region event card list — shows learned events in the selected sub-region
+function RegionEventList({ events, learnedIds, eventMastery, selectedRegion, onSelectEvent, onClose }) {
+    if (!selectedRegion) return null;
+    const regionEvents = events
+        .filter(e => learnedIds.has(e.id) && e.location.region === selectedRegion)
+        .sort((a, b) => a.year - b.year);
+    const colors = REGION_COLORS[selectedRegion];
 
-export default function MapView({ events, learnedIds, hideUnknown, eventMastery, selectedRegion, onRegionSelect }) {
+    return (
+        <div className="mt-3 animate-fade-in">
+            <Card>
+                <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center gap-2">
+                        <div className="w-3 h-3 rounded-full flex-shrink-0" style={{ backgroundColor: colors?.vibrant }} />
+                        <p className="text-[11px] uppercase tracking-wider font-semibold" style={{ color: 'var(--color-ink-faint)' }}>
+                            {selectedRegion} \u00B7 {regionEvents.length} event{regionEvents.length !== 1 ? 's' : ''}
+                        </p>
+                    </div>
+                    <button onClick={onClose}
+                        className="w-6 h-6 flex items-center justify-center rounded-full text-xs"
+                        style={{ color: 'var(--color-ink-muted)' }}>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+                        </svg>
+                    </button>
+                </div>
+                {regionEvents.length === 0 ? (
+                    <p className="text-xs py-2" style={{ color: 'var(--color-ink-muted)' }}>
+                        No events learned in this region yet.
+                    </p>
+                ) : (
+                    <div style={{ maxHeight: '200px', overflowY: 'auto' }}>
+                        {regionEvents.map(evt => (
+                            <div key={evt.id}
+                                className="flex items-center gap-2 py-2 cursor-pointer active:opacity-70"
+                                style={{ borderTop: '1px solid rgba(var(--color-ink-rgb), 0.06)' }}
+                                onClick={() => onSelectEvent(evt)}>
+                                <div className="w-2.5 h-2.5 rounded-full flex-shrink-0"
+                                    style={{ backgroundColor: CATEGORY_CONFIG[evt.category]?.color || '#999' }} />
+                                <div className="min-w-0 flex-1">
+                                    <p className="text-sm font-medium truncate" style={{ color: 'var(--color-ink)' }}>
+                                        {evt.title}
+                                    </p>
+                                    <p className="text-[11px]" style={{ color: 'var(--color-ink-muted)' }}>{evt.date}</p>
+                                </div>
+                                {eventMastery[evt.id] && (
+                                    <MasteryDots mastery={eventMastery[evt.id]} size="sm" />
+                                )}
+                            </div>
+                        ))}
+                    </div>
+                )}
+            </Card>
+        </div>
+    );
+}
+
+
+export default function MapView({ events, learnedIds, eventMastery, selectedRegion, onRegionSelect }) {
     const [selectedPin, setSelectedPin] = useState(null);
     const [clusterExpanded, setClusterExpanded] = useState(false);
     const [legendVisible, setLegendVisible] = useState(false);
@@ -401,15 +473,12 @@ export default function MapView({ events, learnedIds, hideUnknown, eventMastery,
     const hasScrolledRef = useRef(false);
     const { mapContainerRef, cssTransform, isZoomed, onTouchStart, onTouchMove, onTouchEnd, onWheel, resetZoom } = usePanZoom();
 
-    const visibleEvents = useMemo(() => {
-        let evts = events.filter(e => learnedIds.has(e.id));
-        if (selectedRegion) {
-            evts = evts.filter(e => e.location.region === selectedRegion);
-        }
-        return evts;
-    }, [events, selectedRegion, learnedIds]);
+    // Show all learned events on the map (pins), but filter by region only for the event list
+    const allLearnedEvents = useMemo(() =>
+        events.filter(e => learnedIds.has(e.id)),
+    [events, learnedIds]);
 
-    const pins = useMemo(() => clusterPins(visibleEvents, learnedIds), [visibleEvents, learnedIds]);
+    const pins = useMemo(() => clusterPins(allLearnedEvents, learnedIds), [allLearnedEvents, learnedIds]);
 
     const selectedEventId = selectedPin?.event?.id;
     const selectedClusterXY = selectedPin?.events ? `${selectedPin.x},${selectedPin.y}` : null;
@@ -425,10 +494,23 @@ export default function MapView({ events, learnedIds, hideUnknown, eventMastery,
         }
     };
 
+    const handleCountryClick = useCallback((subRegion) => {
+        // Tapping the already-selected region deselects it
+        const newRegion = selectedRegion === subRegion ? null : subRegion;
+        onRegionSelect(newRegion || 'all');
+        setSelectedPin(null);
+        setClusterExpanded(false);
+        feedback.tap();
+    }, [selectedRegion, onRegionSelect]);
+
     const handleMapBgClick = () => {
         setSelectedPin(null);
         setClusterExpanded(false);
         setLegendVisible(false);
+        // Clicking empty space deselects region
+        if (selectedRegion) {
+            onRegionSelect('all');
+        }
     };
 
     // Center fullscreen scroll on Europe/Middle East on first open
@@ -445,7 +527,6 @@ export default function MapView({ events, learnedIds, hideUnknown, eventMastery,
                 if (!container) return;
                 const mapWidth = container.scrollWidth;
                 const mapHeight = container.scrollHeight;
-                // Center on Europe/Middle East area (~42% across, ~22% down)
                 container.scrollLeft = Math.max(0, mapWidth * 0.42 - container.clientWidth / 2);
                 container.scrollTop = Math.max(0, mapHeight * 0.22 - container.clientHeight / 2);
                 hasScrolledRef.current = true;
@@ -461,7 +542,6 @@ export default function MapView({ events, learnedIds, hideUnknown, eventMastery,
         const container = fullscreenScrollRef.current;
         const mapWidth = container.scrollWidth;
         const mapHeight = container.scrollHeight;
-        // REGION_CENTERS are in 800×500 SVG coords → convert to fraction of map dimensions
         const fracX = center.x / 800;
         const fracY = center.y / 500;
         const targetLeft = Math.max(0, mapWidth * fracX - container.clientWidth / 2);
@@ -473,23 +553,47 @@ export default function MapView({ events, learnedIds, hideUnknown, eventMastery,
     const clusterEvents = selectedPin?.events;
 
     const sharedSvgProps = {
-        visibleEvents, pins, learnedIds, selectedRegion,
+        pins, learnedIds, selectedRegion,
         selectedPin, selectedEventId, selectedClusterXY,
-        handlePinClick, handleMapBgClick,
+        handlePinClick, handleMapBgClick, handleCountryClick,
     };
+
+    // Popup content shared between inline and fullscreen
+    const popupContent = (
+        <>
+            {selectedEvent && (
+                <EventPopup event={selectedEvent} learnedIds={learnedIds} eventMastery={eventMastery}
+                    onClose={() => setSelectedPin(null)} />
+            )}
+            {clusterEvents && clusterExpanded && (
+                <ClusterPopup events={clusterEvents} learnedIds={learnedIds}
+                    onSelectEvent={(evt) => { setSelectedPin({ event: evt }); setClusterExpanded(false); }}
+                    onClose={() => { setSelectedPin(null); setClusterExpanded(false); }} />
+            )}
+            {/* Region event list — shown when a sub-region is selected and no pin/cluster is open */}
+            {!selectedEvent && !clusterExpanded && selectedRegion && (
+                <RegionEventList
+                    events={events}
+                    learnedIds={learnedIds}
+                    eventMastery={eventMastery}
+                    selectedRegion={selectedRegion}
+                    onSelectEvent={(evt) => { setSelectedPin({ event: evt }); }}
+                    onClose={() => onRegionSelect('all')}
+                />
+            )}
+        </>
+    );
 
     // ─── Fullscreen overlay ───
     if (isFullscreen) {
         return (
             <div className="fixed inset-0 z-[999] flex flex-col animate-fade-in"
                  style={{ backgroundColor: 'var(--color-parchment)' }}>
-                {/* Fullscreen map — oversized and scrollable */}
                 <div
                     ref={fullscreenScrollRef}
                     className="flex-1 overflow-auto relative"
                     style={{ WebkitOverflowScrolling: 'touch' }}
                 >
-                    {/* Close + controls overlay — floats on top of the map */}
                     <div className="sticky top-0 left-0 right-0 z-20 flex items-center justify-between px-3 pt-3 pb-1"
                          style={{ pointerEvents: 'none' }}>
                         <button
@@ -531,7 +635,7 @@ export default function MapView({ events, learnedIds, hideUnknown, eventMastery,
                         onWheel={onWheel}
                         style={{
                             width: '280%',
-                            marginTop: '-44px', // pull map up behind the sticky controls
+                            marginTop: '-44px',
                             transform: cssTransform,
                             transformOrigin: 'center center',
                             transition: isZoomed ? 'none' : 'transform 0.3s ease-out',
@@ -545,17 +649,8 @@ export default function MapView({ events, learnedIds, hideUnknown, eventMastery,
                     </div>
                 </div>
 
-                {/* Fullscreen popups */}
                 <div className="flex-shrink-0 px-3 pb-3" style={{ maxHeight: '40vh', overflowY: 'auto' }}>
-                    {selectedEvent && (
-                        <EventPopup event={selectedEvent} learnedIds={learnedIds} eventMastery={eventMastery}
-                            onClose={() => setSelectedPin(null)} />
-                    )}
-                    {clusterEvents && clusterExpanded && (
-                        <ClusterPopup events={clusterEvents} learnedIds={learnedIds}
-                            onSelectEvent={(evt) => { setSelectedPin({ event: evt }); setClusterExpanded(false); }}
-                            onClose={() => { setSelectedPin(null); setClusterExpanded(false); }} />
-                    )}
+                    {popupContent}
                 </div>
             </div>
         );
@@ -564,12 +659,9 @@ export default function MapView({ events, learnedIds, hideUnknown, eventMastery,
     // ─── Normal (inline) mode ───
     return (
         <div className="relative">
-            {/* Horizontally scrollable map container */}
             <div className="relative rounded-xl overflow-hidden" style={{ boxShadow: 'var(--shadow-card)', backgroundColor: 'var(--color-map-ocean, #D6CFC4)' }}>
-                {/* Legend toggle */}
                 <Legend visible={legendVisible} onToggle={() => setLegendVisible(v => !v)} />
 
-                {/* Zoom reset button */}
                 {isZoomed && (
                     <button
                         onClick={resetZoom}
@@ -586,7 +678,6 @@ export default function MapView({ events, learnedIds, hideUnknown, eventMastery,
                     </button>
                 )}
 
-                {/* Fullscreen expand button */}
                 <button
                     onClick={() => { setIsFullscreen(true); resetZoom(); }}
                     className="absolute bottom-2 right-2 z-10 w-7 h-7 rounded-full flex items-center justify-center"
@@ -601,7 +692,6 @@ export default function MapView({ events, learnedIds, hideUnknown, eventMastery,
                     </svg>
                 </button>
 
-                {/* Scrollable map area — wider than container for bigger display */}
                 <div style={{ overflowX: 'auto', overflowY: 'hidden', WebkitOverflowScrolling: 'touch' }}>
                     <div
                         ref={mapContainerRef}
@@ -626,19 +716,9 @@ export default function MapView({ events, learnedIds, hideUnknown, eventMastery,
                 </div>
             </div>
 
-            {/* Bottom popup: single event */}
-            <EventPopup event={selectedEvent} learnedIds={learnedIds} eventMastery={eventMastery}
-                onClose={() => setSelectedPin(null)} />
+            {popupContent}
 
-            {/* Bottom popup: cluster list */}
-            {clusterExpanded && (
-                <ClusterPopup events={clusterEvents} learnedIds={learnedIds}
-                    onSelectEvent={(evt) => { setSelectedPin({ event: evt }); setClusterExpanded(false); }}
-                    onClose={() => { setSelectedPin(null); setClusterExpanded(false); }} />
-            )}
-
-            {/* Empty state */}
-            {visibleEvents.length === 0 && (
+            {allLearnedEvents.length === 0 && !selectedRegion && (
                 <div className="text-center py-8">
                     <p className="text-sm" style={{ color: 'var(--color-ink-muted)' }}>
                         No events match the current filters.

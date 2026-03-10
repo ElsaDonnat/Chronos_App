@@ -5,6 +5,18 @@ Format follows [Keep a Changelog](https://keepachangelog.com/) and [Semantic Ver
 
 Use the version entries from the last playstore push to the most recent version for Play Store "What's New" text.
 
+## [1.9.0] - 2026-03-10
+
+### Added
+- **Sub-region map interaction** — the map is now a colorful watercolor atlas with 11 distinct pastel-colored sub-regions. Tapping any country selects its sub-region, transitioning to a vibrant saturated color while other regions dim. Tapping again deselects. Sound feedback on selection via `feedback.tap()`.
+- **Region event list** — selecting a sub-region shows a scrollable card list of all learned events in that region below the map, with category dots, mastery indicators, and year. Replaces the old continent-level highlighting system.
+- **`COUNTRY_TO_SUBREGION` mapping** — ~170 ISO country codes mapped to 11 sub-regions in `mapPaths.js`.
+- **`REGION_COLORS` constant** — pastel/vibrant color pairs for all 11 sub-regions, using CSS custom properties with light and dark mode variants (44 new CSS variables total).
+
+### Changed
+- **All learned events always visible on map** — previously the map filtered pins by selected region; now all learned events show regardless of region filter, making the map always feel populated.
+- **Country borders refined** — stroke width reduced from 0.5 to 0.3 for subtler intra-region borders.
+
 ## [1.8.3] - 2026-03-10
 
 ### Added

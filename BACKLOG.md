@@ -28,29 +28,9 @@ Selecting an event pin highlights the country where it happened with a distinct 
 
 ---
 
-### Feature — Sub-region map interaction (next up)
+### ~~Feature — Sub-region map interaction~~ ✅ Done (2026-03-10)
 
-**Why:** The map should feel like a map of *regions*, not individual countries. Each sub-region is a tappable zone that reveals its events. Country borders provide visual detail, but interaction is at the sub-region level. This makes the map feel purposeful and educational — "tap the Middle East to see what happened there" — rather than a generic political map.
-
-**Visual design:**
-- Each sub-region filled with a **distinct pastel color** (e.g., Europe = soft blue, Middle East = warm sand, East Asia = pale jade, etc.). Country borders (`strokeWidth: 0.3`) still visible within each region for geographic detail, but fill is uniform per sub-region
-- **Unselected state:** pastel/muted fill — the map looks like a soft watercolor atlas
-- **Selected state:** the tapped sub-region transitions to a **vibrant/saturated version** of its pastel color (e.g., soft blue → rich blue). Other regions dim slightly. Smooth CSS transition (~300ms)
-- Country-level highlighting (current feature) is replaced by sub-region-level highlighting
-
-**Interaction:**
-- Tapping a sub-region plays a **sound** (`feedback.tap()` or a new `feedback.regionSelect()`) and a **haptic pulse**
-- After selection, the region's **event cards** appear — a scrollable list/grid of learned events in that sub-region, shown below the map (inline mode) or as an overlay panel (fullscreen mode)
-- Event cards show title, year, category tag, and mastery dots — similar to the existing pin popup but as a proper card list
-- Tapping a card could highlight its pin on the map and open the full event detail
-- Selecting a different region smoothly transitions colors and swaps the card list
-- Tapping the already-selected region deselects it (returns to pastel, hides cards)
-
-**Data requirements:**
-- Need a mapping from each country (ISO code) → sub-region, so all countries in a sub-region share the same fill color. This can live in `mapPaths.js` as a `COUNTRY_TO_SUBREGION` lookup (or group countries under sub-regions in `MAP_REGIONS`)
-- Sub-region pastel + vibrant color pairs defined as a constant (e.g., `REGION_COLORS`)
-
-**Files:** `src/components/MapView.jsx`, `src/data/mapPaths.js` (country→sub-region mapping + color palette), `scripts/write-map-data.mjs` (if restructuring data), `src/services/feedback.js` (optional new sound)
+Each sub-region filled with a distinct pastel color (watercolor atlas look). Tapping a country selects its sub-region (vibrant color), other regions dim. `COUNTRY_TO_SUBREGION` mapping (~170 ISO codes → 11 sub-regions) and `REGION_COLORS` (pastel/vibrant pairs via CSS custom properties) added to `mapPaths.js`. 22 CSS variables for light + dark mode. `RegionEventList` component shows learned events for the selected region. Sound feedback via `feedback.tap()`.
 
 ---
 
@@ -183,7 +163,7 @@ These are independent of each other and can be done in any order:
 ~~1. **Per-country SVG paths** ✅~~
 ~~2. **Country highlighting on event selection** ✅~~
 ~~3. **UX: wheel zoom, region auto-scroll, pin animations** ✅~~
-4. **Sub-region map interaction** — pastel-colored sub-regions, tap to select (vibrant), sound + haptics, show event cards for that region
+~~4. **Sub-region map interaction** ✅~~
 5. **Region audit** — expand to 13-14 sub-regions, validate country→sub-region mapping
 6. **UX interaction improvements** — double-tap zoom, swipe-down fullscreen dismiss, hover states, cluster drill-down
 7. **Time slider on map** — high-impact standalone feature
@@ -241,3 +221,4 @@ Add more events per era, deeper non-Western history coverage, and new lessons be
 - **UX — Map improvements batch 5: interaction & animation** (2026-03-09): Desktop wheel zoom (onWheel handler, ±0.15 per scroll step, 1–4× range). Region auto-scroll in fullscreen (selecting a region chip smoothly scrolls the viewport to center on that region via REGION_CENTERS). Animated pin entrance (staggered scale+fade pop-in, 30ms delay per pin).
 - **Foundation — Per-country SVG paths** (2026-03-09): Replaced continent-merged path blobs with individual per-country SVG paths (177 countries, each with ISO code + name). Countries grouped by continent for rendering. MapView renders individual `<path>` elements with `data-country` attributes. Bundle size impact: +2KB gzipped (91KB uncompressed vs 81KB). Unblocks country highlighting, hover states, and semantic zoom.
 - **Feature — Country highlighting on event selection** (2026-03-09): Selecting an event pin highlights the country where it happened with a distinct fill + gold stroke. Uses coordinate-based point-in-polygon matching at runtime. Smooth CSS transitions on highlight/unhighlight.
+- **Feature — Sub-region map interaction** (2026-03-10): Each sub-region filled with distinct pastel color (watercolor atlas look). Tapping a country selects its sub-region (vibrant saturated color), other regions dim to 0.4 opacity. `COUNTRY_TO_SUBREGION` mapping (~170 ISO codes → 11 sub-regions) and `REGION_COLORS` (pastel/vibrant pairs via CSS custom properties) added to `mapPaths.js`. 22 CSS variables for light mode + 22 for dark mode. `RegionEventList` component shows learned events for the selected sub-region below the map. Sound feedback via `feedback.tap()`. All learned events always visible on map regardless of region filter.
