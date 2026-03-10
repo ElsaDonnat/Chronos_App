@@ -194,7 +194,7 @@ export const FUN_FACTS = [
         eventId: 'f18',
         question: 'What did Augustus Caesar reportedly say on his deathbed about his time as ruler?',
         correctAnswer: '"Have I played the part well? Then applaud as I exit"',
-        wrongAnswers: ['"I came, I saw, I conquered"', '"Beware the Ides of March"', '"Rome will endure forever"'],
+        wrongAnswers: ['"I have lived long enough for both nature and glory"', '"Let them hate me, so long as they fear me"', '"Rome will endure forever"'],
         explanation: 'Augustus viewed his entire reign as a performance. On his deathbed, he reportedly asked his friends, "Have I played the part well? Then applaud as I exit." This reveals how conscious he was of the political theater needed to rule while pretending to be merely "first citizen," not an emperor.',
     },
     {
@@ -250,7 +250,7 @@ export const FUN_FACTS = [
         eventId: 'f38',
         question: 'What really happened with Newton and the apple?',
         correctAnswer: 'He saw an apple fall and wondered if gravity reached the Moon',
-        wrongAnswers: ['An apple hit him on the head', 'He conducted experiments throwing apples', 'He invented the story later for publicity'],
+        wrongAnswers: ['An apple hit him on the head', 'The entire apple story is a myth \u2014 it never happened', 'He invented the story later for publicity'],
         explanation: 'Newton never said an apple hit his head. His friend William Stukeley recorded Newton saying he was sitting in a garden when an apple fell, which made him wonder: if gravity pulls the apple, does it reach as far as the Moon? This thought experiment led to universal gravitation. The "bonk on the head" version is a cartoon myth.',
     },
     {
@@ -266,7 +266,7 @@ export const FUN_FACTS = [
         eventId: 'f44',
         question: 'How tall was Napoleon Bonaparte really?',
         correctAnswer: 'About 5\u20197\u2033 \u2014 average height for his era',
-        wrongAnswers: ['About 5\u20192\u2033 \u2014 very short', 'About 5\u20190\u2033 \u2014 exceptionally short', 'About 6\u20191\u2033 \u2014 taller than most'],
+        wrongAnswers: ['About 5\u20192\u2033 \u2014 very short', 'About 5\u20195\u2033 \u2014 shorter than average', 'About 6\u20191\u2033 \u2014 taller than most'],
         explanation: 'The myth of Napoleon being short comes from a confusion between French and English inches. His recorded height of 5 feet 2 inches was in French units, which were larger than English inches. Converted properly, he stood about 5\u20197\u2033 (170 cm) \u2014 average or slightly above average for a Frenchman of his time. British propaganda cartoons cemented the "short Napoleon" myth.',
     },
     {
@@ -274,7 +274,7 @@ export const FUN_FACTS = [
         eventId: 'f50',
         question: 'What was Lenin\u2019s real name?',
         correctAnswer: 'Vladimir Ilyich Ulyanov',
-        wrongAnswers: ['Vladimir Leninsky', 'Josef Leninov', 'Nikolai Romanov'],
+        wrongAnswers: ['Vladimir Nikolaevich Volkov', 'Grigory Ilyich Petrov', 'Nikolai Alexandrovich Romanov'],
         explanation: '"Lenin" was a pseudonym, likely derived from the Lena River in Siberia. Russian revolutionaries commonly used false names to evade the Tsarist secret police. Similarly, "Stalin" meant "Man of Steel" (real name: Josef Djugashvili) and "Trotsky" was also a pseudonym (real name: Lev Bronstein). Almost none of the revolution\u2019s leaders used their birth names.',
     },
     {
@@ -290,7 +290,7 @@ export const FUN_FACTS = [
         eventId: 'f52',
         question: 'What happened on "Black Tuesday," October 29, 1929?',
         correctAnswer: '16 million shares were panic-traded in a single day',
-        wrongAnswers: ['All US banks closed simultaneously', 'The dollar lost all its value overnight', 'The stock exchange building caught fire'],
+        wrongAnswers: ['The Federal Reserve raised interest rates to a record high', 'The US government froze all bank withdrawals', 'Every major European stock market collapsed first'],
         explanation: 'On Black Tuesday, panicked investors traded about 16 million shares \u2014 a record that would stand for decades. The ticker tape fell so far behind that traders had no idea what their stocks were worth. Some shares literally had no buyers at any price. The crash wiped out $14 billion in a single day (equivalent to hundreds of billions today).',
     },
     {
@@ -314,7 +314,7 @@ export const FUN_FACTS = [
         eventId: 'f62',
         question: 'What strategic decision by Napoleon helped double the size of the United States?',
         correctAnswer: 'Haiti\u2019s revolution forced him to sell Louisiana',
-        wrongAnswers: ['He lost a bet with Thomas Jefferson', 'He needed money to build the Suez Canal', 'He was pressured by the British Navy'],
+        wrongAnswers: ['He traded it for British naval concessions', 'He needed money to fund his European wars', 'He was pressured by the British Navy'],
         explanation: 'Napoleon had planned to use Haiti as a base for a French empire in the Americas. When the Haitian Revolution destroyed that plan and he lost 50,000 soldiers to disease and battle, he abandoned his American ambitions and sold the entire Louisiana Territory to the US in 1803 for $15 million \u2014 about 4 cents per acre. The Haitian Revolution indirectly doubled the size of the United States.',
     },
     {
@@ -394,7 +394,7 @@ export const FUN_FACTS = [
         eventId: 'f110',
         question: 'How many people traveled with Mansa Musa on his pilgrimage to Mecca?',
         correctAnswer: 'About 60,000, including 12,000 slaves each carrying gold',
-        wrongAnswers: ['Just 20 personal bodyguards', 'About 500 merchants and advisors', 'About 5,000 soldiers on horseback'],
+        wrongAnswers: ['About 1,000 royal guards and servants', 'About 500 merchants and advisors', 'About 5,000 soldiers on horseback'],
         explanation: 'Mansa Musa\u2019s 1324 pilgrimage was the most extravagant journey in history. His caravan included roughly 60,000 people, 80 camels each carrying 300 pounds of gold, and 12,000 slaves each carrying 4 pounds of gold. The procession stretched as far as the eye could see. Arab chroniclers who witnessed it wrote that nothing like it had ever been seen before \u2014 or since.',
     },
     {
