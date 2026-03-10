@@ -73,10 +73,11 @@ No router — `App.jsx` uses `activeTab` state (`'learn'` | `'timeline'` | `'pra
 ### Map System
 
 **Data pipeline** (`scripts/write-map-data.mjs`):
-- Reads `world-atlas/countries-110m.json` (TopoJSON, Natural Earth 110m resolution)
+- Reads `world-atlas/countries-50m.json` (TopoJSON, Natural Earth 50m resolution)
 - Uses `d3-geo`'s Natural Earth I projection to convert GeoJSON country polygons → SVG path strings
-- Groups countries **by continent** (Europe, Middle East, Africa, Asia, Americas) with individual per-country SVG paths preserved (ISO code + name + path string per country)
-- Outputs `src/data/mapPaths.js` (~91KB) containing `MAP_REGIONS`, `SUB_REGIONS`, `REGION_CENTERS`, and `projectToSVG()`
+- Applies path simplification: 1-decimal coordinate precision, consecutive point dedup, collinear point removal
+- Groups countries **by continent** (Europe, Middle East, Africa, Asia, Americas) with individual per-country SVG paths preserved (ISO code + name + path string per country, ~234 countries)
+- Outputs `src/data/mapPaths.js` (~144KB) containing `MAP_REGIONS`, `SUB_REGIONS`, `REGION_CENTERS`, and `projectToSVG()`
 - Regenerate with: `node scripts/write-map-data.mjs`
 
 **Rendering** (`src/components/MapView.jsx`):
@@ -103,8 +104,8 @@ No router — `App.jsx` uses `activeTab` state (`'learn'` | `'timeline'` | `'pra
 **Strengths**: zero runtime map deps, offline-capable, deterministic projection, fast render, clean regeneration pipeline.
 
 **Known limitations for future expansion**:
-- 110m resolution — coastlines look chunky when zoomed; would need 50m or 10m for detail
 - CSS zoom with scale compensation — keeps the CSS `transform: scale()` approach but inversely scales SVG attributes; a full SVG viewBox rewrite could give even crisper rendering
+- 10m resolution available for even more detail, but would significantly increase bundle size
 
 ### Concurrent Events View (`src/components/ConcurrentView.jsx`)
 

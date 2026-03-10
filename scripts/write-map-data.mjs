@@ -16,9 +16,9 @@ import { dirname, join } from 'path';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-// ─── Load world TopoJSON ───
+// ─── Load world TopoJSON (50m resolution for smoother coastlines) ───
 const worldTopo = JSON.parse(
-    readFileSync(join(__dirname, '../node_modules/world-atlas/countries-110m.json'), 'utf-8')
+    readFileSync(join(__dirname, '../node_modules/world-atlas/countries-50m.json'), 'utf-8')
 );
 const countries = feature(worldTopo, worldTopo.objects.countries);
 
@@ -26,7 +26,7 @@ const countries = feature(worldTopo, worldTopo.objects.countries);
 const CONTINENT_MAP = {
     Europe: new Set([
         '008','020','040','051','056','070','100','112','191','196','203','208',
-        '233','234','246','250','276','292','300','348','352','372','380','428',
+        '233','234','246','248','250','276','292','300','336','348','352','372','380','428',
         '438','440','442','470','492','498','499','528','578','616','620','642',
         '643','674','688','703','705','724','752','756','804','807','826','831',
         '832','833','680','010',
@@ -36,22 +36,23 @@ const CONTINENT_MAP = {
         '422','512','634','682','760','792','784','887','524',
     ]),
     Africa: new Set([
-        '012','024','072','084','108','120','132','140','148','174','178',
+        '012','024','072','084','086','108','120','132','140','148','174','178',
         '180','204','226','231','232','262','266','270','288','324','384',
         '404','426','430','434','450','454','466','478','480','504','508',
-        '516','562','566','624','638','646','678','686','694','706','710',
+        '516','562','566','624','638','646','654','678','686','690','694','706','710',
         '716','728','729','732','748','768','788','800','834','854','894',
         '818','736',
     ]),
     Asia: new Set([
-        '004','050','064','096','104','116','144','156','158','166','170',
-        '242','258','296','356','360','392','398','408','410','417','418',
-        '446','458','462','496','524','540','548','586','598','608','626',
-        '643','702','704','760','762','764','795','798','860',
+        '004','016','036','050','064','090','096','104','116','144','156','158','166','170',
+        '184','242','258','296','334','344','356','360','392','398','408','410','417','418',
+        '446','458','462','496','520','524','540','548','554','570','574','580','583','584',
+        '585','586','598','608','612','626',
+        '643','702','704','760','762','764','776','795','798','860','876','882',
     ]),
     Americas: new Set([
-        '028','032','044','052','060','068','074','076','084','124','136',
-        '152','170','188','192','212','214','218','222','238','254','304',
+        '028','032','044','052','060','068','074','076','084','092','124','136',
+        '152','170','188','192','212','214','218','222','238','239','254','304',
         '308','312','316','320','328','332','340','388','474','484','500',
         '531','533','534','535','558','591','600','604','630','652','659',
         '660','662','663','666','670','740','780','796','840','850','858',
@@ -109,23 +110,79 @@ for (const [continent] of Object.entries(CONTINENT_MAP)) {
     continentCountries[continent] = [];
 }
 
+const seenCodes = new Set();
 for (const country of countries.features) {
     const code = country.id || country.properties?.iso_n3;
-    const continent = getContinent(code);
+    if (!code || code === 'undefined') continue;
+    const codeStr = String(code);
+    // Skip duplicate codes (e.g., 036 appears for both Australia and Ashmore/Cartier Is.)
+    if (seenCodes.has(codeStr)) continue;
+    const continent = getContinent(codeStr);
     if (!continent) continue;
     const d = finalPath(country);
     if (d) {
+        seenCodes.add(codeStr);
         continentCountries[continent].push({
-            code: String(code),
+            code: codeStr,
             name: country.properties?.name || '',
-            d: roundPath(d),
+            d: simplifyPath(roundPath(d)),
         });
     }
 }
 
-// Round path coordinates to integers
+// Round path coordinates to 1 decimal place (10x precision for zoom quality)
 function roundPath(d) {
-    return d.replace(/(\d+\.\d+)/g, (match) => Math.round(parseFloat(match)).toString());
+    return d.replace(/(\d+\.\d+)/g, (match) => {
+        const v = Math.round(parseFloat(match) * 10) / 10;
+        return v % 1 === 0 ? v.toString() : v.toFixed(1);
+    });
+}
+
+// Simplify SVG path: deduplicate consecutive identical points, remove collinear points
+function simplifyPath(d) {
+    const subpaths = d.split(/(?=[MZ])/);
+    let result = '';
+    for (const part of subpaths) {
+        if (!part) continue;
+        const cmd = part[0];
+        if (cmd === 'Z') { result += 'Z'; continue; }
+        if (cmd !== 'M') { result += part; continue; }
+
+        // Parse all coordinate pairs from this subpath
+        const numStr = part.slice(1).trim();
+        if (!numStr) { result += cmd; continue; }
+        const nums = numStr.match(/-?\d+\.?\d*/g);
+        if (!nums || nums.length < 2) { result += part; continue; }
+
+        const pts = [];
+        for (let i = 0; i < nums.length - 1; i += 2) {
+            pts.push([parseFloat(nums[i]), parseFloat(nums[i + 1])]);
+        }
+        if (pts.length === 0) { result += part; continue; }
+
+        // 1. Deduplicate consecutive identical points
+        const deduped = [pts[0]];
+        for (let i = 1; i < pts.length; i++) {
+            if (pts[i][0] !== deduped[deduped.length - 1][0] ||
+                pts[i][1] !== deduped[deduped.length - 1][1]) {
+                deduped.push(pts[i]);
+            }
+        }
+
+        // 2. Remove collinear points (cross product ≈ 0)
+        const simplified = [deduped[0]];
+        for (let i = 1; i < deduped.length - 1; i++) {
+            const [ax, ay] = simplified[simplified.length - 1];
+            const [bx, by] = deduped[i];
+            const [cx, cy] = deduped[i + 1];
+            const cross = (bx - ax) * (cy - ay) - (by - ay) * (cx - ax);
+            if (Math.abs(cross) > 0.5) simplified.push(deduped[i]);
+        }
+        if (deduped.length > 1) simplified.push(deduped[deduped.length - 1]);
+
+        result += 'M' + simplified.map(p => p[0] + ',' + p[1]).join('L');
+    }
+    return result;
 }
 
 // ─── Calculate label positions ───
@@ -236,16 +293,24 @@ while ((evMatch = eventRegex.exec(eventsSource)) !== null) {
     }
 }
 
-// Manual overrides for events that fall outside 110m-simplified coastlines
+// Manual overrides for events that fall outside simplified coastlines
 const MANUAL_COUNTRY_OVERRIDES = {
-    'f20': '792',   // Constantinople (Istanbul) → Turkey
-    'f22': '792',   // Constantinople → Turkey
-    'f31': '792',   // Constantinople → Turkey
-    'f92': '792',   // Constantinople → Turkey
-    'f52': '840',   // New York → USA
-    'f57': '840',   // Cape Canaveral → USA
-    'f127': '300',  // Halicarnassus → Greece
-    'f129': '380',  // Syracuse → Italy
+    'f20': '792',    // Constantinople (Istanbul) → Turkey
+    'f22': '792',    // Constantinople → Turkey
+    'f31': '792',    // Constantinople → Turkey
+    'f92': '792',    // Constantinople → Turkey
+    'f52': '840',    // New York → USA
+    'f54': '840',    // San Francisco → USA
+    'f57': '840',    // Cape Canaveral → USA
+    'f75': '840',    // New York → USA
+    'f83': '710',    // Cape Town → South Africa
+    'f84': '840',    // New York → USA
+    'f123': '840',   // New York → USA
+    'f127': '300',   // Halicarnassus → Greece
+    'f129': '380',   // Syracuse → Italy
+    'f149': '834',   // Dar es Salaam → Tanzania
+    'dih-6': '840',  // New York → USA
+    'dih-18': '208', // Copenhagen → Denmark
 };
 
 const stillUnmapped = [];
@@ -263,7 +328,7 @@ if (stillUnmapped.length > 0) {
 }
 
 // ─── Assemble the output file ───
-let output = `// \u2500\u2500\u2500 SVG WORLD MAP DATA (Natural Earth I projection, 110m) \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n`;
+let output = `// \u2500\u2500\u2500 SVG WORLD MAP DATA (Natural Earth I projection, 50m) \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n`;
 output += `// Auto-generated by: node scripts/write-map-data.mjs\n`;
 output += `// Projection: Natural Earth I. ViewBox: 0 0 ${WIDTH} ${HEIGHT}.\n`;
 output += `// Scale: ${scale.toFixed(4)}, Translate: [${projTranslate.map(v => Math.round(v)).join(', ')}]\n`;
@@ -383,6 +448,27 @@ for (const [id, code] of Object.entries(eventCountryMap)) {
 }
 output += `};\n`;
 
+// ─── Preserve hand-written sections (COUNTRY_TO_SUBREGION, REGION_COLORS, etc.) ───
 const outPath = join(__dirname, '../src/data/mapPaths.js');
-writeFileSync(outPath, output, 'utf-8');
-console.log(`\nWrote ${outPath} (${output.length} bytes)`);
+let handWritten = '';
+try {
+    const existing = readFileSync(outPath, 'utf-8');
+    // Everything after EVENT_COUNTRY_MAP closing brace is hand-written
+    const startMarker = '// ISO country code';
+    const endMarker = '// Event ID';
+    const startIdx = existing.indexOf(startMarker);
+    const endIdx = existing.indexOf(endMarker, startIdx);
+    if (startIdx !== -1) {
+        // Preserve COUNTRY_TO_SUBREGION and REGION_COLORS, but NOT EVENT_COUNTRY_MAP
+        handWritten = endIdx !== -1
+            ? existing.slice(startIdx, endIdx).trimEnd()
+            : existing.slice(startIdx).trimEnd();
+        console.log(`Preserved ${handWritten.length} bytes of hand-written sections`);
+    }
+} catch (e) {
+    console.log('No existing mapPaths.js found, skipping hand-written section preservation');
+}
+
+const finalOutput = output + (handWritten ? '\n' + handWritten : '');
+writeFileSync(outPath, finalOutput, 'utf-8');
+console.log(`\nWrote ${outPath} (${finalOutput.length} bytes)`);

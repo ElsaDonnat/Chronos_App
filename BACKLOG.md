@@ -14,7 +14,7 @@
 
 The map is intended to become a flagship feature of Chronos — visually rich, scalable to hundreds of events, and eventually extractable as a standalone component. This roadmap covers everything from foundational architectural changes to polish. Items are ordered by dependency (foundations first, features second, polish last).
 
-**Current state (as of v1.9.1):** Natural Earth I projection, 800×500 SVG viewBox, per-country SVG paths (177 countries grouped by continent) with country highlighting on event selection, 14 sub-regions (incl. Southeast Asia, Central Asia, Oceania), pastel-colored watercolor atlas with tap-to-select, grid-based pin clustering, CSS pinch-zoom + desktop wheel zoom, fullscreen mode with region auto-scroll, animated pin entrance. See CLAUDE.md "Map System" section for full architecture docs.
+**Current state (as of v1.9.12):** Natural Earth I projection (50m resolution), 800×500 SVG viewBox, per-country SVG paths (234 countries grouped by continent) with country highlighting on event selection, 14 sub-regions (incl. Southeast Asia, Central Asia, Oceania), pastel-colored watercolor atlas with tap-to-select, grid-based pin clustering, CSS pinch-zoom + desktop wheel zoom, fullscreen mode with region auto-scroll, animated pin entrance, semantic zoom, connection arcs, era coloring, map search. See CLAUDE.md "Map System" section for full architecture docs.
 
 ---
 
@@ -79,7 +79,7 @@ Scale-compensated rendering: all SVG attributes (pin radii, stroke widths, hit a
 - ~~**Animated pin entrance**~~ ✅ Done (2026-03-09)
 - ~~**Era coloring mode**~~ ✅ Done (2026-03-10) — Topic/Era toggle in Legend dropdown. Era mode colors pins by historical period (5 eras). Persists to localStorage.
 - ~~**Region labels fade near pins**~~ ✅ Done (2026-03-10) — continent labels fade out between 1\u2013 2× zoom (part of semantic zoom). Pin-proximity fading not needed since labels disappear before pin labels appear.
-- **Higher resolution map data** — switch from 110m to 50m (or 10m for fullscreen) for cleaner coastlines. Test bundle size impact. Could lazy-load the high-res version only for fullscreen.
+- ~~**Higher resolution map data**~~ ✅ Done (2026-03-10) — upgraded from 110m to 50m with path simplification (1-decimal precision, dedup + collinear removal). Bundle size +37% raw (~144KB vs ~105KB). Also fixed missing countries (Australia, NZ, Singapore, 60+ territories).
 
 ---
 
@@ -185,3 +185,4 @@ Add more events per era, deeper non-Western history coverage, and new lessons be
 - **Visual — Event connection arcs** (2026-03-10): `ConnectionArcs` component draws quadratic bezier SVG arcs from a selected pin to its EVENT_CONNECTIONS targets. Category-colored, solid for learned events, dashed for unlearned. Rendered between country layer and pin layer. Uses `arcControlPoint()` helper for perpendicular curve offset (30% of distance, capped at 40 SVG units).
 - **Visual — Era coloring mode** (2026-03-10): Topic/Era segmented toggle in Legend dropdown. `ERA_COLORS` constant with 5 period-specific colors. `getEraForYear()` helper maps year to era key. `colorMode` state persisted to localStorage (`chronos-map-color-mode`). Cluster pins use majority era of contained events.
 - **Visual — Map search** (2026-03-10): `MapSearch` component overlaid on map with auto-focus input, live filtered results (title, location, year, max 6), category color dots, and click-to-select event highlighting.
+- **Visual — Higher resolution map data** (2026-03-10): Upgraded from Natural Earth 110m to 50m resolution. Path simplification (1-decimal precision, dedup + collinear removal) keeps bundle size manageable (+37%). Fixed missing countries (Australia, NZ, Singapore, 60+ territories). Updated manual event-country overrides for 50m coastlines.

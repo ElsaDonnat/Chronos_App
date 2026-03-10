@@ -5,6 +5,16 @@ Format follows [Keep a Changelog](https://keepachangelog.com/) and [Semantic Ver
 
 Use the version entries from the last playstore push to the most recent version for Play Store "What's New" text.
 
+## [1.9.12] - 2026-03-10
+
+### Changed
+- **Higher resolution map data** — upgraded from Natural Earth 110m to 50m resolution for significantly smoother coastlines, especially visible when zoomed. Uses 1-decimal coordinate precision (10x finer grid) and SVG path simplification (dedup + collinear point removal) to keep bundle size reasonable (~144KB vs ~105KB, +37% raw / ~8KB gzipped).
+
+### Fixed
+- **Missing countries on map** — Australia, New Zealand, Solomon Islands, Singapore, and ~60 other small territories/islands were missing from the rendered map due to absent continent mappings. All 234 countries from the 50m dataset now render correctly.
+- **COUNTRY_TO_SUBREGION gaps** — added ~65 new country-to-subregion mappings for territories introduced by 50m data (Caribbean islands, Pacific islands, European micro-states, etc.).
+- **EVENT_COUNTRY_MAP accuracy** — 8 additional coastal events now correctly map to their countries (San Francisco, Cape Town, Copenhagen, etc.) with updated manual overrides for the 50m coastline data.
+
 ## [1.9.11] - 2026-03-10
 
 ### Fixed
