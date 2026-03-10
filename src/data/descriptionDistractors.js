@@ -1718,7 +1718,7 @@ export const DESCRIPTION_DISTRACTORS = {
         ]
     },
     f150: {
-        hardCorrect: "The innovation was born of necessity \u2014 copper coins were too heavy for large transactions and Sichuan was short of metal.",
+        hardCorrect: "The innovation was born of necessity \u2014 Sichuan used iron coins (copper was restricted), and large purchases required cartloads of heavy currency.",
         distractors: [
             { text: "Paper money was invented in Europe during the Renaissance by Italian bankers.", d: 1 },
             { text: "The Song Dynasty created paper money as a way to fund its space exploration program.", d: 1 },

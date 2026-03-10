@@ -88,6 +88,7 @@ No router — `App.jsx` uses `activeTab` state (`'learn'` | `'timeline'` | `'pra
 - Fullscreen mode: 280% width SVG inside a scrollable container, centered on Europe/Middle East; auto-scrolls to selected region; swipe-down gesture to dismiss (pull-down > 80px with rubber-band physics and visual hint pill)
 - Animated pin entrance: staggered scale+fade pop-in (30ms per pin) via CSS `mapPinEntrance` keyframes
 - Desktop hover states: country paths brighten on hover (`brightness(1.08)`), pins get soft drop-shadow glow. Both gated behind `@media (hover: hover)`.
+- **Time slider**: clock toggle button activates a piecewise-linear slider below the map (both inline and fullscreen). Each of the 5 eras gets equal slider space (0\u2013200, 200\u2013400, etc. out of 1000). Era-aware time windows: `getTimeWindow(year)` returns a half-window proportional to the era span (25% for Prehistory, 12% for Ancient, 15% for others). Pins fade via `getEventTimeOpacity()` which handles `yearEnd` ranges. Era quick-jump buttons snap to the median learned event year in each era. CSS-styled range input with era tick marks in `index.css` (`.time-slider-input`).
 
 **Region system**: 14 sub-regions (Europe, Middle East, N/W/E/S Africa, South/East/Southeast/Central Asia, Oceania, N/C/S America) → 5 continent SVG groups. `COUNTRY_TO_SUBREGION` maps ~170 ISO country codes to sub-regions. `REGION_COLORS` defines pastel (unselected) and vibrant (selected) color pairs for each sub-region via CSS custom properties (28 light + 28 dark mode variables in `index.css`).
 

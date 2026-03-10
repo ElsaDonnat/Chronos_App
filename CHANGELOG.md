@@ -5,6 +5,27 @@ Format follows [Keep a Changelog](https://keepachangelog.com/) and [Semantic Ver
 
 Use the version entries from the last playstore push to the most recent version for Play Store "What's New" text.
 
+## [1.9.6] - 2026-03-10
+
+### Added
+- **Time slider on map** — scrub through history and watch pins appear/disappear chronologically. Clock toggle button on both inline and fullscreen map modes. Features:
+  - **Piecewise-linear slider** — each era (Prehistory, Ancient, Medieval, Early Modern, Modern) gets equal slider space for usable scrubbing at every scale
+  - **Era-aware time windows** — pins visible within a proportional window of the current era's span (25% for sparse Prehistory, 12–15% for denser eras). Pins within the window show at full opacity; those in the fade zone (2× window) gradually fade out
+  - **Era quick-jump buttons** — tap an era label to snap to the median learned event year in that era (not the midpoint), so you always land near actual events
+  - **Pin fade transitions** — 0.3s CSS opacity transitions on pin groups for smooth visual filtering as the slider moves
+  - **Range event support** — events with yearEnd (e.g., "7–6 million years ago") stay visible when the slider is anywhere within their date range
+  - **Year display** — formatted year label (e.g., "3.5M BCE", "300K BCE", "988 CE") updates in real-time as slider moves
+  - CSS-styled range input with burgundy thumb, era boundary tick marks, and backdrop blur panel
+
+## [1.9.5] - 2026-03-10
+
+### Changed
+- **Card content review (Money & Trade)** — reviewed 10 cards (f147–f156); 2 edits made:
+  - **f150 (Paper Money in China):** fixed "copper coins were too heavy" → Sichuan specifically used iron coins (the government restricted copper there), and iron coins were far heavier per unit of value. This is the actual reason paper money was invented in Sichuan. Updated hardCorrect in descriptionDistractors to match.
+  - **f156 (Rise of Globalization):** "Global trade tripled in a decade" → "more than doubled" — world merchandise exports roughly doubled (not tripled) from 1995 to 2005 in nominal terms. WTO data shows ~5.5% annual volume growth over that decade, equaling ~70% real growth.
+- Cards f147, f148, f149, f151, f152, f153, f154, f155 reviewed and confirmed accurate — no changes needed.
+- **QA check**: both builds (Capacitor + GitHub Pages) pass, cap sync OK, data integrity checks all pass (147 core + 30 daily events, no duplicate IDs, no orphan refs in lessons/challengeQuiz/distractors), no merge conflict markers. Lint has 172 pre-existing issues (mostly `no-useless-escape` for Unicode chars in data files) — no new errors from recent changes.
+
 ## [1.9.4] - 2026-03-10
 
 ### Changed

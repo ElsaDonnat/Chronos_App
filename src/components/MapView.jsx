@@ -1,9 +1,84 @@
 import { useState, useMemo, useRef, useCallback, useEffect } from 'react';
-import { CATEGORY_CONFIG, isDiHEvent } from '../data/events';
+import { CATEGORY_CONFIG, isDiHEvent, ERA_RANGES } from '../data/events';
 import { MAP_REGIONS, REGION_CENTERS, projectToSVG, normalizeRegion, EVENT_COUNTRY_MAP, COUNTRY_TO_SUBREGION, REGION_COLORS } from '../data/mapPaths';
 import { Card, CategoryTag, ImportanceTag, MasteryDots, ExpandableText } from './shared';
 import * as feedback from '../services/feedback';
 const CLUSTER_GRID = 25; // SVG units per grid cell
+
+// ─── Time slider helpers ───
+const SLIDER_MAX = 1000;
+const ERA_SLIDER_SEGMENTS = [
+    { id: 'prehistory', label: 'Prehistory', start: -7000000, end: -3200, sliderStart: 0, sliderEnd: 200 },
+    { id: 'ancient', label: 'Ancient', start: -3200, end: 476, sliderStart: 200, sliderEnd: 400 },
+    { id: 'medieval', label: 'Medieval', start: 476, end: 1500, sliderStart: 400, sliderEnd: 600 },
+    { id: 'earlymodern', label: 'E. Modern', start: 1500, end: 1789, sliderStart: 600, sliderEnd: 800 },
+    { id: 'modern', label: 'Modern', start: 1789, end: 2030, sliderStart: 800, sliderEnd: 1000 },
+];
+
+function sliderToYear(value) {
+    for (const seg of ERA_SLIDER_SEGMENTS) {
+        if (value >= seg.sliderStart && value <= seg.sliderEnd) {
+            const frac = (value - seg.sliderStart) / (seg.sliderEnd - seg.sliderStart);
+            return seg.start + frac * (seg.end - seg.start);
+        }
+    }
+    return ERA_SLIDER_SEGMENTS[ERA_SLIDER_SEGMENTS.length - 1].end;
+}
+
+function yearToSlider(year) {
+    for (const seg of ERA_SLIDER_SEGMENTS) {
+        if (year >= seg.start && year <= seg.end) {
+            const frac = (year - seg.start) / (seg.end - seg.start);
+            return Math.round(seg.sliderStart + frac * (seg.sliderEnd - seg.sliderStart));
+        }
+    }
+    return year < ERA_SLIDER_SEGMENTS[0].start ? 0 : SLIDER_MAX;
+}
+
+function getTimeWindow(year) {
+    for (const seg of ERA_SLIDER_SEGMENTS) {
+        if (year >= seg.start && year <= seg.end) {
+            const span = seg.end - seg.start;
+            // Wider windows for sparser eras, tighter for dense ones
+            if (seg.id === 'prehistory') return span * 0.25;
+            if (seg.id === 'ancient') return span * 0.12;
+            return span * 0.15;
+        }
+    }
+    return 100;
+}
+
+function formatSliderYear(year) {
+    const abs = Math.abs(year);
+    const suffix = year < 0 ? 'BCE' : 'CE';
+    if (abs >= 1000000) {
+        const m = abs / 1000000;
+        return `${m % 1 === 0 ? m.toFixed(0) : m.toFixed(1)}M ${suffix}`;
+    }
+    if (abs >= 10000) return `${Math.round(abs / 1000)}K ${suffix}`;
+    return `${Math.round(abs).toLocaleString()} ${suffix}`;
+}
+
+function getEventTimeOpacity(event, sliderYear, halfWindow) {
+    const eventStart = event.year;
+    const eventEnd = event.yearEnd || event.year;
+    // Fully visible if slider is within event's time range
+    if (sliderYear >= eventStart && sliderYear <= eventEnd) return 1;
+    // Distance to nearest edge of event's range
+    const dist = sliderYear < eventStart
+        ? eventStart - sliderYear
+        : sliderYear - eventEnd;
+    if (dist <= halfWindow) return 1;
+    if (dist <= halfWindow * 2) return 1 - (dist - halfWindow) / halfWindow;
+    return 0;
+}
+
+function getActiveEraId(sliderValue) {
+    for (const seg of ERA_SLIDER_SEGMENTS) {
+        if (sliderValue >= seg.sliderStart && sliderValue < seg.sliderEnd) return seg.id;
+    }
+    return 'modern';
+}
 
 // Map-specific color tokens (light / dark via CSS vars with fallbacks)
 const MAP_COLORS = {
@@ -231,7 +306,7 @@ function getCountryFill(countryCode, selectedRegion) {
 }
 
 // The SVG map content — shared between normal and fullscreen modes
-function MapSVG({ pins, learnedIds, selectedRegion, selectedPin, selectedEventId, selectedClusterXY, handlePinClick, handleMapBgClick, handleCountryClick, svgStyle, svgClassName, viewBox }) {
+function MapSVG({ pins, learnedIds, selectedRegion, selectedPin, selectedEventId, selectedClusterXY, handlePinClick, handleMapBgClick, handleCountryClick, svgStyle, svgClassName, viewBox, timeOpacities }) {
     const highlightedCountryCode = selectedEventId ? EVENT_COUNTRY_MAP[selectedEventId] : null;
 
     return (
@@ -310,24 +385,38 @@ function MapSVG({ pins, learnedIds, selectedRegion, selectedPin, selectedEventId
                 const pinColor = isLearned ? catColor : MAP_COLORS.pinMuted;
                 const r = pin.cluster ? 10 : 6;
 
+                // Time filter opacity
+                let tOp = 1;
+                if (timeOpacities) {
+                    if (pin.cluster) {
+                        tOp = Math.max(0, ...pin.events.map(e => timeOpacities.get(e.id) ?? 0));
+                    } else {
+                        tOp = timeOpacities.get(pin.event?.id) ?? 1;
+                    }
+                }
+                if (tOp <= 0) return null;
+
                 return (
-                    <g key={i} onClick={(e) => handlePinClick(pin, e)}
-                       className="map-pin-hover"
-                       style={{ cursor: 'pointer', animation: `mapPinEntrance 0.4s ease-out ${i * 30}ms both`, transition: 'filter 0.15s' }}>
-                        <circle cx={pin.x} cy={pin.y} r={18} fill="transparent" />
-                        <circle cx={pin.x} cy={pin.y + 1} r={r} fill="rgba(0,0,0,0.12)" />
-                        <circle cx={pin.x} cy={pin.y} r={r}
-                            fill={pinColor}
-                            stroke={MAP_COLORS.pinStroke} strokeWidth={1.5}
-                            opacity={isLearned ? 1 : 0.45}
-                        />
-                        {pin.cluster && (
-                            <text x={pin.x} y={pin.y + 1} textAnchor="middle" dominantBaseline="middle"
-                                fill="white" fontSize="9" fontWeight="bold"
-                                style={{ pointerEvents: 'none' }}>
-                                {pin.count}
-                            </text>
-                        )}
+                    <g key={i} opacity={tOp < 1 ? tOp : undefined}
+                       style={{ transition: timeOpacities ? 'opacity 0.3s' : undefined }}>
+                        <g onClick={(e) => handlePinClick(pin, e)}
+                           className="map-pin-hover"
+                           style={{ cursor: 'pointer', animation: `mapPinEntrance 0.4s ease-out ${i * 30}ms both`, transition: 'filter 0.15s' }}>
+                            <circle cx={pin.x} cy={pin.y} r={18} fill="transparent" />
+                            <circle cx={pin.x} cy={pin.y + 1} r={r} fill="rgba(0,0,0,0.12)" />
+                            <circle cx={pin.x} cy={pin.y} r={r}
+                                fill={pinColor}
+                                stroke={MAP_COLORS.pinStroke} strokeWidth={1.5}
+                                opacity={isLearned ? 1 : 0.45}
+                            />
+                            {pin.cluster && (
+                                <text x={pin.x} y={pin.y + 1} textAnchor="middle" dominantBaseline="middle"
+                                    fill="white" fontSize="9" fontWeight="bold"
+                                    style={{ pointerEvents: 'none' }}>
+                                    {pin.count}
+                                </text>
+                            )}
+                        </g>
                     </g>
                 );
             })}
@@ -482,12 +571,94 @@ function RegionEventList({ events, learnedIds, eventMastery, selectedRegion, onS
 }
 
 
+// Time slider component
+function TimeSlider({ value, onChange, onClose, learnedEventYears }) {
+    const activeEra = getActiveEraId(value);
+    const year = sliderToYear(value);
+
+    const handleEraJump = (segId) => {
+        const seg = ERA_SLIDER_SEGMENTS.find(s => s.id === segId);
+        if (!seg) return;
+        // Jump to median learned event year in this era (or midpoint if none)
+        const eraYears = (learnedEventYears || [])
+            .filter(y => y >= seg.start && y < seg.end)
+            .sort((a, b) => a - b);
+        if (eraYears.length > 0) {
+            onChange(yearToSlider(eraYears[Math.floor(eraYears.length / 2)]));
+        } else {
+            onChange(Math.round((seg.sliderStart + seg.sliderEnd) / 2));
+        }
+        feedback.tap();
+    };
+
+    return (
+        <div className="px-3 py-2" style={{ backgroundColor: 'rgba(var(--color-parchment-rgb, 250, 246, 240), 0.92)', backdropFilter: 'blur(4px)' }}>
+            {/* Year display + close */}
+            <div className="flex items-center justify-between mb-1.5">
+                <p className="text-xs font-bold" style={{ fontFamily: 'var(--font-serif)', color: 'var(--color-burgundy)' }}>
+                    {formatSliderYear(year)}
+                </p>
+                <button
+                    onClick={onClose}
+                    className="w-5 h-5 flex items-center justify-center rounded-full"
+                    style={{ color: 'var(--color-ink-muted)', backgroundColor: 'rgba(var(--color-ink-rgb), 0.06)' }}
+                >
+                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round">
+                        <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+                    </svg>
+                </button>
+            </div>
+
+            {/* Slider track with era tick marks */}
+            <div className="relative mb-1">
+                <input
+                    type="range"
+                    min="0"
+                    max={SLIDER_MAX}
+                    value={value}
+                    onChange={(e) => onChange(Number(e.target.value))}
+                    className="time-slider-input w-full"
+                />
+                {/* Era boundary tick marks */}
+                {ERA_SLIDER_SEGMENTS.slice(1).map(seg => (
+                    <div key={seg.id}
+                        className="absolute top-1/2 -translate-y-1/2 w-px h-3"
+                        style={{
+                            left: `${(seg.sliderStart / SLIDER_MAX) * 100}%`,
+                            backgroundColor: 'rgba(var(--color-ink-rgb), 0.15)',
+                            pointerEvents: 'none',
+                        }}
+                    />
+                ))}
+            </div>
+
+            {/* Era quick-jump buttons */}
+            <div className="flex gap-0.5">
+                {ERA_SLIDER_SEGMENTS.map(seg => (
+                    <button key={seg.id}
+                        onClick={() => handleEraJump(seg.id)}
+                        className="flex-1 text-center py-0.5 rounded text-[9px] font-semibold transition-all duration-200"
+                        style={{
+                            backgroundColor: activeEra === seg.id ? 'var(--color-burgundy)' : 'transparent',
+                            color: activeEra === seg.id ? 'white' : 'var(--color-ink-faint)',
+                        }}
+                    >
+                        {seg.label}
+                    </button>
+                ))}
+            </div>
+        </div>
+    );
+}
+
 export default function MapView({ events, learnedIds, eventMastery, selectedRegion, onRegionSelect }) {
     const [selectedPin, setSelectedPin] = useState(null);
     const [clusterExpanded, setClusterExpanded] = useState(false);
     const [legendVisible, setLegendVisible] = useState(false);
     const [isFullscreen, setIsFullscreen] = useState(false);
     const [pullDown, setPullDown] = useState(0);
+    const [timeActive, setTimeActive] = useState(false);
+    const [timeValue, setTimeValue] = useState(500); // Start at medieval midpoint
     const fullscreenScrollRef = useRef(null);
     const hasScrolledRef = useRef(false);
     const pullStartRef = useRef(null);
@@ -504,6 +675,18 @@ export default function MapView({ events, learnedIds, eventMastery, selectedRegi
     const allLearnedEvents = useMemo(() =>
         events.filter(e => learnedIds.has(e.id)),
     [events, learnedIds]);
+
+    // Time slider: compute per-event opacity when active
+    const timeOpacities = useMemo(() => {
+        if (!timeActive) return null;
+        const year = sliderToYear(timeValue);
+        const halfWindow = getTimeWindow(year);
+        const map = new Map();
+        for (const e of allLearnedEvents) {
+            map.set(e.id, getEventTimeOpacity(e, year, halfWindow));
+        }
+        return map;
+    }, [timeActive, timeValue, allLearnedEvents]);
 
     const pins = useMemo(() => clusterPins(allLearnedEvents, learnedIds, clusterScale), [allLearnedEvents, learnedIds, clusterScale]);
 
@@ -642,7 +825,21 @@ export default function MapView({ events, learnedIds, eventMastery, selectedRegi
         pins, learnedIds, selectedRegion,
         selectedPin, selectedEventId, selectedClusterXY,
         handlePinClick, handleMapBgClick, handleCountryClick,
+        timeOpacities,
     };
+
+    const learnedEventYears = useMemo(() =>
+        allLearnedEvents.map(e => e.year),
+    [allLearnedEvents]);
+
+    const timeSliderUI = timeActive && (
+        <TimeSlider
+            value={timeValue}
+            onChange={setTimeValue}
+            onClose={() => setTimeActive(false)}
+            learnedEventYears={learnedEventYears}
+        />
+    );
 
     // Popup content shared between inline and fullscreen
     const popupContent = (
@@ -727,6 +924,22 @@ export default function MapView({ events, learnedIds, eventMastery, selectedRegi
                                     Reset zoom
                                 </button>
                             )}
+                            <button
+                                onClick={() => { setTimeActive(v => !v); feedback.tap(); }}
+                                className="w-7 h-7 rounded-full flex items-center justify-center"
+                                style={{
+                                    backgroundColor: timeActive
+                                        ? 'var(--color-burgundy)'
+                                        : 'rgba(var(--color-parchment-rgb, 250, 246, 240), 0.85)',
+                                    color: timeActive ? 'white' : 'var(--color-ink-muted)',
+                                    backdropFilter: 'blur(4px)',
+                                }}
+                                title="Time slider"
+                            >
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                                    <circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" />
+                                </svg>
+                            </button>
                             <Legend visible={legendVisible} onToggle={() => setLegendVisible(v => !v)} className="relative z-10" />
                         </div>
                     </div>
@@ -752,6 +965,13 @@ export default function MapView({ events, learnedIds, eventMastery, selectedRegi
                             svgStyle={{ display: 'block' }} />
                     </div>
                 </div>
+
+                {/* Time slider (fullscreen mode) */}
+                {timeSliderUI && (
+                    <div className="flex-shrink-0" style={{ borderTop: '1px solid rgba(var(--color-ink-rgb), 0.06)' }}>
+                        {timeSliderUI}
+                    </div>
+                )}
 
                 <div className="flex-shrink-0 px-3 pb-3" style={{ maxHeight: '40vh', overflowY: 'auto' }}>
                     {popupContent}
@@ -781,6 +1001,21 @@ export default function MapView({ events, learnedIds, eventMastery, selectedRegi
                         </svg>
                     </button>
                 )}
+
+                {/* Time slider toggle */}
+                <button
+                    onClick={() => { setTimeActive(v => !v); feedback.tap(); }}
+                    className="absolute bottom-2 left-2 z-10 w-7 h-7 rounded-full flex items-center justify-center"
+                    style={{
+                        backgroundColor: timeActive ? 'var(--color-burgundy)' : 'rgba(var(--color-ink-rgb), 0.06)',
+                        color: timeActive ? 'white' : 'var(--color-ink-muted)',
+                    }}
+                    title="Time slider"
+                >
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                        <circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" />
+                    </svg>
+                </button>
 
                 <button
                     onClick={() => { setIsFullscreen(true); resetZoom(); }}
@@ -818,6 +1053,9 @@ export default function MapView({ events, learnedIds, eventMastery, selectedRegi
                             svgStyle={{ display: 'block' }} />
                     </div>
                 </div>
+
+                {/* Time slider panel (inline mode) */}
+                {timeSliderUI}
             </div>
 
             {popupContent}

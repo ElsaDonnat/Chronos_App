@@ -56,19 +56,9 @@ Expanded from 11 to 14 sub-regions by splitting "East Asia" into East Asia (Chin
 
 ---
 
-### Feature — Time slider on map
+### ~~Feature — Time slider on map~~ ✅ Done (2026-03-10)
 
-**Why:** The "killer feature" for a history map. Scrubbing through time and watching pins appear/disappear chronologically makes history tangible. Works both as standalone map feature and as the time control shared with the Concurrent view.
-
-**What to do:**
-- Add a slider bar below the map (both inline and fullscreen modes)
-- Slider range = min year to max year of all learned events
-- As user drags, pins fade in/out based on whether their year falls within a window around the slider position
-- Era-aware window size: prehistory shows wider window (±500 years), modern shows tighter (±20 years)
-- Era quick-jump buttons above or beside the slider
-- Optional: auto-play mode that slowly scrubs through time
-
-**Files:** `src/components/MapView.jsx`, potentially a shared `TimeSlider` component
+Piecewise-linear slider with era-aware time windows. Clock toggle button on inline + fullscreen modes. Era quick-jump buttons snap to median learned event year. Pin fade transitions (0.3s CSS opacity). Range event support (yearEnd). Formatted year display. Styled range input with era boundary tick marks.
 
 ---
 
@@ -155,7 +145,7 @@ All sub-items completed:
 ~~4. **Sub-region map interaction** ✅~~
 ~~5. **Region audit** ✅~~
 ~~6. **UX interaction improvements** ✅~~ — double-tap zoom, swipe-down fullscreen dismiss, hover states, cluster drill-down
-7. **Time slider on map** — high-impact standalone feature
+~~7. **Time slider on map** ✅~~
 8. **Concurrent events view** — the biggest new feature, benefits from time slider and region system
 9. **Semantic zoom** — zoom-adaptive clustering + viewBox manipulation
 10. **Visual polish** — connection arcs, era coloring, region label fading, higher resolution
@@ -213,3 +203,4 @@ Add more events per era, deeper non-Western history coverage, and new lessons be
 - **Feature — Sub-region map interaction** (2026-03-10): Each sub-region filled with distinct pastel color (watercolor atlas look). Tapping a country selects its sub-region (vibrant saturated color), other regions dim to 0.4 opacity. `COUNTRY_TO_SUBREGION` mapping (~170 ISO codes → 11 sub-regions) and `REGION_COLORS` (pastel/vibrant pairs via CSS custom properties) added to `mapPaths.js`. 22 CSS variables for light mode + 22 for dark mode. `RegionEventList` component shows learned events for the selected sub-region below the map. Sound feedback via `feedback.tap()`. All learned events always visible on map regardless of region filter.
 - **Foundation — Region system audit** (2026-03-10): Expanded from 11 to 14 sub-regions. Split "East Asia" into East Asia (China, Taiwan, Japan, Korea), Southeast Asia (Philippines, Malaysia, Cambodia, Thailand, etc.), Central Asia (Mongolia, Kazakhstan, etc.), and Oceania (Papua New Guinea, Fiji, etc.). Added 6 new CSS variable pairs (light + dark). Re-tagged Mongol Empire (f29) to Central Asia. Updated generation script for consistency.
 - **UX — Interaction improvements** (2026-03-10): Four improvements: (1) Double-tap to zoom — double-tapping background zooms to 2× centered on tap, double-tap again resets. (2) Swipe-down to dismiss fullscreen — pull-down gesture with visual feedback pill and rubber-band physics. (3) Hover states — desktop-only brightness boost on country paths and drop-shadow glow on pins. (4) Cluster drill-down — tapping a cluster auto-zooms to separate pins via zoom-aware clustering (grid size inversely scales with zoom level, debounced at 150ms).
+- **Feature — Time slider on map** (2026-03-10): Piecewise-linear slider (each era gets equal space) with clock toggle button on inline + fullscreen modes. Era-aware time windows (25% for Prehistory, 12–15% for others). Smart era quick-jump buttons snap to median learned event year. Pin opacity transitions (0.3s). Range event support for yearEnd spans. Styled range input with era boundary tick marks and backdrop blur panel.
