@@ -18,7 +18,7 @@ export const FUN_FACTS = [
         eventId: 'f2',
         question: 'What happened to the human jaw and teeth as a result of cooking food?',
         correctAnswer: 'They became significantly smaller',
-        wrongAnswers: ['They grew stronger and larger', 'They developed a second row of molars', 'They remained unchanged for millennia'],
+        wrongAnswers: ['They grew stronger and larger', 'They stayed the same size but changed shape', 'They became sharper for cutting cooked meat'],
         explanation: 'Because cooked food is softer and easier to chew, humans no longer needed massive jaws and large teeth. Over time, jaw muscles shrank and teeth got smaller. This freed up skull space, which some researchers believe helped the brain expand.',
     },
     {
@@ -26,7 +26,7 @@ export const FUN_FACTS = [
         eventId: 'f12',
         question: 'What did ancient Olympic athletes wear during competition?',
         correctAnswer: 'Nothing \u2013 they competed nude',
-        wrongAnswers: ['Leather armor', 'Simple white tunics', 'Bronze helmets only'],
+        wrongAnswers: ['Wool loincloths and sandals', 'Simple white tunics', 'City-colored sashes for identification'],
         explanation: 'Ancient Greek athletes competed completely naked. The word \u201Cgymnasium\u201D comes from the Greek \u201Cgymnos,\u201D meaning \u201Cnaked.\u201D Legend says this tradition started when a runner\u2019s loincloth fell off mid-race and he won anyway, prompting others to follow suit.',
     },
     {
@@ -34,7 +34,7 @@ export const FUN_FACTS = [
         eventId: 'f15',
         question: 'What happened to Alexander the Great\u2019s empire immediately after his death?',
         correctAnswer: 'His generals divided it among themselves',
-        wrongAnswers: ['His son inherited the entire empire', 'It was peacefully handed to Persia', 'The Senate of Macedonia governed it as a republic'],
+        wrongAnswers: ['His son inherited the entire empire', 'It was absorbed into the Roman Republic', 'A council of generals ruled it as a unified state'],
         explanation: 'When Alexander died at 32, he reportedly said his empire should go \u201Cto the strongest.\u201D His generals, called the Diadochi, fought brutal wars for decades and split the empire into rival kingdoms \u2013 the Ptolemaic (Egypt), Seleucid (Persia), and Antigonid (Macedonia).',
     },
     {
@@ -90,7 +90,7 @@ export const FUN_FACTS = [
         eventId: 'f3',
         question: 'How many human species coexisted on Earth at the same time as early Homo sapiens?',
         correctAnswer: 'At least five or six',
-        wrongAnswers: ['Just one (Neanderthals)', 'None \u2013 we were always alone', 'Exactly two'],
+        wrongAnswers: ['Just one (Neanderthals)', 'Three or four at most', 'Exactly two'],
         explanation: 'When Homo sapiens first appeared, Earth was home to several other human species including Neanderthals, Denisovans, Homo erectus, Homo floresiensis (the "Hobbit"), and Homo naledi. We weren\u2019t always the only humans \u2013 for most of our history, we shared the planet with close relatives.',
     },
     {
@@ -98,7 +98,7 @@ export const FUN_FACTS = [
         eventId: 'f6',
         question: 'What surprising health consequence did early farmers experience compared to hunter-gatherers?',
         correctAnswer: 'They became shorter and less healthy',
-        wrongAnswers: ['They immediately grew taller', 'They developed immunity to all diseases', 'Their lifespans doubled'],
+        wrongAnswers: ['They grew taller from a steadier food supply', 'Their bones grew stronger from daily fieldwork', 'They gained more consistent nutrition year-round'],
         explanation: 'Early farmers were actually shorter and had worse nutrition than hunter-gatherers. A grain-heavy diet lacked the variety of wild foods, and living close to animals introduced new diseases. Average height dropped by about 5 inches. It took thousands of years for farming societies to recover.',
     },
     {
@@ -122,7 +122,7 @@ export const FUN_FACTS = [
         eventId: 'f29',
         question: 'What surprising postal service did the Mongol Empire operate?',
         correctAnswer: 'A relay system spanning 50,000+ km with rest stations every 40 km',
-        wrongAnswers: ['Carrier pigeons trained to fly between capitals', 'Ships that circled the empire\u2019s coastline', 'Underground tunnels connecting major cities'],
+        wrongAnswers: ['Carrier pigeons trained to fly between capitals', 'Trained runners on foot carrying sealed scrolls', 'Horse-drawn carts on paved imperial roads'],
         explanation: 'The Yam postal relay system was one of the Mongol Empire\u2019s greatest achievements. Riders on fast horses could relay urgent messages up to 300 km per day across a network of over 1,400 stations. Merchants and diplomats could also rest and get fresh horses. Marco Polo described it as the most efficient system in the world.',
     },
     {
@@ -130,7 +130,7 @@ export const FUN_FACTS = [
         eventId: 'f30',
         question: 'What unusual method did some medieval doctors use to "treat" the Black Death?',
         correctAnswer: 'Sitting between two large fires',
-        wrongAnswers: ['Drinking molten silver', 'Sleeping with live chickens', 'Bathing in vinegar daily for a month'],
+        wrongAnswers: ['Applying leeches dipped in rosewater', 'Wearing pouches of dried herbs around the neck', 'Bathing in vinegar daily for a month'],
         explanation: 'Medieval doctors tried many desperate remedies. Pope Clement VI\u2019s personal physician advised him to sit between two large fires, believing heat would purify the air \u2013 and the Pope survived (possibly because the fires kept fleas away). Other treatments included bloodletting, sniffing flowers, and placing live frogs on the sores.',
     },
     {
@@ -138,7 +138,7 @@ export const FUN_FACTS = [
         eventId: 'f34',
         question: 'What did Leonardo da Vinci write in his notebooks to keep his ideas secret?',
         correctAnswer: 'Mirror writing (backwards script)',
-        wrongAnswers: ['An invented language', 'Invisible ink made from lemon juice', 'Ancient Egyptian hieroglyphs'],
+        wrongAnswers: ['An invented language only he could read', 'Invisible ink made from lemon juice', 'A personal shorthand code based on Latin'],
         explanation: 'Leonardo filled over 7,000 pages of notebooks with mirror writing \u2013 text that reads normally only when held up to a mirror. Some scholars believe he did this for secrecy, while others think it was simply more natural for a left-handed person to write right-to-left to avoid smudging the ink.',
     },
     {
@@ -146,7 +146,7 @@ export const FUN_FACTS = [
         eventId: 'f42',
         question: 'What percentage of American colonists actually supported the Revolution?',
         correctAnswer: 'Roughly one-third',
-        wrongAnswers: ['Over 90%', 'About 75%', 'Less than 10%'],
+        wrongAnswers: ['About three-quarters', 'Over 80%', 'Less than 15%'],
         explanation: 'The Revolution was far from unanimous. Historians estimate roughly a third of colonists were Patriots (supporting independence), a third were Loyalists (supporting Britain), and a third were neutral or indifferent. Many Loyalists fled to Canada after the war \u2013 about 60,000 to 80,000 people.',
     },
     {
@@ -162,7 +162,7 @@ export const FUN_FACTS = [
         eventId: 'f59',
         question: 'How did the Berlin Wall actually come to be opened on November 9, 1989?',
         correctAnswer: 'A spokesperson accidentally announced it at a press conference',
-        wrongAnswers: ['Protesters broke through with sledgehammers', 'The East German president signed an order', 'Western tanks pushed through a checkpoint'],
+        wrongAnswers: ['Protesters overwhelmed the guards with sheer numbers', 'The East German president signed a formal order', 'Gorbachev personally called to have it opened'],
         explanation: 'East German spokesman G\u00FCnter Schabowski was handed a note about relaxed travel rules and asked when they took effect. Unprepared, he shrugged and said "immediately, without delay." The announcement was broadcast live, and thousands of East Berliners rushed to the checkpoints. Overwhelmed guards opened the gates. It was essentially a bureaucratic accident.',
     },
     {
