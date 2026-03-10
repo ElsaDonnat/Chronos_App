@@ -65,41 +65,27 @@ All sub-items completed:
 
 ---
 
-### UX — Semantic zoom (zoom-adaptive rendering)
+### ~~UX — Semantic zoom (zoom-adaptive rendering)~~ ✅ Done (2026-03-10)
 
-**Why:** Current zoom is CSS-only — `transform: scale()` just magnifies the same SVG. At 4× zoom, pins are huge, text is blurry, and clustering doesn't adapt. True semantic zoom re-renders the map at each zoom level.
+Scale-compensated rendering: all SVG attributes (pin radii, stroke widths, hit areas, text sizes) inversely scale with zoom so elements stay constant screen-size. Pin title labels with parchment-stroke halo appear at 2×+ zoom for learned non-cluster pins. Continent labels fade out at 2×+ zoom. Graticule, coastlines, and country borders all maintain consistent visual weight. Dynamic cluster recalculation (grid scales with zoom) was already in place.
 
-**What to do:**
-- **Dynamic cluster recalculation** — `CLUSTER_GRID = 25` is fixed. Recompute clusters based on current zoom level: at 2×, use grid size 12; at 4×, use grid size 6. Pins should spread out as you zoom in.
-- **Pin labels on zoom** — when zoomed >2×, show event title text next to pins for identification without tapping.
-- **Level-of-detail rendering** — at base zoom, show simplified continent shapes. At 2×+, show country borders (per-country paths now ready). At 4×+, show region labels and pin titles.
-- Replace CSS `transform: scale()` with actual SVG viewBox manipulation for crisper rendering at all zoom levels.
-
-**Files:** `src/components/MapView.jsx`
+**Remaining for future**: Full SVG viewBox manipulation (replacing CSS `transform: scale()`) for pixel-perfect rendering at all zoom levels. Higher resolution map data (50m/10m) for zoomed-in coastlines.
 
 ---
 
 ### Visual — Map aesthetics
 
-- **Event connection arcs** — draw faint curved lines between related events on the map. Data already exists in `EVENT_CONNECTIONS`. Togglable via a button or auto-shown when a connected pin is selected.
+- ~~**Event connection arcs**~~ ✅ Done (2026-03-10) — faint curved bezier arcs between related events when a connected pin is selected. Category-colored, solid for learned, dashed for unlearned.
 - ~~**Animated pin entrance**~~ ✅ Done (2026-03-09)
-- **Era coloring mode** — toggle to color pins by era (Prehistory/Ancient/Medieval/Early Modern/Modern) instead of category. Gives a temporal view of geographic spread.
+- ~~**Era coloring mode**~~ ✅ Done (2026-03-10) — Topic/Era toggle in Legend dropdown. Era mode colors pins by historical period (5 eras). Persists to localStorage.
 - **Region labels fade near pins** — the static continent name labels can overlap event pins. Fade them when pins are nearby or when zoomed in.
 - **Higher resolution map data** — switch from 110m to 50m (or 10m for fullscreen) for cleaner coastlines. Test bundle size impact. Could lazy-load the high-res version only for fullscreen.
 
 ---
 
-### Visual — Search on map
+### ~~Visual — Search on map~~ ✅ Done (2026-03-10)
 
-**Why:** As event count grows (currently 126, targeting 200+), finding a specific event on the map becomes hard.
-
-**What to do:**
-- Search bar overlaid on map (fullscreen mode primarily)
-- Fuzzy search by event title, date, or location
-- Matching pin highlighted + map auto-scrolls/zooms to it
-- Search results dropdown for multiple matches
-
-**Files:** `src/components/MapView.jsx`
+Search bar overlay on the map for finding learned events by title, location, or year. Auto-focus input, live results dropdown (max 6 matches), category color dots. `MapSearch` component in `MapView.jsx`.
 
 ---
 
@@ -137,9 +123,9 @@ All sub-items completed:
 ~~6. **UX interaction improvements** ✅~~ — double-tap zoom, swipe-down fullscreen dismiss, hover states, cluster drill-down
 ~~7. **Time slider on map** ✅~~
 ~~8. **Concurrent events view** ✅~~
-9. **Semantic zoom** — zoom-adaptive clustering + viewBox manipulation
-10. **Visual polish** — connection arcs, era coloring, region label fading, higher resolution
-11. **Search on map** — important as event count grows
+~~9. **Semantic zoom** ✅~~ — scale-compensated rendering, pin labels at zoom, continent label fading
+~~10. **Visual polish** ✅~~ — connection arcs, era coloring (region label fading + higher resolution still TODO)
+~~11. **Search on map** ✅~~ — search bar overlay with live results
 12. **Component extraction prep** — ongoing, enforce clean interfaces throughout
 
 ## P5 — Themed collections (remaining)
@@ -195,3 +181,7 @@ Add more events per era, deeper non-Western history coverage, and new lessons be
 - **UX — Interaction improvements** (2026-03-10): Four improvements: (1) Double-tap to zoom — double-tapping background zooms to 2× centered on tap, double-tap again resets. (2) Swipe-down to dismiss fullscreen — pull-down gesture with visual feedback pill and rubber-band physics. (3) Hover states — desktop-only brightness boost on country paths and drop-shadow glow on pins. (4) Cluster drill-down — tapping a cluster auto-zooms to separate pins via zoom-aware clustering (grid size inversely scales with zoom level, debounced at 150ms).
 - **Feature — Time slider on map** (2026-03-10): Piecewise-linear slider (each era gets equal space) with clock toggle button on inline + fullscreen modes. Era-aware time windows (25% for Prehistory, 12–15% for others). Smart era quick-jump buttons snap to median learned event year. Pin opacity transitions (0.3s). Range event support for yearEnd spans. Styled range input with era boundary tick marks and backdrop blur panel.
 - **Feature — Concurrent Events view** (2026-03-10): "Sync" tab on Timeline page with regional swim lanes (4 continent groups, 14 sub-regions), piecewise-linear time slider with era quick-jump buttons showing event counts, smart default position (auto-starts at densest era), opacity-based temporal proximity fade, expandable event cards with category colors/mastery dots, and guided empty state with jump-to-era buttons.
+- **UX — Semantic zoom** (2026-03-10): Scale-compensated rendering — all SVG attributes (pin radii, stroke widths, hit areas, text sizes, graticule, coastlines, borders) inversely scale with zoom for constant screen-size elements. Pin title labels with parchment-stroke halo appear at 2×+ zoom. Continent labels fade out at 2×+. Dynamic cluster recalculation (grid scales with zoom) already in place from earlier work.
+- **Visual — Event connection arcs** (2026-03-10): `ConnectionArcs` component draws quadratic bezier SVG arcs from a selected pin to its EVENT_CONNECTIONS targets. Category-colored, solid for learned events, dashed for unlearned. Rendered between country layer and pin layer. Uses `arcControlPoint()` helper for perpendicular curve offset (30% of distance, capped at 40 SVG units).
+- **Visual — Era coloring mode** (2026-03-10): Topic/Era segmented toggle in Legend dropdown. `ERA_COLORS` constant with 5 period-specific colors. `getEraForYear()` helper maps year to era key. `colorMode` state persisted to localStorage (`chronos-map-color-mode`). Cluster pins use majority era of contained events.
+- **Visual — Map search** (2026-03-10): `MapSearch` component overlaid on map with auto-focus input, live filtered results (title, location, year, max 6), category color dots, and click-to-select event highlighting.

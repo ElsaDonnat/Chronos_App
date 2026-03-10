@@ -1,9 +1,18 @@
 import { useState, useMemo, useRef, useCallback, useEffect } from 'react';
-import { CATEGORY_CONFIG, isDiHEvent, ERA_RANGES } from '../data/events';
+import { CATEGORY_CONFIG, isDiHEvent, ERA_RANGES, EVENT_CONNECTIONS } from '../data/events';
 import { MAP_REGIONS, REGION_CENTERS, projectToSVG, normalizeRegion, EVENT_COUNTRY_MAP, COUNTRY_TO_SUBREGION, REGION_COLORS } from '../data/mapPaths';
 import { Card, CategoryTag, ImportanceTag, MasteryDots, ExpandableText } from './shared';
 import * as feedback from '../services/feedback';
 const CLUSTER_GRID = 25; // SVG units per grid cell
+
+// ─── Era coloring ───
+const ERA_COLORS = {
+    prehistory:  { color: '#8B6F47', label: 'Prehistory' },
+    ancient:     { color: '#C49A3C', label: 'Ancient' },
+    medieval:    { color: '#2E5A88', label: 'Medieval' },
+    earlymodern: { color: '#1A7A6D', label: 'E. Modern' },
+    modern:      { color: '#8B3A3A', label: 'Modern' },
+};
 
 // ─── Time slider helpers ───
 const SLIDER_MAX = 1000;
@@ -80,6 +89,25 @@ function getActiveEraId(sliderValue) {
     return 'modern';
 }
 
+// ─── Era + connection arc helpers ───
+function getEraForYear(year) {
+    if (year == null) return 'modern';
+    for (const seg of ERA_SLIDER_SEGMENTS) {
+        if (year >= seg.start && year <= seg.end) return seg.id;
+    }
+    return year < ERA_SLIDER_SEGMENTS[0].start ? 'prehistory' : 'modern';
+}
+
+function arcControlPoint(x1, y1, x2, y2) {
+    const mx = (x1 + x2) / 2;
+    const my = (y1 + y2) / 2;
+    const dist = Math.hypot(x2 - x1, y2 - y1);
+    const offset = Math.min(dist * 0.3, 40);
+    const dx = x2 - x1, dy = y2 - y1;
+    const len = Math.max(dist, 0.01);
+    return { x: mx + (dy / len) * offset, y: my - (dx / len) * offset };
+}
+
 // Map-specific color tokens (light / dark via CSS vars with fallbacks)
 const MAP_COLORS = {
     ocean: 'var(--color-map-ocean, #D6CFC4)',
@@ -128,7 +156,7 @@ function clusterPins(events, learnedIds, zoom = 1) {
 }
 
 // Graticule lines for Natural Earth I projection (approximated as projected polylines)
-function Graticule() {
+function Graticule({ scale = 1 }) {
     const lines = [];
     const DEG2RAD = Math.PI / 180;
     const S = 143.3071, TX = 400, TY = 250;
@@ -157,15 +185,57 @@ function Graticule() {
         lines.push(<polyline key={`lat${lat}`} points={pts.join(' ')} />);
     }
     return (
-        <g stroke={MAP_COLORS.graticule} strokeWidth="0.5" fill="none" style={{ pointerEvents: 'none' }}>
+        <g stroke={MAP_COLORS.graticule} strokeWidth={0.5 / scale} fill="none" style={{ pointerEvents: 'none' }}>
             {lines}
         </g>
     );
 }
 
-// Category legend
-function Legend({ visible, onToggle, className }) {
+// Connection arcs between related events
+function ConnectionArcs({ selectedEventId, pins, learnedIds, scale, timeOpacities }) {
+    if (!selectedEventId) return null;
+    const connections = EVENT_CONNECTIONS[selectedEventId];
+    if (!connections || connections.length === 0) return null;
+
+    // Find the selected pin's position
+    const srcPin = pins.find(p => !p.cluster && p.event?.id === selectedEventId);
+    if (!srcPin) return null;
+
+    const arcs = [];
+    for (const conn of connections) {
+        const tgtPin = pins.find(p => !p.cluster && p.event?.id === conn.id);
+        if (!tgtPin) continue;
+        // Skip if target is invisible due to time filter
+        if (timeOpacities && (timeOpacities.get(conn.id) ?? 1) <= 0) continue;
+
+        const cp = arcControlPoint(srcPin.x, srcPin.y, tgtPin.x, tgtPin.y);
+        const isLearned = learnedIds.has(conn.id);
+        const catColor = CATEGORY_CONFIG[srcPin.event?.category]?.color || '#8B4157';
+
+        arcs.push(
+            <path
+                key={conn.id}
+                d={`M ${srcPin.x},${srcPin.y} Q ${cp.x},${cp.y} ${tgtPin.x},${tgtPin.y}`}
+                fill="none"
+                stroke={catColor}
+                strokeWidth={1.5 / scale}
+                opacity={isLearned ? 0.45 : 0.2}
+                strokeDasharray={isLearned ? 'none' : `${4 / scale} ${3 / scale}`}
+                strokeLinecap="round"
+                style={{ pointerEvents: 'none', transition: 'opacity 0.3s' }}
+            />
+        );
+    }
+
+    if (arcs.length === 0) return null;
+    return <g className="connection-arcs">{arcs}</g>;
+}
+
+// Map legend with category/era color mode toggle
+function Legend({ visible, onToggle, className, colorMode, onColorModeChange }) {
     const cats = Object.entries(CATEGORY_CONFIG);
+    const eras = Object.entries(ERA_COLORS);
+    const isEra = colorMode === 'era';
     return (
         <div className={className || "absolute top-2 right-2 z-10"}>
             <button
@@ -184,14 +254,39 @@ function Legend({ visible, onToggle, className }) {
             {visible && (
                 <div
                     className="absolute top-8 right-0 rounded-lg py-1.5 px-2 animate-fade-in"
+                    onClick={(e) => e.stopPropagation()}
                     style={{
                         backgroundColor: 'var(--color-card)',
                         border: '1px solid rgba(var(--color-ink-rgb), 0.1)',
                         boxShadow: 'var(--shadow-card)',
-                        minWidth: 110,
+                        minWidth: 120,
                     }}
                 >
-                    {cats.map(([key, cfg]) => (
+                    {/* Color mode toggle */}
+                    <div className="flex rounded-md overflow-hidden mb-1.5"
+                        style={{ border: '1px solid rgba(var(--color-ink-rgb), 0.1)' }}>
+                        {['category', 'era'].map(mode => (
+                            <button key={mode}
+                                onClick={(e) => { e.stopPropagation(); onColorModeChange(mode); }}
+                                className="flex-1 py-0.5 text-[9px] font-semibold uppercase tracking-wider transition-colors duration-150"
+                                style={{
+                                    backgroundColor: colorMode === mode ? 'var(--color-burgundy)' : 'transparent',
+                                    color: colorMode === mode ? 'white' : 'var(--color-ink-muted)',
+                                }}
+                            >
+                                {mode === 'category' ? 'Topic' : 'Era'}
+                            </button>
+                        ))}
+                    </div>
+                    {/* Legend entries */}
+                    {isEra ? eras.map(([key, cfg]) => (
+                        <div key={key} className="flex items-center gap-1.5 py-0.5">
+                            <div className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: cfg.color }} />
+                            <span className="text-[10px] font-medium" style={{ color: 'var(--color-ink-secondary)' }}>
+                                {cfg.label}
+                            </span>
+                        </div>
+                    )) : cats.map(([key, cfg]) => (
                         <div key={key} className="flex items-center gap-1.5 py-0.5">
                             <div className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: cfg.color }} />
                             <span className="text-[10px] font-medium" style={{ color: 'var(--color-ink-secondary)' }}>
@@ -307,7 +402,7 @@ function getCountryFill(countryCode, selectedRegion) {
 }
 
 // The SVG map content — shared between normal and fullscreen modes
-function MapSVG({ pins, learnedIds, selectedRegion, selectedPin, selectedEventId, selectedClusterXY, handlePinClick, handleMapBgClick, handleCountryClick, svgStyle, svgClassName, viewBox, timeOpacities }) {
+function MapSVG({ pins, learnedIds, selectedRegion, selectedPin, selectedEventId, selectedClusterXY, handlePinClick, handleMapBgClick, handleCountryClick, svgStyle, svgClassName, viewBox, timeOpacities, scale = 1, colorMode = 'category' }) {
     const highlightedCountryCode = selectedEventId ? EVENT_COUNTRY_MAP[selectedEventId] : null;
 
     return (
@@ -317,7 +412,7 @@ function MapSVG({ pins, learnedIds, selectedRegion, selectedPin, selectedEventId
             <rect width="800" height="500" fill={MAP_COLORS.ocean} />
 
             {/* Graticule grid */}
-            <Graticule />
+            <Graticule scale={scale} />
 
             {/* Continent coastline outlines — drawn behind country borders for land/water contrast */}
             {Object.entries(MAP_REGIONS).map(([continentName, data]) => (
@@ -326,7 +421,7 @@ function MapSVG({ pins, learnedIds, selectedRegion, selectedPin, selectedEventId
                         <path key={country.code} d={country.d}
                             fill="none"
                             stroke={MAP_COLORS.coastline}
-                            strokeWidth={1.2}
+                            strokeWidth={1.2 / scale}
                             strokeLinejoin="round"
                             opacity={selectedRegion ? 0.3 : 0.7}
                             style={{ transition: 'opacity 0.3s' }}
@@ -351,7 +446,7 @@ function MapSVG({ pins, learnedIds, selectedRegion, selectedPin, selectedEventId
                             <path key={country.code} d={country.d}
                                 fill={fill}
                                 stroke={isCountryHighlighted ? MAP_COLORS.labelActive : MAP_COLORS.border}
-                                strokeWidth={isCountryHighlighted ? 1.5 : 0.5}
+                                strokeWidth={(isCountryHighlighted ? 1.5 : 0.5) / scale}
                                 opacity={isDimmed ? 0.4 : 1}
                                 data-country={country.code}
                                 className={subRegion ? 'map-country-hover' : undefined}
@@ -370,12 +465,17 @@ function MapSVG({ pins, learnedIds, selectedRegion, selectedPin, selectedEventId
                     })}
                     <text x={data.labelPos.x} y={data.labelPos.y}
                         textAnchor="middle" fill={MAP_COLORS.label}
-                        fontSize="11" fontWeight="600" opacity={selectedRegion ? 0.3 : 0.6}
+                        fontSize={11 / scale} fontWeight="600"
+                        opacity={(selectedRegion ? 0.3 : 0.6) * Math.max(0, 1 - (scale - 1))}
                         style={{ pointerEvents: 'none', transition: 'opacity 0.3s' }}>
                         {continentName}
                     </text>
                 </g>
             ))}
+
+            {/* Connection arcs between related events */}
+            <ConnectionArcs selectedEventId={selectedEventId} pins={pins}
+                learnedIds={learnedIds} scale={scale} timeOpacities={timeOpacities} />
 
             {/* Selected pin highlight ring */}
             {selectedPin && (
@@ -383,12 +483,12 @@ function MapSVG({ pins, learnedIds, selectedRegion, selectedPin, selectedEventId
                     {selectedEventId && (() => {
                         const pin = pins.find(p => !p.cluster && p.event?.id === selectedEventId);
                         if (!pin) return null;
-                        return <circle cx={pin.x} cy={pin.y} r={12} fill="none" stroke={CATEGORY_CONFIG[pin.event.category]?.color || '#8B4157'} strokeWidth="2" opacity="0.4" className="map-pin-pulse" />;
+                        return <circle cx={pin.x} cy={pin.y} r={12 / scale} fill="none" stroke={CATEGORY_CONFIG[pin.event.category]?.color || '#8B4157'} strokeWidth={2 / scale} opacity="0.4" className="map-pin-pulse" />;
                     })()}
                     {selectedClusterXY && (() => {
                         const pin = pins.find(p => p.cluster && `${p.x},${p.y}` === selectedClusterXY);
                         if (!pin) return null;
-                        return <circle cx={pin.x} cy={pin.y} r={16} fill="none" stroke={CATEGORY_CONFIG[pin.category]?.color || '#8B4157'} strokeWidth="2" opacity="0.4" className="map-pin-pulse" />;
+                        return <circle cx={pin.x} cy={pin.y} r={16 / scale} fill="none" stroke={CATEGORY_CONFIG[pin.category]?.color || '#8B4157'} strokeWidth={2 / scale} opacity="0.4" className="map-pin-pulse" />;
                     })()}
                 </g>
             )}
@@ -396,11 +496,24 @@ function MapSVG({ pins, learnedIds, selectedRegion, selectedPin, selectedEventId
             {/* Event pins */}
             {pins.map((pin, i) => {
                 const isLearned = pin.cluster ? pin.learned : learnedIds.has(pin.event?.id);
-                const catColor = pin.cluster
-                    ? (CATEGORY_CONFIG[pin.category]?.color || '#8B4157')
-                    : (CATEGORY_CONFIG[pin.event?.category]?.color || '#999');
+                let catColor;
+                if (colorMode === 'era') {
+                    if (pin.cluster) {
+                        // Use the most common era among cluster events
+                        const eraCounts = {};
+                        pin.events.forEach(e => { const era = getEraForYear(e.year); eraCounts[era] = (eraCounts[era] || 0) + 1; });
+                        const topEra = Object.entries(eraCounts).sort((a, b) => b[1] - a[1])[0]?.[0] || 'modern';
+                        catColor = ERA_COLORS[topEra]?.color || '#8B4157';
+                    } else {
+                        catColor = ERA_COLORS[getEraForYear(pin.event?.year)]?.color || '#999';
+                    }
+                } else {
+                    catColor = pin.cluster
+                        ? (CATEGORY_CONFIG[pin.category]?.color || '#8B4157')
+                        : (CATEGORY_CONFIG[pin.event?.category]?.color || '#999');
+                }
                 const pinColor = isLearned ? catColor : MAP_COLORS.pinMuted;
-                const r = pin.cluster ? 10 : 6;
+                const r = (pin.cluster ? 10 : 6) / scale;
 
                 // Time filter opacity
                 let tOp = 1;
@@ -419,21 +532,38 @@ function MapSVG({ pins, learnedIds, selectedRegion, selectedPin, selectedEventId
                         <g onClick={(e) => handlePinClick(pin, e)}
                            className="map-pin-hover"
                            style={{ cursor: 'pointer', animation: `mapPinEntrance 0.4s ease-out ${i * 30}ms both`, transition: 'filter 0.15s' }}>
-                            <circle cx={pin.x} cy={pin.y} r={18} fill="transparent" />
-                            <circle cx={pin.x} cy={pin.y + 1} r={r} fill="rgba(0,0,0,0.12)" />
+                            <circle cx={pin.x} cy={pin.y} r={18 / scale} fill="transparent" />
+                            <circle cx={pin.x} cy={pin.y + 1 / scale} r={r} fill="rgba(0,0,0,0.12)" />
                             <circle cx={pin.x} cy={pin.y} r={r}
                                 fill={pinColor}
-                                stroke={MAP_COLORS.pinStroke} strokeWidth={1.5}
+                                stroke={MAP_COLORS.pinStroke} strokeWidth={1.5 / scale}
                                 opacity={isLearned ? 1 : 0.45}
                             />
                             {pin.cluster && (
-                                <text x={pin.x} y={pin.y + 1} textAnchor="middle" dominantBaseline="middle"
-                                    fill="white" fontSize="9" fontWeight="bold"
+                                <text x={pin.x} y={pin.y + 1 / scale} textAnchor="middle" dominantBaseline="middle"
+                                    fill="white" fontSize={9 / scale} fontWeight="bold"
                                     style={{ pointerEvents: 'none' }}>
                                     {pin.count}
                                 </text>
                             )}
                         </g>
+                        {/* Pin label at zoom >= 2 (non-cluster, learned only) */}
+                        {!pin.cluster && scale >= 2 && isLearned && (
+                            <text
+                                x={pin.x + r + 3 / scale}
+                                y={pin.y + 0.5 / scale}
+                                fontSize={8 / scale}
+                                fontWeight="600"
+                                fill="var(--color-ink)"
+                                stroke="var(--color-parchment)"
+                                strokeWidth={2.5 / scale}
+                                paintOrder="stroke"
+                                dominantBaseline="middle"
+                                style={{ pointerEvents: 'none', fontFamily: 'var(--font-sans, DM Sans, sans-serif)' }}
+                            >
+                                {pin.event.title.length > 24 ? pin.event.title.slice(0, 21) + '\u2026' : pin.event.title}
+                            </text>
+                        )}
                     </g>
                 );
             })}
@@ -545,7 +675,7 @@ function RegionEventList({ events, learnedIds, eventMastery, selectedRegion, onS
                     <div className="flex items-center gap-2">
                         <div className="w-3 h-3 rounded-full flex-shrink-0" style={{ backgroundColor: colors?.vibrant }} />
                         <p className="text-[11px] uppercase tracking-wider font-semibold" style={{ color: 'var(--color-ink-faint)' }}>
-                            {selectedRegion} \u00B7 {regionEvents.length} event{regionEvents.length !== 1 ? 's' : ''}
+                            {selectedRegion} {'\u00B7'} {regionEvents.length} event{regionEvents.length !== 1 ? 's' : ''}
                         </p>
                     </div>
                     <button onClick={onClose}
@@ -587,6 +717,105 @@ function RegionEventList({ events, learnedIds, eventMastery, selectedRegion, onS
     );
 }
 
+
+// Map search overlay
+function MapSearch({ events, learnedIds, onSelectEvent, onClose }) {
+    const [query, setQuery] = useState('');
+    const inputRef = useRef(null);
+
+    useEffect(() => {
+        // Auto-focus the input when search opens
+        const timer = setTimeout(() => inputRef.current?.focus(), 50);
+        return () => clearTimeout(timer);
+    }, []);
+
+    const results = useMemo(() => {
+        const q = query.trim().toLowerCase();
+        if (q.length < 2) return [];
+        return events
+            .filter(e => {
+                if (!learnedIds.has(e.id)) return false;
+                const yearStr = String(Math.abs(e.year));
+                const title = e.title.toLowerCase();
+                const loc = (e.location?.region || '').toLowerCase();
+                return title.includes(q) || loc.includes(q) || yearStr.includes(q);
+            })
+            .slice(0, 6);
+    }, [query, events, learnedIds]);
+
+    return (
+        <div className="animate-fade-in" style={{ pointerEvents: 'auto' }}>
+            <div className="flex items-center gap-1.5 px-2 py-1 rounded-full"
+                style={{
+                    backgroundColor: 'rgba(var(--color-parchment-rgb, 250, 246, 240), 0.92)',
+                    backdropFilter: 'blur(6px)',
+                    border: '1px solid rgba(var(--color-ink-rgb), 0.1)',
+                    boxShadow: 'var(--shadow-card)',
+                }}>
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none"
+                    stroke="var(--color-ink-muted)" strokeWidth="2.5" strokeLinecap="round">
+                    <circle cx="11" cy="11" r="8" /><path d="m21 21-4.35-4.35" />
+                </svg>
+                <input
+                    ref={inputRef}
+                    type="text"
+                    value={query}
+                    onChange={e => setQuery(e.target.value)}
+                    placeholder="Search events\u2026"
+                    className="flex-1 bg-transparent text-xs outline-none min-w-0"
+                    style={{ color: 'var(--color-ink)', fontFamily: 'var(--font-sans)' }}
+                />
+                <button onClick={onClose}
+                    className="w-5 h-5 flex items-center justify-center rounded-full flex-shrink-0"
+                    style={{ color: 'var(--color-ink-muted)' }}>
+                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round">
+                        <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+                    </svg>
+                </button>
+            </div>
+            {results.length > 0 && (
+                <div className="mt-1 rounded-lg overflow-hidden"
+                    style={{
+                        backgroundColor: 'rgba(var(--color-parchment-rgb, 250, 246, 240), 0.95)',
+                        backdropFilter: 'blur(6px)',
+                        border: '1px solid rgba(var(--color-ink-rgb), 0.08)',
+                        boxShadow: 'var(--shadow-card)',
+                        maxHeight: '200px',
+                        overflowY: 'auto',
+                    }}>
+                    {results.map(evt => (
+                        <div key={evt.id}
+                            className="flex items-center gap-2 px-2.5 py-1.5 cursor-pointer active:opacity-70"
+                            style={{ borderBottom: '1px solid rgba(var(--color-ink-rgb), 0.04)' }}
+                            onClick={() => { onSelectEvent(evt); onClose(); }}>
+                            <div className="w-2 h-2 rounded-full flex-shrink-0"
+                                style={{ backgroundColor: CATEGORY_CONFIG[evt.category]?.color || '#999' }} />
+                            <div className="min-w-0 flex-1">
+                                <p className="text-[11px] font-medium truncate" style={{ color: 'var(--color-ink)' }}>
+                                    {evt.title}
+                                </p>
+                                <p className="text-[9px]" style={{ color: 'var(--color-ink-muted)' }}>
+                                    {evt.date} {'\u00B7'} {evt.location?.region}
+                                </p>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            )}
+            {query.length >= 2 && results.length === 0 && (
+                <div className="mt-1 px-2.5 py-2 rounded-lg text-[10px]"
+                    style={{
+                        backgroundColor: 'rgba(var(--color-parchment-rgb, 250, 246, 240), 0.95)',
+                        color: 'var(--color-ink-muted)',
+                        backdropFilter: 'blur(6px)',
+                        border: '1px solid rgba(var(--color-ink-rgb), 0.08)',
+                    }}>
+                    No matching events found
+                </div>
+            )}
+        </div>
+    );
+}
 
 // Time slider component
 function TimeSlider({ value, onChange, onClose, learnedEventYears }) {
@@ -672,10 +901,12 @@ export default function MapView({ events, learnedIds, eventMastery, selectedRegi
     const [selectedPin, setSelectedPin] = useState(null);
     const [clusterExpanded, setClusterExpanded] = useState(false);
     const [legendVisible, setLegendVisible] = useState(false);
+    const [colorMode, setColorMode] = useState(() => localStorage.getItem('chronos-map-color-mode') || 'category');
     const [isFullscreen, setIsFullscreen] = useState(false);
     const [pullDown, setPullDown] = useState(0);
     const [timeActive, setTimeActive] = useState(false);
     const [timeValue, setTimeValue] = useState(500); // Start at medieval midpoint
+    const [searchActive, setSearchActive] = useState(false);
     const fullscreenScrollRef = useRef(null);
     const hasScrolledRef = useRef(false);
     const pullStartRef = useRef(null);
@@ -687,6 +918,29 @@ export default function MapView({ events, learnedIds, eventMastery, selectedRegi
         const timer = setTimeout(() => setClusterScale(scale), 150);
         return () => clearTimeout(timer);
     }, [scale]);
+
+    const handleColorModeChange = useCallback((mode) => {
+        setColorMode(mode);
+        localStorage.setItem('chronos-map-color-mode', mode);
+    }, []);
+
+    const handleSearchSelect = useCallback((evt) => {
+        setSelectedPin({ event: evt });
+        setClusterExpanded(false);
+        setSearchActive(false);
+        // In fullscreen: auto-scroll to the pin's projected position
+        if (isFullscreen && fullscreenScrollRef.current) {
+            const pos = projectToSVG(evt.location.lat, evt.location.lng, normalizeRegion(evt.location.region));
+            const container = fullscreenScrollRef.current;
+            const mapWidth = container.scrollWidth;
+            const mapHeight = container.scrollHeight;
+            const fracX = pos.x / 800;
+            const fracY = pos.y / 500;
+            const targetLeft = Math.max(0, mapWidth * fracX - container.clientWidth / 2);
+            const targetTop = Math.max(0, mapHeight * fracY - container.clientHeight / 2);
+            container.scrollTo({ left: targetLeft, top: targetTop, behavior: 'smooth' });
+        }
+    }, [isFullscreen]);
 
     // Show all learned events on the map (pins), but filter by region only for the event list
     const allLearnedEvents = useMemo(() =>
@@ -842,7 +1096,7 @@ export default function MapView({ events, learnedIds, eventMastery, selectedRegi
         pins, learnedIds, selectedRegion,
         selectedPin, selectedEventId, selectedClusterXY,
         handlePinClick, handleMapBgClick, handleCountryClick,
-        timeOpacities,
+        timeOpacities, scale, colorMode,
     };
 
     const learnedEventYears = useMemo(() =>
@@ -942,6 +1196,22 @@ export default function MapView({ events, learnedIds, eventMastery, selectedRegi
                                 </button>
                             )}
                             <button
+                                onClick={() => { setSearchActive(v => !v); feedback.tap(); }}
+                                className="w-7 h-7 rounded-full flex items-center justify-center"
+                                style={{
+                                    backgroundColor: searchActive
+                                        ? 'var(--color-burgundy)'
+                                        : 'rgba(var(--color-parchment-rgb, 250, 246, 240), 0.85)',
+                                    color: searchActive ? 'white' : 'var(--color-ink-muted)',
+                                    backdropFilter: 'blur(4px)',
+                                }}
+                                title="Search events"
+                            >
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+                                    <circle cx="11" cy="11" r="8" /><path d="m21 21-4.35-4.35" />
+                                </svg>
+                            </button>
+                            <button
                                 onClick={() => { setTimeActive(v => !v); feedback.tap(); }}
                                 className="w-7 h-7 rounded-full flex items-center justify-center"
                                 style={{
@@ -957,9 +1227,22 @@ export default function MapView({ events, learnedIds, eventMastery, selectedRegi
                                     <circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" />
                                 </svg>
                             </button>
-                            <Legend visible={legendVisible} onToggle={() => setLegendVisible(v => !v)} className="relative z-10" />
+                            <Legend visible={legendVisible} onToggle={() => setLegendVisible(v => !v)} className="relative z-10"
+                                colorMode={colorMode} onColorModeChange={handleColorModeChange} />
                         </div>
                     </div>
+
+                    {/* Search bar (fullscreen) */}
+                    {searchActive && (
+                        <div className="sticky top-12 left-0 right-0 z-20 px-3"
+                            style={{ pointerEvents: 'none' }}>
+                            <div style={{ maxWidth: '280px' }}>
+                                <MapSearch events={events} learnedIds={learnedIds}
+                                    onSelectEvent={handleSearchSelect}
+                                    onClose={() => setSearchActive(false)} />
+                            </div>
+                        </div>
+                    )}
 
                     <div
                         ref={mapContainerRef}
@@ -1000,23 +1283,49 @@ export default function MapView({ events, learnedIds, eventMastery, selectedRegi
     // ─── Normal (inline) mode ───
     return (
         <div className="relative">
+            <Legend visible={legendVisible} onToggle={() => setLegendVisible(v => !v)}
+                colorMode={colorMode} onColorModeChange={handleColorModeChange} />
             <div className="relative rounded-xl overflow-hidden" style={{ boxShadow: 'var(--shadow-card)', backgroundColor: 'var(--color-map-ocean, #D6CFC4)' }}>
-                <Legend visible={legendVisible} onToggle={() => setLegendVisible(v => !v)} />
 
-                {isZoomed && (
+                {/* Top-left controls: zoom reset + search */}
+                <div className="absolute top-2 left-2 z-10 flex items-center gap-1.5">
+                    {isZoomed && (
+                        <button
+                            onClick={resetZoom}
+                            className="w-6 h-6 rounded-full flex items-center justify-center animate-fade-in"
+                            style={{
+                                backgroundColor: 'rgba(var(--color-ink-rgb), 0.06)',
+                                color: 'var(--color-ink-muted)',
+                            }}
+                            title="Reset zoom"
+                        >
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+                                <path d="M15 3h6v6" /><path d="M9 21H3v-6" /><path d="M21 3l-7 7" /><path d="M3 21l7-7" />
+                            </svg>
+                        </button>
+                    )}
                     <button
-                        onClick={resetZoom}
-                        className="absolute top-2 left-2 z-10 w-6 h-6 rounded-full flex items-center justify-center animate-fade-in"
+                        onClick={() => { setSearchActive(v => !v); feedback.tap(); }}
+                        className="w-6 h-6 rounded-full flex items-center justify-center"
                         style={{
-                            backgroundColor: 'rgba(var(--color-ink-rgb), 0.06)',
-                            color: 'var(--color-ink-muted)',
+                            backgroundColor: searchActive ? 'var(--color-burgundy)' : 'rgba(var(--color-ink-rgb), 0.06)',
+                            color: searchActive ? 'white' : 'var(--color-ink-muted)',
                         }}
-                        title="Reset zoom"
+                        title="Search events"
                     >
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
-                            <path d="M15 3h6v6" /><path d="M9 21H3v-6" /><path d="M21 3l-7 7" /><path d="M3 21l7-7" />
+                        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+                            <circle cx="11" cy="11" r="8" /><path d="m21 21-4.35-4.35" />
                         </svg>
                     </button>
+                </div>
+
+                {/* Search bar (inline mode) */}
+                {searchActive && (
+                    <div className="absolute top-10 left-2 z-10" style={{ maxWidth: '220px' }}>
+                        <MapSearch events={events} learnedIds={learnedIds}
+                            onSelectEvent={handleSearchSelect}
+                            onClose={() => setSearchActive(false)} />
+                    </div>
                 )}
 
                 {/* Time slider toggle */}

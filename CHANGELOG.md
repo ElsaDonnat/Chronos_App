@@ -5,6 +5,25 @@ Format follows [Keep a Changelog](https://keepachangelog.com/) and [Semantic Ver
 
 Use the version entries from the last playstore push to the most recent version for Play Store "What's New" text.
 
+## [1.9.10] - 2026-03-10
+
+### Added
+- **Event connection arcs** — when selecting a pin that has related events (via `EVENT_CONNECTIONS`), faint curved SVG bezier arcs are drawn between the selected pin and its connections. Category-colored, with solid lines for learned events and dashed lines for unlearned. Auto-shown on pin selection, no toggle needed.
+- **Era coloring mode** — new Topic/Era toggle in the map Legend dropdown. "Era" mode colors all pins by historical period (Prehistory, Ancient, Medieval, Early Modern, Modern) instead of category, giving a temporal-geographic perspective. Mode persists to localStorage.
+- **Map search** — search bar overlay on the map for finding learned events by title, location, or year. Auto-focus, live results dropdown (max 6), category color dots.
+
+### Fixed
+- **Unicode middle dot bug** — region event list header showed literal `\u00B7` text instead of the `·` character.
+
+## [1.9.9] - 2026-03-10
+
+### Added
+- **Semantic zoom on map** — zoom-adaptive rendering so pins, borders, and labels stay constant screen-size at any zoom level instead of getting magnified. Features:
+  - **Scale-compensated rendering** — all SVG attributes (pin radii, hit areas, stroke widths, text sizes) are divided by the current zoom level, so elements maintain consistent visual weight from 1× to 4× zoom
+  - **Pin title labels at 2×+ zoom** — learned event titles appear next to pins when zoomed in, with a parchment-colored stroke halo (`paintOrder: stroke`) for readability on any map background
+  - **Continent label fade** — static continent name labels smoothly fade out between 1×–2× zoom to avoid overlapping with the more useful pin labels
+  - **Consistent map chrome** — graticule lines, coastline outlines, and country borders all maintain their visual weight at all zoom levels
+
 ## [1.9.8] - 2026-03-10
 
 ### Added
