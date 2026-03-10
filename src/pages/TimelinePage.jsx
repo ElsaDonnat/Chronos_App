@@ -106,6 +106,95 @@ export default function TimelinePage() {
         return colors[eraId] || 'transparent';
     };
 
+    const filterBar = (
+        <div className="flex items-center gap-2 overflow-x-auto no-scrollbar">
+            <FilterDropdown
+                value={selectedImportance}
+                onChange={updateImportance}
+                options={[
+                    { value: 'all', label: 'All' },
+                    ...IMPORTANCE_ORDER.map(key => ({
+                        value: key, label: IMPORTANCE_CONFIG[key].label, dotColor: IMPORTANCE_CONFIG[key].color,
+                    })),
+                ]}
+            />
+            <FilterDropdown
+                value={selectedCategory}
+                onChange={updateCategory}
+                options={[
+                    { value: 'all', label: 'All Types' },
+                    ...Object.entries(CATEGORY_CONFIG).map(([key, config]) => ({
+                        value: key, label: config.label, dotColor: config.color,
+                    })),
+                    ...(acquiredDiHIds.size > 0 ? [{ value: 'daily', label: 'Day in History', dotColor: '#E6A817' }] : []),
+                ]}
+            />
+            <FilterDropdown
+                value={selectedRegion || 'all'}
+                onChange={updateRegion}
+                options={[
+                    { value: 'all', label: 'Loca' },
+                    ...regionsWithEvents.map(r => ({ value: r, label: r })),
+                ]}
+            />
+            <button
+                onClick={toggleHideUnknown}
+                className="flex items-center gap-1 px-2.5 py-1.5 rounded-full text-[11px] font-semibold whitespace-nowrap transition-all duration-200 cursor-pointer flex-shrink-0"
+                style={{
+                    backgroundColor: hideUnknown ? 'var(--color-burgundy)' : 'rgba(var(--color-ink-rgb), 0.04)',
+                    color: hideUnknown ? 'white' : 'var(--color-ink-muted)',
+                    border: hideUnknown ? 'none' : '1px solid rgba(var(--color-ink-rgb), 0.08)',
+                }}
+                title={hideUnknown ? 'Showing only discovered' : 'Show all events'}
+            >
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                    {hideUnknown ? (
+                        <>
+                            <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94" />
+                            <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19" />
+                            <line x1="1" y1="1" x2="23" y2="23" />
+                        </>
+                    ) : (
+                        <>
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                            <circle cx="12" cy="12" r="3" />
+                        </>
+                    )}
+                </svg>
+                <span className="hidden min-[360px]:inline">{hideUnknown ? 'Hidden' : 'All'}</span>
+            </button>
+        </div>
+    );
+
+    // ─── Map view: compact layout, map takes full available height ───
+    if (viewMode === 'map') {
+        return (
+            <div className="py-2 flex flex-col" style={{ minHeight: 'calc(100vh - 120px)' }}>
+                {/* Compact tab bar only */}
+                <div className="mb-2 flex-shrink-0">
+                    <TabSelector
+                        tabs={[{ id: 'list', label: 'Timeline' }, { id: 'map', label: 'Map' }, { id: 'sync', label: 'Sync' }]}
+                        activeTab={viewMode}
+                        onChange={updateViewMode}
+                    />
+                </div>
+
+                {/* Map fills remaining space */}
+                <div className="flex-1 min-h-0">
+                    <MapView
+                        events={filteredEvents}
+                        learnedIds={learnedIds}
+                        hideUnknown={hideUnknown}
+                        eventMastery={state.eventMastery}
+                        selectedRegion={selectedRegion}
+                        onRegionSelect={updateRegion}
+                        filterBar={filterBar}
+                    />
+                </div>
+            </div>
+        );
+    }
+
     return (
         <div className="py-6">
             <div className="text-center mb-6">
@@ -139,74 +228,11 @@ export default function TimelinePage() {
             </div>
 
             {/* Compact filter row — scrollable on narrow screens */}
-            <div className="flex items-center gap-2 mb-6 overflow-x-auto no-scrollbar">
-                <FilterDropdown
-                    value={selectedImportance}
-                    onChange={updateImportance}
-                    options={[
-                        { value: 'all', label: 'All' },
-                        ...IMPORTANCE_ORDER.map(key => ({
-                            value: key, label: IMPORTANCE_CONFIG[key].label, dotColor: IMPORTANCE_CONFIG[key].color,
-                        })),
-                    ]}
-                />
-                <FilterDropdown
-                    value={selectedCategory}
-                    onChange={updateCategory}
-                    options={[
-                        { value: 'all', label: 'All Types' },
-                        ...Object.entries(CATEGORY_CONFIG).map(([key, config]) => ({
-                            value: key, label: config.label, dotColor: config.color,
-                        })),
-                        ...(acquiredDiHIds.size > 0 ? [{ value: 'daily', label: 'Day in History', dotColor: '#E6A817' }] : []),
-                    ]}
-                />
-                <FilterDropdown
-                    value={selectedRegion || 'all'}
-                    onChange={updateRegion}
-                    options={[
-                        { value: 'all', label: 'Loca' },
-                        ...regionsWithEvents.map(r => ({ value: r, label: r })),
-                    ]}
-                />
-                <button
-                    onClick={toggleHideUnknown}
-                    className="flex items-center gap-1 px-2.5 py-1.5 rounded-full text-[11px] font-semibold whitespace-nowrap transition-all duration-200 cursor-pointer flex-shrink-0"
-                    style={{
-                        backgroundColor: hideUnknown ? 'var(--color-burgundy)' : 'rgba(var(--color-ink-rgb), 0.04)',
-                        color: hideUnknown ? 'white' : 'var(--color-ink-muted)',
-                        border: hideUnknown ? 'none' : '1px solid rgba(var(--color-ink-rgb), 0.08)',
-                    }}
-                    title={hideUnknown ? 'Showing only discovered' : 'Show all events'}
-                >
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                        {hideUnknown ? (
-                            <>
-                                <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94" />
-                                <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19" />
-                                <line x1="1" y1="1" x2="23" y2="23" />
-                            </>
-                        ) : (
-                            <>
-                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-                                <circle cx="12" cy="12" r="3" />
-                            </>
-                        )}
-                    </svg>
-                    <span className="hidden min-[360px]:inline">{hideUnknown ? 'Hidden' : 'All'}</span>
-                </button>
+            <div className="mb-6">
+                {filterBar}
             </div>
 
-            {viewMode === 'map' ? (
-                <MapView
-                    events={filteredEvents}
-                    learnedIds={learnedIds}
-                    hideUnknown={hideUnknown}
-                    eventMastery={state.eventMastery}
-                    selectedRegion={selectedRegion}
-                    onRegionSelect={updateRegion}
-                />
-            ) : viewMode === 'sync' ? (
+            {viewMode === 'sync' ? (
                 <ConcurrentView
                     events={sortedEvents}
                     learnedIds={learnedIds}

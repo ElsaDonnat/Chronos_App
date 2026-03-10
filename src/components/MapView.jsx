@@ -306,7 +306,7 @@ function usePanZoom() {
         ? `translate(${panOffset.x}%, ${panOffset.y}%) scale(${scale})`
         : 'none';
 
-    return { mapContainerRef, cssTransform, isZoomed, scale, panOffset, onTouchStart, onTouchMove, onTouchEnd, onWheel, resetZoom, zoomToPoint, lastTapRef };
+    return { mapContainerRef, cssTransform, isZoomed, scale, setScale, panOffset, setPanOffset, onTouchStart, onTouchMove, onTouchEnd, onWheel, resetZoom, zoomToPoint, lastTapRef };
 }
 
 // Get fill color for a country based on its sub-region and selection state
@@ -960,6 +960,7 @@ export default function MapView({
     events, learnedIds, eventMastery, selectedRegion, onRegionSelect,
     categoryConfig = DEFAULT_CATEGORY_CONFIG,
     eventConnections = DEFAULT_EVENT_CONNECTIONS,
+    filterBar,
 }) {
     const [selectedPin, setSelectedPin] = useState(null);
     const [clusterExpanded, setClusterExpanded] = useState(false);
@@ -974,7 +975,7 @@ export default function MapView({
     const fullscreenScrollRef = useRef(null);
     const hasScrolledRef = useRef(false);
     const pullStartRef = useRef(null);
-    const { mapContainerRef, cssTransform, isZoomed, scale, panOffset, onTouchStart, onTouchMove, onTouchEnd, onWheel, resetZoom, zoomToPoint, lastTapRef } = usePanZoom();
+    const { mapContainerRef, cssTransform, isZoomed, scale, setScale, panOffset, onTouchStart, onTouchMove, onTouchEnd, onWheel, resetZoom, zoomToPoint, lastTapRef } = usePanZoom();
 
     // Debounced scale for zoom-aware clustering (avoids recalc during pinch gesture)
     const [clusterScale, setClusterScale] = useState(1);
@@ -1341,6 +1342,52 @@ export default function MapView({
                     </div>
                 </div>
 
+                {/* Zoom controls (fullscreen) */}
+                <div className="absolute z-20 flex flex-col gap-1.5"
+                     style={{ bottom: timeActive ? 116 : 24, right: 12 }}>
+                    <button
+                        onClick={() => {
+                            const el = mapContainerRef.current;
+                            if (el) {
+                                const rect = el.getBoundingClientRect();
+                                zoomToPoint(rect.left + rect.width / 2, rect.top + rect.height / 2, Math.min(scale + 0.5, 4));
+                            }
+                        }}
+                        className="w-9 h-9 rounded-full flex items-center justify-center"
+                        style={{
+                            backgroundColor: 'rgba(var(--color-parchment-rgb, 250, 246, 240), 0.9)',
+                            color: 'var(--color-ink-muted)',
+                            backdropFilter: 'blur(4px)',
+                            boxShadow: '0 1px 4px rgba(0,0,0,0.1)',
+                        }}
+                        title="Zoom in"
+                    >
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+                            <line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" />
+                        </svg>
+                    </button>
+                    <button
+                        onClick={() => {
+                            const next = Math.max(scale - 0.5, 1);
+                            if (next === 1) resetZoom();
+                            else setScale(next);
+                        }}
+                        className="w-9 h-9 rounded-full flex items-center justify-center"
+                        style={{
+                            backgroundColor: 'rgba(var(--color-parchment-rgb, 250, 246, 240), 0.9)',
+                            color: 'var(--color-ink-muted)',
+                            backdropFilter: 'blur(4px)',
+                            boxShadow: '0 1px 4px rgba(0,0,0,0.1)',
+                            opacity: scale <= 1 ? 0.4 : 1,
+                        }}
+                        title="Zoom out"
+                    >
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+                            <line x1="5" y1="12" x2="19" y2="12" />
+                        </svg>
+                    </button>
+                </div>
+
                 {/* Mini-map overview */}
                 {!selectedPin && (
                     <div className="absolute z-20 animate-fade-in"
@@ -1367,47 +1414,62 @@ export default function MapView({
     }
 
     // ─── Normal (inline) mode ───
+    // Cropped viewBox: centered on Europe/Middle East/Africa area for a zoomed-in default
+    const inlineViewBox = "120 40 560 420";
+
     return (
-        <div className="relative">
-            <Legend visible={legendVisible} onToggle={() => setLegendVisible(v => !v)}
-                colorMode={colorMode} onColorModeChange={handleColorModeChange} categoryConfig={categoryConfig} />
-            <div className="relative rounded-xl overflow-hidden" style={{ boxShadow: 'var(--shadow-card)', backgroundColor: 'var(--color-map-ocean, #D6CFC4)' }}>
+        <div className="relative flex flex-col h-full">
+            {/* Filter bar overlay at top of map */}
+            {filterBar && (
+                <div className="flex-shrink-0 px-1 pb-2">
+                    {filterBar}
+                </div>
+            )}
+
+            <div className="relative rounded-xl overflow-hidden flex-1 min-h-0"
+                style={{ boxShadow: 'var(--shadow-card)', backgroundColor: 'var(--color-map-ocean, #D6CFC4)' }}>
 
                 {/* Top-left controls: zoom reset + search */}
                 <div className="absolute top-2 left-2 z-10 flex items-center gap-1.5">
                     {isZoomed && (
                         <button
                             onClick={resetZoom}
-                            className="w-6 h-6 rounded-full flex items-center justify-center animate-fade-in"
+                            className="w-7 h-7 rounded-full flex items-center justify-center animate-fade-in"
                             style={{
-                                backgroundColor: 'rgba(var(--color-ink-rgb), 0.06)',
+                                backgroundColor: 'rgba(var(--color-parchment-rgb, 250, 246, 240), 0.85)',
                                 color: 'var(--color-ink-muted)',
+                                backdropFilter: 'blur(4px)',
                             }}
                             title="Reset zoom"
                         >
-                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
                                 <path d="M15 3h6v6" /><path d="M9 21H3v-6" /><path d="M21 3l-7 7" /><path d="M3 21l7-7" />
                             </svg>
                         </button>
                     )}
                     <button
                         onClick={() => { setSearchActive(v => !v); feedback.tap(); }}
-                        className="w-6 h-6 rounded-full flex items-center justify-center"
+                        className="w-7 h-7 rounded-full flex items-center justify-center"
                         style={{
-                            backgroundColor: searchActive ? 'var(--color-burgundy)' : 'rgba(var(--color-ink-rgb), 0.06)',
+                            backgroundColor: searchActive ? 'var(--color-burgundy)' : 'rgba(var(--color-parchment-rgb, 250, 246, 240), 0.85)',
                             color: searchActive ? 'white' : 'var(--color-ink-muted)',
+                            backdropFilter: 'blur(4px)',
                         }}
                         title="Search events"
                     >
-                        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
                             <circle cx="11" cy="11" r="8" /><path d="m21 21-4.35-4.35" />
                         </svg>
                     </button>
                 </div>
 
+                {/* Top-right: legend + info */}
+                <Legend visible={legendVisible} onToggle={() => setLegendVisible(v => !v)}
+                    colorMode={colorMode} onColorModeChange={handleColorModeChange} categoryConfig={categoryConfig} />
+
                 {/* Search bar (inline mode) */}
                 {searchActive && (
-                    <div className="absolute top-10 left-2 z-10" style={{ maxWidth: '220px' }}>
+                    <div className="absolute top-11 left-2 z-10" style={{ maxWidth: '220px' }}>
                         <MapSearch events={events} learnedIds={learnedIds}
                             onSelectEvent={handleSearchSelect}
                             onClose={() => setSearchActive(false)}
@@ -1415,56 +1477,100 @@ export default function MapView({
                     </div>
                 )}
 
-                {/* Time slider toggle */}
+                {/* Bottom-left: time slider toggle */}
                 <button
                     onClick={() => { setTimeActive(v => !v); feedback.tap(); }}
-                    className="absolute bottom-2 left-2 z-10 w-7 h-7 rounded-full flex items-center justify-center"
+                    className="absolute bottom-2 left-2 z-10 w-8 h-8 rounded-full flex items-center justify-center"
                     style={{
-                        backgroundColor: timeActive ? 'var(--color-burgundy)' : 'rgba(var(--color-ink-rgb), 0.06)',
+                        backgroundColor: timeActive ? 'var(--color-burgundy)' : 'rgba(var(--color-parchment-rgb, 250, 246, 240), 0.85)',
                         color: timeActive ? 'white' : 'var(--color-ink-muted)',
+                        backdropFilter: 'blur(4px)',
                     }}
                     title="Time slider"
                 >
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
                         <circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" />
                     </svg>
                 </button>
 
-                <button
-                    onClick={() => { setIsFullscreen(true); resetZoom(); }}
-                    className="absolute bottom-2 right-2 z-10 w-7 h-7 rounded-full flex items-center justify-center"
-                    style={{
-                        backgroundColor: 'rgba(var(--color-ink-rgb), 0.06)',
-                        color: 'var(--color-ink-muted)',
-                    }}
-                    title="Full screen"
-                >
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
-                        <path d="M15 3h6v6" /><path d="M9 21H3v-6" /><path d="M21 3l-7 7" /><path d="M3 21l7-7" />
-                    </svg>
-                </button>
-
-                <div style={{ overflowX: 'auto', overflowY: 'hidden', WebkitOverflowScrolling: 'touch' }}>
-                    <div
-                        ref={mapContainerRef}
-                        onTouchStart={onTouchStart}
-                        onTouchMove={onTouchMove}
-                        onTouchEnd={onTouchEnd}
-                        onWheel={onWheel}
-                        style={{
-                            width: '200%',
-                            overflow: 'hidden',
-                            transform: cssTransform,
-                            transformOrigin: 'center center',
-                            transition: isZoomed ? 'none' : 'transform 0.3s ease-out',
-                            touchAction: isZoomed ? 'none' : 'pan-x pan-y',
+                {/* Bottom-right: zoom controls + fullscreen */}
+                <div className="absolute bottom-2 right-2 z-10 flex flex-col items-center gap-1.5">
+                    <button
+                        onClick={() => {
+                            const el = mapContainerRef.current;
+                            if (el) {
+                                const rect = el.getBoundingClientRect();
+                                zoomToPoint(rect.left + rect.width / 2, rect.top + rect.height / 2, Math.min(scale + 0.5, 4));
+                            }
                         }}
+                        className="w-8 h-8 rounded-full flex items-center justify-center"
+                        style={{
+                            backgroundColor: 'rgba(var(--color-parchment-rgb, 250, 246, 240), 0.85)',
+                            color: 'var(--color-ink-muted)',
+                            backdropFilter: 'blur(4px)',
+                        }}
+                        title="Zoom in"
                     >
-                        <MapSVG {...sharedSvgProps}
-                            viewBox="0 0 800 500"
-                            svgClassName="w-full"
-                            svgStyle={{ display: 'block' }} />
-                    </div>
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+                            <line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" />
+                        </svg>
+                    </button>
+                    <button
+                        onClick={() => {
+                            const next = Math.max(scale - 0.5, 1);
+                            if (next === 1) resetZoom();
+                            else setScale(next);
+                        }}
+                        className="w-8 h-8 rounded-full flex items-center justify-center"
+                        style={{
+                            backgroundColor: 'rgba(var(--color-parchment-rgb, 250, 246, 240), 0.85)',
+                            color: 'var(--color-ink-muted)',
+                            backdropFilter: 'blur(4px)',
+                            opacity: scale <= 1 ? 0.4 : 1,
+                        }}
+                        title="Zoom out"
+                    >
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+                            <line x1="5" y1="12" x2="19" y2="12" />
+                        </svg>
+                    </button>
+                    <button
+                        onClick={() => { setIsFullscreen(true); resetZoom(); feedback.tap(); }}
+                        className="w-8 h-8 rounded-full flex items-center justify-center"
+                        style={{
+                            backgroundColor: 'rgba(var(--color-parchment-rgb, 250, 246, 240), 0.85)',
+                            color: 'var(--color-ink-muted)',
+                            backdropFilter: 'blur(4px)',
+                        }}
+                        title="Full screen"
+                    >
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+                            <path d="M15 3h6v6" /><path d="M9 21H3v-6" /><path d="M21 3l-7 7" /><path d="M3 21l7-7" />
+                        </svg>
+                    </button>
+                </div>
+
+                {/* Map content */}
+                <div
+                    ref={mapContainerRef}
+                    onTouchStart={onTouchStart}
+                    onTouchMove={onTouchMove}
+                    onTouchEnd={onTouchEnd}
+                    onWheel={onWheel}
+                    style={{
+                        width: '100%',
+                        height: '100%',
+                        overflow: 'hidden',
+                        transform: cssTransform,
+                        transformOrigin: 'center center',
+                        transition: isZoomed ? 'none' : 'transform 0.3s ease-out',
+                        touchAction: isZoomed ? 'none' : 'none',
+                    }}
+                >
+                    <MapSVG {...sharedSvgProps}
+                        viewBox={inlineViewBox}
+                        svgClassName="w-full h-full"
+                        svgStyle={{ display: 'block' }} />
                 </div>
 
                 {/* Time slider panel (inline mode) */}
@@ -1474,9 +1580,9 @@ export default function MapView({
             {popupContent}
 
             {allLearnedEvents.length === 0 && !selectedRegion && (
-                <div className="text-center py-8">
-                    <p className="text-sm" style={{ color: 'var(--color-ink-muted)' }}>
-                        No events match the current filters.
+                <div className="text-center py-4">
+                    <p className="text-xs" style={{ color: 'var(--color-ink-muted)' }}>
+                        Complete lessons to discover events on the map
                     </p>
                 </div>
             )}
