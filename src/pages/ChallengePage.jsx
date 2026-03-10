@@ -1080,6 +1080,18 @@ export default function ChallengePage({ onSessionChange, registerBackHandler }) 
                     </div>
                 </div>
 
+                {/* Section heading */}
+                <h3 style={{
+                    fontFamily: 'var(--font-serif)',
+                    fontSize: '0.95rem',
+                    fontWeight: 700,
+                    color: 'var(--color-ink)',
+                    marginBottom: 10,
+                    paddingLeft: 2,
+                }}>
+                    Choose your game mode
+                </h3>
+
                 {/* Mode cards — compact */}
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 10 }}>
                     {/* Solo card */}
@@ -1215,28 +1227,28 @@ export default function ChallengePage({ onSessionChange, registerBackHandler }) 
                             <p style={{ fontSize: '1.05rem', fontWeight: 700, fontFamily: 'var(--font-serif)', color: 'var(--color-burgundy)', lineHeight: 1.1 }}>
                                 {ch.soloHighScore || 0}
                             </p>
-                            <p style={{ fontSize: '0.62rem', color: 'var(--color-ink-muted)' }}>Best</p>
+                            <p style={{ fontSize: '0.62rem', color: 'var(--color-ink-muted)' }}>{'\u2B50'} Best</p>
                         </div>
                         {allTimeAccuracy !== null && (
                             <div style={{ textAlign: 'center' }}>
                                 <p style={{ fontSize: '1.05rem', fontWeight: 700, fontFamily: 'var(--font-serif)', color: 'var(--color-burgundy)', lineHeight: 1.1 }}>
                                     {allTimeAccuracy}%
                                 </p>
-                                <p style={{ fontSize: '0.62rem', color: 'var(--color-ink-muted)' }}>Accuracy</p>
+                                <p style={{ fontSize: '0.62rem', color: 'var(--color-ink-muted)' }}>{'\uD83C\uDFAF'} Accuracy</p>
                             </div>
                         )}
                         <div style={{ textAlign: 'center' }}>
                             <p style={{ fontSize: '1.05rem', fontWeight: 700, fontFamily: 'var(--font-serif)', color: 'var(--color-burgundy)', lineHeight: 1.1 }}>
                                 {ch.multiplayerVictories || 0}
                             </p>
-                            <p style={{ fontSize: '0.62rem', color: 'var(--color-ink-muted)' }}>Victories</p>
+                            <p style={{ fontSize: '0.62rem', color: 'var(--color-ink-muted)' }}>{'\uD83C\uDFC6'} Victories</p>
                         </div>
                         {(ch.soloGamesPlayed > 0 || ch.multiplayerGamesPlayed > 0) && (
                             <div style={{ textAlign: 'center' }}>
                                 <p style={{ fontSize: '1.05rem', fontWeight: 700, fontFamily: 'var(--font-serif)', color: 'var(--color-burgundy)', lineHeight: 1.1 }}>
                                     {(ch.soloGamesPlayed || 0) + (ch.multiplayerGamesPlayed || 0)}
                                 </p>
-                                <p style={{ fontSize: '0.62rem', color: 'var(--color-ink-muted)' }}>Games</p>
+                                <p style={{ fontSize: '0.62rem', color: 'var(--color-ink-muted)' }}>{'\uD83C\uDFAE'} Games</p>
                             </div>
                         )}
                     </div>
