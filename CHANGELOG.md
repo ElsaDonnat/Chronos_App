@@ -5,6 +5,19 @@ Format follows [Keep a Changelog](https://keepachangelog.com/) and [Semantic Ver
 
 Use the version entries from the last playstore push to the most recent version for Play Store "What's New" text.
 
+## [1.9.1] - 2026-03-10
+
+### Changed
+- **Region system audit: 11 → 14 sub-regions** — expanded from 11 to 14 sub-regions by splitting the oversized "East Asia" into three distinct regions:
+  - **Southeast Asia** — Philippines, Malaysia, Brunei, Cambodia, Thailand, Laos, Myanmar, Vietnam, Indonesia, Timor-Leste
+  - **Central Asia** — Mongolia, Kazakhstan, Uzbekistan, Tajikistan, Kyrgyzstan, Turkmenistan
+  - **Oceania** — Papua New Guinea, Fiji, Vanuatu, New Caledonia
+- **East Asia center shifted** — now centered on China/Japan/Korea rather than the old broader grouping
+- **Mongol Empire re-tagged** — f29 moved from "East Asia" to "Central Asia" to reflect geographic origin
+- **6 new CSS custom properties** — pastel/vibrant color pairs for each new region (light + dark mode = 12 new variables total)
+- **`REGION_CENTERS` updated** — accurate SVG centers for all 14 sub-regions
+- **Generation script updated** — `write-map-data.mjs` reflects the 14-region system for future regeneration
+
 ## [1.9.0] - 2026-03-10
 
 ### Added

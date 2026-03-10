@@ -202,13 +202,13 @@ export const MAP_REGIONS = {
 };
 
 // ─── Sub-region system ─────────────────────────
-// 11 sub-regions mapped to 5 continent SVG groups.
+// 14 sub-regions mapped to 5 continent SVG groups.
 // Events use sub-regions; the map highlights the parent continent.
 
 export const SUB_REGIONS = [
     'Europe', 'Middle East',
     'North Africa', 'West Africa', 'East Africa', 'Southern Africa',
-    'South Asia', 'East Asia',
+    'South Asia', 'East Asia', 'Southeast Asia', 'Central Asia', 'Oceania',
     'North America', 'Central America', 'South America',
 ];
 
@@ -222,6 +222,9 @@ export const REGION_TO_CONTINENT = {
     'Southern Africa': 'Africa',
     'South Asia': 'Asia',
     'East Asia': 'Asia',
+    'Southeast Asia': 'Asia',
+    'Central Asia': 'Asia',
+    'Oceania': 'Asia',  // Oceania countries are in Asia SVG group (no separate group)
     'North America': 'Americas',
     'Central America': 'Americas',
     'South America': 'Americas',
@@ -236,7 +239,10 @@ export const REGION_CENTERS = {
     "East Africa": { x: 476, y: 255 },
     "Southern Africa": { x: 453, y: 313 },
     "South Asia": { x: 566, y: 194 },
-    "East Asia": { x: 625, y: 161 },
+    "East Asia": { x: 645, y: 155 },
+    "Southeast Asia": { x: 635, y: 230 },
+    "Central Asia": { x: 545, y: 140 },
+    "Oceania": { x: 735, y: 280 },
     "North America": { x: 204, y: 136 },
     "Central America": { x: 210, y: 212 },
     "South America": { x: 275, y: 288 },
@@ -247,6 +253,7 @@ export function normalizeRegion(region) {
     if (region === 'Africa') return 'East Africa';       // legacy fallback
     if (region === 'Asia') return 'East Asia';            // legacy fallback
     if (region === 'Americas') return 'North America';    // legacy fallback
+    if (region === 'Oceania/Pacific') return 'Oceania';  // legacy fallback
     return region;
 }
 
@@ -283,7 +290,7 @@ export function projectToSVG(lat, lng, region) {
 }
 
 // ISO country code → sub-region mapping
-// Maps each of ~170 countries to one of the 11 sub-regions for color fills.
+// Maps each of ~170 countries to one of the 14 sub-regions for color fills.
 export const COUNTRY_TO_SUBREGION = {
     // ── Europe ──
     "643": "Europe",   // Russia
@@ -411,26 +418,29 @@ export const COUNTRY_TO_SUBREGION = {
     "392": "East Asia",   // Japan
     "410": "East Asia",   // South Korea
     "408": "East Asia",   // North Korea
-    "496": "East Asia",   // Mongolia
-    "608": "East Asia",   // Philippines
-    "458": "East Asia",   // Malaysia
-    "096": "East Asia",   // Brunei
-    "116": "East Asia",   // Cambodia
-    "764": "East Asia",   // Thailand
-    "418": "East Asia",   // Laos
-    "104": "East Asia",   // Myanmar
-    "704": "East Asia",   // Vietnam
-    "360": "East Asia",   // Indonesia
-    "626": "East Asia",   // Timor-Leste
-    "598": "East Asia",   // Papua New Guinea
-    "398": "East Asia",   // Kazakhstan
-    "860": "East Asia",   // Uzbekistan
-    "762": "East Asia",   // Tajikistan
-    "417": "East Asia",   // Kyrgyzstan
-    "795": "East Asia",   // Turkmenistan
-    "242": "East Asia",   // Fiji
-    "548": "East Asia",   // Vanuatu
-    "540": "East Asia",   // New Caledonia
+    // ── Southeast Asia ──
+    "608": "Southeast Asia",   // Philippines
+    "458": "Southeast Asia",   // Malaysia
+    "096": "Southeast Asia",   // Brunei
+    "116": "Southeast Asia",   // Cambodia
+    "764": "Southeast Asia",   // Thailand
+    "418": "Southeast Asia",   // Laos
+    "104": "Southeast Asia",   // Myanmar
+    "704": "Southeast Asia",   // Vietnam
+    "360": "Southeast Asia",   // Indonesia
+    "626": "Southeast Asia",   // Timor-Leste
+    // ── Central Asia ──
+    "496": "Central Asia",   // Mongolia
+    "398": "Central Asia",   // Kazakhstan
+    "860": "Central Asia",   // Uzbekistan
+    "762": "Central Asia",   // Tajikistan
+    "417": "Central Asia",   // Kyrgyzstan
+    "795": "Central Asia",   // Turkmenistan
+    // ── Oceania ──
+    "598": "Oceania",   // Papua New Guinea
+    "242": "Oceania",   // Fiji
+    "548": "Oceania",   // Vanuatu
+    "540": "Oceania",   // New Caledonia
     // ── North America ──
     "124": "North America",  // Canada
     "840": "North America",  // United States
@@ -478,6 +488,9 @@ export const REGION_COLORS = {
     'Southern Africa': { pastel: 'var(--color-map-region-southern-africa, #DAC0C8)', vibrant: 'var(--color-map-region-southern-africa-v, #B86C80)' },
     'South Asia':      { pastel: 'var(--color-map-region-south-asia,      #B8D8D0)', vibrant: 'var(--color-map-region-south-asia-v,      #3A9C8C)' },
     'East Asia':       { pastel: 'var(--color-map-region-east-asia,       #D0D8BA)', vibrant: 'var(--color-map-region-east-asia-v,       #84A84C)' },
+    'Southeast Asia':  { pastel: 'var(--color-map-region-se-asia,         #D8C4D0)', vibrant: 'var(--color-map-region-se-asia-v,         #A8609C)' },
+    'Central Asia':    { pastel: 'var(--color-map-region-central-asia,    #D8D0B8)', vibrant: 'var(--color-map-region-central-asia-v,    #A89848)' },
+    'Oceania':         { pastel: 'var(--color-map-region-oceania,         #B8D0D8)', vibrant: 'var(--color-map-region-oceania-v,         #4898B0)' },
     'North America':   { pastel: 'var(--color-map-region-north-america,   #BCD4E0)', vibrant: 'var(--color-map-region-north-america-v,   #4C98C0)' },
     'Central America': { pastel: 'var(--color-map-region-central-america, #E0C8BC)', vibrant: 'var(--color-map-region-central-america-v, #C0785C)' },
     'South America':   { pastel: 'var(--color-map-region-south-america,   #C4D4B8)', vibrant: 'var(--color-map-region-south-america-v,   #6C9C44)' },

@@ -191,7 +191,10 @@ const subRegionCoords = {
     'East Africa':     { lat: -2, lng: 35 },
     'Southern Africa': { lat: -25, lng: 25 },
     'South Asia':      { lat: 22, lng: 78 },
-    'East Asia':       { lat: 35, lng: 110 },
+    'East Asia':       { lat: 37, lng: 120 },
+    'Southeast Asia':  { lat: 5, lng: 110 },
+    'Central Asia':    { lat: 42, lng: 65 },
+    'Oceania':         { lat: -10, lng: 150 },
     'North America':   { lat: 45, lng: -100 },
     'Central America': { lat: 15, lng: -88 },
     'South America':   { lat: -15, lng: -58 },
@@ -285,13 +288,13 @@ output += `\n`;
 
 // SUB_REGIONS
 output += `// \u2500\u2500\u2500 Sub-region system \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n`;
-output += `// 11 sub-regions mapped to 5 continent SVG groups.\n`;
+output += `// 14 sub-regions mapped to 5 continent SVG groups.\n`;
 output += `// Events use sub-regions; the map highlights the parent continent.\n`;
 output += `\n`;
 output += `export const SUB_REGIONS = [\n`;
 output += `    'Europe', 'Middle East',\n`;
 output += `    'North Africa', 'West Africa', 'East Africa', 'Southern Africa',\n`;
-output += `    'South Asia', 'East Asia',\n`;
+output += `    'South Asia', 'East Asia', 'Southeast Asia', 'Central Asia', 'Oceania',\n`;
 output += `    'North America', 'Central America', 'South America',\n`;
 output += `];\n`;
 output += `\n`;
@@ -307,6 +310,9 @@ output += `    'East Africa': 'Africa',\n`;
 output += `    'Southern Africa': 'Africa',\n`;
 output += `    'South Asia': 'Asia',\n`;
 output += `    'East Asia': 'Asia',\n`;
+output += `    'Southeast Asia': 'Asia',\n`;
+output += `    'Central Asia': 'Asia',\n`;
+output += `    'Oceania': 'Asia',  // Oceania countries are in Asia SVG group (no separate group)\n`;
 output += `    'North America': 'Americas',\n`;
 output += `    'Central America': 'Americas',\n`;
 output += `    'South America': 'Americas',\n`;
@@ -328,6 +334,7 @@ output += `export function normalizeRegion(region) {\n`;
 output += `    if (region === 'Africa') return 'East Africa';       // legacy fallback\n`;
 output += `    if (region === 'Asia') return 'East Asia';            // legacy fallback\n`;
 output += `    if (region === 'Americas') return 'North America';    // legacy fallback\n`;
+output += `    if (region === 'Oceania/Pacific') return 'Oceania';  // legacy fallback\n`;
 output += `    return region;\n`;
 output += `}\n`;
 output += `\n`;

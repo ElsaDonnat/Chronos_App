@@ -88,7 +88,7 @@ No router — `App.jsx` uses `activeTab` state (`'learn'` | `'timeline'` | `'pra
 - Fullscreen mode: 280% width SVG inside a scrollable container, centered on Europe/Middle East; auto-scrolls to selected region
 - Animated pin entrance: staggered scale+fade pop-in (30ms per pin) via CSS `mapPinEntrance` keyframes
 
-**Region system**: 11 sub-regions (Europe, Middle East, N/W/E/S Africa, S/E Asia, N/C/S America) → 5 continent SVG groups. `COUNTRY_TO_SUBREGION` maps ~170 ISO country codes to sub-regions. `REGION_COLORS` defines pastel (unselected) and vibrant (selected) color pairs for each sub-region via CSS custom properties (22 light + 22 dark mode variables in `index.css`).
+**Region system**: 14 sub-regions (Europe, Middle East, N/W/E/S Africa, South/East/Southeast/Central Asia, Oceania, N/C/S America) → 5 continent SVG groups. `COUNTRY_TO_SUBREGION` maps ~170 ISO country codes to sub-regions. `REGION_COLORS` defines pastel (unselected) and vibrant (selected) color pairs for each sub-region via CSS custom properties (28 light + 28 dark mode variables in `index.css`).
 
 **Sub-region interaction**: Tapping any country selects its sub-region — the region transitions from pastel to vibrant color, other regions dim to 0.4 opacity, and a `RegionEventList` component shows learned events for that region below the map. `feedback.tap()` plays on selection. Tapping the same region again deselects it. All learned events always appear on the map regardless of region filter. `getCountryFill()` helper in MapView determines fill color based on country code and selected region.
 

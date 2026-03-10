@@ -14,7 +14,7 @@
 
 The map is intended to become a flagship feature of Chronos — visually rich, scalable to hundreds of events, and eventually extractable as a standalone component. This roadmap covers everything from foundational architectural changes to polish. Items are ordered by dependency (foundations first, features second, polish last).
 
-**Current state (as of v1.7.23):** Natural Earth I projection, 800×500 SVG viewBox, per-country SVG paths (177 countries grouped by continent) with country highlighting on event selection, 11 sub-regions, grid-based pin clustering, CSS pinch-zoom + desktop wheel zoom, fullscreen mode with region auto-scroll, animated pin entrance. See CLAUDE.md "Map System" section for full architecture docs.
+**Current state (as of v1.9.1):** Natural Earth I projection, 800×500 SVG viewBox, per-country SVG paths (177 countries grouped by continent) with country highlighting on event selection, 14 sub-regions (incl. Southeast Asia, Central Asia, Oceania), pastel-colored watercolor atlas with tap-to-select, grid-based pin clustering, CSS pinch-zoom + desktop wheel zoom, fullscreen mode with region auto-scroll, animated pin entrance. See CLAUDE.md "Map System" section for full architecture docs.
 
 ---
 
@@ -34,18 +34,9 @@ Each sub-region filled with a distinct pastel color (watercolor atlas look). Tap
 
 ---
 
-### Foundation — Region system audit
+### ~~Foundation — Region system audit~~ ✅ Done (2026-03-10)
 
-**Why:** The 11 sub-regions are good but need validation for future content. The two-tier system (5 continents → N sub-regions) should be a first-class concept so filters can offer both "group by continent" and "group by region" views.
-
-**What to do:**
-- Audit current 11 sub-regions: ensure they make sense for a world history app. Currently missing: **Southeast Asia** (would split from East Asia — important for events in Vietnam, Cambodia, Indonesia, etc.), **Oceania** (Australia, Pacific Islands — no events yet but needed for future-proofing), **Central Asia** (Silk Road events, Mongol Empire homeland — currently lumped into East Asia)
-- Likely target: **13-14 sub-regions** (add Southeast Asia, Oceania, possibly Central Asia)
-- Formalize the two-tier model: `CONTINENTS` (5-6 top-level groups) and `SUB_REGIONS` (13-14) with explicit mapping. Filters should let users toggle between the two tiers
-- Update `REGION_TO_CONTINENT`, `SUB_REGIONS`, `REGION_CENTERS`, and `normalizeRegion()` in `mapPaths.js`
-- Re-tag affected events in `events.js` (e.g., Mongol Empire from "East Asia" → "Central Asia", Khmer Empire → "Southeast Asia")
-
-**Files:** `src/data/mapPaths.js`, `src/data/events.js`, `src/pages/TimelinePage.jsx` (filter UI)
+Expanded from 11 to 14 sub-regions by splitting "East Asia" into East Asia (China/Japan/Korea), Southeast Asia (10 countries), Central Asia (6 countries), and Oceania (4 countries). Updated `COUNTRY_TO_SUBREGION`, `REGION_COLORS` (6 new CSS vars × light/dark), `REGION_CENTERS`, `normalizeRegion()`, and the generation script. Re-tagged f29 (Mongol Empire) to "Central Asia". Note: two-tier continent/region filter toggle deferred — the existing region dropdown handles 14 options well.
 
 ---
 
@@ -164,7 +155,7 @@ These are independent of each other and can be done in any order:
 ~~2. **Country highlighting on event selection** ✅~~
 ~~3. **UX: wheel zoom, region auto-scroll, pin animations** ✅~~
 ~~4. **Sub-region map interaction** ✅~~
-5. **Region audit** — expand to 13-14 sub-regions, validate country→sub-region mapping
+~~5. **Region audit** ✅~~
 6. **UX interaction improvements** — double-tap zoom, swipe-down fullscreen dismiss, hover states, cluster drill-down
 7. **Time slider on map** — high-impact standalone feature
 8. **Concurrent events view** — the biggest new feature, benefits from time slider and region system
@@ -222,3 +213,4 @@ Add more events per era, deeper non-Western history coverage, and new lessons be
 - **Foundation — Per-country SVG paths** (2026-03-09): Replaced continent-merged path blobs with individual per-country SVG paths (177 countries, each with ISO code + name). Countries grouped by continent for rendering. MapView renders individual `<path>` elements with `data-country` attributes. Bundle size impact: +2KB gzipped (91KB uncompressed vs 81KB). Unblocks country highlighting, hover states, and semantic zoom.
 - **Feature — Country highlighting on event selection** (2026-03-09): Selecting an event pin highlights the country where it happened with a distinct fill + gold stroke. Uses coordinate-based point-in-polygon matching at runtime. Smooth CSS transitions on highlight/unhighlight.
 - **Feature — Sub-region map interaction** (2026-03-10): Each sub-region filled with distinct pastel color (watercolor atlas look). Tapping a country selects its sub-region (vibrant saturated color), other regions dim to 0.4 opacity. `COUNTRY_TO_SUBREGION` mapping (~170 ISO codes → 11 sub-regions) and `REGION_COLORS` (pastel/vibrant pairs via CSS custom properties) added to `mapPaths.js`. 22 CSS variables for light mode + 22 for dark mode. `RegionEventList` component shows learned events for the selected sub-region below the map. Sound feedback via `feedback.tap()`. All learned events always visible on map regardless of region filter.
+- **Foundation — Region system audit** (2026-03-10): Expanded from 11 to 14 sub-regions. Split "East Asia" into East Asia (China, Taiwan, Japan, Korea), Southeast Asia (Philippines, Malaysia, Cambodia, Thailand, etc.), Central Asia (Mongolia, Kazakhstan, etc.), and Oceania (Papua New Guinea, Fiji, etc.). Added 6 new CSS variable pairs (light + dark). Re-tagged Mongol Empire (f29) to Central Asia. Updated generation script for consistency.

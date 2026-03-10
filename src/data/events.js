@@ -402,7 +402,7 @@ const CORE_EVENTS = [
         keywords: "Silk Road superhighway · Gunpowder transfer · Plague vectors",
         description: "Genghis Khan created the largest contiguous land empire. The Pax Mongolica turned the Silk Road into a 'superhighway' for trade, moving gunpowder and paper from China westward — but also plague-carrying rodents.",
         quizDescription: "Genghis Khan built the largest contiguous land empire.",
-        location: { lat: 47.9, lng: 106.9, region: "East Asia", place: "Eurasia (China to Eastern Europe)" },
+        location: { lat: 47.9, lng: 106.9, region: "Central Asia", place: "Eurasia (China to Eastern Europe)" },
         category: "war",
         difficulty: 1
     },

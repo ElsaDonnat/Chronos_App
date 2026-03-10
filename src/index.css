@@ -90,6 +90,12 @@
   --color-map-region-south-asia-v: #3A9C8C;
   --color-map-region-east-asia: #D0D8BA;
   --color-map-region-east-asia-v: #84A84C;
+  --color-map-region-se-asia: #D8C4D0;
+  --color-map-region-se-asia-v: #A8609C;
+  --color-map-region-central-asia: #D8D0B8;
+  --color-map-region-central-asia-v: #A89848;
+  --color-map-region-oceania: #B8D0D8;
+  --color-map-region-oceania-v: #4898B0;
   --color-map-region-north-america: #BCD4E0;
   --color-map-region-north-america-v: #4C98C0;
   --color-map-region-central-america: #E0C8BC;
@@ -185,6 +191,12 @@ html[data-theme="dark"] {
   --color-map-region-south-asia-v: #2A8C7C;
   --color-map-region-east-asia: #323826;
   --color-map-region-east-asia-v: #74983C;
+  --color-map-region-se-asia: #382A34;
+  --color-map-region-se-asia-v: #98508C;
+  --color-map-region-central-asia: #38342A;
+  --color-map-region-central-asia-v: #988838;
+  --color-map-region-oceania: #2A3438;
+  --color-map-region-oceania-v: #3888A0;
   --color-map-region-north-america: #263440;
   --color-map-region-north-america-v: #3C88B0;
   --color-map-region-central-america: #3C2E28;
