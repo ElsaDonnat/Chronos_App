@@ -1881,6 +1881,153 @@ const CORE_EVENTS = [
             what: "Six physicists independently proposed the Higgs mechanism in 1964: Peter Higgs, Fran\u00E7ois Englert, Robert Brout, Gerald Guralnik, C. R. Hagen, and Tom Kibble. Only Higgs and Englert received the 2013 Nobel Prize (Brout had died in 2011). The nickname \u2018God Particle\u2019 was coined by publisher Leon Lederman and is widely disliked by physicists, including Higgs himself.",
         }
     },
+    // ─── Level 2: Exploration & Discovery ────────────────────────────────
+    {
+        id: "f138",
+        title: "Polynesian Voyaging",
+        date: "c. 1500 BCE \u2013 1200 CE",
+        year: -1500,
+        yearEnd: 1200,
+        keywords: "Star navigation \u00B7 Wayfinding \u00B7 Pacific settlement \u00B7 Outrigger canoes",
+        description: "Over nearly three millennia, Polynesian navigators crossed the largest ocean on Earth using nothing but the stars, ocean swells, wind patterns, and the flight of birds. Starting from island Southeast Asia, they reached Samoa and Tonga by 1000 BCE, Hawai\u2019i by 400 CE, and finally Aotearoa (New Zealand) around 1200 CE. Their double-hulled canoes carried entire communities \u2014 families, livestock, and crop seeds \u2014 across thousands of kilometers of open water. It was the greatest feat of open-ocean exploration in human history, accomplished without compass, chart, or metal.",
+        quizDescription: "Polynesians navigated the Pacific by stars and waves, settling islands from Samoa to New Zealand.",
+        location: { lat: -17.7, lng: -149.4, region: "Oceania", place: "Pacific Ocean" },
+        category: "culture",
+        difficulty: 2,
+        controversyNotes: {
+            date: "The chronology of Polynesian expansion is actively debated. Radiocarbon dates for early settlement of Remote Oceania range widely, and the \u2018short chronology\u2019 (rapid expansion after 1000 CE) challenges the older \u2018long chronology.\u2019 Settlement of New Zealand is relatively firm at c. 1250\u20131300 CE, but dates for Hawai\u2019i and Easter Island remain contested.",
+            what: "Whether Polynesians reached South America (or vice versa) is debated. The presence of sweet potato in Polynesia before European contact and recent DNA evidence from Rapa Nui suggest some contact, but the nature and direction remain unclear.",
+        }
+    },
+    {
+        id: "f139",
+        title: "The Silk Road Opens",
+        date: "c. 130 BCE",
+        year: -130,
+        keywords: "Zhang Qian \u00B7 Han Dynasty \u00B7 Trade routes \u00B7 Cultural exchange",
+        description: "In 138 BCE, Han Emperor Wu sent diplomat Zhang Qian westward to find allies against the Xiongnu nomads. Zhang Qian was captured and held prisoner for over a decade, but eventually returned with extraordinary intelligence about Central Asian kingdoms, their horses, and their trade goods. His reports opened the network of routes later called the Silk Road \u2014 a 6,400-kilometer web of paths linking China to Persia, India, and eventually Rome. Silk, spices, paper, and gunpowder flowed west; glass, gold, and horses flowed east. Ideas traveled too: Buddhism entered China along these very roads.",
+        quizDescription: "Zhang Qian\u2019s mission for the Han Dynasty opened the Silk Road trade routes linking China to Rome.",
+        location: { lat: 39.9, lng: 73.5, region: "Central Asia", place: "Central Asia" },
+        category: "politics",
+        difficulty: 2,
+        controversyNotes: {
+            what: "The term \u2018Silk Road\u2019 was coined by German geographer Ferdinand von Richthofen in 1877 \u2014 no one in antiquity used it. The routes were not a single road but a shifting network of trails, oases, and middlemen. Silk was not even the primary commodity; it was simply the most exotic to European eyes. Recent scholarship emphasizes the Silk Road as a web of regional exchanges rather than a single transcontinental highway.",
+        }
+    },
+    {
+        id: "f140",
+        title: "Ibn Battuta\u2019s Odyssey",
+        date: "1325\u20131354 CE",
+        year: 1325,
+        yearEnd: 1354,
+        keywords: "Islamic world \u00B7 Travel writing \u00B7 Dar al-Islam \u00B7 Rihla",
+        description: "At age 21, Moroccan scholar Ibn Battuta left Tangier on a pilgrimage to Mecca \u2014 and didn\u2019t stop traveling for nearly 30 years. He crossed North Africa, the Middle East, East Africa, Central Asia, India, Southeast Asia, and China, covering an estimated 120,000 kilometers \u2014 three times the distance Marco Polo traveled. His account, the Rihla, is the most detailed portrait of the 14th-century Islamic world. He served as a judge in the Maldives, survived shipwrecks and bandits, and witnessed the aftermath of the Black Death firsthand.",
+        quizDescription: "Ibn Battuta traveled 120,000 km across the Islamic world over 29 years.",
+        location: { lat: 35.8, lng: -5.8, region: "Middle East", place: "Tangier, Morocco to China" },
+        category: "culture",
+        difficulty: 2,
+        controversyNotes: {
+            what: "Some scholars question whether Ibn Battuta actually visited every place he claimed, particularly China. His account was dictated from memory to the scholar Ibn Juzayy, who may have embellished or borrowed from earlier travel writings. However, most of his itinerary is considered broadly reliable.",
+        }
+    },
+    {
+        id: "f141",
+        title: "Zheng He\u2019s Treasure Fleets",
+        date: "1405\u20131433 CE",
+        year: 1405,
+        yearEnd: 1433,
+        keywords: "Ming Dynasty \u00B7 Naval exploration \u00B7 Indian Ocean \u00B7 Tribute system",
+        description: "Chinese admiral Zheng He commanded seven massive naval expeditions across the Indian Ocean with fleets of up to 300 ships \u2014 some over 120 meters long, dwarfing anything Europe would build for centuries. His armadas visited Southeast Asia, India, Arabia, and the East African coast, establishing diplomatic and trade relationships across the known world. Then, abruptly, the Ming court ordered the fleets destroyed and overseas voyages banned. China turned inward just decades before European ships would transform the same ocean routes into colonial highways.",
+        quizDescription: "Ming China\u2019s admiral Zheng He led massive fleets across the Indian Ocean decades before Columbus.",
+        location: { lat: 32.1, lng: 118.8, region: "East Asia", place: "Nanjing, China" },
+        category: "politics",
+        difficulty: 2,
+        controversyNotes: {
+            what: "The size of Zheng He\u2019s ships is debated. Chinese sources describe \u2018treasure ships\u2019 of 120+ meters, which would make them the largest wooden vessels ever built. Many Western historians consider these dimensions exaggerated, suggesting 60\u201370 meters is more plausible. The reasons for ending the voyages are also debated: Confucian ideology, fiscal pressure, and factional politics at court all played roles.",
+        }
+    },
+    {
+        id: "f142",
+        title: "Vasco da Gama Reaches India",
+        date: "1498 CE",
+        year: 1498,
+        keywords: "Sea route \u00B7 Spice trade \u00B7 Portuguese Empire \u00B7 Cape of Good Hope",
+        description: "In 1498, Portuguese navigator Vasco da Gama rounded the Cape of Good Hope and reached Calicut (Kozhikode) on India\u2019s southwest coast \u2014 the first European to sail directly from Europe to Asia. The voyage took 10 months and cost the lives of half his crew to scurvy. But its impact was seismic: it broke the Muslim and Venetian monopoly on the spice trade, shifted global commerce from overland routes to sea lanes, and launched the Portuguese maritime empire. Within a decade, Portugal controlled key ports from Mozambique to Malacca.",
+        quizDescription: "Da Gama sailed around Africa to India, opening the first European sea route to Asia.",
+        location: { lat: 11.3, lng: 75.8, region: "South Asia", place: "Calicut, India" },
+        category: "war",
+        difficulty: 2,
+        controversyNotes: {
+            location: "Da Gama sailed from Lisbon but the event\u2019s significance is the arrival in India, not the departure. Calicut (modern Kozhikode, Kerala) was a major spice trading port. The Zamorin (ruler) of Calicut was initially unimpressed by da Gama\u2019s gifts, which were suited for African trade, not Indian royalty.",
+            what: "Da Gama\u2019s second voyage (1502) was far more violent than the first \u2014 he bombarded Calicut and committed atrocities against Muslim traders. The \u2018Age of Discovery\u2019 is increasingly reframed as the \u2018Age of Invasion\u2019 by historians emphasizing its devastating impact on Indigenous peoples and existing trade networks.",
+        }
+    },
+    {
+        id: "f143",
+        title: "The Conquistadors",
+        date: "1519\u20131533 CE",
+        year: 1519,
+        yearEnd: 1533,
+        keywords: "Cort\u00E9s \u00B7 Pizarro \u00B7 Aztec Empire \u00B7 Inca Empire \u00B7 Colonization",
+        description: "In just 14 years, small bands of Spanish soldiers toppled the two largest empires in the Americas. Hern\u00E1n Cort\u00E9s and around 600 men conquered the Aztec capital Tenochtitl\u00E1n (1521) \u2014 a city of 200,000, larger than any in Spain. Francisco Pizarro captured the Inca emperor Atahualpa with fewer than 200 soldiers (1532). The conquistadors succeeded not through military superiority alone but through a catastrophic combination of European diseases (which killed up to 90% of Indigenous populations), local alliances with subject peoples, and devastating technology gaps in steel and horses.",
+        quizDescription: "Spanish conquistadors toppled the Aztec and Inca empires using disease, alliances, and technology.",
+        location: { lat: 19.4, lng: -99.1, region: "Central America", place: "Mexico and Peru" },
+        category: "war",
+        difficulty: 2,
+        controversyNotes: {
+            what: "The narrative of a few hundred Spaniards defeating millions oversimplifies. Cort\u00E9s relied on tens of thousands of Indigenous allies (especially the Tlaxcalans) who had their own reasons to oppose the Aztecs. Disease, while devastating, was not immediate \u2014 the siege of Tenochtitl\u00E1n lasted months. Recent scholarship emphasizes Indigenous agency and the complex political alliances that enabled conquest.",
+        }
+    },
+    {
+        id: "f144",
+        title: "Captain Cook\u2019s Pacific Voyages",
+        date: "1768\u20131779 CE",
+        year: 1768,
+        yearEnd: 1779,
+        keywords: "HMS Endeavour \u00B7 Pacific mapping \u00B7 Scientific exploration \u00B7 Australia",
+        description: "British navigator James Cook led three voyages that mapped more of the Earth\u2019s surface than any explorer before or since. He charted New Zealand, the east coast of Australia, and hundreds of Pacific islands; disproved the existence of a great southern continent (Terra Australis); and was the first European to reach Hawai\u2019i. His ships carried naturalists, astronomers, and artists who documented plants, animals, and peoples unknown to European science. Yet Cook\u2019s voyages also opened the Pacific to colonization, displacing the Indigenous peoples whose ancestors had navigated these waters for millennia.",
+        quizDescription: "Cook\u2019s three voyages mapped the Pacific, reaching Australia, New Zealand, and Hawai\u2019i.",
+        location: { lat: -33.9, lng: 151.2, region: "Oceania", place: "Pacific Ocean" },
+        category: "science",
+        difficulty: 2,
+        controversyNotes: {
+            what: "Cook is celebrated as a navigator and scientist but increasingly criticized for his role in colonialism. His \u2018discovery\u2019 of lands already inhabited for thousands of years is seen as the opening act of dispossession. In Australia and New Zealand, debates over Cook memorials and the concept of \u2018discovery\u2019 itself are ongoing. Cook was killed by Native Hawaiians at Kealakekua Bay in 1779 during a dispute that may have involved misunderstandings about his divine status.",
+        }
+    },
+    {
+        id: "f145",
+        title: "Humboldt\u2019s Scientific Expedition",
+        date: "1799\u20131804 CE",
+        year: 1799,
+        yearEnd: 1804,
+        keywords: "Alexander von Humboldt \u00B7 Natural philosophy \u00B7 Ecology \u00B7 South America",
+        description: "Prussian naturalist Alexander von Humboldt spent five years exploring South America, climbing volcanoes, measuring everything he encountered, and connecting it all into a unified vision of nature. He mapped ocean currents (the Humboldt Current still bears his name), discovered that altitude affects climate zones exactly like latitude, and showed that deforestation causes environmental damage \u2014 the first scientific warning about human impact on nature. His writings directly inspired Darwin, Thoreau, and John Muir. Humboldt essentially invented ecology and biogeography, seeing the natural world as an interconnected web rather than a catalog of specimens.",
+        quizDescription: "Humboldt explored South America for five years, essentially inventing ecology and biogeography.",
+        location: { lat: 0.2, lng: -78.5, region: "South America", place: "South America" },
+        category: "science",
+        difficulty: 2,
+        controversyNotes: {
+            what: "Humboldt traveled with French botanist Aim\u00E9 Bonpland, whose contributions are often overshadowed. Humboldt also relied heavily on Indigenous knowledge and local guides, a debt he sometimes acknowledged but that traditional accounts underemphasize. His fame faded in the English-speaking world partly because of anti-German sentiment during the World Wars, but he remains a towering figure in the history of science.",
+        }
+    },
+    {
+        id: "f146",
+        title: "Darwin\u2019s Voyage on the Beagle",
+        date: "1831\u20131836 CE",
+        year: 1831,
+        yearEnd: 1836,
+        keywords: "HMS Beagle \u00B7 Natural selection \u00B7 Gal\u00E1pagos \u00B7 Origin of Species",
+        description: "In 1831, a 22-year-old Charles Darwin joined HMS Beagle as the ship\u2019s naturalist for a five-year survey voyage around the world. In South America he found fossils of giant extinct mammals. In the Gal\u00E1pagos Islands he noticed that finches on different islands had different beaks adapted to local food sources. These observations, combined with decades of further research, led to On the Origin of Species (1859) and the theory of evolution by natural selection \u2014 perhaps the most transformative scientific idea since Copernicus moved Earth from the center of the universe.",
+        quizDescription: "Darwin\u2019s five-year voyage on the Beagle inspired his theory of evolution by natural selection.",
+        location: { lat: -0.7, lng: -90.3, region: "South America", place: "Gal\u00E1pagos Islands & worldwide" },
+        category: "science",
+        difficulty: 2,
+        controversyNotes: {
+            what: "Alfred Russel Wallace independently conceived the theory of natural selection while in Southeast Asia. Darwin rushed to publish only after receiving Wallace\u2019s letter in 1858; their papers were presented jointly to the Linnean Society. Wallace\u2019s contribution is historically underrecognized. Darwin himself was initially reluctant to publish, fearing religious and social backlash.",
+            date: "The voyage itself (1831\u20131836) is well documented, but Darwin did not publish On the Origin of Species until 1859 \u2014 23 years later. The long delay is attributed to his desire for overwhelming evidence, fear of controversy, and chronic illness.",
+        }
+    },
+
 
     // ─── Level 2 Chapter: Money & Trade ──────────────────────────────
     {
@@ -2893,6 +3040,82 @@ for (const [eventId, connections] of Object.entries(LEVEL2_TRADE_CONNECTIONS)) {
     }
 }
 
+// ─── Level 2: Exploration & Discovery chapter connections ─────────────
+const LEVEL2_EXPLORATION_CONNECTIONS = {
+    f138: [
+        { id: "f139", label: "While Polynesians navigated the Pacific, the Silk Road connected Eurasia by land" },
+        { id: "f144", label: "Cook \u2018discovered\u2019 islands Polynesians had settled millennia earlier" },
+    ],
+    f139: [
+        { id: "f25", label: "The Silk Road reached its peak under the Tang Dynasty centuries later" },
+        { id: "f140", label: "Ibn Battuta traveled many of the routes the Silk Road had established" },
+        { id: "f138", label: "Land routes complemented the maritime routes Polynesians had pioneered" },
+    ],
+    f140: [
+        { id: "f139", label: "Traveled routes that the Silk Road had connected for over a millennium" },
+        { id: "f141", label: "Ibn Battuta visited many of the same ports Zheng He\u2019s fleets would later reach" },
+        { id: "f29", label: "Witnessed the aftermath of the Mongol Empire across Central Asia" },
+        { id: "f30", label: "Encountered the Black Death firsthand during his travels" },
+    ],
+    f141: [
+        { id: "f140", label: "Visited the same Indian Ocean ports Ibn Battuta had described" },
+        { id: "f33", label: "China turned inward just decades before Columbus sailed west" },
+        { id: "f142", label: "European sailors later dominated the ocean routes Zheng He had explored" },
+    ],
+    f142: [
+        { id: "f33", label: "Da Gama reached India by sea six years after Columbus reached the Americas" },
+        { id: "f35", label: "Portuguese route around Africa complemented Magellan\u2019s westward circumnavigation" },
+        { id: "f141", label: "Europeans seized control of the Indian Ocean trade Zheng He had navigated peacefully" },
+        { id: "f139", label: "The sea route undermined the Silk Road\u2019s overland spice trade" },
+    ],
+    f143: [
+        { id: "f33", label: "Columbus\u2019s arrival opened the way for Spanish conquest" },
+        { id: "f35", label: "Magellan\u2019s expedition was part of the same wave of Iberian expansion" },
+        { id: "f39", label: "The devastation of Indigenous populations fed the Atlantic slave trade" },
+        { id: "f98", label: "Smallpox brought by conquistadors killed up to 90% of the Indigenous population" },
+    ],
+    f144: [
+        { id: "f138", label: "Cook mapped islands that Polynesians had settled thousands of years before" },
+        { id: "f145", label: "Cook\u2019s scientific approach to exploration directly inspired Humboldt" },
+        { id: "f146", label: "The Beagle voyage followed routes Cook had charted decades earlier" },
+    ],
+    f145: [
+        { id: "f144", label: "Humboldt was inspired by Cook\u2019s scientific exploration model" },
+        { id: "f146", label: "Humboldt\u2019s vision of interconnected nature directly inspired Darwin" },
+        { id: "f133", label: "Humboldt\u2019s ecological thinking foreshadowed Darwin\u2019s evolutionary theory" },
+    ],
+    f146: [
+        { id: "f145", label: "Darwin built on Humboldt\u2019s vision of nature as an interconnected web" },
+        { id: "f133", label: "Darwin\u2019s voyage provided the observations behind the theory of evolution" },
+        { id: "f57", label: "Scientific exploration reached its ultimate frontier in the Space Race" },
+    ],
+    // Cross-connections: append to existing events
+    f25: [
+        { id: "f139", label: "The Tang Dynasty was the Silk Road\u2019s golden age, but the routes began centuries earlier" },
+    ],
+    f29: [
+        { id: "f140", label: "The Mongol Empire\u2019s peace enabled Ibn Battuta\u2019s vast travels" },
+    ],
+    f33: [
+        { id: "f141", label: "Columbus sailed west while China was abandoning Zheng He\u2019s eastward voyages" },
+        { id: "f143", label: "Columbus\u2019s voyages led directly to the Spanish conquest of the Americas" },
+    ],
+    f35: [
+        { id: "f142", label: "Magellan\u2019s circumnavigation proved da Gama\u2019s route was not the only way east" },
+    ],
+    f57: [
+        { id: "f146", label: "The Space Race extended humanity\u2019s exploration from oceans to orbit" },
+    ],
+};
+
+for (const [eventId, connections] of Object.entries(LEVEL2_EXPLORATION_CONNECTIONS)) {
+    if (EVENT_CONNECTIONS[eventId]) {
+        EVENT_CONNECTIONS[eventId].push(...connections);
+    } else {
+        EVENT_CONNECTIONS[eventId] = connections;
+    }
+}
+
 // Attach connections to each core event
 for (const event of CORE_EVENTS) {
     if (EVENT_CONNECTIONS[event.id]) {
@@ -2927,6 +3150,8 @@ const IMPORTANCE_MAP = {
     f105: 'major', f110: 'major', f116: 'major', f117: 'major', f118: 'major',
     f128: 'major', f131: 'major', f133: 'major', f135: 'major', f136: 'major',
     f147: 'major', f148: 'major', f149: 'major', f153: 'major', f155: 'major',
+    f138: 'major', f139: 'major', f141: 'major', f142: 'major', f143: 'major',
+    f146: 'major',
     // ── Notable ── historically significant; everything else defaults here
 };
 
@@ -2939,7 +3164,7 @@ export const ALL_EVENTS = [
     ...DAILY_QUIZ_EVENTS.map(e => ({ ...e, importance: e.importance || 'minor' })),
 ];
 
-export const CORE_EVENT_COUNT = CORE_EVENTS.length; // 147 (60 Level 1 + 87 Level 2)
+export const CORE_EVENT_COUNT = CORE_EVENTS.length; // 156 (60 Level 1 + 96 Level 2)
 
 /** Level 1 events are f1–f60; Level 2 events are f61+. */
 export function isLevel2Event(event) {

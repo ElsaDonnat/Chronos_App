@@ -39,6 +39,7 @@ Use the version entries from the last playstore push to the most recent version 
 ## [1.9.2] - 2026-03-10
 
 ### Added
+- **Level 2 Chapter: Exploration & Discovery** \u2014 4-lesson chapter with 9 new events (f138\u2013f146) tracing humanity\u2019s journeys from Polynesian star navigation to the Space Race. Polynesian Voyaging, Silk Road Opens, Ibn Battuta\u2019s Odyssey, Zheng He\u2019s Treasure Fleets, Vasco da Gama Reaches India, The Conquistadors, Captain Cook\u2019s Pacific Voyages, Humboldt\u2019s Scientific Expedition, Darwin\u2019s Voyage on the Beagle. Reuses f33 (Columbus), f35 (Magellan), f57 (Space Race). Indigo theme, compass icon. Hand-crafted description distractors, controversy notes, and event connections for all events.
 - **Double-tap to zoom** — double-tapping the map background zooms to 2\u00d7 centered on the tap point; double-tapping again resets to 1\u00d7. Works on both mobile (touch) and desktop (click). Coexists with single-tap pin/region selection.
 - **Swipe-down to dismiss fullscreen** — pulling down on the fullscreen map overlay dismisses it. Visual feedback shows a "Pull down to close" / "Release to close" hint pill with rubber-band physics. More discoverable than the small Close button.
 - **Hover states (desktop)** — on pointer-capable devices, country paths subtly brighten on hover (`brightness(1.08)`) and event pins get a soft glow (`drop-shadow`). Both use `@media (hover: hover)` to avoid sticky hover on touch devices.
