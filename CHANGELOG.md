@@ -5,6 +5,11 @@ Format follows [Keep a Changelog](https://keepachangelog.com/) and [Semantic Ver
 
 Use the version entries from the last playstore push to the most recent version for Play Store "What's New" text.
 
+## [1.9.13] - 2026-03-10
+
+### Changed
+- **Component extraction prep** — extracted shared time slider utilities (era segments, slider-to-year mapping, time windows, opacity calculations) from MapView and ConcurrentView into `src/utils/timeSlider.js`, eliminating ~70 lines of duplicated code. MapView and ConcurrentView now accept optional `categoryConfig` and `eventConnections` props (defaulting to Chronos data), making them reusable without tight coupling to Chronos-specific data modules. Sub-components (EventPopup, ClusterPopup, RegionEventList, MapSearch, Legend, ConnectionArcs, MapSVG) all receive config via props instead of importing directly.
+
 ## [1.9.12] - 2026-03-10
 
 ### Changed

@@ -89,7 +89,7 @@ No router — `App.jsx` uses `activeTab` state (`'learn'` | `'timeline'` | `'pra
 - Fullscreen mode: 280% width SVG inside a scrollable container, centered on Europe/Middle East; auto-scrolls to selected region; swipe-down gesture to dismiss (pull-down > 80px with rubber-band physics and visual hint pill)
 - Animated pin entrance: staggered scale+fade pop-in (30ms per pin) via CSS `mapPinEntrance` keyframes
 - Desktop hover states: country paths brighten on hover (`brightness(1.08)`), pins get soft drop-shadow glow. Both gated behind `@media (hover: hover)`.
-- **Time slider**: clock toggle button activates a piecewise-linear slider below the map (both inline and fullscreen). Each of the 5 eras gets equal slider space (0\u2013200, 200\u2013400, etc. out of 1000). Era-aware time windows: `getTimeWindow(year)` returns a half-window proportional to the era span (25% for Prehistory, 12% for Ancient, 15% for others). Pins fade via `getEventTimeOpacity()` which handles `yearEnd` ranges. Era quick-jump buttons snap to the median learned event year in each era. CSS-styled range input with era tick marks in `index.css` (`.time-slider-input`).
+- **Time slider**: clock toggle button activates a piecewise-linear slider below the map (both inline and fullscreen). Each of the 5 eras gets equal slider space (0\u2013200, 200\u2013400, etc. out of 1000). Shared time slider utilities (`src/utils/timeSlider.js`) provide era segments, slider-to-year mapping, time windows, and opacity calculations \u2014 used by both MapView and ConcurrentView. Era-aware time windows: `getTimeWindow(year)` returns a half-window proportional to the era span (25% for Prehistory, 12% for Ancient, 15% for others). Pins fade via `getEventTimeOpacity()` which handles `yearEnd` ranges. Era quick-jump buttons snap to the median learned event year in each era. CSS-styled range input with era tick marks in `index.css` (`.time-slider-input`).
 
 **Region system**: 14 sub-regions (Europe, Middle East, N/W/E/S Africa, South/East/Southeast/Central Asia, Oceania, N/C/S America) → 5 continent SVG groups. `COUNTRY_TO_SUBREGION` maps ~170 ISO country codes to sub-regions. `REGION_COLORS` defines pastel (unselected) and vibrant (selected) color pairs for each sub-region via CSS custom properties (28 light + 28 dark mode variables in `index.css`).
 
@@ -100,6 +100,8 @@ No router — `App.jsx` uses `activeTab` state (`'learn'` | `'timeline'` | `'pra
 **Era coloring mode**: Topic/Era toggle in the Legend dropdown switches pin colors between category-based (Science/War/Politics/Culture/Revolution) and era-based (Prehistory/Ancient/Medieval/Early Modern/Modern). `ERA_COLORS` constant, `getEraForYear()` helper, `colorMode` state persisted to localStorage key `chronos-map-color-mode`.
 
 **Map search**: `MapSearch` component overlaid on the map — search bar with live fuzzy results by title, location, or year. Max 6 results, category color dots, click to select and highlight event pin.
+
+**Component interfaces**: MapView accepts optional `categoryConfig` and `eventConnections` props (defaulting to Chronos data from `events.js`). All sub-components (EventPopup, ClusterPopup, Legend, ConnectionArcs, MapSVG, RegionEventList, MapSearch) receive config via props — no direct imports of Chronos-specific state. `mapPaths.js` is a standalone utility with no Chronos imports. This makes the map extractable as a standalone component with minimal wiring.
 
 **Strengths**: zero runtime map deps, offline-capable, deterministic projection, fast render, clean regeneration pipeline.
 
@@ -113,9 +115,9 @@ No router — `App.jsx` uses `activeTab` state (`'learn'` | `'timeline'` | `'pra
 
 **Layout**: Vertical swim lanes grouped by 4 continent groups (Europe; Middle East & Africa; Asia & Oceania; Americas), each containing sub-region buckets when multiple regions have events. Events appear as tappable cards with category color dots, titles, dates, and mastery dots.
 
-**Time navigation**: Same piecewise-linear slider as the map (each of 5 eras gets equal slider space). Era quick-jump buttons show learned event count badges. Smart default: slider auto-starts at the era with the most learned events (computed from `learnedEvents`).
+**Time navigation**: Uses shared time slider utilities from `src/utils/timeSlider.js` (same piecewise-linear mapping as map). Era quick-jump buttons show learned event count badges. Smart default: slider auto-starts at the era with the most learned events (computed from `learnedEvents`). Accepts optional `categoryConfig` prop for standalone use.
 
-**Opacity system**: `getEventOpacity()` computes visibility based on temporal proximity — events within the time window show at full opacity, fade zone events at 0.4–0.7, distant events hidden. Window size is era-proportional (same `getTimeWindow()` as map).
+**Opacity system**: Local `getEventOpacity()` computes visibility with softer fade (0.7\u20130.4 in fade zone) compared to MapView\u2019s full fade (1\u20130). Shared `getTimeWindow()` from `timeSlider.js` provides era-proportional window sizes.
 
 **Interaction**: Tapping an event card expands it to show `quizDescription` (or `description`) and location. Outside-tap dismisses. Sound feedback via `feedback.tap()`.
 

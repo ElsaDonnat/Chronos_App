@@ -1,61 +1,11 @@
 import { useState, useMemo, useRef, useCallback, useEffect } from 'react';
-import { CATEGORY_CONFIG } from '../data/events';
+import { CATEGORY_CONFIG as DEFAULT_CATEGORY_CONFIG } from '../data/events';
 import { MasteryDots } from './shared';
+import { SLIDER_MAX, ERA_SLIDER_SEGMENTS, sliderToYear, yearToSlider, getTimeWindow, formatSliderYear } from '../utils/timeSlider';
 import * as feedback from '../services/feedback';
 
-// ─── Time slider helpers (same piecewise-linear mapping as MapView) ───
-const SLIDER_MAX = 1000;
-const ERA_SLIDER_SEGMENTS = [
-    { id: 'prehistory', label: 'Prehistory', start: -7000000, end: -3200, sliderStart: 0, sliderEnd: 200 },
-    { id: 'ancient', label: 'Ancient', start: -3200, end: 476, sliderStart: 200, sliderEnd: 400 },
-    { id: 'medieval', label: 'Medieval', start: 476, end: 1500, sliderStart: 400, sliderEnd: 600 },
-    { id: 'earlymodern', label: 'E. Modern', start: 1500, end: 1789, sliderStart: 600, sliderEnd: 800 },
-    { id: 'modern', label: 'Modern', start: 1789, end: 2030, sliderStart: 800, sliderEnd: 1000 },
-];
-
-function sliderToYear(value) {
-    for (const seg of ERA_SLIDER_SEGMENTS) {
-        if (value >= seg.sliderStart && value <= seg.sliderEnd) {
-            const frac = (value - seg.sliderStart) / (seg.sliderEnd - seg.sliderStart);
-            return seg.start + frac * (seg.end - seg.start);
-        }
-    }
-    return ERA_SLIDER_SEGMENTS[ERA_SLIDER_SEGMENTS.length - 1].end;
-}
-
-function yearToSlider(year) {
-    for (const seg of ERA_SLIDER_SEGMENTS) {
-        if (year >= seg.start && year <= seg.end) {
-            const frac = (year - seg.start) / (seg.end - seg.start);
-            return Math.round(seg.sliderStart + frac * (seg.sliderEnd - seg.sliderStart));
-        }
-    }
-    return year < ERA_SLIDER_SEGMENTS[0].start ? 0 : SLIDER_MAX;
-}
-
-function getTimeWindow(year) {
-    for (const seg of ERA_SLIDER_SEGMENTS) {
-        if (year >= seg.start && year <= seg.end) {
-            const span = seg.end - seg.start;
-            if (seg.id === 'prehistory') return span * 0.25;
-            if (seg.id === 'ancient') return span * 0.12;
-            return span * 0.15;
-        }
-    }
-    return 100;
-}
-
-function formatSliderYear(year) {
-    const abs = Math.abs(year);
-    const suffix = year < 0 ? 'BCE' : 'CE';
-    if (abs >= 1000000) {
-        const m = abs / 1000000;
-        return `${m % 1 === 0 ? m.toFixed(0) : m.toFixed(1)}M ${suffix}`;
-    }
-    if (abs >= 10000) return `${Math.round(abs / 1000)}K ${suffix}`;
-    return `${Math.round(abs).toLocaleString()} ${suffix}`;
-}
-
+// ConcurrentView-specific opacity: events in the fade zone dim to 0.4–0.7 instead of fully disappearing,
+// since card visibility in swim lanes benefits from softer transitions than map pins.
 function getEventOpacity(event, sliderYear, halfWindow) {
     const eventStart = event.year;
     const eventEnd = event.yearEnd || event.year;
@@ -83,7 +33,7 @@ const CONTINENT_COLORS = {
     'americas': 'var(--color-region-north-america-vibrant, #7BA55B)',
 };
 
-export default function ConcurrentView({ events, learnedIds, eventMastery }) {
+export default function ConcurrentView({ events, learnedIds, eventMastery, categoryConfig = DEFAULT_CATEGORY_CONFIG }) {
     // Only show learned events
     const learnedEvents = useMemo(() =>
         events.filter(e => learnedIds.has(e.id)),
@@ -315,7 +265,7 @@ export default function ConcurrentView({ events, learnedIds, eventMastery }) {
                                     )}
                                     <div className="flex flex-wrap gap-1.5">
                                         {bucket.events.map(({ event, opacity }) => {
-                                            const catConfig = CATEGORY_CONFIG[event.category];
+                                            const catConfig = categoryConfig[event.category];
                                             const mastery = eventMastery[event.id];
                                             const isSelected = selectedEvent === event.id;
 

@@ -89,19 +89,9 @@ Search bar overlay on the map for finding learned events by title, location, or 
 
 ---
 
-### Architecture — Clean component interfaces for future extraction
+### ~~Architecture — Clean component interfaces for future extraction~~ ✅ Done (2026-03-10)
 
-**Why:** The map, concurrent view, and timeline data should eventually be extractable from Chronos as a standalone history visualization tool. Not a rewrite — just clean interfaces now that prevent tight coupling later.
-
-**What to do:**
-- `MapView` should accept generic event data via props (it mostly does already — `events`, `learnedIds`, `eventMastery`). Ensure no direct imports of Chronos-specific state inside MapView.
-- Extract the projection math (`projectToSVG`, region system) into a standalone utility module with no Chronos imports
-- The new `ConcurrentView` should similarly accept events + mastery as props
-- The `TimeSlider` component should be reusable across map and concurrent view
-- Keep card/popup components (EventPopup, ClusterPopup) accepting event objects — these become the "card dependencies" that travel with the map if extracted
-- No need to build a package now — just maintain clean prop boundaries so extraction is a packaging task, not a rewrite
-
-**Files:** `src/components/MapView.jsx`, `src/data/mapPaths.js`, any new components
+Shared time slider utilities extracted to `src/utils/timeSlider.js`. MapView and ConcurrentView accept optional `categoryConfig` and `eventConnections` props (defaulting to Chronos data). All sub-components (EventPopup, ClusterPopup, Legend, ConnectionArcs, MapSVG, RegionEventList, MapSearch) receive config via props. `mapPaths.js` already standalone (no Chronos imports). Projection math (`projectToSVG`, region system) remains in `mapPaths.js` — already a clean utility module.
 
 ---
 
@@ -126,7 +116,7 @@ Search bar overlay on the map for finding learned events by title, location, or 
 ~~9. **Semantic zoom** ✅~~ — scale-compensated rendering, pin labels at zoom, continent label fading
 ~~10. **Visual polish** ✅~~ — connection arcs, era coloring (region label fading + higher resolution still TODO)
 ~~11. **Search on map** ✅~~ — search bar overlay with live results
-12. **Component extraction prep** — ongoing, enforce clean interfaces throughout
+~~12. **Component extraction prep** ✅~~ — shared time slider module, prop-based config for MapView/ConcurrentView
 
 ## P5 — Themed collections (remaining)
 
@@ -186,3 +176,4 @@ Add more events per era, deeper non-Western history coverage, and new lessons be
 - **Visual — Era coloring mode** (2026-03-10): Topic/Era segmented toggle in Legend dropdown. `ERA_COLORS` constant with 5 period-specific colors. `getEraForYear()` helper maps year to era key. `colorMode` state persisted to localStorage (`chronos-map-color-mode`). Cluster pins use majority era of contained events.
 - **Visual — Map search** (2026-03-10): `MapSearch` component overlaid on map with auto-focus input, live filtered results (title, location, year, max 6), category color dots, and click-to-select event highlighting.
 - **Visual — Higher resolution map data** (2026-03-10): Upgraded from Natural Earth 110m to 50m resolution. Path simplification (1-decimal precision, dedup + collinear removal) keeps bundle size manageable (+37%). Fixed missing countries (Australia, NZ, Singapore, 60+ territories). Updated manual event-country overrides for 50m coastlines.
+- **Architecture — Component extraction prep** (2026-03-10): Extracted shared time slider utilities to `src/utils/timeSlider.js` (era segments, slider-to-year mapping, time windows, opacity). MapView and ConcurrentView accept optional `categoryConfig`/`eventConnections` props for clean decoupling. All sub-components receive config via props.
