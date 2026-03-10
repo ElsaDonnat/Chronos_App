@@ -12,6 +12,8 @@ Use the version entries from the last playstore push to the most recent version 
 - **Region event list** — selecting a sub-region shows a scrollable card list of all learned events in that region below the map, with category dots, mastery indicators, and year. Replaces the old continent-level highlighting system.
 - **`COUNTRY_TO_SUBREGION` mapping** — ~170 ISO country codes mapped to 11 sub-regions in `mapPaths.js`.
 - **`REGION_COLORS` constant** — pastel/vibrant color pairs for all 11 sub-regions, using CSS custom properties with light and dark mode variants (44 new CSS variables total).
+- **30 new fun facts** — expanded from 20 to 50 curated trivia questions. New facts span ancient through modern history.
+- **Challenge hub redesign** — "Choose your game mode" heading, emoji icons on stats, current tier label 10% larger.
 
 ### Changed
 - **All learned events always visible on map** — previously the map filtered pins by selected region; now all learned events show regardless of region filter, making the map always feel populated.
