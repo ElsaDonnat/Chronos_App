@@ -994,25 +994,25 @@ export default function ChallengePage({ onSessionChange, registerBackHandler }) 
             : -1;
 
         return (
-            <div style={{ padding: '0 0 16px' }} className="animate-fade-in">
-                {/* Arena header */}
+            <div style={{ padding: '0' }} className="animate-fade-in">
+                {/* Arena header — compact */}
                 <div style={{
                     background: `linear-gradient(180deg, rgba(100, 40, 60, 0.83) 0%, ${CHALLENGE_TINT} 100%)`,
                     borderRadius: '0 0 20px 20px',
                     margin: '-16px -16px 0',
-                    padding: '20px 16px 22px',
-                    marginBottom: 20,
+                    padding: '14px 16px 16px',
+                    marginBottom: 14,
                 }}>
-                    {/* Mascot duo */}
-                    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'flex-end', gap: 12, marginBottom: 16 }}>
-                        <Mascot variant="quizmaster" mood="happy" size={56} />
-                        <Mascot mood="happy" size={48} />
+                    {/* Mascot duo — smaller */}
+                    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'flex-end', gap: 8, marginBottom: 8 }}>
+                        <Mascot variant="quizmaster" mood="happy" size={40} />
+                        <Mascot mood="happy" size={34} />
                     </div>
 
-                    <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.3rem', fontWeight: 700, textAlign: 'center', color: 'white', textShadow: '0 1px 6px rgba(62, 30, 20, 0.45)', marginBottom: 4 }}>
+                    <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.15rem', fontWeight: 700, textAlign: 'center', color: 'white', textShadow: '0 1px 6px rgba(62, 30, 20, 0.45)', marginBottom: 2 }}>
                         Challenger Mode
                     </h2>
-                    <p style={{ textAlign: 'center', fontSize: '0.82rem', color: '#3E2723', marginBottom: 18 }}>
+                    <p style={{ textAlign: 'center', fontSize: '0.75rem', color: '#3E2723', marginBottom: 12 }}>
                         Climb from Beginner to God {'\u2014'} {TOTAL_CHALLENGE_QUESTIONS} questions, {CHALLENGE_TIERS.length} tiers!
                     </p>
 
@@ -1080,38 +1080,38 @@ export default function ChallengePage({ onSessionChange, registerBackHandler }) 
                     </div>
                 </div>
 
-                {/* Mode cards */}
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginBottom: 24 }}>
+                {/* Mode cards — compact */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 10 }}>
                     {/* Solo card */}
                     <button
                         onClick={startSoloGame}
                         style={{
                             background: 'var(--color-card)',
                             border: '1.5px solid var(--color-ink-faint, #E7E5E4)',
-                            borderRadius: 14,
-                            padding: '20px 16px',
+                            borderRadius: 12,
+                            padding: '12px 14px',
                             cursor: 'pointer',
                             textAlign: 'left',
                             display: 'flex',
                             alignItems: 'center',
-                            gap: 14,
+                            gap: 12,
                             transition: 'all 0.15s ease',
                         }}
                     >
                         <div style={{ flexShrink: 0 }}>
-                            <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="var(--color-burgundy)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--color-burgundy)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                 <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
                             </svg>
                         </div>
-                        <div>
-                            <p style={{ fontFamily: 'var(--font-serif)', fontWeight: 700, fontSize: '1rem', color: 'var(--color-ink)', marginBottom: 2 }}>
+                        <div style={{ minWidth: 0 }}>
+                            <p style={{ fontFamily: 'var(--font-serif)', fontWeight: 700, fontSize: '0.92rem', color: 'var(--color-ink)', marginBottom: 1 }}>
                                 Solo Challenge
                             </p>
-                            <p style={{ fontSize: '0.78rem', color: 'var(--color-ink-muted)' }}>
+                            <p style={{ fontSize: '0.72rem', color: 'var(--color-ink-muted)' }}>
                                 {CHALLENGE_TIERS.length} tiers, {TOTAL_CHALLENGE_QUESTIONS} questions. Best: <strong>{ch.soloHighScore || 0}/{TOTAL_CHALLENGE_QUESTIONS}</strong>
                             </p>
                         </div>
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--color-ink-muted)" strokeWidth="2" style={{ marginLeft: 'auto' }}>
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--color-ink-muted)" strokeWidth="2" style={{ marginLeft: 'auto', flexShrink: 0 }}>
                             <polyline points="9 18 15 12 9 6" />
                         </svg>
                     </button>
@@ -1126,135 +1126,117 @@ export default function ChallengePage({ onSessionChange, registerBackHandler }) 
                         style={{
                             background: 'var(--color-card)',
                             border: '1.5px solid var(--color-ink-faint, #E7E5E4)',
-                            borderRadius: 14,
-                            padding: '20px 16px',
+                            borderRadius: 12,
+                            padding: '12px 14px',
                             cursor: 'pointer',
                             textAlign: 'left',
                             display: 'flex',
                             alignItems: 'center',
-                            gap: 14,
+                            gap: 12,
                             transition: 'all 0.15s ease',
                         }}
                     >
                         <div style={{ flexShrink: 0 }}>
-                            <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="var(--color-burgundy)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--color-burgundy)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                 <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
                                 <circle cx="9" cy="7" r="4" />
                                 <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
                                 <path d="M16 3.13a4 4 0 0 1 0 7.75" />
                             </svg>
                         </div>
-                        <div>
-                            <p style={{ fontFamily: 'var(--font-serif)', fontWeight: 700, fontSize: '1rem', color: 'var(--color-ink)', marginBottom: 2 }}>
+                        <div style={{ minWidth: 0 }}>
+                            <p style={{ fontFamily: 'var(--font-serif)', fontWeight: 700, fontSize: '0.92rem', color: 'var(--color-ink)', marginBottom: 1 }}>
                                 Multiplayer
                             </p>
-                            <p style={{ fontSize: '0.78rem', color: 'var(--color-ink-muted)' }}>
+                            <p style={{ fontSize: '0.72rem', color: 'var(--color-ink-muted)' }}>
                                 1-5 players, pass the phone
                             </p>
                         </div>
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--color-ink-muted)" strokeWidth="2" style={{ marginLeft: 'auto' }}>
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--color-ink-muted)" strokeWidth="2" style={{ marginLeft: 'auto', flexShrink: 0 }}>
                             <polyline points="9 18 15 12 9 6" />
                         </svg>
                     </button>
+
+                    {/* Fun Facts card */}
+                    <button
+                        onClick={availableFunFacts.length > 0 ? () => setView(VIEW.FUN_FACTS) : undefined}
+                        style={{
+                            background: 'var(--color-card)',
+                            border: '1.5px solid var(--color-ink-faint, #E7E5E4)',
+                            borderRadius: 12,
+                            padding: '12px 14px',
+                            cursor: availableFunFacts.length > 0 ? 'pointer' : 'default',
+                            textAlign: 'left',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: 12,
+                            transition: 'all 0.15s ease',
+                            opacity: availableFunFacts.length > 0 ? 1 : 0.5,
+                            width: '100%',
+                        }}
+                    >
+                        <div style={{ flexShrink: 0 }}>
+                            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--color-burgundy)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <path d="M9 18h6" />
+                                <path d="M10 22h4" />
+                                <path d="M12 2a7 7 0 0 0-4 12.7V17h8v-2.3A7 7 0 0 0 12 2z" />
+                            </svg>
+                        </div>
+                        <div style={{ minWidth: 0 }}>
+                            <p style={{ fontFamily: 'var(--font-serif)', fontWeight: 700, fontSize: '0.92rem', color: 'var(--color-ink)', marginBottom: 1 }}>
+                                Fun Facts
+                            </p>
+                            <p style={{ fontSize: '0.72rem', color: 'var(--color-ink-muted)' }}>
+                                {availableFunFacts.length > 0
+                                    ? `Surprising trivia \u00B7 ${seenFunFactCount}/${availableFunFacts.length} discovered`
+                                    : 'Learn events to unlock fun facts'
+                                }
+                            </p>
+                        </div>
+                        {availableFunFacts.length > 0 && (
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--color-ink-muted)" strokeWidth="2" style={{ marginLeft: 'auto', flexShrink: 0 }}>
+                                <polyline points="9 18 15 12 9 6" />
+                            </svg>
+                        )}
+                    </button>
                 </div>
 
-                {/* Fun Facts */}
-                <button
-                    onClick={availableFunFacts.length > 0 ? () => setView(VIEW.FUN_FACTS) : undefined}
-                    style={{
-                        background: 'var(--color-card)',
-                        border: '1.5px solid var(--color-ink-faint, #E7E5E4)',
-                        borderRadius: 14,
-                        padding: '20px 16px',
-                        cursor: availableFunFacts.length > 0 ? 'pointer' : 'default',
-                        textAlign: 'left',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: 14,
-                        transition: 'all 0.15s ease',
-                        opacity: availableFunFacts.length > 0 ? 1 : 0.5,
-                        width: '100%',
-                    }}
-                >
-                    <div style={{ flexShrink: 0 }}>
-                        <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="var(--color-burgundy)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                            <path d="M9 18h6" />
-                            <path d="M10 22h4" />
-                            <path d="M12 2a7 7 0 0 0-4 12.7V17h8v-2.3A7 7 0 0 0 12 2z" />
-                        </svg>
-                    </div>
-                    <div>
-                        <p style={{ fontFamily: 'var(--font-serif)', fontWeight: 700, fontSize: '1rem', color: 'var(--color-ink)', marginBottom: 2 }}>
-                            Fun Facts
-                        </p>
-                        <p style={{ fontSize: '0.78rem', color: 'var(--color-ink-muted)' }}>
-                            {availableFunFacts.length > 0
-                                ? `Surprising trivia \u00B7 ${seenFunFactCount}/${availableFunFacts.length} discovered`
-                                : 'Learn events to unlock fun facts'
-                            }
-                        </p>
-                    </div>
-                    {availableFunFacts.length > 0 && (
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--color-ink-muted)" strokeWidth="2" style={{ marginLeft: 'auto' }}>
-                            <polyline points="9 18 15 12 9 6" />
-                        </svg>
-                    )}
-                </button>
-
-                {/* Stats */}
+                {/* Stats — compact single row */}
                 {(ch.soloGamesPlayed > 0 || ch.multiplayerGamesPlayed > 0 || allTimeAccuracy !== null) && (
                     <div style={{
                         background: CHALLENGE_TINT,
-                        borderRadius: 12,
-                        padding: '14px 16px',
+                        borderRadius: 10,
+                        padding: '10px 12px',
                         display: 'flex',
-                        flexDirection: 'column',
-                        gap: 10,
+                        justifyContent: 'space-around',
+                        alignItems: 'center',
                     }}>
-                        {/* Top row: High Score + Accuracy */}
-                        <div style={{ display: 'flex', justifyContent: 'space-around' }}>
-                            <div style={{ textAlign: 'center' }}>
-                                <p style={{ fontSize: '1.25rem', fontWeight: 700, fontFamily: 'var(--font-serif)', color: 'var(--color-burgundy)' }}>
-                                    {ch.soloHighScore || 0}
-                                </p>
-                                <p style={{ fontSize: '0.7rem', color: 'var(--color-ink-muted)' }}>Solo Best</p>
-                            </div>
-                            <div style={{ textAlign: 'center' }}>
-                                <p style={{ fontSize: '1.25rem', fontWeight: 700, fontFamily: 'var(--font-serif)', color: 'var(--color-burgundy)' }}>
-                                    {ch.multiplayerVictories || 0}
-                                </p>
-                                <p style={{ fontSize: '0.7rem', color: 'var(--color-ink-muted)' }}>Victories</p>
-                            </div>
-                            {allTimeAccuracy !== null && (
-                                <div style={{ textAlign: 'center' }}>
-                                    <p style={{ fontSize: '1.25rem', fontWeight: 700, fontFamily: 'var(--font-serif)', color: 'var(--color-burgundy)' }}>
-                                        {allTimeAccuracy}%
-                                    </p>
-                                    <p style={{ fontSize: '0.7rem', color: 'var(--color-ink-muted)' }}>Accuracy</p>
-                                </div>
-                            )}
+                        <div style={{ textAlign: 'center' }}>
+                            <p style={{ fontSize: '1.05rem', fontWeight: 700, fontFamily: 'var(--font-serif)', color: 'var(--color-burgundy)', lineHeight: 1.1 }}>
+                                {ch.soloHighScore || 0}
+                            </p>
+                            <p style={{ fontSize: '0.62rem', color: 'var(--color-ink-muted)' }}>Best</p>
                         </div>
-                        {/* Bottom row: Games, Best Streak, Correct */}
+                        {allTimeAccuracy !== null && (
+                            <div style={{ textAlign: 'center' }}>
+                                <p style={{ fontSize: '1.05rem', fontWeight: 700, fontFamily: 'var(--font-serif)', color: 'var(--color-burgundy)', lineHeight: 1.1 }}>
+                                    {allTimeAccuracy}%
+                                </p>
+                                <p style={{ fontSize: '0.62rem', color: 'var(--color-ink-muted)' }}>Accuracy</p>
+                            </div>
+                        )}
+                        <div style={{ textAlign: 'center' }}>
+                            <p style={{ fontSize: '1.05rem', fontWeight: 700, fontFamily: 'var(--font-serif)', color: 'var(--color-burgundy)', lineHeight: 1.1 }}>
+                                {ch.multiplayerVictories || 0}
+                            </p>
+                            <p style={{ fontSize: '0.62rem', color: 'var(--color-ink-muted)' }}>Victories</p>
+                        </div>
                         {(ch.soloGamesPlayed > 0 || ch.multiplayerGamesPlayed > 0) && (
-                            <div style={{ display: 'flex', justifyContent: 'space-around', borderTop: '1px solid rgba(139, 65, 87, 0.08)', paddingTop: 10 }}>
-                                <div style={{ textAlign: 'center' }}>
-                                    <p style={{ fontSize: '1rem', fontWeight: 700, fontFamily: 'var(--font-serif)', color: 'var(--color-burgundy)' }}>
-                                        {(ch.soloGamesPlayed || 0) + (ch.multiplayerGamesPlayed || 0)}
-                                    </p>
-                                    <p style={{ fontSize: '0.7rem', color: 'var(--color-ink-muted)' }}>Games</p>
-                                </div>
-                                <div style={{ textAlign: 'center' }}>
-                                    <p style={{ fontSize: '1rem', fontWeight: 700, fontFamily: 'var(--font-serif)', color: 'var(--color-burgundy)' }}>
-                                        {ch.soloBestStreak || 0}
-                                    </p>
-                                    <p style={{ fontSize: '0.7rem', color: 'var(--color-ink-muted)' }}>Best Streak</p>
-                                </div>
-                                <div style={{ textAlign: 'center' }}>
-                                    <p style={{ fontSize: '1rem', fontWeight: 700, fontFamily: 'var(--font-serif)', color: 'var(--color-burgundy)' }}>
-                                        {ch.totalChallengeCorrect || 0}
-                                    </p>
-                                    <p style={{ fontSize: '0.7rem', color: 'var(--color-ink-muted)' }}>Correct</p>
-                                </div>
+                            <div style={{ textAlign: 'center' }}>
+                                <p style={{ fontSize: '1.05rem', fontWeight: 700, fontFamily: 'var(--font-serif)', color: 'var(--color-burgundy)', lineHeight: 1.1 }}>
+                                    {(ch.soloGamesPlayed || 0) + (ch.multiplayerGamesPlayed || 0)}
+                                </p>
+                                <p style={{ fontSize: '0.62rem', color: 'var(--color-ink-muted)' }}>Games</p>
                             </div>
                         )}
                     </div>
