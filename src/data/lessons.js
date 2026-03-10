@@ -185,7 +185,7 @@ export const ERA_QUIZ_GROUPS = [
             return this.lessonIds.flatMap(lid => LESSONS.find(l => l.id === lid)?.eventIds || []);
         },
         questionCount: 9,
-        passThreshold: 9, // ceil(0.9 * 9)
+        passThreshold: 7, // ~78% — 9 events available
     },
     {
         id: 'ancient',
@@ -194,8 +194,8 @@ export const ERA_QUIZ_GROUPS = [
         get eventIds() {
             return this.lessonIds.flatMap(lid => LESSONS.find(l => l.id === lid)?.eventIds || []);
         },
-        questionCount: 10,
-        passThreshold: 9,
+        questionCount: 12, // 15 events available — vary between retries
+        passThreshold: 9, // 75%
     },
     {
         id: 'medieval',
@@ -204,8 +204,8 @@ export const ERA_QUIZ_GROUPS = [
         get eventIds() {
             return this.lessonIds.flatMap(lid => LESSONS.find(l => l.id === lid)?.eventIds || []);
         },
-        questionCount: 10,
-        passThreshold: 9,
+        questionCount: 10, // 12 events available
+        passThreshold: 8, // 80%
     },
     {
         id: 'earlymodern',
@@ -215,7 +215,7 @@ export const ERA_QUIZ_GROUPS = [
             return this.lessonIds.flatMap(lid => LESSONS.find(l => l.id === lid)?.eventIds || []);
         },
         questionCount: 9,
-        passThreshold: 9,
+        passThreshold: 7, // ~78% — 9 events available
     },
     {
         id: 'modern',
@@ -224,8 +224,8 @@ export const ERA_QUIZ_GROUPS = [
         get eventIds() {
             return this.lessonIds.flatMap(lid => LESSONS.find(l => l.id === lid)?.eventIds || []);
         },
-        questionCount: 10,
-        passThreshold: 9,
+        questionCount: 12, // 15 events available — vary between retries
+        passThreshold: 9, // 75%
     },
 ];
 
