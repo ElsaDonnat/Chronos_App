@@ -8,6 +8,7 @@ import Mascot from '../Mascot';
 import LessonIcon from '../LessonIcon';
 import { LEVEL2_CHAPTERS } from '../../data/lessons';
 import * as feedback from '../../services/feedback';
+import { stripDatesFromDescription } from '../../utils/stripDates';
 import { shareText, buildLessonShareText } from '../../services/share';
 import StreakFlame from '../StreakFlame';
 import StreakCelebration from '../StreakCelebration';
@@ -1296,7 +1297,7 @@ function QuizQuestion({ question, lessonEventIds, onAnswer, onNext, onBack, onSk
                     <p className="text-xs uppercase tracking-wider font-semibold mb-2" style={{ color: 'var(--color-ink-faint)' }}>When did this happen?</p>
                     <h3 className="text-xl font-bold mb-1" style={{ fontFamily: 'var(--font-serif)' }}>{event.title}</h3>
                     <p className="text-sm mb-2 leading-relaxed" style={{ color: 'var(--color-ink-secondary)' }}>
-                        {event.description.substring(0, 80)}…
+                        {stripDatesFromDescription(event.description, 80)}
                     </p>
                     <div className="mcq-options mcq-options--grid mt-4">
                         {dateOptions.map((opt, i) => {
@@ -1578,7 +1579,7 @@ function DateInputQuestion({ event, onAnswer, onNext, onBack, onSkip }) {
                 </div>
                 <h3 className="text-lg font-bold mb-1" style={{ fontFamily: 'var(--font-serif)' }}>{event.title}</h3>
                 <p className="text-sm mb-2 leading-relaxed" style={{ color: 'var(--color-ink-secondary)' }}>
-                    {event.description.substring(0, 100)}…
+                    {stripDatesFromDescription(event.description, 100)}
                 </p>
                 {hint && (
                     <p className="text-xs italic mb-3" style={{ color: 'var(--color-ink-faint)' }}>{hint}</p>

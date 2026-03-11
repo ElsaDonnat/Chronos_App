@@ -7,6 +7,7 @@ import { calculateNextReview, getDueEvents, getCardStatus } from '../data/spaced
 import { Card, Button, MasteryDots, ProgressBar, Divider, CategoryTag, ImportanceTag, DiHBadge, StarButton, TabSelector, ConfirmModal, ExpandableText, ControversyNote } from '../components/shared';
 import Mascot from '../components/Mascot';
 import * as feedback from '../services/feedback';
+import { stripDatesFromDescription } from '../utils/stripDates';
 import { shareText, buildPracticeShareText } from '../services/share';
 import StreakCelebration from '../components/StreakCelebration';
 
@@ -1458,7 +1459,7 @@ function PracticeQuestion({ question, eventMastery, isStarred, onToggleStar, onA
                 <Card style={answered && score ? { backgroundColor: SCORE_COLORS[score].bg, borderLeft: `3px solid ${SCORE_COLORS[score].border}` } : {}}>
                     <p className="text-xs uppercase tracking-wider font-semibold mb-2" style={{ color: 'var(--color-ink-faint)' }}>When did this happen?</p>
                     <h3 className="text-lg font-bold mb-1" style={{ fontFamily: 'var(--font-serif)' }}>{event.title}</h3>
-                    <p className="text-sm mb-5 leading-relaxed" style={{ color: 'var(--color-ink-secondary)' }}>{event.description.substring(0, 100)}…</p>
+                    <p className="text-sm mb-5 leading-relaxed" style={{ color: 'var(--color-ink-secondary)' }}>{stripDatesFromDescription(event.description, 100)}</p>
                     <div className="mcq-options mcq-options--grid">
                         {dateMCQOpts.map((opt, i) => {
                             const isCorrect = opt.isCorrect;
@@ -1500,7 +1501,7 @@ function PracticeQuestion({ question, eventMastery, isStarred, onToggleStar, onA
                 <Card style={answered && score ? { backgroundColor: SCORE_COLORS[score].bg, borderLeft: `3px solid ${SCORE_COLORS[score].border}` } : {}}>
                     <p className="text-xs uppercase tracking-wider font-semibold mb-2" style={{ color: 'var(--color-ink-faint)' }}>When did this happen?</p>
                     <h3 className="text-lg font-bold mb-1" style={{ fontFamily: 'var(--font-serif)' }}>{event.title}</h3>
-                    <p className="text-sm mb-2 leading-relaxed" style={{ color: 'var(--color-ink-secondary)' }}>{event.description.substring(0, 100)}…</p>
+                    <p className="text-sm mb-2 leading-relaxed" style={{ color: 'var(--color-ink-secondary)' }}>{stripDatesFromDescription(event.description, 100)}</p>
                     {hint && <p className="text-xs italic mb-3" style={{ color: 'var(--color-ink-faint)' }}>{hint}</p>}
 
                     {!answered ? (
