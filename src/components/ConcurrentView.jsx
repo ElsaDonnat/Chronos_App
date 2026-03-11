@@ -1,7 +1,7 @@
 import { useState, useMemo, useRef, useCallback, useEffect } from 'react';
 import { CATEGORY_CONFIG as DEFAULT_CATEGORY_CONFIG } from '../data/events';
 import { MasteryDots } from './shared';
-import { SLIDER_MAX, ERA_SLIDER_SEGMENTS, sliderToYear, yearToSlider, getTimeWindow, formatSliderYear } from '../utils/timeSlider';
+import { SLIDER_MAX, ERA_SLIDER_SEGMENTS, sliderToYear, yearToSlider, getTimeWindow, formatSliderYear, getActiveEraColor } from '../utils/timeSlider';
 import * as feedback from '../services/feedback';
 
 // ConcurrentView-specific opacity: events in the fade zone dim to 0.4–0.7 instead of fully disappearing,
@@ -160,13 +160,13 @@ export default function ConcurrentView({ events, learnedIds, eventMastery, categ
                             <button
                                 key={seg.id}
                                 onClick={() => handleEraJump(seg.id)}
-                                className="flex-1 px-1.5 py-1.5 rounded-lg text-[10px] font-semibold transition-all duration-200 cursor-pointer flex flex-col items-center gap-0.5"
+                                className="flex-1 px-1.5 py-1.5 rounded-lg text-[15px] font-semibold transition-all duration-200 cursor-pointer flex flex-col items-center gap-0.5"
                                 style={{
-                                    backgroundColor: isActive ? 'var(--color-burgundy)' : 'rgba(var(--color-ink-rgb), 0.05)',
+                                    backgroundColor: isActive ? seg.color : 'rgba(var(--color-ink-rgb), 0.05)',
                                     color: isActive ? 'white' : 'var(--color-ink-muted)',
                                 }}
                             >
-                                <span>{seg.label}</span>
+                                <span>{seg.emoji}</span>
                                 {count > 0 && (
                                     <span className="text-[8px] font-bold" style={{
                                         opacity: isActive ? 0.85 : 0.5,
@@ -187,7 +187,7 @@ export default function ConcurrentView({ events, learnedIds, eventMastery, categ
                     value={sliderValue}
                     onChange={e => setSliderValue(Number(e.target.value))}
                     className="time-slider-input w-full"
-                    style={{ height: '24px' }}
+                    style={{ height: '24px', '--slider-color': getActiveEraColor(sliderValue) }}
                 />
 
                 {/* Year display + event count */}

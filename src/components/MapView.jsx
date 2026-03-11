@@ -2,7 +2,7 @@ import { useState, useMemo, useRef, useCallback, useEffect } from 'react';
 import { CATEGORY_CONFIG as DEFAULT_CATEGORY_CONFIG, EVENT_CONNECTIONS as DEFAULT_EVENT_CONNECTIONS } from '../data/events';
 import { MAP_REGIONS, REGION_CENTERS, projectToSVG, normalizeRegion, EVENT_COUNTRY_MAP, COUNTRY_TO_SUBREGION, REGION_COLORS } from '../data/mapPaths';
 import { Card, CategoryTag, ImportanceTag, MasteryDots, ExpandableText } from './shared';
-import { SLIDER_MAX, ERA_SLIDER_SEGMENTS, sliderToYear, yearToSlider, getTimeWindow, formatSliderYear, getEventTimeOpacity, getActiveEraId, getEraForYear } from '../utils/timeSlider';
+import { SLIDER_MAX, ERA_SLIDER_SEGMENTS, sliderToYear, yearToSlider, getTimeWindow, formatSliderYear, getEventTimeOpacity, getActiveEraId, getActiveEraColor, getEraForYear } from '../utils/timeSlider';
 import * as feedback from '../services/feedback';
 const CLUSTER_GRID = 25; // SVG units per grid cell
 
@@ -783,6 +783,7 @@ function TimeSlider({ value, onChange, onClose, learnedEventYears }) {
                     value={value}
                     onChange={(e) => onChange(Number(e.target.value))}
                     className="time-slider-input w-full"
+                    style={{ '--slider-color': getActiveEraColor(value) }}
                 />
                 {/* Era boundary tick marks */}
                 {ERA_SLIDER_SEGMENTS.slice(1).map(seg => (
@@ -802,13 +803,13 @@ function TimeSlider({ value, onChange, onClose, learnedEventYears }) {
                 {ERA_SLIDER_SEGMENTS.map(seg => (
                     <button key={seg.id}
                         onClick={() => handleEraJump(seg.id)}
-                        className="flex-1 text-center py-0.5 rounded text-[9px] font-semibold transition-all duration-200"
+                        className="flex-1 text-center py-0.5 rounded text-[13px] transition-all duration-200"
                         style={{
-                            backgroundColor: activeEra === seg.id ? 'var(--color-burgundy)' : 'transparent',
+                            backgroundColor: activeEra === seg.id ? seg.color : 'transparent',
                             color: activeEra === seg.id ? 'white' : 'var(--color-ink-faint)',
                         }}
                     >
-                        {seg.label}
+                        {seg.emoji}
                     </button>
                 ))}
             </div>

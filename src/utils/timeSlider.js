@@ -6,11 +6,11 @@
 export const SLIDER_MAX = 1000;
 
 export const ERA_SLIDER_SEGMENTS = [
-    { id: 'prehistory', label: 'Prehistory', start: -7000000, end: -3200, sliderStart: 0, sliderEnd: 200 },
-    { id: 'ancient', label: 'Ancient', start: -3200, end: 476, sliderStart: 200, sliderEnd: 400 },
-    { id: 'medieval', label: 'Medieval', start: 476, end: 1500, sliderStart: 400, sliderEnd: 600 },
-    { id: 'earlymodern', label: 'E. Modern', start: 1500, end: 1789, sliderStart: 600, sliderEnd: 800 },
-    { id: 'modern', label: 'Modern', start: 1789, end: 2030, sliderStart: 800, sliderEnd: 1000 },
+    { id: 'prehistory', label: 'Prehistory', emoji: '🦴', color: '#9E4A4A', start: -7000000, end: -3200, sliderStart: 0, sliderEnd: 200 },
+    { id: 'ancient', label: 'Ancient', emoji: '🏛️', color: '#7A6B50', start: -3200, end: 476, sliderStart: 200, sliderEnd: 400 },
+    { id: 'medieval', label: 'Medieval', emoji: '⚔️', color: '#B06A30', start: 476, end: 1500, sliderStart: 400, sliderEnd: 600 },
+    { id: 'earlymodern', label: 'E. Modern', emoji: '🧭', color: '#9A8528', start: 1500, end: 1789, sliderStart: 600, sliderEnd: 800 },
+    { id: 'modern', label: 'Modern', emoji: '🌍', color: '#B09035', start: 1789, end: 2030, sliderStart: 800, sliderEnd: 1000 },
 ];
 
 /** Convert a slider value (0–1000) to a calendar year via piecewise-linear mapping. */
@@ -83,6 +83,14 @@ export function getActiveEraId(sliderValue) {
         if (sliderValue >= seg.sliderStart && sliderValue < seg.sliderEnd) return seg.id;
     }
     return 'modern';
+}
+
+/** Return the era color for a given slider value. */
+export function getActiveEraColor(sliderValue) {
+    for (const seg of ERA_SLIDER_SEGMENTS) {
+        if (sliderValue >= seg.sliderStart && sliderValue < seg.sliderEnd) return seg.color;
+    }
+    return ERA_SLIDER_SEGMENTS[ERA_SLIDER_SEGMENTS.length - 1].color;
 }
 
 /** Return the era key for a given calendar year. */
