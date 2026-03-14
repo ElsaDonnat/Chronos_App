@@ -11,7 +11,7 @@
  *   ambientMusic.configure({ musicEnabled: true });
  */
 
-const TRACK_URL = '/bensound-silentwaves.mp3';
+const TRACK_URL = `${import.meta.env.BASE_URL}bensound-silentwaves.mp3`;
 const FADE_IN_SEC = 3;
 const FADE_OUT_SEC = 2;
 const CROSSFADE_SEC = 6; // overlap between ending and restarting

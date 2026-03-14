@@ -10,6 +10,12 @@ Use the version entries from the last playstore push to the most recent version 
 ### Added
 - **Challenge Quiz — Historian pool expansion**: Added 10 new curated questions to Historian tier (2 whichCameFirst, 3 trueOrFalse, 1 hardMCQ/date, 2 hardMCQ/location, 2 oddOneOut). Non-Western focus: Confucius, Ibn Battuta, Ibn Khaldun, Iranian Revolution, Song Dynasty paper money, Indian Ocean trade, and Murasaki Shikibu. New pool size: 35 questions.
 
+### Fixed
+- **Ambient music 404 on Capacitor** \u2014 mp3 URL was hardcoded as `/bensound-silentwaves.mp3` (absolute path), which fails on Android where `base` is `./`. Now uses `import.meta.env.BASE_URL` so the path resolves correctly on both GitHub Pages and Capacitor builds.
+
+### Changed
+- **Card content review (Daily Quiz events)** \u2014 reviewed all 30 daily quiz events (dih-0\u2013dih-29) and their description distractors; 0 edits needed. All dates, locations, descriptions, wrongTitles, and distractor tiers confirmed accurate. Minor structural note: daily events use broad continent regions ("Africa", "Asia") instead of the 14 sub-regions used by core events \u2014 not a factual error but a consistency gap for future cleanup.
+
 ## [1.9.19] - 2026-03-14
 
 ### Added
