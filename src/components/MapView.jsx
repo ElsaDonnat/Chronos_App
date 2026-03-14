@@ -656,8 +656,9 @@ function MapSearch({ events, learnedIds, onSelectEvent, onClose, categoryConfig 
                 if (!learnedIds.has(e.id)) return false;
                 const yearStr = String(Math.abs(e.year));
                 const title = e.title.toLowerCase();
-                const loc = (e.location?.region || '').toLowerCase();
-                return title.includes(q) || loc.includes(q) || yearStr.includes(q);
+                const region = (e.location?.region || '').toLowerCase();
+                const place = (e.location?.place || '').toLowerCase();
+                return title.includes(q) || region.includes(q) || place.includes(q) || yearStr.includes(q);
             })
             .slice(0, 6);
     }, [query, events, learnedIds]);
@@ -736,12 +737,59 @@ function MapSearch({ events, learnedIds, onSelectEvent, onClose, categoryConfig 
     );
 }
 
-// Time slider component
+// Time slider component with animated playback
+const PLAYBACK_DURATION_MS = 30000; // 30 seconds for full sweep
+
 function TimeSlider({ value, onChange, onClose, learnedEventYears }) {
     const activeEra = getActiveEraId(value);
     const year = sliderToYear(value);
+    const [isPlaying, setIsPlaying] = useState(false);
+    const playStartRef = useRef(null); // { time, startValue }
+
+    // Animated playback via requestAnimationFrame
+    useEffect(() => {
+        if (!isPlaying) { playStartRef.current = null; return; }
+        let raf;
+        const startValue = value;
+        const remaining = SLIDER_MAX - startValue;
+        if (remaining <= 0) { setIsPlaying(false); return; }
+        const duration = (remaining / SLIDER_MAX) * PLAYBACK_DURATION_MS;
+        const startTime = performance.now();
+        playStartRef.current = { time: startTime, startValue };
+
+        const tick = (now) => {
+            const elapsed = now - startTime;
+            const progress = Math.min(1, elapsed / duration);
+            const newValue = Math.round(startValue + progress * remaining);
+            onChange(newValue);
+            if (progress >= 1) {
+                setIsPlaying(false);
+            } else {
+                raf = requestAnimationFrame(tick);
+            }
+        };
+        raf = requestAnimationFrame(tick);
+        return () => cancelAnimationFrame(raf);
+    }, [isPlaying]); // eslint-disable-line react-hooks/exhaustive-deps
+
+    const handlePlayPause = () => {
+        if (isPlaying) {
+            setIsPlaying(false);
+        } else {
+            // If at the end, restart from beginning
+            if (value >= SLIDER_MAX - 5) onChange(0);
+            setIsPlaying(true);
+        }
+        feedback.tap();
+    };
+
+    const handleManualChange = (newValue) => {
+        if (isPlaying) setIsPlaying(false);
+        onChange(newValue);
+    };
 
     const handleEraJump = (segId) => {
+        if (isPlaying) setIsPlaying(false);
         const seg = ERA_SLIDER_SEGMENTS.find(s => s.id === segId);
         if (!seg) return;
         // Jump to median learned event year in this era (or midpoint if none)
@@ -756,15 +804,42 @@ function TimeSlider({ value, onChange, onClose, learnedEventYears }) {
         feedback.tap();
     };
 
+    const handleClose = () => {
+        if (isPlaying) setIsPlaying(false);
+        onClose();
+    };
+
     return (
         <div className="px-3 py-2" style={{ backgroundColor: 'rgba(var(--color-parchment-rgb, 250, 246, 240), 0.92)', backdropFilter: 'blur(4px)' }}>
-            {/* Year display + close */}
+            {/* Year display + play/pause + close */}
             <div className="flex items-center justify-between mb-1.5">
-                <p className="text-xs font-bold" style={{ fontFamily: 'var(--font-serif)', color: 'var(--color-burgundy)' }}>
-                    {formatSliderYear(year)}
-                </p>
+                <div className="flex items-center gap-1.5">
+                    <button
+                        onClick={handlePlayPause}
+                        className="w-5 h-5 flex items-center justify-center rounded-full transition-colors duration-150"
+                        style={{
+                            backgroundColor: isPlaying ? 'var(--color-burgundy)' : 'rgba(var(--color-ink-rgb), 0.08)',
+                            color: isPlaying ? 'white' : 'var(--color-burgundy)',
+                        }}
+                        title={isPlaying ? 'Pause' : 'Play timeline'}
+                    >
+                        {isPlaying ? (
+                            <svg width="8" height="8" viewBox="0 0 10 10">
+                                <rect x="1" y="1" width="3" height="8" rx="0.5" fill="currentColor" />
+                                <rect x="6" y="1" width="3" height="8" rx="0.5" fill="currentColor" />
+                            </svg>
+                        ) : (
+                            <svg width="8" height="8" viewBox="0 0 10 10">
+                                <path d="M2 1l7 4-7 4z" fill="currentColor" />
+                            </svg>
+                        )}
+                    </button>
+                    <p className="text-xs font-bold" style={{ fontFamily: 'var(--font-serif)', color: 'var(--color-burgundy)' }}>
+                        {formatSliderYear(year)}
+                    </p>
+                </div>
                 <button
-                    onClick={onClose}
+                    onClick={handleClose}
                     className="w-5 h-5 flex items-center justify-center rounded-full"
                     style={{ color: 'var(--color-ink-muted)', backgroundColor: 'rgba(var(--color-ink-rgb), 0.06)' }}
                 >
@@ -781,7 +856,7 @@ function TimeSlider({ value, onChange, onClose, learnedEventYears }) {
                     min="0"
                     max={SLIDER_MAX}
                     value={value}
-                    onChange={(e) => onChange(Number(e.target.value))}
+                    onChange={(e) => handleManualChange(Number(e.target.value))}
                     className="time-slider-input w-full"
                 />
                 {/* Era boundary tick marks */}

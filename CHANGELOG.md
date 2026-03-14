@@ -5,6 +5,48 @@ Format follows [Keep a Changelog](https://keepachangelog.com/) and [Semantic Ver
 
 Use the version entries from the last playstore push to the most recent version for Play Store "What's New" text.
 
+## [1.9.20] - 2026-03-14
+
+### Added
+- **Challenge Quiz — Historian pool expansion**: Added 10 new curated questions to Historian tier (2 whichCameFirst, 3 trueOrFalse, 1 hardMCQ/date, 2 hardMCQ/location, 2 oddOneOut). Non-Western focus: Confucius, Ibn Battuta, Ibn Khaldun, Iranian Revolution, Song Dynasty paper money, Indian Ocean trade, and Murasaki Shikibu. New pool size: 35 questions.
+
+## [1.9.19] - 2026-03-14
+
+### Added
+- **Level 2 Chapter: Food & Agriculture** \u2014 4-lesson chapter with 10 new events (f177\u2013f186) tracing how food shaped civilization from the Neolithic to GMOs. Rice cultivation in China, maize domestication in Mesoamerica, the ancient spice trade, the Columbian Exchange, sugar & the plantation economy, the Irish Potato Famine, Fritz Haber & synthetic fertilizer, the Dust Bowl, the Green Revolution, and the GMO debate. Reuses f6 (Neolithic Revolution) and f33 (Columbus). Lime-green theme (#65A30D), seedling icon (new icon index 45). Hand-crafted description distractors and controversy notes for all events. Rich event connections linking to existing Exploration, Plagues, and Slave Trade events.
+- **QA check (2026-03-14)**: lint (173 problems, all pre-existing `no-useless-escape` + unused directives), both builds pass (Capacitor + GitHub Pages), no merge artifacts. Data integrity: 253 challengeQuiz refs valid, no duplicate IDs, no orphan connections. Pre-existing issue `rev-4` (2 eventIds) unchanged — see ERROR_LOG.md. New content from v1.9.18 (Advanced pool expansion) and v1.9.19 (Food & Agriculture chapter) verified clean.
+
+## [1.9.18] - 2026-03-14
+
+### Added
+- **Challenge Quiz — Advanced pool expansion**: Added 10 new curated questions to Advanced tier (3 whichCameFirst, 3 trueOrFalse, 2 hardMCQ, 2 oddOneOut). Draws from under-represented chapters: Exploration & Discovery, Money & Trade, Philosophy & Ideas, Women Who Changed History. New pool size: 34 questions.
+
+### Changed
+- **Card content review (Philosophy & Ideas)** \u2014 reviewed 10 cards (f157\u2013f166); 1 edit made:
+  - **f165 (Karl Marx):** Replaced d:2 distractor "Marx predicted that communist revolutions would happen first in advanced industrial nations" \u2014 this was historically TRUE (Marx did predict this, per his own controversy notes), so a knowledgeable student would be unfairly penalized. Replaced with a genuinely false d:2 about parliamentary reform.
+- Cards f157, f158, f159, f160, f161, f162, f163, f164, f166 reviewed and confirmed accurate \u2014 no changes needed.
+
+## [1.9.17] - 2026-03-13
+
+### Changed
+- **Card content review (Women Who Changed History)** \u2014 reviewed 10 cards (f167\u2013f176); 2 edits made:
+  - **f172 (Queen Nzinga):** Fixed region from "West Africa" to "Southern Africa" \u2014 Angola is classified as Southern Africa in the map system, and "West Africa" caused incorrect map placement.
+  - **f174 (Lakshmibai):** Changed "infant son" to "young son" \u2014 Damodar Rao was approximately 5\u20137 years old during the 1857 Rebellion, not an infant.
+- Cards f167, f168, f169, f170, f171, f173, f175, f176 reviewed and confirmed accurate \u2014 no changes needed.
+- **QA check (2026-03-13)**: lint (173 problems, all pre-existing `no-useless-escape`), both builds pass, no merge artifacts. Data integrity: 176 event IDs valid, 232 challengeQuiz refs valid, no duplicate IDs, no orphan connections. Pre-existing issue `rev-4` (2 eventIds) unchanged \u2014 see ERROR_LOG.md.
+
+## [1.9.16] - 2026-03-13
+
+### Added
+- **Level 2 Chapter: Women Who Changed History** \u2014 4-lesson chapter with 10 new events (f167\u2013f176) tracing women who broke barriers across civilizations. Hatshepsut (Egypt\u2019s female pharaoh), Hypatia of Alexandria, Wu Zetian (China\u2019s only empress), Murasaki Shikibu (world\u2019s first novel), Joan of Arc, Queen Nzinga (anti-colonial resistance), Sor Juana In\u00e9s de la Cruz, Lakshmibai (Rani of Jhansi), Sojourner Truth, Wangari Maathai (Green Belt Movement). Reuses f8 (Unification of Egypt) and f39 (Atlantic Slave Trade). Deep rose theme (#BE185D), crown icon. Hand-crafted description distractors, controversy notes, and event connections for all events. Strong non-Western coverage (Egypt, China, Japan, Angola, Mexico, India, Kenya).
+
+## [1.9.15] - 2026-03-11
+
+### Added
+- **Level 2 Chapter: Philosophy & Ideas** \u2014 4-lesson chapter with 10 new events (f157\u2013f166) tracing the history of ideas from Confucius to postcolonial thought. Confucius & the Analects, Trial of Socrates, Nalanda University, Ibn Khaldun\u2019s Muqaddimah, the Printing Press & Reformation, Descartes, the Encyclop\u00e9die, Wollstonecraft\u2019s Vindication, Marx & the Communist Manifesto, Fanon & decolonial thought. Reuses f14 (The Axial Age) and f40 (The Enlightenment). Slate theme, iconIndex 17. Hand-crafted description distractors, controversy notes, and event connections for all events. Strong non-Western coverage (China, India, North Africa).
+- **QA check**: lint, both builds (Capacitor + GitHub Pages), and data integrity checks all passed. No new issues from v1.9.15. 168 pre-existing lint errors (mostly `no-useless-escape` in Unicode data files) — none in the modified files.
+- **QA check (2026-03-13)**: lint (173 problems, all pre-existing `no-useless-escape`), both builds pass. Data integrity found 1 pre-existing issue: L2 lesson `rev-4` has 2 eventIds instead of 3 — see ERROR_LOG.md. All event references, connections, distractors, and challenge quiz refs are valid. 196 total events, 21 L1 lessons, 11 L2 chapters.
+
 ## [1.9.14] - 2026-03-10
 
 ### Fixed

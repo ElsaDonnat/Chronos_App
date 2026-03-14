@@ -1878,4 +1878,308 @@ export const DESCRIPTION_DISTRACTORS = {
             { text: "The WTO\u2019s founding in 1995, combined with container shipping and the internet, tripled global trade in a decade and lifted hundreds of millions from poverty without any significant downsides.", d: 3 },
         ]
     },
+    // ─── PHILOSOPHY & IDEAS ──────────────────────────────────────────────
+    f157: {
+        hardCorrect: "Confucius\u2019s students compiled his sayings in the Analects, which shaped Chinese governance for over two millennia.",
+        distractors: [
+            { text: "Confucius personally wrote the Analects as a systematic philosophical treatise.", d: 1 },
+            { text: "Confucius was a powerful government official who imposed his ethical system by law.", d: 1 },
+            { text: "Confucius\u2019s teachings were immediately adopted as state ideology during his own lifetime.", d: 2 },
+            { text: "The Analects primarily addressed religious rituals and worship rather than ethical governance.", d: 2 },
+            { text: "Confucius outlined an ethical system based on meritocratic governance and self-cultivation that was adopted by the Qin Dynasty as its founding philosophy.", d: 3 },
+        ]
+    },
+    f158: {
+        hardCorrect: "Socrates\u2019s method of relentless questioning, preserved by Plato, became the blueprint for critical thinking.",
+        distractors: [
+            { text: "Socrates wrote several important books that became the foundation of Western philosophy.", d: 1 },
+            { text: "Socrates was executed for leading a failed military revolt against the Athenian government.", d: 1 },
+            { text: "Socrates was charged with corrupting the youth because he taught them to reject democracy entirely.", d: 2 },
+            { text: "After his trial, Socrates escaped Athens with Plato\u2019s help and continued teaching in exile.", d: 2 },
+            { text: "Athens tried Socrates for impiety and corrupting the youth; he accepted exile rather than death, allowing Plato to record his teachings in the years that followed.", d: 3 },
+        ]
+    },
+    f159: {
+        hardCorrect: "Nalanda attracted 10,000 students from China, Korea, Tibet, and Southeast Asia for over 700 years.",
+        distractors: [
+            { text: "Nalanda was a Hindu temple complex that primarily served local Indian scholars.", d: 1 },
+            { text: "Nalanda was founded by Alexander the Great during his invasion of India.", d: 1 },
+            { text: "Nalanda was a small monastery with a few hundred monks, famous mainly for its architecture.", d: 2 },
+            { text: "Nalanda was primarily a medical school that pioneered surgical techniques used across Asia.", d: 2 },
+            { text: "Nalanda hosted 10,000 students from across Asia and taught philosophy, astronomy, and medicine until it was peacefully absorbed into the Delhi Sultanate\u2019s university system in the 12th century.", d: 3 },
+        ]
+    },
+    f160: {
+        hardCorrect: "Ibn Khaldun proposed that civilizations rise and fall in predictable cycles driven by group solidarity (asabiyyah).",
+        distractors: [
+            { text: "Ibn Khaldun was a European scholar who studied North African cultures from a distance.", d: 1 },
+            { text: "The Muqaddimah was primarily a religious text about Islamic theology.", d: 1 },
+            { text: "Ibn Khaldun\u2019s Muqaddimah focused on military strategy and was used as a manual by Ottoman generals.", d: 2 },
+            { text: "Ibn Khaldun argued that civilizations prosper when they abandon nomadic traditions and embrace urban luxury.", d: 2 },
+            { text: "Ibn Khaldun wrote the Muqaddimah in Baghdad\u2019s House of Wisdom, proposing that civilizations rise and fall based on the strength of their religious institutions.", d: 3 },
+        ]
+    },
+    f161: {
+        hardCorrect: "The printing press turned Luther\u2019s local protest into a continental revolution by spreading his ideas faster than censors could suppress them.",
+        distractors: [
+            { text: "Luther\u2019s 95 Theses were spread primarily by word of mouth across German taverns.", d: 1 },
+            { text: "The Catholic Church immediately accepted Luther\u2019s reforms and revised its teachings.", d: 1 },
+            { text: "Luther translated the Bible into German before writing the 95 Theses, which is what gave him his audience.", d: 2 },
+            { text: "The printing press had little impact on the Reformation, which spread mainly through political alliances.", d: 2 },
+            { text: "Luther nailed his 95 Theses to the Wittenberg church door and the printing press spread them across Europe, but the Reformation succeeded mainly because the Pope quickly excommunicated Luther, turning him into a martyr.", d: 3 },
+        ]
+    },
+    f162: {
+        hardCorrect: "Descartes published Discourse on the Method while hiding in the Netherlands during the Thirty Years\u2019 War.",
+        distractors: [
+            { text: "Descartes was a Greek philosopher who taught at the Academy in Athens.", d: 1 },
+            { text: "\u2018I think, therefore I am\u2019 was Descartes\u2019s proof that God exists.", d: 1 },
+            { text: "Descartes\u2019s main contribution was rejecting all mathematics in favor of pure philosophical reasoning.", d: 2 },
+            { text: "Descartes argued that certainty comes from sensory experience, not from thought alone.", d: 2 },
+            { text: "Descartes proposed that thinking is the only certainty, launching modern philosophy by uniting mind and body into a single rational substance.", d: 3 },
+        ]
+    },
+    f163: {
+        hardCorrect: "The Encyclop\u00e9die was repeatedly banned by the Church and the French crown but still sold 25,000 copies.",
+        distractors: [
+            { text: "The Encyclop\u00e9die was commissioned by the French king to celebrate the achievements of his reign.", d: 1 },
+            { text: "Diderot wrote all 28 volumes of the Encyclop\u00e9die single-handedly over 10 years.", d: 1 },
+            { text: "The Encyclop\u00e9die was the first encyclopedia ever written, with no predecessors in any language.", d: 2 },
+            { text: "The Church endorsed the Encyclop\u00e9die as a valuable educational resource and helped distribute it.", d: 2 },
+            { text: "Diderot and 150 contributors compiled all human knowledge in the Encyclop\u00e9die, which was enthusiastically supported by the French crown as a monument to national prestige.", d: 3 },
+        ]
+    },
+    f164: {
+        hardCorrect: "Wollstonecraft turned the Enlightenment\u2019s own logic of reason and rights against its blind spot: the exclusion of women.",
+        distractors: [
+            { text: "Wollstonecraft argued that women should not be educated because it would disrupt society.", d: 1 },
+            { text: "A Vindication of the Rights of Woman was written during the American Revolution in Philadelphia.", d: 1 },
+            { text: "Wollstonecraft argued that women were biologically superior to men and should therefore lead society.", d: 2 },
+            { text: "Her book was celebrated throughout her lifetime and immediately led to women gaining the right to vote.", d: 2 },
+            { text: "Wollstonecraft argued that women deserve equal education and political rights, and her work was immediately embraced by Enlightenment thinkers, leading to legal reforms across Europe within her lifetime.", d: 3 },
+        ]
+    },
+    f165: {
+        hardCorrect: "Marx\u2019s analysis of inequality, labor, and power remains the most influential critique of capitalism ever written.",
+        distractors: [
+            { text: "Marx was a wealthy factory owner who wrote about workers\u2019 rights from personal experience.", d: 1 },
+            { text: "The Communist Manifesto was a 500-page academic treatise on economic theory.", d: 1 },
+            { text: "The Communist Manifesto proposed gradual reform through parliamentary democracy rather than workers\u2019 revolution.", d: 2 },
+            { text: "Marx\u2019s ideas were immediately implemented in Germany, where he lived and published.", d: 2 },
+            { text: "Marx co-wrote a 23-page pamphlet arguing that class struggle drives history, and communist revolutions in industrial nations like Britain and France soon validated his predictions.", d: 3 },
+        ]
+    },
+    f166: {
+        hardCorrect: "Fanon was a psychiatrist from Martinique who was radicalized while treating tortured Algerians during France\u2019s colonial war.",
+        distractors: [
+            { text: "Fanon was a French military officer who wrote about colonialism after retiring.", d: 1 },
+            { text: "The Wretched of the Earth argued that colonialism was beneficial for both colonizers and colonized.", d: 1 },
+            { text: "Fanon was an Algerian-born philosopher who studied colonialism from an academic distance in Paris.", d: 2 },
+            { text: "Fanon\u2019s work focused exclusively on economic exploitation and ignored the psychological effects of colonialism.", d: 2 },
+            { text: "Fanon, a psychiatrist from Martinique, analyzed colonialism\u2019s psychological damage in The Wretched of the Earth, which advocated exclusively for peaceful negotiation as the path to decolonization.", d: 3 },
+        ]
+    },
+    // ─── WOMEN WHO CHANGED HISTORY ─────────────────────────────────
+    f167: {
+        hardCorrect: "After Hatshepsut\u2019s death, her successor Thutmose III systematically erased her images and names from monuments.",
+        distractors: [
+            { text: "Hatshepsut was a foreign queen who married into the Egyptian royal family.", d: 1 },
+            { text: "Hatshepsut\u2019s reign was marked by constant warfare and military conquest.", d: 1 },
+            { text: "Hatshepsut was deposed by a military coup led by rival priests.", d: 2 },
+            { text: "Hatshepsut ruled as regent for her son and never claimed the full title of pharaoh.", d: 2 },
+            { text: "Hatshepsut declared herself pharaoh and ruled for roughly twenty years, but her successor immediately erased all evidence of her reign upon taking power.", d: 3 },
+        ]
+    },
+    f168: {
+        hardCorrect: "Hypatia lectured to both pagan and Christian students, and her murder symbolized the violent end of classical learning in Alexandria.",
+        distractors: [
+            { text: "Hypatia was a Roman senator\u2019s daughter who wrote philosophical texts in private.", d: 1 },
+            { text: "Hypatia fled Alexandria and founded a new school of philosophy in Constantinople.", d: 1 },
+            { text: "Hypatia was a Christian convert whose murder was motivated by pagan hostility to Christianity.", d: 2 },
+            { text: "Hypatia\u2019s school was closed by imperial decree because her teachings contradicted Church doctrine.", d: 2 },
+            { text: "Hypatia was Alexandria\u2019s last great scholar, murdered by a pagan mob angered by her Christian sympathies, marking the end of classical learning.", d: 3 },
+        ]
+    },
+    f169: {
+        hardCorrect: "Wu Zetian reformed the civil service examination to promote merit over aristocratic birth and championed Buddhism.",
+        distractors: [
+            { text: "Wu Zetian was born into the royal family and inherited the throne directly.", d: 1 },
+            { text: "Wu Zetian\u2019s rule was so weak that the Tang Dynasty collapsed during her reign.", d: 1 },
+            { text: "Wu Zetian rose to power through a peasant revolution against the Tang aristocracy.", d: 2 },
+            { text: "Wu Zetian abolished the civil service exams in favor of hereditary appointments.", d: 2 },
+            { text: "China\u2019s only female emperor reformed the civil service to favor aristocratic families over common scholars and promoted Confucianism over Buddhism.", d: 3 },
+        ]
+    },
+    f170: {
+        hardCorrect: "Murasaki wrote in Japanese rather than the Chinese script used by male scholars, turning a language considered \u2018lesser\u2019 into literary greatness.",
+        distractors: [
+            { text: "The Tale of Genji was a collection of poetry rather than a prose narrative.", d: 1 },
+            { text: "Murasaki was a Buddhist nun who wrote religious texts disguised as fiction.", d: 1 },
+            { text: "Murasaki wrote The Tale of Genji in Chinese to gain acceptance among male scholars.", d: 2 },
+            { text: "The Tale of Genji was published anonymously because women were forbidden from writing.", d: 2 },
+            { text: "Murasaki\u2019s 54-chapter novel is considered the world\u2019s first novel, though she wrote it in the prestige Chinese script to ensure it would be taken seriously by male scholars.", d: 3 },
+        ]
+    },
+    f171: {
+        hardCorrect: "Joan lifted the siege of Orl\u00e9ans in just nine days, turning the Hundred Years\u2019 War\u2019s tide in France\u2019s favor.",
+        distractors: [
+            { text: "Joan of Arc was a noblewoman trained in military strategy from childhood.", d: 1 },
+            { text: "Joan was captured by the French king who no longer needed her after his victory.", d: 1 },
+            { text: "Joan fought primarily as a symbolic figurehead and never participated in actual combat.", d: 2 },
+            { text: "Joan was tried and executed by the French church for practicing witchcraft.", d: 2 },
+            { text: "A teenage peasant girl led French armies to victory at Orl\u00e9ans, was captured by Burgundian allies of England, and was burned at the stake after a secular trial for treason rather than heresy.", d: 3 },
+        ]
+    },
+    f172: {
+        hardCorrect: "Nzinga forged alliances with the Dutch and led guerrilla campaigns against the Portuguese for nearly four decades.",
+        distractors: [
+            { text: "Nzinga was a Portuguese-educated queen who initially cooperated with the slave trade.", d: 1 },
+            { text: "Nzinga defeated the Portuguese in a single decisive battle and ended the slave trade.", d: 1 },
+            { text: "Nzinga allied with the French navy to blockade Portuguese trade routes.", d: 2 },
+            { text: "Nzinga accepted Portuguese terms after a few years of resistance and converted to Christianity.", d: 2 },
+            { text: "Nzinga fought Portuguese colonialism for nearly four decades, allied with the British rather than the Dutch, and was eventually forced to flee her kingdom.", d: 3 },
+        ]
+    },
+    f173: {
+        hardCorrect: "Sor Juana entered a convent because it was the only way a woman could pursue intellectual life in 17th-century Mexico.",
+        distractors: [
+            { text: "Sor Juana was a wealthy heiress who founded her own private university.", d: 1 },
+            { text: "Sor Juana\u2019s works were celebrated by the Church and used in religious education.", d: 1 },
+            { text: "Sor Juana entered the convent out of deep religious devotion and wrote exclusively on theological topics.", d: 2 },
+            { text: "Sor Juana smuggled her writings to Spain where they were published without Church interference.", d: 2 },
+            { text: "Sor Juana entered a convent to pursue intellectual freedom and became colonial Latin America\u2019s greatest writer, but voluntarily gave up writing after a spiritual awakening rather than under Church pressure.", d: 3 },
+        ]
+    },
+    f174: {
+        hardCorrect: "The British praised Lakshmibai as the bravest of their enemies, and she became a symbol of Indian resistance for a century.",
+        distractors: [
+            { text: "Lakshmibai was a British-educated princess who led a diplomatic protest.", d: 1 },
+            { text: "Lakshmibai fled to Nepal and lived in exile after the rebellion failed.", d: 1 },
+            { text: "Lakshmibai commanded her forces from a palace fortress and never fought in person.", d: 2 },
+            { text: "Lakshmibai surrendered to the British after negotiating a peaceful settlement for her kingdom.", d: 2 },
+            { text: "Lakshmibai fought the British on horseback during the 1857 Rebellion and survived the war, living in hiding until India\u2019s independence.", d: 3 },
+        ]
+    },
+    f175: {
+        hardCorrect: "Truth\u2019s speech exposed how race and gender oppression were intertwined \u2014 a connection mainstream feminism would take another century to recognize.",
+        distractors: [
+            { text: "Sojourner Truth was a senator\u2019s daughter who campaigned for abolition in Congress.", d: 1 },
+            { text: "Truth\u2019s speech argued that women should wait until slavery was abolished before seeking their own rights.", d: 1 },
+            { text: "Truth\u2019s speech focused exclusively on the abolition of slavery without mentioning women\u2019s rights.", d: 2 },
+            { text: "Truth delivered her famous speech at a convention in Seneca Falls alongside Elizabeth Cady Stanton.", d: 2 },
+            { text: "A formerly enslaved woman challenged both racism and sexism at a convention in Ohio, delivering a carefully prepared written speech that was later published verbatim in major newspapers.", d: 3 },
+        ]
+    },
+    f176: {
+        hardCorrect: "Maathai connected deforestation to poverty, women\u2019s oppression, and political corruption, arguing they were the same problem.",
+        distractors: [
+            { text: "Maathai was a government minister who launched the tree-planting program as official policy.", d: 1 },
+            { text: "The Green Belt Movement was a UN initiative that Maathai was hired to lead.", d: 1 },
+            { text: "Maathai focused purely on environmental issues and avoided political confrontation with Kenya\u2019s government.", d: 2 },
+            { text: "Maathai won the Nobel Prize for Literature for her environmental writings.", d: 2 },
+            { text: "A Kenyan biologist launched the Green Belt Movement and won the Nobel Peace Prize for her work, which focused solely on reforestation without connecting it to women\u2019s empowerment or political reform.", d: 3 },
+        ]
+    },
+
+    // \u2500\u2500\u2500 Food & Agriculture (f177\u2013f186) \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
+    f177: {
+        hardCorrect: "Chinese rice cultivation required sophisticated paddy-field water management that shaped communal social structures for millennia.",
+        distractors: [
+            { text: "Rice was first domesticated in India and spread to China via early trade routes.", d: 1 },
+            { text: "Chinese farmers developed rice cultivation by observing European wheat-growing techniques.", d: 1 },
+            { text: "Rice was domesticated in northern China\u2019s dry plains, where farmers adapted it to arid conditions.", d: 2 },
+            { text: "Wild rice was domesticated rapidly in a single generation through deliberate crossbreeding experiments.", d: 2 },
+            { text: "Yangtze valley farmers domesticated rice around 8000 BCE using dry-field cultivation methods similar to those used for wheat in the Fertile Crescent.", d: 3 },
+        ]
+    },
+    f178: {
+        hardCorrect: "Teosinte\u2019s transformation into maize was one of the most radical genetic modifications ever achieved without modern science.",
+        distractors: [
+            { text: "Maize was brought to the Americas from Africa by early ocean-crossing migrants.", d: 1 },
+            { text: "Europeans introduced maize to the Americas during the Age of Exploration.", d: 1 },
+            { text: "Maize was domesticated from a wild grass called amaranth in the highlands of Peru.", d: 2 },
+            { text: "Teosinte naturally evolved into modern maize without any human intervention over thousands of years.", d: 2 },
+            { text: "Indigenous farmers selectively bred teosinte into maize in a rapid process that took only a few decades, transforming it from a wild grass into the staple crop of Mesoamerican civilizations.", d: 3 },
+        ]
+    },
+    f179: {
+        hardCorrect: "The astronomical prices Europeans paid for spices ultimately drove the Age of Exploration, as Portugal and Spain sought direct sea routes to bypass Arab middlemen.",
+        distractors: [
+            { text: "The spice trade was controlled exclusively by Chinese merchants who sailed directly to European ports.", d: 1 },
+            { text: "Spices were cheap and abundant in medieval Europe, used mainly as medicine rather than food flavoring.", d: 1 },
+            { text: "The spice trade was primarily a land-based route through Central Africa connecting Indian farmers to European buyers.", d: 2 },
+            { text: "European merchants traveled directly to India to buy spices throughout the medieval period, cutting out all middlemen.", d: 2 },
+            { text: "For three millennia, spices were among the most valuable commodities on Earth, traded mainly along land routes from India through Persia directly to European markets without intermediaries.", d: 3 },
+        ]
+    },
+    f180: {
+        hardCorrect: "The Columbian Exchange\u2019s darkest element was disease: smallpox, measles, and influenza killed an estimated 90% of the Indigenous population of the Americas.",
+        distractors: [
+            { text: "The Columbian Exchange primarily involved the transfer of manufactured goods like textiles and tools between continents.", d: 1 },
+            { text: "All plants and animals were already present on every continent before Columbus; the Exchange merely increased trade volumes.", d: 1 },
+            { text: "The Columbian Exchange transferred crops from the Americas to Europe but brought no significant plants or animals in the other direction.", d: 2 },
+            { text: "Potatoes and tomatoes were native to Asia and were introduced to the Americas during the Columbian Exchange.", d: 2 },
+            { text: "After Columbus\u2019s voyages, crops like potatoes and maize spread to Europe while wheat and horses transformed the Americas, though disease played only a minor role in the demographic changes that followed.", d: 3 },
+        ]
+    },
+    f181: {
+        hardCorrect: "By 1750, sugar had transformed from an exotic luxury into an everyday necessity, and the profits from its trade helped finance the Industrial Revolution.",
+        distractors: [
+            { text: "Sugar cane was native to the Caribbean and was already being cultivated there before European arrival.", d: 1 },
+            { text: "Caribbean sugar plantations relied primarily on hired local labor rather than enslaved Africans.", d: 1 },
+            { text: "Sugar plantations in the Caribbean used a rotating workforce of indentured European laborers who served short-term contracts.", d: 2 },
+            { text: "Sugar remained a rare luxury item throughout the 18th century, consumed only by European royalty.", d: 2 },
+            { text: "Caribbean sugar plantations generated enormous wealth through enslaved labor, though working conditions were relatively humane compared to other colonial enterprises, and workers typically survived long enough to start families on the plantations.", d: 3 },
+        ]
+    },
+    f182: {
+        hardCorrect: "British policies \u2014 continued food exports from Ireland during the famine and inadequate relief \u2014 remain deeply controversial and shaped Irish identity for generations.",
+        distractors: [
+            { text: "The Irish Potato Famine was caused by a volcanic eruption that destroyed farmland across Ireland.", d: 1 },
+            { text: "Ireland\u2019s population grew significantly during the famine years due to increased food imports from Britain.", d: 1 },
+            { text: "The famine affected all of Europe equally, as the potato blight spread across every country simultaneously.", d: 2 },
+            { text: "Ireland depended on many varieties of potato, but the blight was so powerful it destroyed all of them at once.", d: 2 },
+            { text: "A potato blight destroyed Ireland\u2019s diverse agricultural base, causing mass starvation despite the British government\u2019s extensive and well-funded relief programs that fed millions.", d: 3 },
+        ]
+    },
+    f183: {
+        hardCorrect: "The Haber-Bosch process now produces fertilizer that feeds roughly half the world\u2019s population, but it also enabled the mass production of explosives for both World Wars.",
+        distractors: [
+            { text: "Fritz Haber invented a process for extracting nitrogen from seawater to create synthetic fertilizer.", d: 1 },
+            { text: "Synthetic fertilizer was first developed in the United States during World War II as a military project.", d: 1 },
+            { text: "Haber\u2019s process converts atmospheric oxygen into ammonia, which is the key ingredient in synthetic fertilizer.", d: 2 },
+            { text: "The Haber-Bosch process was developed solely for agricultural purposes and had no military applications.", d: 2 },
+            { text: "Fritz Haber discovered how to pull nitrogen from the air to make ammonia for fertilizer, a purely peaceful invention that was later misappropriated by the military without Haber\u2019s knowledge or involvement.", d: 3 },
+        ]
+    },
+    f184: {
+        hardCorrect: "Wind picked up millions of tons of exposed topsoil and created apocalyptic \u2018black blizzards\u2019 that darkened skies as far away as New York City.",
+        distractors: [
+            { text: "The Dust Bowl was caused by a massive wildfire that burned across the Great Plains for several years.", d: 1 },
+            { text: "The Dust Bowl occurred in the northeastern United States, devastating cities like Boston and Philadelphia.", d: 1 },
+            { text: "The Dust Bowl was caused primarily by a shift in ocean currents that dried out the Great Plains, with farming practices playing only a minor role.", d: 2 },
+            { text: "The Dust Bowl displaced roughly 250,000 people, mostly from urban areas near the affected farmland.", d: 2 },
+            { text: "Decades of deep plowing stripped the Great Plains of native grass, and when drought hit in 1930, massive dust storms displaced roughly 2.5 million people \u2014 though the land recovered naturally within a year once rains returned.", d: 3 },
+        ]
+    },
+    f185: {
+        hardCorrect: "Borlaug was awarded the Nobel Peace Prize in 1970, credited with saving more lives than any other person in history.",
+        distractors: [
+            { text: "The Green Revolution was a political movement in South America that redistributed farmland to peasants.", d: 1 },
+            { text: "Norman Borlaug was a British economist who proposed new trade policies to increase global food supply.", d: 1 },
+            { text: "Borlaug\u2019s wheat varieties were developed in India and later exported to Mexico and the rest of Latin America.", d: 2 },
+            { text: "The Green Revolution eliminated the need for synthetic fertilizers by developing crops that could grow in poor soil.", d: 2 },
+            { text: "Borlaug developed high-yield wheat that averted mass famine in India and Pakistan, and the new varieties thrived without needing synthetic fertilizers or irrigation, making them ideal for small-scale farmers.", d: 3 },
+        ]
+    },
+    f186: {
+        hardCorrect: "The controversy intensified as companies like Monsanto patented seeds, making it illegal for farmers to save and replant their own harvest.",
+        distractors: [
+            { text: "The first genetically modified food was a strain of wheat developed by the Soviet Union in the 1970s.", d: 1 },
+            { text: "GMO foods were universally embraced from the start, with no significant opposition from consumers or scientists.", d: 1 },
+            { text: "The Flavr Savr tomato was banned within months of release due to widespread allergic reactions in consumers.", d: 2 },
+            { text: "The GMO debate centered solely on human health risks, with no significant concerns about environmental or economic impacts.", d: 2 },
+            { text: "The Flavr Savr tomato sparked a global debate about food safety and corporate control, though seed patents were not a significant issue since farmers could freely save and replant genetically modified seeds.", d: 3 },
+        ]
+    },
 };

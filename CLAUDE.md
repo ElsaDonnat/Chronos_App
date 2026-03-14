@@ -64,8 +64,8 @@ No router — `App.jsx` uses `activeTab` state (`'learn'` | `'timeline'` | `'pra
 
 ### Data Layer (`src/data/`)
 
-- **`events.js`** — `ALL_EVENTS`: 156 core events (60 Level 1 + 96 Level 2) + 30 daily quiz events, each with `id`, `title`, `year`, `yearEnd` (for ranges), `location`, `category`, `difficulty` (1-3)
-- **`lessons.js`** — `LESSONS`: 21 Level 1 lessons (0-20). Lesson 0 is special (era overview, no events). Lessons 1-20 each have exactly 3 `eventIds`. `LEVEL2_CHAPTERS`: 10 thematic chapters (40 lessons) with independent progression
+- **`events.js`** — `ALL_EVENTS`: 166 core events (60 Level 1 + 106 Level 2) + 30 daily quiz events, each with `id`, `title`, `year`, `yearEnd` (for ranges), `location`, `category`, `difficulty` (1-3)
+- **`lessons.js`** — `LESSONS`: 21 Level 1 lessons (0-20). Lesson 0 is special (era overview, no events). Lessons 1-20 each have exactly 3 `eventIds`. `LEVEL2_CHAPTERS`: 11 thematic chapters (44 lessons) with independent progression
 - **`quiz.js`** — Quiz generation and scoring. Date scoring uses magnitude-based tolerances: prehistoric scales by order of magnitude (millions ±1M, 100Ks ±100K, etc.), medieval ±50, early modern exact+±5, modern exact+±3. Range events get 25% span bonus. XP calculated from difficulty × score
 - **`dailyQuiz.js`** — 10 days of daily quiz content (30 real historical events). Cycling: `dayIndex = daysSinceEpoch % 10`. Each day has 3 events with learn-then-quiz flow
 - **`achievements.js`** — 15 achievements across 7 categories + `useAchievementChecker()` hook that runs on state changes

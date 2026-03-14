@@ -2184,6 +2184,480 @@ const CORE_EVENTS = [
         controversyNotes: {
             what: "Whether globalization\u2019s net effect is positive or negative remains one of the most contested questions in economics. Proponents point to billions lifted from poverty; critics highlight rising inequality, environmental destruction, and the vulnerability of long supply chains exposed by COVID-19.",
         }
+    },
+    // ─── LEVEL 2: PHILOSOPHY & IDEAS ─────────────────────────────────────
+    {
+        id: "f157",
+        title: "Confucius & the Analects",
+        date: "c. 551\u2013479 BCE",
+        year: -551,
+        yearEnd: -479,
+        keywords: "Filial piety \u00B7 Ren \u00B7 Governance by virtue \u00B7 Civil service",
+        description: "A wandering teacher from the state of Lu outlined an ethical system based on respect for elders, self-cultivation, and benevolent governance. His students recorded his sayings in the Analects, which became the moral backbone of Chinese civilization for over two millennia \u2014 shaping everything from family life to imperial examinations.",
+        quizDescription: "Confucius taught ethics of respect and virtue that shaped Chinese civilization for millennia.",
+        location: { lat: 35.6, lng: 116.99, region: "East Asia", place: "Qufu, China" },
+        category: "culture",
+        difficulty: 1,
+        controversyNotes: {
+            what: "The Analects were compiled by disciples over generations, not written by Confucius himself. Scholars debate which passages reflect his actual words versus later additions. \u2018Confucianism\u2019 as a coherent system was largely constructed by later thinkers like Mencius and Xunzi, and the state ideology it became under the Han Dynasty differed significantly from Confucius\u2019s original teachings.",
+        }
+    },
+    {
+        id: "f158",
+        title: "The Trial of Socrates",
+        date: "399 BCE",
+        year: -399,
+        keywords: "Examined life \u00B7 Socratic method \u00B7 Martyrdom for ideas",
+        description: "Athens put its most famous philosopher on trial for \u2018corrupting the youth\u2019 and \u2018impiety.\u2019 Socrates refused to flee, drank hemlock, and died \u2014 turning himself into the West\u2019s first intellectual martyr. His method of relentless questioning, preserved by Plato, became the foundation of Western philosophy and the blueprint for critical thinking itself.",
+        quizDescription: "Socrates was executed for questioning Athenian beliefs, becoming an icon of free thought.",
+        location: { lat: 37.97, lng: 23.72, region: "Europe", place: "Athens, Greece" },
+        category: "culture",
+        difficulty: 1,
+        controversyNotes: {
+            what: "Almost everything we know about Socrates comes from Plato and Xenophon, who had very different portrayals. Plato\u2019s Socrates may be partly a literary character expressing Plato\u2019s own ideas. The real charges may have been more political than philosophical \u2014 Socrates had connections to oligarchs who had briefly overthrown Athenian democracy.",
+        }
+    },
+    {
+        id: "f159",
+        title: "Nalanda: The World\u2019s First University",
+        date: "c. 427\u20131193 CE",
+        year: 427,
+        yearEnd: 1193,
+        keywords: "Buddhist learning \u00B7 International scholars \u00B7 Logic \u00B7 Debate",
+        description: "In the flatlands of Bihar, India, a Buddhist monastery grew into a residential university with 10,000 students and 2,000 teachers from across Asia. For over 700 years, Nalanda taught logic, philosophy, astronomy, and medicine \u2014 attracting scholars from China, Korea, Tibet, and Southeast Asia. Its destruction by invaders in 1193 scattered Buddhist knowledge across the continent.",
+        quizDescription: "Nalanda was a massive Buddhist university in India that taught scholars from across Asia for 700 years.",
+        location: { lat: 25.14, lng: 85.45, region: "South Asia", place: "Bihar, India" },
+        category: "culture",
+        difficulty: 2,
+        controversyNotes: {
+            date: "The founding date is debated. Some traditions place it in the 5th century under the Gupta dynasty; archaeological evidence suggests the earliest structures date to around the 5th\u20136th century CE. The 427 CE date is approximate.",
+            what: "Whether Nalanda qualifies as a \u2018university\u2019 in the modern sense is debated. It had no degrees or formal curriculum in the Western sense. Some historians prefer \u2018monastic academy.\u2019 The destruction is traditionally attributed to Bakhtiyar Khilji\u2019s forces in 1193, but some scholars argue it had already been in decline.",
+        }
+    },
+    {
+        id: "f160",
+        title: "Ibn Khaldun & the Muqaddimah",
+        date: "1377 CE",
+        year: 1377,
+        keywords: "Cycles of civilization \u00B7 Historiography \u00B7 Social science \u00B7 Asabiyyah",
+        description: "A Tunisian scholar sitting in an Algerian fortress wrote the Muqaddimah (\u2018Introduction\u2019), arguably the first work of social science. Ibn Khaldun proposed that civilizations rise and fall in predictable cycles driven by group solidarity (asabiyyah) \u2014 an idea that anticipated sociology, economics, and political science by four centuries.",
+        quizDescription: "Ibn Khaldun wrote the Muqaddimah, proposing that civilizations rise and fall in predictable cycles.",
+        location: { lat: 34.88, lng: 2.83, region: "North Africa", place: "Qal\u2019at Ibn Salama, Algeria" },
+        category: "culture",
+        difficulty: 2,
+        controversyNotes: {
+            what: "Calling Ibn Khaldun the \u2018father of sociology\u2019 is common but debated. Some scholars argue this retroactively imposes modern categories on his work. Others point out that his cyclical theory was partly autobiographical \u2014 he witnessed the collapse of several North African dynasties firsthand. His ideas had limited influence in the Islamic world until European scholars rediscovered him in the 19th century.",
+        }
+    },
+    {
+        id: "f161",
+        title: "The Printing Press & the Reformation",
+        date: "1517 CE",
+        year: 1517,
+        keywords: "Martin Luther \u00B7 95 Theses \u00B7 Gutenberg \u00B7 Mass communication",
+        description: "When Martin Luther nailed his 95 Theses to a church door in Wittenberg, it was Gutenberg\u2019s printing press that turned a local protest into a continental revolution. Within weeks, Luther\u2019s ideas were reprinted across Germany. For the first time, a single thinker could challenge the most powerful institution in Europe \u2014 and win, because ideas could now spread faster than censors could suppress them.",
+        quizDescription: "Luther\u2019s ideas spread across Europe thanks to the printing press, breaking the Church\u2019s monopoly on thought.",
+        location: { lat: 51.87, lng: 12.65, region: "Europe", place: "Wittenberg, Germany" },
+        category: "culture",
+        difficulty: 1,
+        controversyNotes: {
+            what: "The story of Luther \u2018nailing\u2019 his theses to the church door may be legend \u2014 the first account of it was written after his death. What\u2019s certain is that printed copies spread rapidly. Some historians argue the Reformation was driven more by political and economic grievances than theological ones, and that Luther\u2019s ideas succeeded because German princes found them useful against papal authority.",
+        }
+    },
+    {
+        id: "f162",
+        title: "Ren\u00e9 Descartes: \u2018I Think, Therefore I Am\u2019",
+        date: "1637 CE",
+        year: 1637,
+        keywords: "Cogito \u00B7 Rationalism \u00B7 Mind-body dualism \u00B7 Modern philosophy",
+        description: "A French mathematician, hiding from the Thirty Years\u2019 War in the Netherlands, published Discourse on the Method \u2014 proposing that the only thing we can be certain of is our own thinking. Descartes\u2019s radical doubt swept away centuries of medieval scholasticism and launched modern philosophy, separating mind from body in a way that still shapes how we think about consciousness.",
+        quizDescription: "Descartes launched modern philosophy by arguing that thinking itself is the only certainty.",
+        location: { lat: 52.09, lng: 5.12, region: "Europe", place: "Leiden, Netherlands" },
+        category: "culture",
+        difficulty: 2,
+        controversyNotes: {
+            what: "Descartes\u2019s mind-body dualism has been criticized for centuries. Modern neuroscience largely rejects the idea that mind and body are separate substances. Some scholars argue his \u2018radical doubt\u2019 was more rhetorical than genuine \u2014 he always intended to arrive at certainty. The \u2018cogito\u2019 argument was also anticipated by Augustine (\u2018si fallor, sum\u2019 \u2014 \u2018if I am wrong, I exist\u2019).",
+        }
+    },
+    {
+        id: "f163",
+        title: "The Encyclop\u00e9die",
+        date: "1751\u20131772 CE",
+        year: 1751,
+        yearEnd: 1772,
+        keywords: "Diderot \u00B7 D\u2019Alembert \u00B7 Banned books \u00B7 Knowledge for all",
+        description: "Denis Diderot and Jean d\u2019Alembert assembled 150 contributors to create a 28-volume encyclopedia of all human knowledge. Repeatedly banned by the Church and the French crown, the Encyclop\u00e9die became a weapon of the Enlightenment \u2014 arguing that reason, science, and craft mattered more than tradition and divine authority. It sold 25,000 copies and helped lay the intellectual groundwork for the French Revolution.",
+        quizDescription: "Diderot\u2019s banned encyclopedia compiled all human knowledge and fueled the Enlightenment.",
+        location: { lat: 48.85, lng: 2.35, region: "Europe", place: "Paris, France" },
+        category: "culture",
+        difficulty: 2,
+        controversyNotes: {
+            what: "The Encyclop\u00e9die was not the first encyclopedia \u2014 Chambers\u2019 Cyclopaedia (1728) and earlier Chinese and Arabic encyclopedias preceded it. Diderot\u2019s version was distinctive for its Enlightenment agenda and subversive cross-references that undermined religious authority through implication rather than direct attack. Some scholars argue its influence on the Revolution is overstated \u2014 most readers were already educated elites.",
+        }
+    },
+    {
+        id: "f164",
+        title: "Mary Wollstonecraft\u2019s Vindication",
+        date: "1792 CE",
+        year: 1792,
+        keywords: "Women\u2019s rights \u00B7 Rational education \u00B7 Equality \u00B7 Proto-feminism",
+        description: "In the heat of the French Revolution, Mary Wollstonecraft published A Vindication of the Rights of Woman \u2014 the first major work arguing that women are not naturally inferior but merely denied education. She turned the Enlightenment\u2019s own logic of reason and rights against its blind spot: the exclusion of half of humanity. Her ideas were ridiculed in her lifetime but became the intellectual foundation of modern feminism.",
+        quizDescription: "Wollstonecraft argued women\u2019s apparent inferiority was due to denied education, not nature.",
+        location: { lat: 51.51, lng: -0.13, region: "Europe", place: "London, England" },
+        category: "culture",
+        difficulty: 2,
+        controversyNotes: {
+            what: "Wollstonecraft\u2019s reputation was destroyed after her death when her husband published a memoir revealing her suicide attempts and affairs. For a century, she was dismissed as immoral. Modern scholars debate whether she was a \u2018feminist\u2019 in the modern sense \u2014 she focused on education and morality, not legal equality or suffrage, and her views on class were limited to the middle class.",
+        }
+    },
+    {
+        id: "f165",
+        title: "Karl Marx & The Communist Manifesto",
+        date: "1848 CE",
+        year: 1848,
+        keywords: "Class struggle \u00B7 Capitalism \u00B7 Workers\u2019 revolution \u00B7 Historical materialism",
+        description: "A German philosopher living in exile co-wrote a 23-page pamphlet that would reshape the 20th century. Marx argued that all of history was driven by class struggle, and that capitalism would inevitably be overthrown by the workers it exploited. Whether embraced or rejected, his analysis of inequality, labor, and power remains the most influential critique of capitalism ever written.",
+        quizDescription: "Marx argued that class struggle drives history and capitalism would be overthrown by workers.",
+        location: { lat: 50.85, lng: 4.35, region: "Europe", place: "Brussels, Belgium" },
+        category: "culture",
+        difficulty: 2,
+        controversyNotes: {
+            what: "Marx\u2019s predictions about capitalism\u2019s collapse have not played out as he described. Communist revolutions occurred in agrarian countries (Russia, China), not the industrialized nations he expected. Defenders distinguish between Marx\u2019s analysis of capitalism (widely respected even by non-Marxists) and his political prescriptions (far more contested). The regimes claiming his legacy killed millions, but Marx himself never advocated totalitarianism.",
+        }
+    },
+    {
+        id: "f166",
+        title: "Frantz Fanon & Decolonial Thought",
+        date: "1961 CE",
+        year: 1961,
+        keywords: "The Wretched of the Earth \u00B7 Postcolonialism \u00B7 Violence \u00B7 Liberation",
+        description: "A psychiatrist from Martinique, radicalized while treating tortured Algerians during France\u2019s colonial war, wrote The Wretched of the Earth \u2014 a searing analysis of how colonialism damages both the colonized and the colonizer. Fanon argued that colonial subjects must reclaim their identity through struggle. His ideas electrified independence movements across Africa and Asia, and remain foundational to postcolonial thought worldwide.",
+        quizDescription: "Fanon analyzed colonialism\u2019s psychological damage and argued liberation required active resistance.",
+        location: { lat: 36.75, lng: 3.06, region: "North Africa", place: "Algiers, Algeria" },
+        category: "culture",
+        difficulty: 3,
+        controversyNotes: {
+            what: "Fanon\u2019s apparent endorsement of revolutionary violence remains deeply controversial. Some scholars read him as describing violence as an inevitable consequence of colonial oppression, not advocating it as a first choice. Others argue he genuinely saw violence as cathartic and necessary. His ideas have been both embraced by liberation movements and criticized as justifying terrorism.",
+            description: "Fanon died of leukemia at 36, just months after The Wretched of the Earth was published. Jean-Paul Sartre\u2019s inflammatory preface \u2014 which went further than Fanon himself in endorsing violence \u2014 colored the book\u2019s reception and may have led many readers to attribute Sartre\u2019s views to Fanon.",
+        }
+    },
+    // \u2500\u2500\u2500 LEVEL 2: WOMEN WHO CHANGED HISTORY \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
+    {
+        id: "f167",
+        title: "Hatshepsut: Egypt\u2019s Female Pharaoh",
+        date: "c. 1479\u20131458 BCE",
+        year: -1479,
+        yearEnd: -1458,
+        keywords: "Pharaoh \u00B7 Deir el-Bahri \u00B7 Trade expedition \u00B7 Erased from history",
+        description: "Hatshepsut declared herself pharaoh and ruled Egypt for roughly twenty years \u2014 one of the longest and most prosperous reigns of the 18th Dynasty. She launched major building projects, including her magnificent mortuary temple at Deir el-Bahri, and expanded trade networks, most famously sending an expedition to the Land of Punt. After her death, her successor Thutmose III systematically erased her images and names from monuments \u2014 yet her achievements survived the attempt to erase her from history.",
+        quizDescription: "A female pharaoh who ruled Egypt prosperously for twenty years before her images were erased.",
+        location: { lat: 25.74, lng: 32.61, region: "North Africa", place: "Deir el-Bahri, Egypt" },
+        category: "politics",
+        difficulty: 1,
+        controversyNotes: {
+            what: "Why Thutmose III erased Hatshepsut\u2019s name is debated. Older theories assumed misogyny, but modern scholars believe it may have been a political move to secure his own son\u2019s succession by simplifying the royal lineage. The erasure wasn\u2019t immediate \u2014 it began about 20 years after her death, suggesting political calculation rather than personal vendetta.",
+        }
+    },
+    {
+        id: "f168",
+        title: "Hypatia of Alexandria",
+        date: "c. 370\u2013415 CE",
+        year: 370,
+        yearEnd: 415,
+        keywords: "Mathematics \u00B7 Philosophy \u00B7 Classical learning \u00B7 Religious violence",
+        description: "The last great scholar of ancient Alexandria, Hypatia was a mathematician, astronomer, and philosopher who lectured to packed halls of students \u2014 both pagan and Christian. In 415 CE, a Christian mob dragged her from her chariot and murdered her, an act that symbolized the violent end of classical learning in the ancient world. Her death marked the twilight of Greco-Roman intellectual culture and foreshadowed centuries in which women\u2019s scholarship would be suppressed.",
+        quizDescription: "Alexandria\u2019s last great scholar was murdered by a mob, symbolizing the end of classical learning.",
+        location: { lat: 31.2, lng: 29.9, region: "North Africa", place: "Alexandria, Egypt" },
+        category: "culture",
+        difficulty: 2,
+        controversyNotes: {
+            what: "Hypatia\u2019s murder was politically motivated \u2014 she was allied with the Roman prefect Orestes, who was in conflict with Bishop Cyril. Later accounts romanticized her as a \u2018martyr of science\u2019 killed by anti-intellectual fanatics, but the reality was more about local power struggles. Her scholarly achievements, while real, may have been inflated by later admirers who saw her as a symbol.",
+        }
+    },
+    {
+        id: "f169",
+        title: "Wu Zetian: China\u2019s Only Empress",
+        date: "690\u2013705 CE",
+        year: 690,
+        yearEnd: 705,
+        keywords: "Tang Dynasty \u00B7 Merit-based exams \u00B7 Buddhism \u00B7 Female emperor",
+        description: "The only woman in Chinese history to officially rule as emperor in her own right, Wu Zetian rose from concubine to empress through a combination of political genius and ruthlessness. She expanded the Tang Dynasty\u2019s borders, reformed the civil service examination to promote merit over aristocratic birth, and championed Buddhism. Traditional historians vilified her \u2014 but modern scholars recognize her 15-year reign as one of the Tang Dynasty\u2019s most effective.",
+        quizDescription: "China\u2019s only female emperor rose from concubine to ruler, reforming the civil service and expanding the empire.",
+        location: { lat: 34.62, lng: 112.45, region: "East Asia", place: "Luoyang, China" },
+        category: "politics",
+        difficulty: 2,
+        controversyNotes: {
+            what: "Traditional Chinese historians portrayed Wu Zetian as a scheming tyrant who murdered her own infant daughter to frame a rival. Modern scholars question these accounts, noting that they were written by male Confucian historians hostile to the idea of female rule. Separating historical fact from politically motivated slander remains extremely difficult.",
+        }
+    },
+    {
+        id: "f170",
+        title: "Murasaki Shikibu & The Tale of Genji",
+        date: "c. 1010 CE",
+        year: 1010,
+        keywords: "World\u2019s first novel \u00B7 Heian court \u00B7 Japanese literature \u00B7 Women\u2019s writing",
+        description: "A lady-in-waiting at Japan\u2019s imperial court wrote a 54-chapter novel exploring love, loss, and political intrigue among the Heian aristocracy. The Tale of Genji is widely considered the world\u2019s first novel \u2014 a psychologically complex work that influenced Japanese art, literature, and aesthetics for a millennium. Murasaki wrote in Japanese rather than the Chinese script used by male scholars, turning a language considered \u2018lesser\u2019 into one of literature\u2019s greatest achievements.",
+        quizDescription: "A court lady wrote The Tale of Genji, considered the world\u2019s first novel, in Japanese rather than Chinese.",
+        location: { lat: 35.01, lng: 135.77, region: "East Asia", place: "Kyoto, Japan" },
+        category: "culture",
+        difficulty: 2,
+        controversyNotes: {
+            what: "Whether The Tale of Genji is truly \u2018the world\u2019s first novel\u2019 depends on how you define a novel. Earlier long-form prose narratives exist \u2014 including the Latin Satyricon and the Greek Daphnis and Chloe. However, Genji\u2019s psychological depth, complex characterization, and narrative structure make the strongest case for the title. Some scholars also question whether Murasaki wrote all 54 chapters or whether later sections were completed by others.",
+        }
+    },
+    {
+        id: "f171",
+        title: "Joan of Arc",
+        date: "1429\u20131431 CE",
+        year: 1429,
+        yearEnd: 1431,
+        keywords: "Hundred Years\u2019 War \u00B7 Divine visions \u00B7 Orl\u00e9ans \u00B7 Heresy trial",
+        description: "A teenage peasant girl claiming divine visions convinced the French king to let her lead his armies against England during the Hundred Years\u2019 War. Joan lifted the siege of Orl\u00e9ans in just nine days, turning the war\u2019s tide. Captured by Burgundian allies of England, she was tried for heresy and burned at the stake at 19. Twenty-five years later, the Church cleared her name; five centuries later, they made her a saint.",
+        quizDescription: "A peasant girl who claimed divine visions led French armies to victory before being burned at the stake.",
+        location: { lat: 47.9, lng: 1.91, region: "Europe", place: "Orl\u00e9ans, France" },
+        category: "war",
+        difficulty: 1,
+        controversyNotes: {
+            what: "Joan\u2019s trial for heresy was highly political \u2014 the English needed to discredit her to delegitimize the French king she had helped crown. Her \u2018divine visions\u2019 have been variously explained as genuine mystical experience, epilepsy, schizophrenia, or shrewd political theater. Whatever the cause, her military leadership was real and tactically effective.",
+        }
+    },
+    {
+        id: "f172",
+        title: "Queen Nzinga of Ndongo & Matamba",
+        date: "c. 1624\u20131663 CE",
+        year: 1624,
+        yearEnd: 1663,
+        keywords: "Anti-colonial resistance \u00B7 Diplomacy \u00B7 Guerrilla warfare \u00B7 Angola",
+        description: "When Portuguese slave traders threatened her kingdom, Nzinga of Ndongo refused to submit. A brilliant diplomat and military strategist, she forged alliances with the Dutch, led guerrilla campaigns in the highlands, and at one famous meeting refused to sit on the floor \u2014 instead using a servant as a throne to show she met the Portuguese as equals. She fought European colonialism for nearly four decades, keeping her people free until her death at 81.",
+        quizDescription: "An Angolan queen fought Portuguese colonizers for nearly forty years through diplomacy and guerrilla warfare.",
+        location: { lat: -9.0, lng: 14.0, region: "Southern Africa", place: "Ndongo (modern Angola)" },
+        category: "politics",
+        difficulty: 2,
+        controversyNotes: {
+            what: "The famous \u2018human throne\u2019 story, while widely repeated, comes from a single European source and may be exaggerated or invented. Nzinga\u2019s military resistance is well documented, but she also participated in the slave trade herself, selling war captives to both Portuguese and Dutch buyers. Her legacy is complex \u2014 a symbol of African resistance who also operated within the slave system she opposed.",
+        }
+    },
+    {
+        id: "f173",
+        title: "Sor Juana In\u00e9s de la Cruz",
+        date: "1691 CE",
+        year: 1691,
+        keywords: "Colonial Mexico \u00B7 Women\u2019s education \u00B7 Poetry \u00B7 Intellectual freedom",
+        description: "Considered the greatest writer of colonial Latin America, Sor Juana entered a convent not out of devotion but because it was the only way a woman could pursue intellectual life in 17th-century Mexico. She amassed a library of 4,000 volumes, wrote poetry, plays, and scientific treatises, and in her famous Reply to Sor Filotea defended women\u2019s right to education. Church authorities eventually forced her to sell her library and renounce writing \u2014 she died of plague shortly after, but her words outlived her silencing.",
+        quizDescription: "A Mexican nun who became colonial Latin America\u2019s greatest writer before the Church forced her to stop.",
+        location: { lat: 19.43, lng: -99.13, region: "Central America", place: "Mexico City, Mexico" },
+        category: "culture",
+        difficulty: 2,
+        controversyNotes: {
+            what: "Whether Sor Juana\u2019s decision to enter the convent was purely intellectual or also a way to avoid marriage is debated. Some scholars argue her poetry reveals romantic attachments to women, making her an early queer icon \u2014 though others caution against reading modern identities into 17th-century texts. Her \u2018silencing\u2019 may have been partly voluntary, reflecting genuine religious crisis rather than pure coercion.",
+        }
+    },
+    {
+        id: "f174",
+        title: "Lakshmibai, Rani of Jhansi",
+        date: "1857\u20131858 CE",
+        year: 1857,
+        yearEnd: 1858,
+        keywords: "Indian Rebellion \u00B7 British East India Company \u00B7 Warrior queen \u00B7 Independence symbol",
+        description: "When the British East India Company seized her kingdom after her husband\u2019s death, Rani Lakshmibai refused to accept it. She became one of the leading figures of the 1857 Indian Rebellion, fighting on horseback with her young son strapped to her back. She died in battle at 29, sword in hand. The British praised her as the bravest of their enemies. For Indians, she became a symbol of resistance that fueled the independence movement a century later.",
+        quizDescription: "An Indian queen who fought the British on horseback during the 1857 Rebellion, becoming a symbol of resistance.",
+        location: { lat: 25.45, lng: 78.57, region: "South Asia", place: "Jhansi, India" },
+        category: "war",
+        difficulty: 2,
+        controversyNotes: {
+            what: "British sources claim Lakshmibai initially tried to negotiate and only fought after being forced into it. Indian nationalist accounts portray her as a warrior from the start. The image of her fighting with her son strapped to her back may be embellished. Her role in the rebellion was significant but has been amplified by nationalist mythology into something larger than the historical record supports.",
+        }
+    },
+    {
+        id: "f175",
+        title: "Sojourner Truth: \u2018Ain\u2019t I a Woman?\u2019",
+        date: "1851 CE",
+        year: 1851,
+        keywords: "Abolition \u00B7 Women\u2019s rights \u00B7 Intersectionality \u00B7 Enslaved people\u2019s testimony",
+        description: "A formerly enslaved woman stood before a women\u2019s rights convention in Ohio and delivered one of the most powerful speeches in American history. Sojourner Truth demolished the argument that women were too delicate for equal rights by pointing to her own life of backbreaking labor. Her speech exposed how race and gender oppression were intertwined \u2014 a connection that mainstream feminism would take another century to fully recognize.",
+        quizDescription: "A formerly enslaved woman challenged both racism and sexism in a single landmark speech.",
+        location: { lat: 41.08, lng: -81.52, region: "North America", place: "Akron, Ohio" },
+        category: "revolution",
+        difficulty: 2,
+        controversyNotes: {
+            what: "The famous version of the speech, with its repeated refrain \u2018Ain\u2019t I a Woman?\u2019, was published 12 years later by Frances Dana Gage and likely embellished \u2014 adding a Southern dialect Truth never spoke (she grew up speaking Dutch in New York). The contemporaneous account by Marius Robinson is shorter and lacks the famous refrain. The speech\u2019s power is real, but its most quoted version is partly a literary creation.",
+        }
+    },
+    {
+        id: "f176",
+        title: "Wangari Maathai & the Green Belt Movement",
+        date: "1977 CE",
+        year: 1977,
+        keywords: "Environmental activism \u00B7 Tree planting \u00B7 Nobel Peace Prize \u00B7 Women\u2019s empowerment",
+        description: "A Kenyan biologist planted seven trees on Earth Day 1977 and launched a movement that would plant over 51 million trees across Africa. Wangari Maathai connected deforestation to poverty, women\u2019s oppression, and political corruption \u2014 arguing that environmental destruction and bad governance were the same problem. Repeatedly beaten and jailed by Kenya\u2019s authoritarian government, she won the Nobel Peace Prize in 2004, becoming the first African woman to receive the honor.",
+        quizDescription: "A Kenyan biologist linked deforestation to women\u2019s rights and became the first African woman to win the Nobel Peace Prize.",
+        location: { lat: -1.29, lng: 36.82, region: "East Africa", place: "Nairobi, Kenya" },
+        category: "politics",
+        difficulty: 2,
+        controversyNotes: {
+            what: "Maathai courted controversy in 2004 when she appeared to suggest HIV was a biological weapon created in a laboratory. She later clarified her remarks, but the incident complicated her Nobel Prize reception. Some critics argue the Green Belt Movement\u2019s impact on deforestation has been overstated relative to the scale of the problem, though its empowerment of rural women is widely acknowledged.",
+        }
+    },
+
+    // ─── Food & Agriculture (f177\u2013f186) ────────────────────────────────
+    {
+        id: "f177",
+        title: "Rice Cultivation in Ancient China",
+        date: "c. 8000 BCE",
+        year: -8000,
+        keywords: "Paddy farming \u00B7 Yangtze River \u00B7 Staple crop \u00B7 Wetland agriculture",
+        description: "Farmers in the Yangtze River valley independently domesticated wild rice, creating an agricultural system that would eventually feed half of humanity. Unlike the dry-grain farming of the Fertile Crescent, Chinese rice cultivation required sophisticated water management \u2014 paddy fields, irrigation channels, and communal labor \u2014 which shaped the region\u2019s social structures for millennia.",
+        quizDescription: "Yangtze valley farmers domesticated rice, eventually feeding half the world.",
+        location: { lat: 30.0, lng: 120.0, region: "East Asia", place: "Yangtze River Valley, China" },
+        category: "culture",
+        difficulty: 1,
+        controversyNotes: {
+            date: "Rice domestication dates are debated. The earliest evidence from Shangshan and Kuahuqiao sites suggests cultivation began around 8000\u20137000 BCE, but full domestication (non-shattering grains) took several thousand more years. Some scholars argue true rice farming only emerged around 5000 BCE.",
+            location: "While the lower Yangtze is the primary center, some evidence points to the middle Yangtze (Hunan/Hubei) as an equally early or earlier domestication site. The exact origin zone remains a subject of active archaeological debate.",
+        }
+    },
+    {
+        id: "f178",
+        title: "The Domestication of Maize",
+        date: "c. 7000 BCE",
+        year: -7000,
+        keywords: "Teosinte \u00B7 Selective breeding \u00B7 Mesoamerica \u00B7 Milpa farming",
+        description: "Indigenous farmers in the Balsas River valley of Mexico transformed teosinte \u2014 a scraggly grass with tiny, rock-hard seeds \u2014 into maize through centuries of patient selective breeding. This was one of the most radical genetic transformations ever achieved without modern science, and the resulting crop became the foundation of every major Mesoamerican civilization from the Olmec to the Aztec.",
+        quizDescription: "Mexican farmers selectively bred a wild grass into maize, the foundation of Mesoamerican civilizations.",
+        location: { lat: 18.0, lng: -100.0, region: "Central America", place: "Balsas River Valley, Mexico" },
+        category: "culture",
+        difficulty: 2,
+        controversyNotes: {
+            date: "Genetic studies point to a single domestication event around 9,000 years ago, but archaeological evidence of fully domesticated maize cobs only appears around 4300 BCE in the Tehuac\u00E1n Valley. The gap suggests a long, gradual process of selection rather than a sudden transformation.",
+            what: "Whether teosinte was domesticated for its grain, its sugary stalks (for chewing or fermenting into alcohol), or both remains debated. The \u2018beer before bread\u2019 hypothesis proposes early cultivation was driven by brewing rather than eating.",
+        }
+    },
+    {
+        id: "f179",
+        title: "The Ancient Spice Trade",
+        date: "c. 1500 BCE \u2013 1500 CE",
+        year: -1500,
+        yearEnd: 1500,
+        keywords: "Pepper \u00B7 Cinnamon \u00B7 Trade routes \u00B7 Maritime commerce",
+        description: "For three thousand years, spices like black pepper, cinnamon, and cloves were among the most valuable commodities on Earth \u2014 worth more by weight than gold. Ancient trade networks stretched from the Malabar Coast of India through Arab middlemen to Mediterranean markets. The astronomical prices Europeans paid for spices ultimately drove the Age of Exploration, as Portugal and Spain sought direct sea routes to bypass the middlemen.",
+        quizDescription: "Spices worth more than gold drove three millennia of trade from India to Europe.",
+        location: { lat: 10.0, lng: 76.2, region: "South Asia", place: "Malabar Coast, India" },
+        category: "politics",
+        difficulty: 2,
+        controversyNotes: {
+            what: "The claim that spices were primarily used to mask the taste of spoiled meat is a persistent myth. Medieval Europeans used spices as luxury status symbols and for medicinal purposes. Wealthy households that could afford expensive spices could certainly afford fresh meat.",
+        }
+    },
+    {
+        id: "f180",
+        title: "The Columbian Exchange",
+        date: "1492\u20131600 CE",
+        year: 1492,
+        yearEnd: 1600,
+        keywords: "New World crops \u00B7 Old World livestock \u00B7 Ecological transformation \u00B7 Disease",
+        description: "After Columbus\u2019s voyages, an unprecedented transfer of plants, animals, and diseases reshaped life on every continent. Potatoes and maize from the Americas fed population booms across Europe and Asia. Wheat, horses, and cattle transformed the Americas. But the exchange\u2019s darkest element was disease: smallpox, measles, and influenza killed an estimated 90% of the Indigenous population of the Americas \u2014 the greatest demographic catastrophe in human history.",
+        quizDescription: "Plants, animals, and diseases crossed between hemispheres, transforming global agriculture and devastating Indigenous populations.",
+        location: { lat: 25.0, lng: -40.0, region: "Central America", place: "Atlantic \u2014 Americas, Europe, Africa" },
+        category: "culture",
+        difficulty: 2,
+        controversyNotes: {
+            what: "The exact mortality rate among Indigenous Americans is debated, with estimates ranging from 50% to 95%. The wide range reflects uncertainty about pre-contact population sizes. Whether European diseases spread ahead of direct contact (via trade networks) or primarily through direct encounter is also debated.",
+            date: "While 1492 marks Columbus\u2019s first voyage, the ecological exchange intensified gradually over the following century. Some scholars argue the most transformative phase was the 17th\u201318th centuries, when crops like potatoes truly became staples in Europe.",
+        }
+    },
+    {
+        id: "f181",
+        title: "Sugar & the Plantation Economy",
+        date: "c. 1600\u20131800 CE",
+        year: 1600,
+        yearEnd: 1800,
+        keywords: "Sugar cane \u00B7 Caribbean \u00B7 Slavery \u00B7 Global commodity",
+        description: "Sugar cane became the world\u2019s first truly global commodity, creating immense wealth for European empires while demanding a brutal labor system. Caribbean plantations consumed enslaved workers at such horrific rates that a constant supply of captives from Africa was needed. By 1750, sugar had transformed from an exotic luxury into an everyday necessity, and the profits from its trade helped finance the Industrial Revolution.",
+        quizDescription: "Caribbean sugar plantations created vast wealth through enslaved labor and fueled the rise of global capitalism.",
+        location: { lat: 18.0, lng: -66.0, region: "Central America", place: "Caribbean Islands" },
+        category: "politics",
+        difficulty: 2,
+        controversyNotes: {
+            what: "The relationship between sugar profits and the Industrial Revolution is debated. Eric Williams\u2019s influential thesis argued Caribbean slave profits directly funded British industrialization, but some economic historians contend sugar\u2019s financial contribution was smaller than Williams claimed. The cultural and institutional impacts may have been more significant than the raw capital flows.",
+        }
+    },
+    {
+        id: "f182",
+        title: "The Irish Potato Famine",
+        date: "1845\u20131852 CE",
+        year: 1845,
+        yearEnd: 1852,
+        keywords: "Blight \u00B7 Monoculture \u00B7 Mass emigration \u00B7 Colonial policy",
+        description: "When the Phytophthora infestans blight destroyed Ireland\u2019s potato crop, the island\u2019s near-total dependence on a single variety of potato turned a crop disease into a civilizational catastrophe. Approximately one million people died and another million emigrated, reducing Ireland\u2019s population by 25%. British policies \u2014 continued food exports from Ireland during the famine and inadequate relief \u2014 remain deeply controversial and shaped Irish identity for generations.",
+        quizDescription: "A potato blight killed one million and forced another million to emigrate, exposing the danger of monoculture.",
+        location: { lat: 53.3, lng: -8.0, region: "Europe", place: "Ireland" },
+        category: "politics",
+        difficulty: 2,
+        controversyNotes: {
+            what: "Whether the famine constitutes genocide is fiercely debated. Irish nationalists argue British policies (continued grain exports, inadequate relief, evictions) were deliberate. Most historians describe it as a catastrophe worsened by ideological rigidity and negligence rather than intentional extermination, though the moral culpability of British officials is widely acknowledged.",
+        }
+    },
+    {
+        id: "f183",
+        title: "Fritz Haber & Synthetic Fertilizer",
+        date: "1909 CE",
+        year: 1909,
+        keywords: "Haber-Bosch process \u00B7 Nitrogen fixation \u00B7 Green chemistry \u00B7 Dual use",
+        description: "Fritz Haber discovered how to pull nitrogen from thin air and convert it into ammonia \u2014 the key ingredient in synthetic fertilizer. The Haber-Bosch process, industrialized by Carl Bosch, is arguably the most consequential invention of the 20th century: it now produces fertilizer that feeds roughly half the world\u2019s population. But the same chemistry also enabled the mass production of explosives for both World Wars, and Haber personally directed Germany\u2019s chemical weapons program.",
+        quizDescription: "Haber\u2019s nitrogen-fixation process feeds half the world today but also enabled mass production of explosives.",
+        location: { lat: 49.0, lng: 8.4, region: "Europe", place: "Karlsruhe, Germany" },
+        category: "science",
+        difficulty: 2,
+        controversyNotes: {
+            what: "Haber is one of history\u2019s most morally complex figures. He won the 1918 Nobel Prize for the fertilizer process, yet also led Germany\u2019s poison gas program in World War I. His wife Clara, also a chemist, shot herself in 1915 in what many believe was a protest against his chemical weapons work. He later developed Zyklon A, a precursor to the Zyklon B used in the Holocaust \u2014 despite being Jewish himself.",
+        }
+    },
+    {
+        id: "f184",
+        title: "The Dust Bowl",
+        date: "1930\u20131936 CE",
+        year: 1930,
+        yearEnd: 1936,
+        keywords: "Soil erosion \u00B7 Great Plains \u00B7 Ecological disaster \u00B7 Migration",
+        description: "Decades of reckless deep plowing had stripped the Great Plains of their native grass, leaving topsoil exposed. When severe drought hit in 1930, the wind picked up millions of tons of loose soil and turned it into apocalyptic \u2018black blizzards\u2019 that darkened skies as far away as New York City. Roughly 2.5 million people fled the affected region, and the disaster forced the U.S. government to create modern soil conservation practices that reshaped farming worldwide.",
+        quizDescription: "Over-plowing and drought turned the Great Plains into a dust wasteland, forcing millions to flee.",
+        location: { lat: 36.0, lng: -99.0, region: "North America", place: "Oklahoma & Great Plains, USA" },
+        category: "culture",
+        difficulty: 2,
+        controversyNotes: {
+            date: "While 1930\u20131936 marks the worst period, dust storms continued through 1940. Some historians argue the Dust Bowl began as early as 1931 and didn\u2019t truly end until wartime rains returned in 1941. The 1930 start date reflects the onset of severe drought conditions.",
+        }
+    },
+    {
+        id: "f185",
+        title: "The Green Revolution",
+        date: "1960s\u20131970s CE",
+        year: 1961,
+        yearEnd: 1975,
+        keywords: "High-yield crops \u00B7 Norman Borlaug \u00B7 Famine prevention \u00B7 Agribusiness",
+        description: "American agronomist Norman Borlaug developed high-yield, disease-resistant wheat varieties in Mexico that were then adapted for India and Pakistan, averting predicted famines that could have killed hundreds of millions. Borlaug was awarded the Nobel Peace Prize in 1970 for saving more lives than any other person in history. But the Green Revolution\u2019s reliance on synthetic fertilizers, irrigation, and monoculture created long-term environmental costs that are still being reckoned with today.",
+        quizDescription: "Borlaug\u2019s high-yield wheat averted mass famine but created dependency on chemicals and monoculture.",
+        location: { lat: 19.4, lng: -99.1, region: "Central America", place: "Mexico, then India & Pakistan" },
+        category: "science",
+        difficulty: 2,
+        controversyNotes: {
+            what: "Critics argue the Green Revolution primarily benefited large-scale farmers while marginalizing smallholders, increased water usage unsustainably (especially in Punjab), and reduced crop diversity. Vandana Shiva and other scholars contend it was more about geopolitical control during the Cold War than genuine humanitarian concern. Supporters counter that without it, hundreds of millions would have starved.",
+        }
+    },
+    {
+        id: "f186",
+        title: "The GMO Debate & Seed Patents",
+        date: "1994 CE",
+        year: 1994,
+        keywords: "Genetic modification \u00B7 Flavr Savr tomato \u00B7 Monsanto \u00B7 Food sovereignty",
+        description: "The Flavr Savr tomato became the first genetically modified food sold commercially, igniting a global debate that continues today. Proponents argued GMOs could feed a growing world and reduce pesticide use. Opponents raised concerns about corporate control of the food supply, biodiversity loss, and unknown health risks. The controversy intensified as companies like Monsanto patented seeds, making it illegal for farmers to save and replant their own harvest \u2014 a practice as old as agriculture itself.",
+        quizDescription: "The first GM food sparked a global debate about biotech, corporate seed control, and feeding the world.",
+        location: { lat: 38.5, lng: -121.7, region: "North America", place: "Davis, California, USA" },
+        category: "science",
+        difficulty: 3,
+        controversyNotes: {
+            what: "Scientific consensus holds that approved GM foods are safe to eat, but the debate extends far beyond safety. Concerns about corporate monopolies over seeds, farmer debt in developing countries (particularly the wave of Indian farmer suicides linked to Bt cotton costs), biodiversity reduction, and the precautionary principle keep the controversy alive. The EU largely bans GM cultivation while the Americas embrace it.",
+        }
     }
 ];
 
@@ -3116,6 +3590,240 @@ for (const [eventId, connections] of Object.entries(LEVEL2_EXPLORATION_CONNECTIO
     }
 }
 
+// --- Level 2: Philosophy & Ideas chapter connections ---
+const LEVEL2_PHILOSOPHY_CONNECTIONS = {
+    f157: [
+        { id: "f14", label: "Confucius was one of the Axial Age\u2019s great thinkers" },
+        { id: "f158", label: "Confucius and Socrates independently championed ethical questioning across civilizations" },
+        { id: "f159", label: "Confucian and Buddhist ideas cross-pollinated at Nalanda and along the Silk Road" },
+        { id: "f90", label: "The Han Dynasty made Confucianism the state ideology of China" },
+    ],
+    f158: [
+        { id: "f14", label: "Socrates embodied the Axial Age\u2019s turn toward rational inquiry" },
+        { id: "f157", label: "Socrates and Confucius, continents apart, both made ethics the heart of philosophy" },
+        { id: "f162", label: "Descartes revived Socratic doubt as the starting point of modern philosophy" },
+        { id: "f127", label: "Socrates was a contemporary of Hippocrates; both championed reason over tradition" },
+    ],
+    f159: [
+        { id: "f89", label: "Founded under the Gupta dynasty that Ashoka\u2019s Maurya Empire preceded" },
+        { id: "f157", label: "Nalanda taught both Buddhist and Confucian-influenced scholars from East Asia" },
+        { id: "f160", label: "Nalanda and Ibn Khaldun represent parallel traditions of institutional scholarship" },
+        { id: "f118", label: "Like the House of Wisdom in Baghdad, Nalanda was a beacon drawing scholars from across civilizations" },
+    ],
+    f160: [
+        { id: "f159", label: "Ibn Khaldun and Nalanda represent parallel traditions of systematic knowledge" },
+        { id: "f30", label: "Ibn Khaldun survived the Black Death and incorporated its effects into his theory of civilizational collapse" },
+        { id: "f165", label: "Marx\u2019s theory of historical stages echoed Ibn Khaldun\u2019s cyclical model four centuries later" },
+        { id: "f92", label: "Ibn Khaldun witnessed and analyzed the Ottoman Empire\u2019s rise" },
+    ],
+    f161: [
+        { id: "f34", label: "The printing press\u2019s spread of ideas paralleled the Renaissance\u2019s revival of classical thought" },
+        { id: "f162", label: "Luther\u2019s challenge to Church authority paved the way for Descartes\u2019s intellectual independence" },
+        { id: "f40", label: "The Reformation\u2019s challenge to authority was a precursor to Enlightenment thinking" },
+        { id: "f163", label: "Luther used the press to spread ideas; Diderot would use it to compile all knowledge" },
+    ],
+    f162: [
+        { id: "f158", label: "Descartes\u2019s radical doubt echoed Socrates\u2019s method of questioning everything" },
+        { id: "f161", label: "The Reformation\u2019s break with Church authority enabled Descartes\u2019s independent thinking" },
+        { id: "f40", label: "Descartes\u2019s rationalism was a cornerstone of the Enlightenment" },
+        { id: "f38", label: "Descartes was both a philosopher and a mathematician of the Scientific Revolution" },
+    ],
+    f163: [
+        { id: "f40", label: "The Encyclop\u00e9die was the Enlightenment\u2019s most ambitious single project" },
+        { id: "f162", label: "Built on the rationalist tradition Descartes had established" },
+        { id: "f161", label: "Like Luther, Diderot used printing technology to challenge the Church\u2019s authority" },
+        { id: "f164", label: "Wollstonecraft turned the Encyclop\u00e9die\u2019s Enlightenment logic against gender inequality" },
+        { id: "f43", label: "The Encyclop\u00e9die helped lay the intellectual groundwork for the French Revolution" },
+    ],
+    f164: [
+        { id: "f163", label: "Wollstonecraft applied the Encyclop\u00e9die\u2019s Enlightenment principles to women\u2019s rights" },
+        { id: "f40", label: "Turned the Enlightenment\u2019s own logic against its exclusion of women" },
+        { id: "f80", label: "Wollstonecraft\u2019s arguments directly inspired the suffragette movement a century later" },
+        { id: "f165", label: "Both Wollstonecraft and Marx exposed blind spots in Enlightenment ideals" },
+    ],
+    f165: [
+        { id: "f164", label: "Both Marx and Wollstonecraft challenged the Enlightenment\u2019s incomplete vision of equality" },
+        { id: "f160", label: "Marx\u2019s theory of historical stages paralleled Ibn Khaldun\u2019s cyclical model" },
+        { id: "f46", label: "Marx\u2019s critique was a direct response to the Industrial Revolution\u2019s exploitation" },
+        { id: "f64", label: "The Communist Manifesto inspired the Russian Revolution seven decades later" },
+        { id: "f166", label: "Fanon extended Marx\u2019s class analysis to colonial and racial oppression" },
+    ],
+    f166: [
+        { id: "f165", label: "Fanon extended Marx\u2019s analysis of exploitation to colonial contexts" },
+        { id: "f56", label: "Fanon\u2019s ideas powered decolonization movements across Africa and Asia" },
+        { id: "f83", label: "Fanon\u2019s analysis of systemic oppression influenced the anti-apartheid movement" },
+        { id: "f82", label: "The Wretched of the Earth influenced Black Power and Civil Rights thinkers" },
+    ],
+    // Cross-connections: append to existing events
+    f14: [
+        { id: "f157", label: "Confucius was one of the Axial Age\u2019s defining figures" },
+        { id: "f158", label: "Socrates embodied the Greek philosophical tradition born in the Axial Age" },
+    ],
+    f40: [
+        { id: "f163", label: "The Encyclop\u00e9die was the Enlightenment\u2019s most ambitious publishing project" },
+        { id: "f164", label: "Wollstonecraft turned Enlightenment ideals against the exclusion of women" },
+    ],
+    f34: [
+        { id: "f161", label: "The printing press enabled both the Renaissance and the Reformation" },
+    ],
+    f46: [
+        { id: "f165", label: "The Industrial Revolution\u2019s inequalities provoked Marx\u2019s critique of capitalism" },
+    ],
+};
+
+for (const [eventId, connections] of Object.entries(LEVEL2_PHILOSOPHY_CONNECTIONS)) {
+    if (EVENT_CONNECTIONS[eventId]) {
+        EVENT_CONNECTIONS[eventId].push(...connections);
+    } else {
+        EVENT_CONNECTIONS[eventId] = connections;
+    }
+}
+
+// --- Level 2: Women Who Changed History chapter connections ---
+const LEVEL2_WOMEN_CONNECTIONS = {
+    f167: [
+        { id: "f8", label: "Hatshepsut ruled the Egypt that the pharaohs had unified millennia earlier" },
+        { id: "f168", label: "Hatshepsut and Hypatia bookend women\u2019s power in ancient Egypt" },
+    ],
+    f168: [
+        { id: "f167", label: "Both Hatshepsut and Hypatia thrived in Egypt \u2014 separated by a thousand years" },
+        { id: "f21", label: "Hypatia\u2019s murder came as the Roman world crumbled around her" },
+        { id: "f127", label: "Hypatia carried on the Greek tradition of rational inquiry that Hippocrates began" },
+    ],
+    f169: [
+        { id: "f25", label: "Wu Zetian transformed the Tang Dynasty from within" },
+        { id: "f170", label: "Wu Zetian and Murasaki Shikibu both thrived in East Asian courts where women wielded hidden power" },
+    ],
+    f170: [
+        { id: "f169", label: "Both women achieved greatness within the constraints of East Asian court culture" },
+        { id: "f117", label: "Murasaki continued Homer\u2019s tradition of using narrative to explore the human condition" },
+        { id: "f120", label: "Like Shakespeare, Murasaki wrote in her own language rather than the prestige tongue" },
+    ],
+    f171: [
+        { id: "f30", label: "Joan fought in the aftermath of the Black Death that had devastated France" },
+        { id: "f31", label: "Joan\u2019s campaigns came during the Hundred Years\u2019 War, a conflict shaped by feudal rivalries" },
+    ],
+    f172: [
+        { id: "f39", label: "Nzinga fought the same slave trade that was devastating West Africa" },
+        { id: "f116", label: "Nzinga\u2019s resistance foreshadowed African independence movements centuries later" },
+        { id: "f113", label: "Nzinga was a contemporary of the Benin Kingdom\u2019s artistic golden age" },
+    ],
+    f173: [
+        { id: "f164", label: "Sor Juana defended women\u2019s education a century before Wollstonecraft" },
+        { id: "f161", label: "Like Luther, Sor Juana challenged Church authority over intellectual freedom" },
+    ],
+    f174: [
+        { id: "f94", label: "Lakshmibai fought against the British Empire at its height" },
+        { id: "f81", label: "Lakshmibai\u2019s rebellion foreshadowed Gandhi\u2019s independence movement" },
+    ],
+    f175: [
+        { id: "f79", label: "Truth continued the tradition of resistance that the Underground Railroad embodied" },
+        { id: "f78", label: "The abolitionist movement gave Truth her platform to speak" },
+        { id: "f164", label: "Truth exposed the blind spot in Wollstonecraft\u2019s feminism: it ignored race" },
+        { id: "f82", label: "Truth\u2019s intersectional critique anticipated the Civil Rights Movement by a century" },
+    ],
+    f176: [
+        { id: "f116", label: "Maathai built on the independence her parents\u2019 generation won" },
+        { id: "f106", label: "Maathai\u2019s environmental activism anticipated the global crises of the 21st century" },
+    ],
+    // Cross-connections: append to existing events
+    f8: [
+        { id: "f167", label: "Egyptian civilization produced one of history\u2019s most powerful female rulers" },
+    ],
+    f21: [
+        { id: "f168", label: "Hypatia\u2019s murder symbolized the collapse of classical learning as Rome fell" },
+    ],
+    f25: [
+        { id: "f169", label: "The Tang Dynasty was reshaped by its only female emperor, Wu Zetian" },
+    ],
+    f39: [
+        { id: "f172", label: "Queen Nzinga fought the Portuguese slave trade for nearly forty years" },
+    ],
+};
+
+for (const [eventId, connections] of Object.entries(LEVEL2_WOMEN_CONNECTIONS)) {
+    if (EVENT_CONNECTIONS[eventId]) {
+        EVENT_CONNECTIONS[eventId].push(...connections);
+    } else {
+        EVENT_CONNECTIONS[eventId] = connections;
+    }
+}
+
+// --- Level 2: Food & Agriculture chapter connections ---
+const LEVEL2_FOOD_CONNECTIONS = {
+    f177: [
+        { id: "f6", label: "Rice domestication was part of the global Neolithic Revolution" },
+        { id: "f178", label: "Rice and maize were domesticated independently on opposite sides of the world" },
+    ],
+    f178: [
+        { id: "f6", label: "Maize domestication paralleled the Fertile Crescent\u2019s Neolithic Revolution" },
+        { id: "f177", label: "Maize and rice: two independent agricultural revolutions that fed different hemispheres" },
+        { id: "f23", label: "Maize agriculture enabled the rise of Maya civilization" },
+        { id: "f180", label: "Maize crossed to Europe in the Columbian Exchange" },
+    ],
+    f179: [
+        { id: "f25", label: "The Silk Road carried spices alongside silk and ideas during the Tang Dynasty" },
+        { id: "f33", label: "The desire for spices helped drive Columbus to seek a westward route to Asia" },
+        { id: "f35", label: "Magellan\u2019s circumnavigation was partly motivated by reaching the Spice Islands" },
+    ],
+    f180: [
+        { id: "f33", label: "Columbus\u2019s voyages triggered the greatest ecological exchange in history" },
+        { id: "f178", label: "Maize from the Americas transformed diets across Europe, Africa, and Asia" },
+        { id: "f100", label: "European diseases devastated the Americas during the Columbian Exchange" },
+        { id: "f181", label: "The Columbian Exchange introduced sugar cane to the Caribbean" },
+    ],
+    f181: [
+        { id: "f39", label: "Sugar plantations were the primary driver of the Atlantic slave trade" },
+        { id: "f180", label: "Sugar cultivation in the Americas was made possible by the Columbian Exchange" },
+        { id: "f46", label: "Sugar profits helped finance the Industrial Revolution" },
+        { id: "f62", label: "The brutality of sugar plantations fueled the Haitian Revolution" },
+    ],
+    f182: [
+        { id: "f180", label: "The potato that Ireland depended on had arrived via the Columbian Exchange" },
+        { id: "f183", label: "The famine\u2019s lesson about crop failure drove urgency for agricultural science" },
+    ],
+    f183: [
+        { id: "f64", label: "Haber\u2019s dual-use chemistry fed the world and armed World War I" },
+        { id: "f185", label: "Synthetic fertilizer was essential to the Green Revolution\u2019s high-yield crops" },
+        { id: "f182", label: "The memory of mass famine motivated the search for ways to boost food production" },
+    ],
+    f184: [
+        { id: "f52", label: "The Dust Bowl compounded the economic devastation of the Great Depression" },
+        { id: "f185", label: "The Dust Bowl\u2019s lessons about soil drove investment in agricultural science" },
+    ],
+    f185: [
+        { id: "f183", label: "The Green Revolution depended on Haber\u2019s synthetic fertilizers" },
+        { id: "f184", label: "Agricultural science advanced partly in response to disasters like the Dust Bowl" },
+        { id: "f186", label: "The Green Revolution\u2019s success raised the question: could genetic engineering go further?" },
+    ],
+    f186: [
+        { id: "f185", label: "GMOs extended the Green Revolution\u2019s logic of engineering better crops" },
+        { id: "f58", label: "The Digital Revolution enabled the gene-sequencing technology behind GMOs" },
+    ],
+    // Cross-connections: append to existing events
+    f6: [
+        { id: "f177", label: "The Neolithic Revolution happened independently in China with rice" },
+        { id: "f178", label: "Mesoamerica independently domesticated maize thousands of years later" },
+    ],
+    f33: [
+        { id: "f180", label: "Columbus\u2019s voyages triggered the Columbian Exchange of crops and diseases" },
+    ],
+    f39: [
+        { id: "f181", label: "The slave trade was driven largely by Caribbean sugar plantation demand" },
+    ],
+    f52: [
+        { id: "f184", label: "The Dust Bowl worsened the Great Depression\u2019s impact on rural America" },
+    ],
+};
+
+for (const [eventId, connections] of Object.entries(LEVEL2_FOOD_CONNECTIONS)) {
+    if (EVENT_CONNECTIONS[eventId]) {
+        EVENT_CONNECTIONS[eventId].push(...connections);
+    } else {
+        EVENT_CONNECTIONS[eventId] = connections;
+    }
+}
+
 // Attach connections to each core event
 for (const event of CORE_EVENTS) {
     if (EVENT_CONNECTIONS[event.id]) {
@@ -3152,6 +3860,9 @@ const IMPORTANCE_MAP = {
     f147: 'major', f148: 'major', f149: 'major', f153: 'major', f155: 'major',
     f138: 'major', f139: 'major', f141: 'major', f142: 'major', f143: 'major',
     f146: 'major',
+    f157: 'major', f158: 'major', f161: 'major', f165: 'major',
+    f167: 'major', f169: 'major', f171: 'major', f175: 'major',
+    f180: 'major', f183: 'major', f185: 'major',
     // ── Notable ── historically significant; everything else defaults here
 };
 
@@ -3164,7 +3875,7 @@ export const ALL_EVENTS = [
     ...DAILY_QUIZ_EVENTS.map(e => ({ ...e, importance: e.importance || 'minor' })),
 ];
 
-export const CORE_EVENT_COUNT = CORE_EVENTS.length; // 156 (60 Level 1 + 96 Level 2)
+export const CORE_EVENT_COUNT = CORE_EVENTS.length; // 186 (60 Level 1 + 126 Level 2)
 
 /** Level 1 events are f1–f60; Level 2 events are f61+. */
 export function isLevel2Event(event) {

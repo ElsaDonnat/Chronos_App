@@ -327,6 +327,47 @@ const ADVANCED_QUESTIONS = [
         outlierEventId: 'f101', sharedTrait: 'All computing pioneers/milestones' },  // Cholera/epidemiology is the outlier among computing
     { type: 'oddOneOut', events: ['f81', 'f82', 'f83', 'f52'],
         outlierEventId: 'f52', sharedTrait: 'All civil rights/freedom movements' },  // Great Depression is the outlier among rights movements
+
+    // ── whichCameFirst — close dates, different regions (Exploration/Trade/Women/Philosophy) ──
+    { type: 'whichCameFirst', eventIdA: 'f141', eventIdB: 'f171' },  // Zheng He (1405) vs Joan of Arc (1429) — 24 yrs; Chinese treasure fleets sailed before Joan fought
+    { type: 'whichCameFirst', eventIdA: 'f147', eventIdB: 'f157' },  // Invention of Coinage (-600) vs Confucius (-551) — 49 yrs; coins predate Confucius
+    { type: 'whichCameFirst', eventIdA: 'f153', eventIdB: 'f172' },  // Dutch East India Co (1602) vs Queen Nzinga (1624) — 22 yrs; VOC formed before Nzinga\u2019s resistance began
+
+    // ── trueOrFalse — conceptual misconceptions about under-represented chapters ──
+    { type: 'trueOrFalse', eventId: 'f138',
+        statement: 'Polynesian navigators used simple instruments like early compasses and astrolabes to navigate the Pacific',
+        isTrue: false, correction: 'They used no instruments at all. They navigated by reading stars, ocean swells, bird flight patterns, and cloud formations \u2014 entirely through observation and memorized knowledge passed down orally.' },
+    { type: 'trueOrFalse', eventId: 'f152',
+        statement: 'The Medici family ruled Florence as hereditary nobility before establishing their famous banking empire',
+        isTrue: false, correction: 'The Medicis were commoners who built their fortune through banking, then used that wealth to gain political influence and eventually become de facto rulers of Florence.' },
+    { type: 'trueOrFalse', eventId: 'f170',
+        statement: 'The Tale of Genji, written by a Japanese court lady around 1010 CE, is widely considered the world\u2019s first novel',
+        isTrue: true },  // Murasaki Shikibu wrote it in Japanese rather than Chinese, making it a pioneering work of prose fiction
+
+    // ── hardMCQ/location — same-country distractors ──
+    { type: 'hardMCQ', subType: 'location', eventId: 'f141',
+        options: [
+            { label: 'Nanjing, China', isCorrect: true },
+            { label: 'Beijing, China', isCorrect: false },      // Ming capital after 1421
+            { label: 'Guangzhou, China', isCorrect: false },     // Major southern port city
+            { label: 'Hangzhou, China', isCorrect: false },      // Former Song dynasty capital
+        ] },  // Zheng He\u2019s fleets launched from Nanjing \u2014 all major Chinese cities
+
+    // ── hardMCQ/date — tight distractors within 10-20 years ──
+    { type: 'hardMCQ', subType: 'date', eventId: 'f155',
+        prompt: 'When was the Bretton Woods Conference held?',
+        options: [
+            { label: '1936', isCorrect: false },     // Keynes publishes General Theory
+            { label: '1944', isCorrect: true },
+            { label: '1947', isCorrect: false },     // Marshall Plan announced
+            { label: '1952', isCorrect: false },     // European Coal and Steel Community
+        ] },  // All dates tied to post-Depression/WWII financial restructuring
+
+    // ── oddOneOut — under-represented chapters ──
+    { type: 'oddOneOut', events: ['f138', 'f140', 'f144', 'f150'],
+        outlierEventId: 'f150', sharedTrait: 'All great voyages of exploration' },  // Paper Money in China is a financial innovation, not an exploration
+    { type: 'oddOneOut', events: ['f167', 'f169', 'f172', 'f171'],
+        outlierEventId: 'f171', sharedTrait: 'All women who held sovereign political power' },  // Joan of Arc was a military commander but never a ruler; the others were pharaoh, empress, and queen
 ];
 
 const HISTORIAN_QUESTIONS = [
@@ -428,6 +469,53 @@ const HISTORIAN_QUESTIONS = [
         outlierEventId: 'f116', sharedTrait: 'All art & culture movements' },  // African Independence is the outlier among art movements
     { type: 'oddOneOut', events: ['f100', 'f103', 'f101', 'f84'],
         outlierEventId: 'f84', sharedTrait: 'All medical breakthroughs' },  // Stonewall is the outlier among medical discoveries
+
+    // ── whichCameFirst — non-Western focus, surprising order ──────────
+    { type: 'whichCameFirst', eventIdA: 'f157', eventIdB: 'f127' },  // Confucius (-551) vs Hippocrates (-460) — 91 yrs; both Axial Age but Confucius came first, surprising to Western audiences
+    { type: 'whichCameFirst', eventIdA: 'f170', eventIdB: 'f150' },  // Murasaki Shikibu (1010) vs Paper Money in China (1024) — only 14 yrs apart; Tale of Genji predates government paper currency
+
+    // ── trueOrFalse — expert misconceptions about non-Western history ──
+    { type: 'trueOrFalse', eventId: 'f66',
+        statement: 'The 1979 Iranian Revolution was backed by a broad coalition \u2014 including liberals, Marxists, and nationalists \u2014 before Ayatollah Khomeini consolidated an Islamic theocracy',
+        isTrue: true },  // The Shah\u2019s overthrow united many factions; Khomeini only marginalized them afterward
+    { type: 'trueOrFalse', eventId: 'f150',
+        statement: 'The Song Dynasty invented paper money in 1024 CE by government decree to replace the cumbersome iron coins merchants struggled with in Sichuan',
+        isTrue: false, correction: 'Paper money was not invented by the government. Private Sichuan merchants created jiaozi promissory notes around 997 CE. The Song government nationalized and monopolized the system in 1024 \u2014 it did not invent it.' },
+    { type: 'trueOrFalse', eventId: 'f160',
+        statement: 'Ibn Khaldun\u2019s Muqaddimah, widely studied as a standalone work of philosophy, was actually written as the introduction to a much larger history of the world called the Kitab al-Ibar',
+        isTrue: true },  // \u201CMuqaddimah\u201D literally means \u201CIntroduction\u201D \u2014 it was the prolegomena to his Kitab al-Ibar (Book of Lessons)
+
+    // ── hardMCQ/date — tight distractors tied to medieval travelers ────
+    { type: 'hardMCQ', subType: 'date', eventId: 'f140',
+        prompt: 'When did Ibn Battuta begin his famous 29-year journey?',
+        options: [
+            { label: '1271 CE', isCorrect: false },   // Marco Polo left Venice
+            { label: '1325 CE', isCorrect: true },
+            { label: '1368 CE', isCorrect: false },   // Ming Dynasty founded
+            { label: '1405 CE', isCorrect: false },   // Zheng He\u2019s first treasure fleet
+        ] },  // All significant medieval travel/exploration dates
+
+    // ── hardMCQ/location — same-region distractors ────────────────────
+    { type: 'hardMCQ', subType: 'location', eventId: 'f149',
+        options: [
+            { label: 'Kilwa, Tanzania', isCorrect: true },
+            { label: 'Mombasa, Kenya', isCorrect: false },       // Major Swahili port city
+            { label: 'Zanzibar, Tanzania', isCorrect: false },   // Famous trading island
+            { label: 'Sofala, Mozambique', isCorrect: false },   // Southernmost Swahili trading post
+        ] },  // Indian Ocean Trade Network \u2014 all major Swahili coast cities
+    { type: 'hardMCQ', subType: 'location', eventId: 'f157',
+        options: [
+            { label: 'Qufu, China', isCorrect: true },
+            { label: 'Luoyang, China', isCorrect: false },    // Zhou capital; where Confucius reportedly met Laozi
+            { label: 'Linzi, China', isCorrect: false },      // Capital of rival state Qi in same province
+            { label: 'Handan, China', isCorrect: false },     // Capital of Zhao state
+        ] },  // Confucius \u2014 all Warring States-era cities; Qufu was his birthplace in the state of Lu
+
+    // ── oddOneOut — tricky groupings from trade and philosophy chapters ──
+    { type: 'oddOneOut', events: ['f149', 'f151', 'f153', 'f154'],
+        outlierEventId: 'f154', sharedTrait: 'All powerful trading networks or commercial organizations' },  // South Sea Bubble was a speculative crash, not a trading network
+    { type: 'oddOneOut', events: ['f157', 'f158', 'f128', 'f160'],
+        outlierEventId: 'f160', sharedTrait: 'All foundational thinkers of the ancient classical world' },  // Ibn Khaldun (14th century) is the outlier among pre-200 BCE scholars
 ];
 
 // ─── Curated pool for Expert ─────────────────────────────────

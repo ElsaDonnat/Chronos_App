@@ -99,6 +99,8 @@ const ICONS = [
     () => <g><line x1="5" y1="2" x2="5" y2="22" /><path d="M5 3h14l-3 5 3 5H5" fill={FC} opacity="0.28" /><path d="M5 3h14l-3 5 3 5H5" /></g>,
     // 44: atom (orbital model)
     () => <g><ellipse cx="12" cy="12" rx="9" ry="3.5" /><ellipse cx="12" cy="12" rx="9" ry="3.5" transform="rotate(60 12 12)" /><ellipse cx="12" cy="12" rx="9" ry="3.5" transform="rotate(120 12 12)" /><circle cx="12" cy="12" r="2.5" fill={FC} opacity="0.4" /><circle cx="12" cy="12" r="2.5" /></g>,
+    // 45: seedling / sprout
+    () => <g><path d="M12 22V12" /><path d="M12 12c0-4 4-7 8-7-1 4-4 7-8 7z" fill={FC} opacity="0.28" /><path d="M12 12c0-4 4-7 8-7-1 4-4 7-8 7" /><path d="M12 15c0-3-3-5.5-6-5.5.5 3.5 3 5.5 6 5.5z" fill={FC} opacity="0.22" /><path d="M12 15c0-3-3-5.5-6-5.5.5 3.5 3 5.5 6 5.5" /></g>,
 ];
 
 const FALLBACK = () => <g><path d="M4 4h16v16H4z" /><line x1="8" y1="10" x2="16" y2="10" /><line x1="8" y1="14" x2="14" y2="14" /></g>;
