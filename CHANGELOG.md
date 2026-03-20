@@ -5,6 +5,11 @@ Format follows [Keep a Changelog](https://keepachangelog.com/) and [Semantic Ver
 
 Use the version entries from the last playstore push to the most recent version for Play Store "What's New" text.
 
+## [1.9.24] - 2026-03-20
+
+### Added
+- **Challenge Quiz — Beginner pool expansion**: Added 10 new curated questions to Beginner tier (3 whichCameFirst, 2 eraDetective, 5 trueOrFalse). New pairs: Alexander vs Qin, Augustus vs Jesus, Islamic Golden Age vs Mongol Empire. Era traps: Steam Engine (Early Modern, not Modern), Edict of Milan (Ancient, not Medieval). Common misconceptions: women in Ancient Olympics, Magellan's circumnavigation, Genghis Khan's origins, Great Wall vs Mongols, Lenin and the Tsar. New pool size: 31 questions.
+
 ## [1.9.23] - 2026-03-18
 
 ### Changed

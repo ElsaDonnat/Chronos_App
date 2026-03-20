@@ -69,6 +69,32 @@ const BEGINNER_QUESTIONS = [
     { type: 'trueOrFalse', eventId: 'f13',
         statement: 'The Roman Republic was founded after overthrowing a monarchy',
         isTrue: true },
+
+    // ── whichCameFirst — accessible pairs with non-obvious order ──────
+    { type: 'whichCameFirst', eventIdA: 'f15', eventIdB: 'f16' },  // Conquests of Alexander (-334) vs Qin Unification (-221) — Alexander first; many assume China predates Greece
+    { type: 'whichCameFirst', eventIdA: 'f18', eventIdB: 'f19' },  // Augustus/Pax Romana (-27) vs Life of Jesus (-4) — Augustus first by 23 yrs; Jesus was born into an already-established Empire
+    { type: 'whichCameFirst', eventIdA: 'f26', eventIdB: 'f29' },  // Islamic Golden Age (750) vs Mongol Empire (1206) — Golden Age first; both major medieval milestones
+
+    // ── eraDetective — eras that surprise beginners ───────────────────
+    { type: 'eraDetective', eventId: 'f41' },  // Watt Steam Engine (1776) → Early Modern; most beginners say "Modern"
+    { type: 'eraDetective', eventId: 'f20' },  // Edict of Milan / Constantine (313 CE) → Ancient; most beginners say "Medieval"
+
+    // ── trueOrFalse — common misconceptions ───────────────────────────
+    { type: 'trueOrFalse', eventId: 'f12',
+        statement: 'Women were allowed to compete in the Ancient Olympic Games',
+        isTrue: false, correction: 'Women were forbidden from both competing and watching. A separate festival, the Heraea, allowed unmarried women to run at Olympia.' },
+    { type: 'trueOrFalse', eventId: 'f35',
+        statement: 'Ferdinand Magellan became the first person to circumnavigate the globe',
+        isTrue: false, correction: 'Magellan was killed in the Philippines in 1521. His navigator Juan Sebasti\u00e1n Elcano commanded the remaining crew to complete the voyage.' },
+    { type: 'trueOrFalse', eventId: 'f29',
+        statement: 'Genghis Khan was born into a powerful noble Mongol family and inherited his leadership',
+        isTrue: false, correction: 'He came from a minor tribal family. His father was poisoned when he was young, and he was briefly enslaved before rising to power through his own military genius.' },
+    { type: 'trueOrFalse', eventId: 'f16',
+        statement: 'China\u2019s Great Wall was built to keep out the Mongols',
+        isTrue: false, correction: 'The Great Wall predates the Mongols by over 1,400 years. The Qin Dynasty (221 BCE) connected earlier walls to defend against various northern nomads. The iconic version most people picture was built mainly during the Ming Dynasty (1368\u20131644).' },
+    { type: 'trueOrFalse', eventId: 'f50',
+        statement: 'Vladimir Lenin personally led the revolution that overthrew the Russian Tsar in 1917',
+        isTrue: false, correction: 'Lenin was in exile in Switzerland when the February Revolution spontaneously overthrew the Tsar. He returned to Russia later that year to lead the Bolshevik October Revolution, which overthrew the Provisional Government \u2014 not the Tsar.' },
 ];
 
 const AMATEUR_QUESTIONS = [
