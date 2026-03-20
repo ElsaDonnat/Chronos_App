@@ -35,7 +35,7 @@ const MAP_COLORS = {
     graticule: 'var(--color-map-graticule, rgba(0,0,0,0.04))',
     pinStroke: 'var(--color-map-pin-stroke, #FFFDF9)',
     pinMuted: 'var(--color-map-pin-muted, #C9B896)',
-    label: 'var(--color-map-label, #A8A29E)',
+    label: 'var(--color-map-label, #7A6B5A)',
     labelActive: 'var(--color-map-label-active, #8B4157)',
 };
 
