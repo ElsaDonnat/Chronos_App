@@ -309,8 +309,12 @@ function usePanZoom() {
     return { mapContainerRef, cssTransform, isZoomed, scale, panOffset, onTouchStart, onTouchMove, onTouchEnd, onWheel, resetZoom, zoomToPoint, lastTapRef };
 }
 
+// Countries whose SVG paths cross the International Date Line — their fill spans the whole map
+const DATELINE_COUNTRIES = new Set(['296', '242']); // Kiribati, Fiji
+
 // Get fill color for a country based on its sub-region and selection state
 function getCountryFill(countryCode, selectedRegion) {
+    if (DATELINE_COUNTRIES.has(countryCode)) return 'none';
     const subRegion = COUNTRY_TO_SUBREGION[countryCode];
     if (!subRegion) return MAP_COLORS.land; // Antarctica or unmapped
     const colors = REGION_COLORS[subRegion];
@@ -877,7 +881,7 @@ function TimeSlider({ value, onChange, onClose, learnedEventYears }) {
                 {ERA_SLIDER_SEGMENTS.map(seg => (
                     <button key={seg.id}
                         onClick={() => handleEraJump(seg.id)}
-                        className="flex-1 text-center py-0.5 rounded text-[9px] font-semibold transition-all duration-200"
+                        className="flex-1 text-center py-0.5 rounded text-[9px] font-semibold transition-all duration-200 whitespace-nowrap"
                         style={{
                             backgroundColor: activeEra === seg.id ? 'var(--color-burgundy)' : 'transparent',
                             color: activeEra === seg.id ? 'white' : 'var(--color-ink-faint)',
