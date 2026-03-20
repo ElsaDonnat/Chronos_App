@@ -160,7 +160,7 @@ export default function ConcurrentView({ events, learnedIds, eventMastery, categ
                             <button
                                 key={seg.id}
                                 onClick={() => handleEraJump(seg.id)}
-                                className="flex-1 px-1 py-1.5 rounded-lg text-[9px] font-semibold transition-all duration-200 cursor-pointer flex flex-col items-center gap-0.5 whitespace-nowrap"
+                                className="flex-1 px-0.5 py-1.5 rounded-lg text-[8px] font-semibold transition-all duration-200 cursor-pointer flex items-center justify-center gap-1 whitespace-nowrap leading-none"
                                 style={{
                                     backgroundColor: isActive ? 'var(--color-burgundy)' : 'rgba(var(--color-ink-rgb), 0.05)',
                                     color: isActive ? 'white' : 'var(--color-ink-muted)',

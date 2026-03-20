@@ -759,7 +759,7 @@ input, textarea, [contenteditable] {
   cursor: pointer;
   border: 2px solid var(--color-parchment);
   box-shadow: 0 1px 3px rgba(0,0,0,0.2);
-  margin-top: -7px;
+  margin-top: -8px;
 }
 .time-slider-input::-moz-range-thumb {
   width: 16px;
@@ -771,13 +771,13 @@ input, textarea, [contenteditable] {
   box-shadow: 0 1px 3px rgba(0,0,0,0.2);
 }
 .time-slider-input::-webkit-slider-runnable-track {
-  height: 2px;
-  border-radius: 1px;
+  height: 1px;
+  border-radius: 0.5px;
   background: rgba(var(--color-ink-rgb), 0.12);
 }
 .time-slider-input::-moz-range-track {
-  height: 2px;
-  border-radius: 1px;
+  height: 1px;
+  border-radius: 0.5px;
   background: rgba(var(--color-ink-rgb), 0.12);
 }
 
