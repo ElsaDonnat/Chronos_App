@@ -877,7 +877,7 @@ function TimeSlider({ value, onChange, onClose, learnedEventYears }) {
                 {ERA_SLIDER_SEGMENTS.map(seg => (
                     <button key={seg.id}
                         onClick={() => handleEraJump(seg.id)}
-                        className="flex-1 text-center py-0.5 rounded text-[9px] font-semibold transition-all duration-200"
+                        className="flex-1 text-center py-0.5 rounded text-[9px] font-semibold transition-all duration-200 whitespace-nowrap"
                         style={{
                             backgroundColor: activeEra === seg.id ? 'var(--color-burgundy)' : 'transparent',
                             color: activeEra === seg.id ? 'white' : 'var(--color-ink-faint)',

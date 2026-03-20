@@ -160,7 +160,7 @@ export default function ConcurrentView({ events, learnedIds, eventMastery, categ
                             <button
                                 key={seg.id}
                                 onClick={() => handleEraJump(seg.id)}
-                                className="flex-1 px-1.5 py-1.5 rounded-lg text-[10px] font-semibold transition-all duration-200 cursor-pointer flex flex-col items-center gap-0.5"
+                                className="flex-1 px-1 py-1.5 rounded-lg text-[9px] font-semibold transition-all duration-200 cursor-pointer flex flex-col items-center gap-0.5 whitespace-nowrap"
                                 style={{
                                     backgroundColor: isActive ? 'var(--color-burgundy)' : 'rgba(var(--color-ink-rgb), 0.05)',
                                     color: isActive ? 'white' : 'var(--color-ink-muted)',
@@ -187,7 +187,6 @@ export default function ConcurrentView({ events, learnedIds, eventMastery, categ
                     value={sliderValue}
                     onChange={e => setSliderValue(Number(e.target.value))}
                     className="time-slider-input w-full"
-                    style={{ height: '24px' }}
                 />
 
                 {/* Year display + event count */}
