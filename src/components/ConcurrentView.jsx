@@ -1,7 +1,7 @@
 import { useState, useMemo, useRef, useCallback, useEffect } from 'react';
 import { CATEGORY_CONFIG as DEFAULT_CATEGORY_CONFIG } from '../data/events';
 import { MasteryDots } from './shared';
-import { SLIDER_MAX, ERA_SLIDER_SEGMENTS, sliderToYear, yearToSlider, getTimeWindow, formatSliderYear } from '../utils/timeSlider';
+import { SLIDER_MAX, ERA_SLIDER_SEGMENTS, sliderToYear, yearToSlider, getTimeWindow, formatSliderYear, ERA_BUTTON_COLORS } from '../utils/timeSlider';
 import * as feedback from '../services/feedback';
 
 // ConcurrentView-specific opacity: events in the fade zone dim to 0.4–0.7 instead of fully disappearing,
@@ -162,7 +162,7 @@ export default function ConcurrentView({ events, learnedIds, eventMastery, categ
                                 onClick={() => handleEraJump(seg.id)}
                                 className="flex-1 px-0.5 py-1.5 rounded-lg text-[8px] font-semibold transition-all duration-200 cursor-pointer flex items-center justify-center gap-1 whitespace-nowrap leading-none"
                                 style={{
-                                    backgroundColor: isActive ? 'var(--color-burgundy)' : 'rgba(var(--color-ink-rgb), 0.05)',
+                                    backgroundColor: isActive ? ERA_BUTTON_COLORS[seg.id] : 'rgba(var(--color-ink-rgb), 0.05)',
                                     color: isActive ? 'white' : 'var(--color-ink-muted)',
                                 }}
                             >

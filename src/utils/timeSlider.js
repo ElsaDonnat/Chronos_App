@@ -5,6 +5,15 @@
 
 export const SLIDER_MAX = 1000;
 
+/** Era accent colors — matches LearnPage palette */
+export const ERA_BUTTON_COLORS = {
+    prehistory:  '#9E4A4A',
+    ancient:     '#7A6B50',
+    medieval:    '#B06A30',
+    earlymodern: '#9A8528',
+    modern:      '#B09035',
+};
+
 export const ERA_SLIDER_SEGMENTS = [
     { id: 'prehistory', label: 'Prehistory', start: -7000000, end: -3200, sliderStart: 0, sliderEnd: 200 },
     { id: 'ancient', label: 'Ancient', start: -3200, end: 476, sliderStart: 200, sliderEnd: 400 },
