@@ -367,6 +367,7 @@ function MapSVG({ pins, learnedIds, selectedRegion, selectedPin, selectedEventId
                         return (
                             <path key={country.code} d={country.d}
                                 fill={fill}
+                                fillRule="evenodd"
                                 stroke={isCountryHighlighted ? MAP_COLORS.labelActive : MAP_COLORS.border}
                                 strokeWidth={(isCountryHighlighted ? 1.5 : 0.5) / scale}
                                 opacity={isDimmed ? 0.4 : 1}
@@ -387,9 +388,9 @@ function MapSVG({ pins, learnedIds, selectedRegion, selectedPin, selectedEventId
                     })}
                     <text x={data.labelPos.x} y={data.labelPos.y}
                         textAnchor="middle" fill={MAP_COLORS.label}
-                        fontSize={11 / scale} fontWeight="600"
-                        opacity={(selectedRegion ? 0.3 : 0.6) * Math.max(0, 1 - (scale - 1))}
-                        style={{ pointerEvents: 'none', transition: 'opacity 0.3s' }}>
+                        fontSize={14 / scale} fontWeight="700" letterSpacing={1.5 / scale}
+                        opacity={(selectedRegion ? 0.35 : 0.75) * Math.max(0, 1 - (scale - 1))}
+                        style={{ pointerEvents: 'none', transition: 'opacity 0.3s', textTransform: 'uppercase' }}>
                         {continentName}
                     </text>
                 </g>

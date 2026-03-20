@@ -71,7 +71,7 @@
   --color-map-graticule: rgba(0, 0, 0, 0.04);
   --color-map-pin-stroke: #FFFDF9;
   --color-map-pin-muted: #C9B896;
-  --color-map-label: #7A6B5A;
+  --color-map-label: #4A3D30;
   --color-map-label-active: #8B4157;
 
   /* Map sub-region colors — pastel (default fill) + vibrant (selected) */
@@ -173,7 +173,7 @@ html[data-theme="dark"] {
   --color-map-graticule: rgba(255, 255, 255, 0.06);
   --color-map-pin-stroke: #35312C;
   --color-map-pin-muted: #544E47;
-  --color-map-label: #8A8070;
+  --color-map-label: #B0A898;
   --color-map-label-active: #C4748A;
 
   /* Map sub-region colors — dark mode: muted tones */
