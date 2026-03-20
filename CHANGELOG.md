@@ -5,6 +5,11 @@ Format follows [Keep a Changelog](https://keepachangelog.com/) and [Semantic Ver
 
 Use the version entries from the last playstore push to the most recent version for Play Store "What's New" text.
 
+## [1.9.21] - 2026-03-20
+
+### Added
+- **Level 2 Chapter: Medicine & Public Health** \u2014 4-lesson chapter with 10 new events (f187\u2013f196) tracing the history of healing from ancient civilizations to global health institutions. Imhotep & Egyptian medicine, Sushruta & Indian surgery, the Huangdi Neijing & Chinese medicine, Avicenna\u2019s Canon, the first quarantine in Ragusa, Vesalius & modern anatomy, Semmelweis & handwashing, Florence Nightingale & nursing, Pasteur & germ theory, the WHO & global health. Reuses f38 (Scientific Revolution) and f54 (United Nations). Teal theme (#0D9488), medicine icon (index 46). Hand-crafted description distractors and controversy notes for all events. Strong non-Western coverage (Egypt, India, China, Persia, Ottoman Empire).
+
 ## [1.9.20] - 2026-03-14
 
 ### Added

@@ -2182,4 +2182,105 @@ export const DESCRIPTION_DISTRACTORS = {
             { text: "The Flavr Savr tomato sparked a global debate about food safety and corporate control, though seed patents were not a significant issue since farmers could freely save and replant genetically modified seeds.", d: 3 },
         ]
     },
+    // ─── MEDICINE & PUBLIC HEALTH ─────────────────────────────────
+    f187: {
+        hardCorrect: "The Edwin Smith Papyrus, likely based on Imhotep\u2019s teachings, describes 48 surgical cases with rational diagnosis and honest prognosis.",
+        distractors: [
+            { text: "Imhotep was a Greek physician who studied medicine in Alexandria.", d: 1 },
+            { text: "Ancient Egyptian medicine was entirely based on magical spells and prayers to the gods.", d: 1 },
+            { text: "Imhotep was the first physician to perform brain surgery using metal instruments.", d: 2 },
+            { text: "The Edwin Smith Papyrus was written by Imhotep himself and discovered in his tomb.", d: 2 },
+            { text: "Imhotep\u2019s medical text describes 48 surgical cases with clinical precision, and his observation-based approach was developed at the same time as Hippocrates\u2019s similar methods in Greece.", d: 3 },
+        ]
+    },
+    f188: {
+        hardCorrect: "Sushruta described over 300 surgical procedures including rhinoplasty so advanced that British surgeons studied it in the 18th century.",
+        distractors: [
+            { text: "Sushruta was a Chinese physician who invented acupuncture.", d: 1 },
+            { text: "Ancient Indian medicine relied exclusively on herbal remedies and never developed surgical techniques.", d: 1 },
+            { text: "Sushruta\u2019s rhinoplasty technique was forgotten until European doctors reinvented it independently during the Renaissance.", d: 2 },
+            { text: "The Sushruta Samhita primarily focused on pharmacology rather than surgical procedures.", d: 2 },
+            { text: "Sushruta compiled a surgical text describing over 300 procedures and 120 instruments, including rhinoplasty techniques that Western surgeons independently developed centuries later without knowledge of his work.", d: 3 },
+        ]
+    },
+    f189: {
+        hardCorrect: "The Huangdi Neijing described the body as a system of qi flowing through meridians, with disease arising from energetic imbalance.",
+        distractors: [
+            { text: "The Huangdi Neijing was written by a single emperor as a personal health manual.", d: 1 },
+            { text: "Traditional Chinese Medicine was based on treating individual symptoms rather than the whole body.", d: 1 },
+            { text: "The Huangdi Neijing was primarily a surgical manual that focused on anatomical dissection.", d: 2 },
+            { text: "The text systematized acupuncture but rejected herbal medicine as superstition.", d: 2 },
+            { text: "The Huangdi Neijing laid the foundation for Chinese medicine by systematizing acupuncture and qi theory, and was written by the Yellow Emperor himself around 200 BCE.", d: 3 },
+        ]
+    },
+    f190: {
+        hardCorrect: "Avicenna\u2019s Canon introduced systematic rules for testing drug effectiveness \u2014 an early form of clinical trials \u2014 and identified tuberculosis as contagious.",
+        distractors: [
+            { text: "Avicenna was an Arab physician who practiced exclusively in Baghdad.", d: 1 },
+            { text: "The Canon of Medicine was a short treatise focused only on herbal remedies.", d: 1 },
+            { text: "Avicenna\u2019s Canon was revolutionary because it rejected all Greek medical knowledge in favor of purely Islamic approaches.", d: 2 },
+            { text: "The Canon remained influential for about a century before being superseded by European medical texts.", d: 2 },
+            { text: "Avicenna\u2019s five-volume encyclopedia synthesized Greek, Indian, and Islamic medicine and remained the standard for 600 years, though his ideas about contagious disease were purely theoretical with no empirical basis.", d: 3 },
+        ]
+    },
+    f191: {
+        hardCorrect: "Ragusa\u2019s 30-day isolation requirement for ships was later extended to 40 days (quaranta giorni), giving us the word \u2018quarantine.\u2019",
+        distractors: [
+            { text: "Quarantine was first practiced in ancient Rome during the Antonine Plague.", d: 1 },
+            { text: "The word \u2018quarantine\u2019 comes from a Latin word meaning \u2018to clean.\u2019", d: 1 },
+            { text: "Venice invented quarantine in 1348, a full 30 years before Ragusa\u2019s legislation.", d: 2 },
+            { text: "Ragusa\u2019s quarantine required sailors to remain on their ships for 40 days from the start.", d: 2 },
+            { text: "Ragusa enacted history\u2019s first quarantine law requiring 30-day isolation for arriving ships, and the practice was immediately adopted across all European ports within a year.", d: 3 },
+        ]
+    },
+    f192: {
+        hardCorrect: "Vesalius corrected over 200 of Galen\u2019s anatomical errors that had gone unquestioned for 1,400 years by dissecting actual human bodies.",
+        distractors: [
+            { text: "Vesalius was an elderly professor who spent decades compiling his anatomical atlas.", d: 1 },
+            { text: "Vesalius confirmed Galen\u2019s anatomy was correct and simply added better illustrations.", d: 1 },
+            { text: "Vesalius\u2019s work was immediately accepted by the medical establishment, which had been waiting for someone to challenge Galen.", d: 2 },
+            { text: "Before Vesalius, no physician in any culture had ever performed a human dissection.", d: 2 },
+            { text: "At 28, Vesalius published a revolutionary anatomical atlas correcting Galen\u2019s errors, and he was the first physician in history to base anatomical knowledge on actual human dissection.", d: 3 },
+        ]
+    },
+    f193: {
+        hardCorrect: "Semmelweis reduced maternity ward deaths from 18% to under 2% with handwashing, but was ridiculed and died in an asylum at 47.",
+        distractors: [
+            { text: "Semmelweis was a British surgeon who discovered handwashing during the Crimean War.", d: 1 },
+            { text: "The medical establishment immediately adopted Semmelweis\u2019s handwashing protocol.", d: 1 },
+            { text: "Semmelweis discovered that midwives had higher death rates than doctors, proving that untrained practitioners were the problem.", d: 2 },
+            { text: "Semmelweis\u2019s handwashing protocol was rejected because doctors had already tried and failed to reduce childbed fever with similar methods.", d: 2 },
+            { text: "Semmelweis proved handwashing saved lives and reduced death rates from 18% to under 2%, but the medical establishment rejected his findings because germ theory had already disproved his chlorine-based approach.", d: 3 },
+        ]
+    },
+    f194: {
+        hardCorrect: "Nightingale\u2019s most lasting contribution was using pioneering statistical graphics to prove most soldiers died from preventable disease, not combat.",
+        distractors: [
+            { text: "Florence Nightingale was a battlefield surgeon who operated on wounded soldiers.", d: 1 },
+            { text: "Nightingale\u2019s main achievement was inventing new surgical techniques for the Crimean War.", d: 1 },
+            { text: "Nightingale\u2019s sanitation reforms immediately reduced death rates as soon as she arrived at Scutari hospital.", d: 2 },
+            { text: "Nightingale\u2019s work focused exclusively on nursing care and did not involve data analysis or statistics.", d: 2 },
+            { text: "Nightingale used statistical graphics to prove soldiers died of disease rather than combat, and her sanitation reforms reduced the death rate from 42% to 2% from the moment she arrived at Scutari.", d: 3 },
+        ]
+    },
+    f195: {
+        hardCorrect: "Pasteur\u2019s private notebooks, opened in 1995, revealed he sometimes used rivals\u2019 methods without credit and took ethical risks with his rabies vaccine.",
+        distractors: [
+            { text: "Pasteur was a physician who developed germ theory by treating patients in his hospital.", d: 1 },
+            { text: "Germ theory was widely accepted before Pasteur, and he merely refined existing knowledge.", d: 1 },
+            { text: "Pasteur discovered penicillin as a direct result of his germ theory research.", d: 2 },
+            { text: "Pasteur\u2019s work focused exclusively on fermentation and he never developed any vaccines.", d: 2 },
+            { text: "Pasteur proved microorganisms cause disease and developed vaccines for rabies and anthrax, and his work was conducted in friendly collaboration with Robert Koch, who shared the credit equally.", d: 3 },
+        ]
+    },
+    f196: {
+        hardCorrect: "The WHO\u2019s greatest triumph was coordinating the global eradication of smallpox in 1980 \u2014 the only human disease ever eliminated.",
+        distractors: [
+            { text: "The WHO was founded during World War I to coordinate battlefield medicine.", d: 1 },
+            { text: "The WHO is a private charitable organization funded entirely by donations.", d: 1 },
+            { text: "The WHO\u2019s primary achievement was developing the polio vaccine, which it distributed worldwide.", d: 2 },
+            { text: "The WHO successfully eradicated both smallpox and polio during the 20th century.", d: 2 },
+            { text: "Founded as a UN agency in 1948, the WHO declared health a fundamental human right and has successfully eradicated two major human diseases: smallpox in 1980 and polio in 2000.", d: 3 },
+        ]
+    },
 };

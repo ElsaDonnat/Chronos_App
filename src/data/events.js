@@ -2658,6 +2658,161 @@ const CORE_EVENTS = [
         controversyNotes: {
             what: "Scientific consensus holds that approved GM foods are safe to eat, but the debate extends far beyond safety. Concerns about corporate monopolies over seeds, farmer debt in developing countries (particularly the wave of Indian farmer suicides linked to Bt cotton costs), biodiversity reduction, and the precautionary principle keep the controversy alive. The EU largely bans GM cultivation while the Americas embrace it.",
         }
+    },
+    // ─── MEDICINE & PUBLIC HEALTH ──────────────────────────────────────
+    {
+        id: "f187",
+        title: "Imhotep & Egyptian Medicine",
+        date: "c. 2650 BCE",
+        year: -2650,
+        keywords: "First physician \u00B7 Edwin Smith Papyrus \u00B7 Surgery \u00B7 Ancient Egypt",
+        description: "Imhotep was the world\u2019s first physician known by name \u2014 and he was also an architect, priest, and advisor to Pharaoh Djoser. The Edwin Smith Papyrus, likely based on his teachings, contains 48 surgical cases described with stunning clinical precision: examining injuries, diagnosing conditions, and prescribing treatments or honestly admitting \u2018an ailment not to be treated.\u2019 This rational, observation-based approach appeared over two millennia before Hippocrates.",
+        quizDescription: "The world\u2019s first named physician, whose surgical teachings used rational diagnosis over two millennia before Hippocrates.",
+        location: { lat: 29.87, lng: 31.22, region: "North Africa", place: "Memphis, Egypt" },
+        category: "science",
+        difficulty: 2,
+        controversyNotes: {
+            what: "The Edwin Smith Papyrus dates to ~1600 BCE but is believed to be a copy of a much older text, possibly from Imhotep\u2019s era (~2650 BCE). Whether Imhotep personally authored it is uncertain. He was deified by later Egyptians and equated with the Greek god Asclepius, making it hard to separate historical fact from legend.",
+            date: "Imhotep lived around 2650 BCE, but the Edwin Smith Papyrus is a copy from ~1600 BCE. The original text may predate the copy by a thousand years.",
+        }
+    },
+    {
+        id: "f188",
+        title: "Sushruta & Ancient Indian Surgery",
+        date: "c. 600 BCE",
+        year: -600,
+        keywords: "Sushruta Samhita \u00B7 Rhinoplasty \u00B7 Cataract surgery \u00B7 Ayurveda",
+        description: "In ancient India, the physician Sushruta compiled one of history\u2019s most remarkable medical texts. The Sushruta Samhita describes over 300 surgical procedures and 120 surgical instruments, including techniques for rhinoplasty (nose reconstruction) so sophisticated that British surgeons were still learning from them in the 18th century. Sushruta also performed cataract surgery using a curved needle and described the importance of cleanliness during operations \u2014 insights that the West wouldn\u2019t rediscover for two millennia.",
+        quizDescription: "An ancient Indian surgeon whose text described rhinoplasty and cataract surgery millennia before Western medicine caught up.",
+        location: { lat: 25.32, lng: 83.01, region: "South Asia", place: "Varanasi, India" },
+        category: "science",
+        difficulty: 2,
+        controversyNotes: {
+            what: "The Sushruta Samhita\u2019s dating is debated \u2014 the core text may be from 600 BCE, but it was expanded and edited over centuries, with some scholars placing the final form as late as the early centuries CE. Whether Sushruta was a single historical person or a composite figure is also uncertain.",
+            date: "Estimates range from 1000 BCE to 500 BCE for the original text, with significant later additions. The commonly cited 600 BCE is an approximation.",
+        }
+    },
+    {
+        id: "f189",
+        title: "The Huangdi Neijing & Chinese Medicine",
+        date: "c. 200 BCE",
+        year: -200,
+        keywords: "Yellow Emperor\u2019s Classic \u00B7 Acupuncture \u00B7 Qi \u00B7 Holistic medicine",
+        description: "The Huangdi Neijing (Yellow Emperor\u2019s Classic of Medicine) laid the foundation for Chinese medicine that is still practiced by millions today. Rather than treating individual symptoms, it described the body as a system of interconnected energies (qi) flowing through channels (meridians), with disease arising from imbalance. It systematized acupuncture, herbal medicine, and diagnostic techniques like pulse-reading. This holistic approach influenced medical thinking across East Asia for over two thousand years.",
+        quizDescription: "A foundational Chinese medical text that systematized acupuncture, qi theory, and holistic diagnosis.",
+        location: { lat: 34.26, lng: 108.94, region: "East Asia", place: "China (Han Dynasty)" },
+        category: "science",
+        difficulty: 2,
+        controversyNotes: {
+            what: "Despite its title, the Huangdi Neijing was not written by any single emperor but compiled by multiple authors over centuries. Modern scientific evidence for acupuncture is mixed: some studies show benefits for pain management, while the concept of qi and meridians has no established physiological basis. The text\u2019s influence is undeniable, but its medical claims remain controversial in evidence-based medicine.",
+        }
+    },
+    {
+        id: "f190",
+        title: "Avicenna\u2019s Canon of Medicine",
+        date: "1025 CE",
+        year: 1025,
+        keywords: "Ibn Sina \u00B7 Islamic Golden Age \u00B7 Clinical trials \u00B7 Medical encyclopedia",
+        description: "Ibn Sina (known in the West as Avicenna) wrote a five-volume medical encyclopedia so comprehensive that it remained the standard medical textbook in both the Islamic world and European universities for over 600 years. The Canon of Medicine synthesized Greek, Indian, and Islamic medical knowledge, and introduced groundbreaking ideas: the contagious nature of tuberculosis, the spread of diseases through water, and systematic rules for testing the effectiveness of new drugs \u2014 an early form of clinical trials.",
+        quizDescription: "A Persian polymath whose five-volume medical encyclopedia was the standard textbook in Europe and the Islamic world for 600 years.",
+        location: { lat: 38.57, lng: 68.77, region: "Central Asia", place: "Bukhara, Persia (modern Uzbekistan)" },
+        category: "science",
+        difficulty: 2,
+        controversyNotes: {
+            what: "Some historians debate the extent to which Avicenna\u2019s \u2018clinical trial\u2019 rules constitute true experimental methodology by modern standards. His rules for testing drugs included control conditions and reproducibility requirements, but they lacked the randomization and blinding that define modern clinical trials. His influence on European medicine is undisputed, but how much was preservation vs. original contribution is debated.",
+        }
+    },
+    {
+        id: "f191",
+        title: "The First Quarantine",
+        date: "1377 CE",
+        year: 1377,
+        keywords: "Ragusa \u00B7 Dubrovnik \u00B7 Black Death \u00B7 Public health policy",
+        description: "After watching the Black Death devastate Europe, the city-state of Ragusa (modern Dubrovnik) enacted the world\u2019s first institutionalized quarantine. Ships arriving from plague-affected areas had to anchor offshore for 30 days \u2014 later extended to 40 (quaranta giorni, giving us the word \u2018quarantine\u2019). This was revolutionary: it was the first time a government used systematic isolation as a public health tool. The idea spread to Venice, Milan, and eventually the entire Mediterranean, establishing the principle that states have a duty to protect public health.",
+        quizDescription: "Ragusa enacted history\u2019s first quarantine, requiring ships to isolate for 30 days to prevent plague \u2014 giving us the word itself.",
+        location: { lat: 42.64, lng: 18.11, region: "Europe", place: "Ragusa (Dubrovnik), Croatia" },
+        category: "politics",
+        difficulty: 2,
+        controversyNotes: {
+            what: "Venice and Milan also implemented early quarantine measures around the same time, and some historians argue Venice\u2019s 1348 measures predate Ragusa\u2019s 1377 law. However, Ragusa\u2019s trentino (30-day isolation) is generally recognized as the first formal, codified quarantine legislation. The extension to 40 days (quarantino) came later from Venice.",
+        }
+    },
+    {
+        id: "f192",
+        title: "Andreas Vesalius & Modern Anatomy",
+        date: "1543 CE",
+        year: 1543,
+        keywords: "De Humani Corporis Fabrica \u00B7 Dissection \u00B7 Galen corrected \u00B7 Renaissance",
+        description: "At just 28 years old, Andreas Vesalius published De Humani Corporis Fabrica (On the Fabric of the Human Body), a stunningly illustrated anatomical atlas based on actual human dissection. For 1,400 years, European medicine had relied on Galen\u2019s anatomy, which was largely based on animal dissections. Vesalius corrected over 200 of Galen\u2019s errors, proving that the only way to understand the human body was to look at it directly. His work helped launch the Scientific Revolution in medicine.",
+        quizDescription: "A 28-year-old who corrected 1,400 years of anatomical errors by dissecting actual human bodies.",
+        location: { lat: 45.41, lng: 12.34, region: "Europe", place: "Padua & Venice, Italy" },
+        category: "science",
+        difficulty: 2,
+        controversyNotes: {
+            what: "Islamic and Chinese physicians had performed human dissections centuries earlier, so Vesalius was not truly the first. His contribution was systematic correction of Galen within the European tradition and the unprecedented quality of his illustrations (drawn by artists from Titian\u2019s studio). Some historians also note that his reliance on executed criminals for dissection subjects raises ethical questions by modern standards.",
+        }
+    },
+    {
+        id: "f193",
+        title: "Ignaz Semmelweis & Handwashing",
+        date: "1847 CE",
+        year: 1847,
+        keywords: "Childbed fever \u00B7 Antisepsis \u00B7 Germ theory precursor \u00B7 Medical rejection",
+        description: "In a Vienna maternity ward, Ignaz Semmelweis noticed that women delivered by doctors who came straight from the autopsy room died of childbed fever at five times the rate of those delivered by midwives. He ordered doctors to wash their hands in chlorinated lime solution \u2014 and the death rate plummeted from 18% to under 2%. But the medical establishment ridiculed him: the idea that doctors\u2019 own hands could kill their patients was seen as an insult. Semmelweis died in an asylum at 47, his discovery ignored for decades.",
+        quizDescription: "A doctor who proved handwashing saved lives in maternity wards, but was ridiculed and died in an asylum.",
+        location: { lat: 48.22, lng: 16.36, region: "Europe", place: "Vienna, Austria" },
+        category: "science",
+        difficulty: 1,
+        controversyNotes: {
+            what: "Semmelweis\u2019s downfall was partly his own doing: he was combative, refused to publish his full data for years, and wrote angry open letters attacking his critics. Some historians argue the medical establishment\u2019s rejection was not purely about ego but also about the lack of a theoretical mechanism (germ theory hadn\u2019t been established yet). His death in an asylum may have resulted from Alzheimer\u2019s, syphilis, or beatings by guards \u2014 the cause is disputed.",
+        }
+    },
+    {
+        id: "f194",
+        title: "Florence Nightingale & Modern Nursing",
+        date: "1854\u20131860 CE",
+        year: 1854,
+        yearEnd: 1860,
+        keywords: "Crimean War \u00B7 Sanitation \u00B7 Statistical graphics \u00B7 Hospital reform",
+        description: "Florence Nightingale arrived at a British military hospital during the Crimean War to find soldiers dying of infections in filthy, overcrowded wards. She implemented strict sanitation protocols and reduced the death rate from 42% to 2%. But her most lasting contribution was invisible: she used pioneering statistical graphics (her famous \u2018coxcomb\u2019 diagrams) to prove that most soldiers died from preventable disease, not combat wounds. Her data convinced the government to reform military hospitals and established nursing as a respected profession.",
+        quizDescription: "A nurse who used statistics and sanitation to slash death rates in the Crimean War, then reformed hospitals worldwide.",
+        location: { lat: 41.01, lng: 29.0, region: "Middle East", place: "Scutari (Istanbul), Ottoman Empire" },
+        category: "science",
+        difficulty: 1,
+        controversyNotes: {
+            what: "Nightingale\u2019s Scutari hospital initially had HIGHER death rates because the building sat over a broken sewer. The dramatic improvement came after a Sanitary Commission cleaned the water supply and ventilation. Some historians argue Nightingale\u2019s personal nursing had less impact than her later statistical advocacy. Her legacy also overshadows Mary Seacole, a Jamaican-British nurse who provided frontline care during the same war but received far less recognition.",
+        }
+    },
+    {
+        id: "f195",
+        title: "Louis Pasteur & Germ Theory",
+        date: "1861\u20131885 CE",
+        year: 1861,
+        yearEnd: 1885,
+        keywords: "Pasteurization \u00B7 Rabies vaccine \u00B7 Microbiology \u00B7 Spontaneous generation",
+        description: "Louis Pasteur demolished the ancient belief in spontaneous generation by proving that microorganisms cause fermentation, spoilage, and disease. His work led to pasteurization (saving countless lives through safe milk and wine), antiseptic surgery (inspiring Joseph Lister), and the development of vaccines for rabies and anthrax. Germ theory was medicine\u2019s greatest paradigm shift: it transformed disease from a mysterious punishment into something that could be understood, prevented, and cured.",
+        quizDescription: "The scientist who proved germs cause disease, invented pasteurization, and created vaccines for rabies and anthrax.",
+        location: { lat: 48.85, lng: 2.35, region: "Europe", place: "Paris, France" },
+        category: "science",
+        difficulty: 1,
+        controversyNotes: {
+            what: "Pasteur\u2019s rivalry with Robert Koch (who identified the specific bacteria causing tuberculosis and cholera) was bitter and sometimes nationalistic (French vs. German). Some historians argue Koch deserves equal credit for germ theory. Pasteur\u2019s private notebooks, opened in 1995, revealed he sometimes used rivals\u2019 methods without credit and took risks with his rabies vaccine that would be considered unethical today.",
+        }
+    },
+    {
+        id: "f196",
+        title: "The WHO & Global Health",
+        date: "1948 CE",
+        year: 1948,
+        keywords: "World Health Organization \u00B7 Smallpox eradication \u00B7 Universal health \u00B7 UN",
+        description: "Founded as a specialized agency of the United Nations, the World Health Organization declared that \u2018the highest attainable standard of health\u2019 is a fundamental human right \u2014 not a privilege. Its greatest triumph was coordinating the global eradication of smallpox in 1980, the only human disease ever eliminated. The WHO also led campaigns against polio, malaria, and HIV/AIDS, and established international health regulations that govern how nations respond to pandemics. Its founding marked the moment public health became a global responsibility.",
+        quizDescription: "The UN agency that declared health a human right and coordinated the only successful eradication of a human disease.",
+        location: { lat: 46.23, lng: 6.13, region: "Europe", place: "Geneva, Switzerland" },
+        category: "politics",
+        difficulty: 1,
+        controversyNotes: {
+            what: "The WHO has faced criticism for its handling of multiple crises: slow response to the 2014 Ebola outbreak, alleged deference to China during early COVID-19, and influence of large private donors (particularly the Gates Foundation) on its priorities. Some argue it has become too politicized, while defenders note it operates with limited authority over sovereign nations and a budget smaller than many individual hospitals.",
+        }
     }
 ];
 
@@ -3824,6 +3979,90 @@ for (const [eventId, connections] of Object.entries(LEVEL2_FOOD_CONNECTIONS)) {
     }
 }
 
+// --- Level 2: Medicine & Public Health chapter connections ---
+const LEVEL2_MEDICINE_CONNECTIONS = {
+    f187: [
+        { id: "f8", label: "Egyptian medicine developed alongside the civilization that unified the Nile" },
+        { id: "f188", label: "Indian surgery developed independently around the same era" },
+    ],
+    f188: [
+        { id: "f187", label: "Indian and Egyptian medicine represent two independent ancient traditions" },
+        { id: "f189", label: "India and China each developed holistic medical systems independently" },
+    ],
+    f189: [
+        { id: "f188", label: "Chinese and Indian medicine evolved in parallel as holistic systems" },
+        { id: "f14", label: "Chinese medicine developed during the Axial Age\u2019s intellectual flowering" },
+        { id: "f190", label: "Chinese medical knowledge eventually reached the Islamic world via the Silk Road" },
+    ],
+    f190: [
+        { id: "f189", label: "Avicenna synthesized Greek, Indian, and Chinese medical knowledge" },
+        { id: "f191", label: "Islamic medical understanding of contagion influenced quarantine practices" },
+        { id: "f192", label: "The Canon remained the standard until Vesalius challenged ancient authority" },
+    ],
+    f191: [
+        { id: "f30", label: "Quarantine was a direct response to the devastation of the Black Death" },
+        { id: "f190", label: "Islamic medicine\u2019s understanding of contagion influenced quarantine thinking" },
+        { id: "f105", label: "The quarantine principle was revived globally during the COVID-19 pandemic" },
+    ],
+    f192: [
+        { id: "f38", label: "Vesalius published in the same year as Copernicus, launching the Scientific Revolution in medicine" },
+        { id: "f190", label: "Vesalius challenged the Galenic anatomy that Avicenna had preserved" },
+        { id: "f195", label: "Anatomical knowledge was essential for understanding how germs attack the body" },
+    ],
+    f193: [
+        { id: "f194", label: "Semmelweis and Nightingale independently proved sanitation saves lives" },
+        { id: "f195", label: "Semmelweis discovered the practice; Pasteur later provided the theory" },
+        { id: "f101", label: "Semmelweis\u2019s handwashing and Snow\u2019s cholera map both showed disease had physical causes" },
+    ],
+    f194: [
+        { id: "f193", label: "Nightingale and Semmelweis both demonstrated sanitation\u2019s life-saving power" },
+        { id: "f195", label: "Nightingale\u2019s sanitation reforms anticipated the germ theory Pasteur would prove" },
+        { id: "f196", label: "Nightingale\u2019s vision of public health as a system inspired global health institutions" },
+    ],
+    f195: [
+        { id: "f193", label: "Germ theory explained why Semmelweis\u2019s handwashing had worked" },
+        { id: "f100", label: "Pasteur\u2019s vaccine work built on Jenner\u2019s earlier smallpox vaccination" },
+        { id: "f38", label: "Germ theory applied the Scientific Revolution\u2019s empirical method to medicine" },
+        { id: "f104", label: "Germ theory led directly to the discovery of antibiotics like penicillin" },
+    ],
+    f196: [
+        { id: "f54", label: "The WHO was founded as a specialized agency of the United Nations" },
+        { id: "f103", label: "The WHO coordinated the global eradication of smallpox" },
+        { id: "f105", label: "The WHO led the international response to the COVID-19 pandemic" },
+        { id: "f194", label: "Nightingale\u2019s vision of systematic public health found its global expression in the WHO" },
+    ],
+    // Cross-connections: append to existing events
+    f8: [
+        { id: "f187", label: "Egyptian civilization also produced the world\u2019s first named physician" },
+    ],
+    f14: [
+        { id: "f189", label: "The Axial Age saw the systematization of Chinese medical theory" },
+    ],
+    f30: [
+        { id: "f191", label: "The Black Death\u2019s devastation led to the invention of quarantine" },
+    ],
+    f38: [
+        { id: "f192", label: "Vesalius\u2019s anatomical revolution was part of the Scientific Revolution" },
+    ],
+    f54: [
+        { id: "f196", label: "The UN created the WHO to make health a global responsibility" },
+    ],
+    f100: [
+        { id: "f195", label: "Pasteur built on Jenner\u2019s vaccination principle with germ theory" },
+    ],
+    f101: [
+        { id: "f193", label: "Snow and Semmelweis independently proved disease has physical, preventable causes" },
+    ],
+};
+
+for (const [eventId, connections] of Object.entries(LEVEL2_MEDICINE_CONNECTIONS)) {
+    if (EVENT_CONNECTIONS[eventId]) {
+        EVENT_CONNECTIONS[eventId].push(...connections);
+    } else {
+        EVENT_CONNECTIONS[eventId] = connections;
+    }
+}
+
 // Attach connections to each core event
 for (const event of CORE_EVENTS) {
     if (EVENT_CONNECTIONS[event.id]) {
@@ -3863,6 +4102,7 @@ const IMPORTANCE_MAP = {
     f157: 'major', f158: 'major', f161: 'major', f165: 'major',
     f167: 'major', f169: 'major', f171: 'major', f175: 'major',
     f180: 'major', f183: 'major', f185: 'major',
+    f190: 'major', f195: 'major', f196: 'major',
     // ── Notable ── historically significant; everything else defaults here
 };
 
@@ -3875,7 +4115,7 @@ export const ALL_EVENTS = [
     ...DAILY_QUIZ_EVENTS.map(e => ({ ...e, importance: e.importance || 'minor' })),
 ];
 
-export const CORE_EVENT_COUNT = CORE_EVENTS.length; // 186 (60 Level 1 + 126 Level 2)
+export const CORE_EVENT_COUNT = CORE_EVENTS.length; // 196 (60 Level 1 + 136 Level 2)
 
 /** Level 1 events are f1–f60; Level 2 events are f61+. */
 export function isLevel2Event(event) {
