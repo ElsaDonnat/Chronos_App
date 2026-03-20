@@ -130,8 +130,8 @@ Cross-cutting study paths like "Women in History", "Scientific Breakthroughs". G
 
 Add more events per era, deeper non-Western history coverage, and new lessons beyond the current 21. Plan for thematic content packs or era-specific expansions. Priority: regions currently underrepresented (Asia, Africa, Americas pre-colonization). This is a long-term effort — the app framework supports it, but content creation takes time.
 
-**Completed themes:** Revolutions, AI, Freedom, Empires, Plagues, Africa, Art, Science, Exploration, Money & Trade, Philosophy & Ideas, Women Who Changed History, Food & Agriculture, Law & Justice, Great Inventions (15 chapters, 206 core events).
-**Possible future themes:** Music That Changed the World, Medicine & Public Health, Migrations & Diasporas, Architecture & Engineering.
+**Completed themes:** Revolutions, AI, Freedom, Empires, Plagues, Africa, Art, Science, Exploration, Money & Trade, Philosophy & Ideas, Women Who Changed History, Food & Agriculture, Law & Justice, Great Inventions, Medicine & Public Health (16 chapters, 216 core events).
+**Possible future themes:** Music That Changed the World, Migrations & Diasporas, Architecture & Engineering.
 
 ---
 
