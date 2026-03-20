@@ -200,8 +200,9 @@ export default function ConcurrentView({ events, learnedIds, eventMastery, categ
                 </div>
             </div>
 
-            {/* Empty state */}
-            {totalVisible === 0 && (
+            {/* Empty state — only show when user has some learned events but none near current time.
+               When learnedEvents is empty, TimelinePage shows its own mascot empty state above. */}
+            {totalVisible === 0 && learnedEvents.length > 0 && (
                 <div className="text-center py-10 animate-fade-in">
                     <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--color-ink-faint)" strokeWidth="1.5" className="mx-auto mb-3">
                         <circle cx="12" cy="12" r="10" />
@@ -211,28 +212,22 @@ export default function ConcurrentView({ events, learnedIds, eventMastery, categ
                     <p className="text-sm font-medium" style={{ fontFamily: 'var(--font-serif)', color: 'var(--color-ink-muted)' }}>
                         No events discovered near this time
                     </p>
-                    {/* Show which eras have events */}
-                    {learnedEvents.length > 0 ? (
-                        <div className="mt-3 flex flex-wrap gap-1.5 justify-center">
-                            {ERA_SLIDER_SEGMENTS.filter(seg => eraEventCounts[seg.id] > 0).map(seg => (
-                                <button
-                                    key={seg.id}
-                                    onClick={() => { handleEraJump(seg.id); feedback.tap(); }}
-                                    className="px-2.5 py-1 rounded-full text-[10px] font-semibold cursor-pointer transition-colors duration-200"
-                                    style={{
-                                        backgroundColor: 'rgba(var(--color-ink-rgb), 0.06)',
-                                        color: 'var(--color-burgundy)',
-                                    }}
-                                >
-                                    Jump to {seg.label} ({eraEventCounts[seg.id]})
-                                </button>
-                            ))}
-                        </div>
-                    ) : (
-                        <p className="text-xs mt-1" style={{ color: 'var(--color-ink-faint)' }}>
-                            Complete lessons to discover events
-                        </p>
-                    )}
+                    {/* Quick-jump to eras that have events */}
+                    <div className="mt-3 flex flex-wrap gap-1.5 justify-center">
+                        {ERA_SLIDER_SEGMENTS.filter(seg => eraEventCounts[seg.id] > 0).map(seg => (
+                            <button
+                                key={seg.id}
+                                onClick={() => { handleEraJump(seg.id); feedback.tap(); }}
+                                className="px-2.5 py-1 rounded-full text-[10px] font-semibold cursor-pointer transition-colors duration-200"
+                                style={{
+                                    backgroundColor: 'rgba(var(--color-ink-rgb), 0.06)',
+                                    color: 'var(--color-burgundy)',
+                                }}
+                            >
+                                Jump to {seg.label} ({eraEventCounts[seg.id]})
+                            </button>
+                        ))}
+                    </div>
                 </div>
             )}
 
