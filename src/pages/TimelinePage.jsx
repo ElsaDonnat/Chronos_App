@@ -107,8 +107,8 @@ export default function TimelinePage() {
     };
 
     return (
-        <div className="py-6">
-            <div className="text-center mb-6">
+        <div className="py-4">
+            <div className="text-center mb-4">
                 <h1 className="text-2xl font-bold" style={{ fontFamily: 'var(--font-serif)', color: 'var(--color-ink)' }}>
                     Timeline
                 </h1>
@@ -118,9 +118,9 @@ export default function TimelinePage() {
             </div>
 
             {learnedIds.size === 0 && (
-                <div className="text-center py-12 animate-fade-in">
-                    <Mascot mood="happy" size={64} />
-                    <p className="text-base font-semibold mt-3" style={{ fontFamily: 'var(--font-serif)', color: 'var(--color-ink-secondary)' }}>
+                <div className="text-center py-6 animate-fade-in">
+                    <Mascot mood="happy" size={56} />
+                    <p className="text-base font-semibold mt-2" style={{ fontFamily: 'var(--font-serif)', color: 'var(--color-ink-secondary)' }}>
                         Your timeline begins with your first lesson
                     </p>
                     <p className="text-sm mt-1" style={{ color: 'var(--color-ink-muted)' }}>
@@ -139,7 +139,7 @@ export default function TimelinePage() {
             </div>
 
             {/* Compact filter row — scrollable on narrow screens */}
-            <div className="flex items-center gap-2 mb-6 overflow-x-auto no-scrollbar">
+            <div className="flex items-center gap-2 mb-6 flex-wrap">
                 <FilterDropdown
                     value={selectedImportance}
                     onChange={updateImportance}
