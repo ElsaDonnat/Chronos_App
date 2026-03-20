@@ -2182,4 +2182,205 @@ export const DESCRIPTION_DISTRACTORS = {
             { text: "The Flavr Savr tomato sparked a global debate about food safety and corporate control, though seed patents were not a significant issue since farmers could freely save and replant genetically modified seeds.", d: 3 },
         ]
     },
+    f187: {
+        hardCorrect: "The Twelve Tables established that law must be publicly displayed and accessible to all citizens, not just the ruling class.",
+        distractors: [
+            { text: "The Twelve Tables were a set of military regulations governing the Roman legions.", d: 1 },
+            { text: "Roman law was borrowed entirely from ancient Greece with no original Roman contributions.", d: 1 },
+            { text: "The Twelve Tables gave equal rights to all residents of Rome, including slaves and foreigners.", d: 2 },
+            { text: "The Twelve Tables were created by Roman emperors to consolidate their authority over the Senate.", d: 2 },
+            { text: "Roman plebeians demanded written laws displayed in the Forum, ending patrician legal monopolies \u2014 though the resulting Twelve Tables applied equally to all people in Rome, including non-citizens and enslaved individuals.", d: 3 },
+        ]
+    },
+    f188: {
+        hardCorrect: "Legalism\u2019s core argument was that human nature is inherently selfish, so only strict, impartial laws can maintain social order.",
+        distractors: [
+            { text: "Legalism was a Buddhist philosophy that emphasized spiritual enlightenment through strict monastic rules.", d: 1 },
+            { text: "Qin Shi Huang unified China primarily through diplomatic marriages and voluntary alliances.", d: 1 },
+            { text: "Legalism argued that human nature was essentially good, and strict laws were needed only to punish the rare criminal.", d: 2 },
+            { text: "The Qin Dynasty lasted for centuries because Legalism proved universally popular with both scholars and commoners.", d: 2 },
+            { text: "Qin Shi Huang unified China using Legalist principles of strict, impartial law and standardization \u2014 and while he restricted some texts, he preserved philosophical works by Confucius and Mencius as part of the new state library.", d: 3 },
+        ]
+    },
+    f189: {
+        hardCorrect: "Though initially about feudal privileges, Magna Carta was revived centuries later as proof that no ruler is above the law.",
+        distractors: [
+            { text: "Magna Carta was a peace treaty between England and France that ended a century of warfare.", d: 1 },
+            { text: "King John enthusiastically signed Magna Carta as part of his plan to modernize English governance.", d: 1 },
+            { text: "Magna Carta established a democratic parliament with elected representatives from every English county.", d: 2 },
+            { text: "Magna Carta was immediately adopted across Europe, with every major kingdom signing similar charters within a decade.", d: 2 },
+            { text: "English barons forced King John to seal a charter guaranteeing that even the king was subject to law \u2014 a document that remained continuously enforced and celebrated from 1215 onward without interruption.", d: 3 },
+        ]
+    },
+    f190: {
+        hardCorrect: "Four major Sunni legal schools emerged, each offering different interpretations while respecting the others \u2014 a remarkable example of legal pluralism.",
+        distractors: [
+            { text: "Islamic jurisprudence was a set of trade regulations governing commerce between Muslim and Christian merchants.", d: 1 },
+            { text: "The Quran contains a complete, detailed legal code that required no scholarly interpretation or development.", d: 1 },
+            { text: "Islamic law was developed by a single scholar who personally codified every rule from the Quran into a unified system.", d: 2 },
+            { text: "The four Sunni legal schools were in constant violent conflict, each condemning the others as heretical.", d: 2 },
+            { text: "Muslim scholars developed a sophisticated legal methodology combining scripture, prophetic example, and reasoning \u2014 though the resulting four schools were rigid and unchanging, applying exactly the same rules regardless of local culture or historical context.", d: 3 },
+        ]
+    },
+    f191: {
+        hardCorrect: "Chiefs in the Confederacy were chosen by clan mothers, giving women significant political power in the system.",
+        distractors: [
+            { text: "The Great Law of Peace was a military alliance created to wage war against European colonizers.", d: 1 },
+            { text: "The Haudenosaunee Confederacy was a short-lived agreement that collapsed within a generation of its founding.", d: 1 },
+            { text: "The Great Law of Peace established a hereditary monarchy with an Onondaga king ruling all five nations.", d: 2 },
+            { text: "The Haudenosaunee system was based entirely on unanimous agreement, with no formal leadership roles or decision-making structure.", d: 2 },
+            { text: "Five Iroquois nations created a constitution with representative government and separation of powers \u2014 though the system was designed and led exclusively by male warriors, with women playing no formal role in governance.", d: 3 },
+        ]
+    },
+    f192: {
+        hardCorrect: "Napoleon called habeas corpus the single most important safeguard of personal liberty.",
+        distractors: [
+            { text: "The Habeas Corpus Act gave English citizens the right to vote in parliamentary elections.", d: 1 },
+            { text: "Habeas corpus was a religious doctrine that required weekly church attendance for all English subjects.", d: 1 },
+            { text: "The Act was passed to protect members of Parliament from arrest, not ordinary citizens.", d: 2 },
+            { text: "Habeas corpus was an entirely new legal invention with no precedent in English law before 1679.", d: 2 },
+            { text: "Parliament required that anyone detained must be brought before a court \u2014 a right that, once enacted, was never suspended or restricted by any government in any circumstance.", d: 3 },
+        ]
+    },
+    f193: {
+        hardCorrect: "Over 120 countries today use legal systems descended from the Napoleonic Code.",
+        distractors: [
+            { text: "The Napoleonic Code was a military manual that standardized battlefield tactics across the French army.", d: 1 },
+            { text: "Napoleon\u2019s Code was rejected by France and only adopted by foreign countries he conquered.", d: 1 },
+            { text: "The Napoleonic Code granted equal legal rights to all citizens regardless of gender, making France a pioneer of women\u2019s rights.", d: 2 },
+            { text: "The Code was based primarily on Germanic tribal customs rather than Roman legal traditions.", d: 2 },
+            { text: "Napoleon unified French law into a secular code establishing legal equality and property rights \u2014 and these principles of equality applied fully to all citizens, including married women who retained their independent legal and property rights.", d: 3 },
+        ]
+    },
+    f194: {
+        hardCorrect: "For the first time, \u2018following orders\u2019 was rejected as a defense for committing atrocities.",
+        distractors: [
+            { text: "The Nuremberg Trials were a series of negotiations between Allied and Axis powers to divide post-war Europe.", d: 1 },
+            { text: "All defendants at Nuremberg were found guilty and executed by the end of 1945.", d: 1 },
+            { text: "The trials used well-established international laws that had been in place since the 19th century.", d: 2 },
+            { text: "The Nuremberg Trials focused exclusively on military commanders, with no political or civilian leaders prosecuted.", d: 2 },
+            { text: "Nazi leaders were tried under international law for crimes against humanity \u2014 though the Allies also subjected their own officers to the same tribunal for wartime conduct on the Eastern Front and in the Pacific.", d: 3 },
+        ]
+    },
+    f195: {
+        hardCorrect: "Though not legally binding, the UDHR has inspired over 70 human rights treaties and influenced nearly every constitution written since.",
+        distractors: [
+            { text: "The Universal Declaration was a trade agreement between Western nations to establish common tariff policies.", d: 1 },
+            { text: "The Declaration was drafted exclusively by American and British delegates with no input from other nations.", d: 1 },
+            { text: "The UDHR was adopted unanimously with enthusiastic support from every nation in the General Assembly.", d: 2 },
+            { text: "The Declaration was legally binding from the moment of adoption, with the UN empowered to enforce every article.", d: 2 },
+            { text: "Representatives from multiple nations drafted a declaration of universal rights adopted by the General Assembly \u2014 though as a legally binding treaty, it gave the United Nations direct enforcement power over any nation that violated its provisions.", d: 3 },
+        ]
+    },
+    f196: {
+        hardCorrect: "The United States, China, Russia, and India have all refused to join the ICC, limiting its ability to prosecute crimes globally.",
+        distractors: [
+            { text: "The ICC is a branch of the United States federal court system that handles international disputes.", d: 1 },
+            { text: "The International Criminal Court replaced the United Nations entirely as the main body of international governance.", d: 1 },
+            { text: "Every member of the UN Security Council has ratified the ICC treaty and fully supports the court\u2019s authority.", d: 2 },
+            { text: "The ICC has jurisdiction over any crime committed anywhere in the world, regardless of whether the nation involved is a member.", d: 2 },
+            { text: "After tribunals for Rwanda and Yugoslavia, 120 nations created a permanent court to prosecute war crimes and genocide \u2014 and all major world powers, including the United States, China, and Russia, joined the court to ensure universal enforcement.", d: 3 },
+        ]
+    },
+    // ─── Great Inventions chapter ────────────────────────────────────────
+    f197: {
+        hardCorrect: "The wheel first appeared as a potter\u2019s tool before being adapted for transport with an axle.",
+        distractors: [
+            { text: "The wheel was invented specifically for war chariots by the ancient Egyptians.", d: 1 },
+            { text: "Every advanced ancient civilization independently developed wheeled transport.", d: 1 },
+            { text: "The wheel was invented for transport and only later adapted for pottery.", d: 2 },
+            { text: "Advanced civilizations in the Americas used wheeled transport extensively before European contact.", d: 2 },
+            { text: "The wheel first appeared as a potter\u2019s tool in Mesopotamia, and every major civilization that encountered it quickly adopted wheeled transport \u2014 including the Maya, Aztec, and Inca.", d: 3 },
+        ]
+    },
+    f198: {
+        hardCorrect: "Paper spread to the Islamic world partly because Arab forces captured Chinese papermakers after the Battle of Talas in 751 CE.",
+        distractors: [
+            { text: "Paper was invented in ancient Egypt from papyrus reeds and then copied by the Chinese.", d: 1 },
+            { text: "Gutenberg invented paper as part of his printing press system in the 15th century.", d: 1 },
+            { text: "Cai Lun invented paper from silk fibers, which made it expensive and limited to the imperial court.", d: 2 },
+            { text: "Paper spread to Europe through peaceful Silk Road trade, with Chinese merchants willingly sharing the technique.", d: 2 },
+            { text: "Cai Lun perfected papermaking from bark, hemp, and rags during the Han Dynasty, and the technique spread to the Islamic world through peaceful Silk Road trade agreements with China.", d: 3 },
+        ]
+    },
+    f199: {
+        hardCorrect: "Chinese alchemists discovered gunpowder while searching for an elixir of immortality.",
+        distractors: [
+            { text: "Gunpowder was invented by European knights to improve their siege warfare capabilities.", d: 1 },
+            { text: "Gunpowder was developed as a mining explosive by the ancient Romans.", d: 1 },
+            { text: "Gunpowder was deliberately invented by Chinese military engineers for use in cannons.", d: 2 },
+            { text: "Gunpowder reached Europe through Arab merchants who had independently discovered the formula.", d: 2 },
+            { text: "Chinese alchemists accidentally discovered gunpowder while seeking immortality, and it was immediately adopted for military use in firearms and cannons during the Tang Dynasty.", d: 3 },
+        ]
+    },
+    f200: {
+        hardCorrect: "Chinese navigators used magnetized needles floating in water to find north at sea during the Song Dynasty.",
+        distractors: [
+            { text: "The compass was invented by Christopher Columbus to navigate across the Atlantic.", d: 1 },
+            { text: "Ancient Greek sailors invented the compass using static electricity from amber.", d: 1 },
+            { text: "The magnetic compass was invented simultaneously in China and Europe through completely independent discoveries.", d: 2 },
+            { text: "Chinese geomancers used the compass exclusively for navigation from the 4th century BCE onward.", d: 2 },
+            { text: "Song Dynasty navigators used magnetized needles to find north, enabling open-ocean sailing \u2014 a technique Chinese geomancers had already been using for maritime navigation since the 4th century BCE.", d: 3 },
+        ]
+    },
+    f201: {
+        hardCorrect: "Galileo did not invent the telescope \u2014 Dutch spectacle-maker Hans Lippershey applied for the patent first.",
+        distractors: [
+            { text: "Galileo invented the telescope and used it to prove that the Earth orbits the Sun.", d: 1 },
+            { text: "The telescope was invented by Isaac Newton as part of his work on optics and gravity.", d: 1 },
+            { text: "Lippershey invented the telescope and was awarded an exclusive patent by the Dutch government.", d: 2 },
+            { text: "Galileo\u2019s telescope confirmed the geocentric model by showing that all planets orbit the Earth.", d: 2 },
+            { text: "Lippershey patented the telescope and Galileo turned it skyward, confirming the heliocentric model \u2014 Lippershey received an exclusive patent that prevented others from building their own versions.", d: 3 },
+        ]
+    },
+    f202: {
+        hardCorrect: "Morse\u2019s telegraph made information travel faster than any person for the first time in human history.",
+        distractors: [
+            { text: "The telegraph was invented by Alexander Graham Bell as a precursor to the telephone.", d: 1 },
+            { text: "The telegraph transmitted voice messages over wires, replacing the postal service.", d: 1 },
+            { text: "Morse was the first person to develop any form of electrical communication device.", d: 2 },
+            { text: "The transatlantic telegraph cable was laid within a year of Morse\u2019s first demonstration in 1844.", d: 2 },
+            { text: "Morse sent the first electronic message in 1844, making information travel faster than a person for the first time \u2014 he was also the first inventor to develop any form of electromagnetic communication device.", d: 3 },
+        ]
+    },
+    f203: {
+        hardCorrect: "Edison\u2019s real achievement was not just the light bulb but the complete electrical distribution system to power it.",
+        distractors: [
+            { text: "Edison invented electricity itself, which had never been observed or studied before.", d: 1 },
+            { text: "The light bulb was Edison\u2019s only invention; he spent his entire career perfecting it.", d: 1 },
+            { text: "Edison was the first person to demonstrate an incandescent light, with no prior attempts by any inventor.", d: 2 },
+            { text: "Edison\u2019s Pearl Street Station powered all of New York City from its first day of operation.", d: 2 },
+            { text: "Edison created a practical light bulb and built the first power grid, proving electricity could be sold as a utility \u2014 as the first person to ever demonstrate an incandescent lamp, his achievement was entirely without precedent.", d: 3 },
+        ]
+    },
+    f204: {
+        hardCorrect: "The Wright Brothers built a wind tunnel and tested over 200 wing shapes before their first flight.",
+        distractors: [
+            { text: "The Wright Brothers were university-trained aeronautical engineers who received government funding.", d: 1 },
+            { text: "The first powered flight lasted over an hour and covered several miles.", d: 1 },
+            { text: "The Wright Brothers\u2019 first flight was publicly witnessed by hundreds of spectators and journalists.", d: 2 },
+            { text: "The key innovation was a more powerful engine, while wing design was already well understood.", d: 2 },
+            { text: "Two bicycle mechanics achieved sustained powered flight at Kitty Hawk, succeeding because they built the most powerful engine of any aviation pioneer \u2014 while wing shape was already well understood from previous experiments.", d: 3 },
+        ]
+    },
+    f205: {
+        hardCorrect: "Fleming discovered penicillin\u2019s potential, but Florey and Chain solved the harder problem of mass-producing it.",
+        distractors: [
+            { text: "Fleming deliberately engineered penicillin by combining chemicals in a laboratory.", d: 1 },
+            { text: "Penicillin was first used during World War I to treat wounded soldiers on the Western Front.", d: 1 },
+            { text: "Fleming both discovered and mass-produced penicillin, making it available for soldiers by 1930.", d: 2 },
+            { text: "Antibiotics only affect viral infections, which is why they were developed during the flu pandemic.", d: 2 },
+            { text: "Fleming noticed mold killing bacteria by accident and quickly developed the mass production process, making penicillin widely available within a few years of his 1928 discovery.", d: 3 },
+        ]
+    },
+    f206: {
+        hardCorrect: "A modern smartphone contains more transistors than all the computers that existed in 1960 combined.",
+        distractors: [
+            { text: "The transistor was invented by a single scientist working alone at MIT.", d: 1 },
+            { text: "Transistors are mechanical switches that work by physically flipping tiny metal contacts.", d: 1 },
+            { text: "The transistor replaced the vacuum tube but was the same size, offering no miniaturization advantage.", d: 2 },
+            { text: "The transistor was invented in Silicon Valley, which is why the region got its name.", d: 2 },
+            { text: "Three Bell Labs physicists invented the transistor, making the computer age possible \u2014 the team worked harmoniously, and their shared Nobel Prize in 1956 cemented a lifelong collaboration.", d: 3 },
+        ]
+    },
 };

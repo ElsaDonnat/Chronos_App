@@ -2658,7 +2658,315 @@ const CORE_EVENTS = [
         controversyNotes: {
             what: "Scientific consensus holds that approved GM foods are safe to eat, but the debate extends far beyond safety. Concerns about corporate monopolies over seeds, farmer debt in developing countries (particularly the wave of Indian farmer suicides linked to Bt cotton costs), biodiversity reduction, and the precautionary principle keep the controversy alive. The EU largely bans GM cultivation while the Americas embrace it.",
         }
-    }
+    },
+
+    // ─── Law & Justice (f187–f196) ────────────────────────────────────
+    {
+        id: "f187",
+        title: "Roman Law & the Twelve Tables",
+        date: "c. 450 BCE",
+        year: -450,
+        keywords: "Plebeians \u00B7 Written law \u00B7 Legal equality \u00B7 Ius civile",
+        description: "Roman plebeians demanded that the laws governing their lives be written down and displayed in public, ending the patricians\u2019 monopoly on legal knowledge. The resulting Twelve Tables \u2014 inscribed on bronze and erected in the Forum \u2014 established principles that still underpin Western law today: the right to a trial, the presumption of innocence, and the idea that law must be transparent and accessible to all citizens.",
+        quizDescription: "Roman plebeians demanded written laws, producing the Twelve Tables that founded Western legal tradition.",
+        location: { lat: 41.9, lng: 12.5, region: "Europe", place: "Rome, Italy" },
+        category: "politics",
+        difficulty: 2,
+        controversyNotes: {
+            what: "The traditional story that ten Roman envoys traveled to Athens to study Solon\u2019s laws before drafting the Twelve Tables is likely a later embellishment. The tables themselves were destroyed when the Gauls sacked Rome in 390 BCE, so our knowledge of their content comes from later quotations and paraphrases.",
+            date: "The traditional date of 451\u2013450 BCE is widely accepted but based on literary sources written centuries later. Some historians question the precision of early Roman chronology.",
+        }
+    },
+    {
+        id: "f188",
+        title: "Legalism & the Unification of China",
+        date: "221 BCE",
+        year: -221,
+        keywords: "Qin Shi Huang \u00B7 Shang Yang \u00B7 Han Fei \u00B7 Standardization",
+        description: "The philosophers Shang Yang and Han Fei argued that human nature was selfish and only strict, impartial laws could maintain order. When Qin Shi Huang used Legalist principles to unify China, he created a ruthlessly efficient state with standardized weights, measures, script, and punishments \u2014 but also burned philosophical texts and executed dissenting scholars. Legalism\u2019s tension between order and tyranny remains one of history\u2019s great debates about the purpose of law.",
+        quizDescription: "Qin Shi Huang unified China using Legalist philosophy: strict laws, standardization, and ruthless punishment of dissent.",
+        location: { lat: 34.3, lng: 108.9, region: "East Asia", place: "Xianyang, China" },
+        category: "politics",
+        difficulty: 2,
+        controversyNotes: {
+            what: "The \u2018burning of books and burying of scholars\u2019 may be exaggerated by later Han Dynasty historians who had political reasons to vilify the Qin. Some scholars argue Legalism was less a coherent philosophy than a pragmatic toolkit for state-building, and that Confucianism later adopted many Legalist administrative techniques while publicly denouncing them.",
+        }
+    },
+    {
+        id: "f189",
+        title: "Magna Carta",
+        date: "1215 CE",
+        year: 1215,
+        keywords: "King John \u00B7 Runnymede \u00B7 Rule of law \u00B7 Constitutional limits",
+        description: "English barons, furious at King John\u2019s arbitrary taxes and imprisonment without trial, forced him to seal a charter at Runnymede guaranteeing that even the king was subject to law. Though initially about feudal privileges rather than universal rights, Magna Carta was revived by English lawyers in the 1600s and American revolutionaries in the 1700s as proof that no ruler is above the law \u2014 an idea that became the cornerstone of constitutional government worldwide.",
+        quizDescription: "English barons forced King John to accept that even the king was subject to law.",
+        location: { lat: 51.4, lng: -0.6, region: "Europe", place: "Runnymede, England" },
+        category: "politics",
+        difficulty: 1,
+        controversyNotes: {
+            what: "Magna Carta was annulled by Pope Innocent III within months and largely forgotten for centuries. Its modern significance is largely a creation of 17th-century English lawyers like Edward Coke, who reinterpreted it as a guarantee of individual rights it was never originally intended to provide. Only 3 of its 63 clauses remain in English law today.",
+        }
+    },
+    {
+        id: "f190",
+        title: "Islamic Jurisprudence & the Four Schools",
+        date: "c. 750\u2013900 CE",
+        year: 750,
+        yearEnd: 900,
+        keywords: "Fiqh \u00B7 Sharia \u00B7 Ijma \u00B7 Qiyas \u00B7 Legal pluralism",
+        description: "After Muhammad\u2019s death, Muslim scholars faced a monumental challenge: how to govern a vast, diverse empire using divine principles. They developed usul al-fiqh \u2014 a sophisticated legal methodology combining the Quran, the Prophet\u2019s example, scholarly consensus, and analogical reasoning. Four major Sunni schools emerged (Hanafi, Maliki, Shafi\u2019i, Hanbali), each offering different interpretations while respecting the others \u2014 a remarkable example of legal pluralism that allowed Islamic law to adapt across cultures from West Africa to Southeast Asia.",
+        quizDescription: "Muslim scholars developed a sophisticated legal methodology and four major schools of jurisprudence.",
+        location: { lat: 33.3, lng: 44.4, region: "Middle East", place: "Baghdad, Abbasid Caliphate" },
+        category: "culture",
+        difficulty: 2,
+        controversyNotes: {
+            what: "Western portrayals of Sharia as a monolithic \u2018Islamic law\u2019 miss its enormous internal diversity. The four Sunni schools and multiple Shia traditions disagree on many points, and scholars have always debated how to balance literal text with contextual interpretation. Modern debates about Sharia\u2019s role in governance often collapse this complexity.",
+            date: "The four schools crystallized gradually over centuries, not at specific founding moments. Dating \u2018the development of Islamic jurisprudence\u2019 to a precise period is necessarily an approximation of a long, organic intellectual process.",
+        }
+    },
+    {
+        id: "f191",
+        title: "The Haudenosaunee Great Law of Peace",
+        date: "c. 1450 CE",
+        year: 1450,
+        keywords: "Iroquois Confederacy \u00B7 Representative government \u00B7 Peacemaker \u00B7 Wampum",
+        description: "Five warring nations in what is now upstate New York \u2014 the Mohawk, Oneida, Onondaga, Cayuga, and Seneca \u2014 agreed to a constitution called the Great Law of Peace. It established a council of 50 chiefs chosen by clan mothers, separation of powers between war and civil leadership, and provisions for adopting new nations. The Confederacy maintained peace among its members for centuries, and several American founders, including Benjamin Franklin, cited it when arguing for colonial unity.",
+        quizDescription: "Five Iroquois nations created a constitution with representative government, chosen by clan mothers.",
+        location: { lat: 43.0, lng: -76.1, region: "North America", place: "Onondaga Lake, present-day New York" },
+        category: "politics",
+        difficulty: 2,
+        controversyNotes: {
+            date: "The date of the Great Law\u2019s founding is hotly debated, with estimates ranging from the 12th to the 16th century. Some Haudenosaunee oral traditions and astronomical evidence (a solar eclipse) point to 1142 CE, while archaeological evidence suggests the Confederacy formed closer to 1450\u20131600.",
+            what: "The degree to which the Haudenosaunee influenced the US Constitution is contested. The US Senate acknowledged the influence in a 1988 resolution, but some historians argue the connection was minimal compared to European Enlightenment philosophy. Haudenosaunee scholars maintain their system was a direct model for American federalism.",
+        }
+    },
+    {
+        id: "f192",
+        title: "The Habeas Corpus Act",
+        date: "1679 CE",
+        year: 1679,
+        keywords: "Due process \u00B7 Personal liberty \u00B7 Arbitrary detention \u00B7 English Parliament",
+        description: "The English Parliament passed a law requiring that anyone detained by the state must be brought before a court and shown the legal basis for their imprisonment. The principle that the government cannot simply lock people up without reason \u2014 habeas corpus, literally \u2018produce the body\u2019 \u2014 became one of the most important legal protections in history. Napoleon called it the single most important safeguard of personal liberty, and it was exported to nearly every common-law country through the British Empire.",
+        quizDescription: "Parliament required courts to justify any detention, establishing the right against arbitrary imprisonment.",
+        location: { lat: 51.5, lng: -0.1, region: "Europe", place: "London, England" },
+        category: "politics",
+        difficulty: 2,
+        controversyNotes: {
+            what: "Habeas corpus had medieval roots well before 1679 \u2014 references appear as early as the 14th century. The 1679 Act strengthened enforcement rather than inventing the concept. Critics note that habeas corpus has been suspended during nearly every major crisis in British and American history, including the US Civil War and the post-9/11 detentions at Guant\u00E1namo Bay.",
+        }
+    },
+    {
+        id: "f193",
+        title: "The Napoleonic Code",
+        date: "1804 CE",
+        year: 1804,
+        keywords: "Civil law \u00B7 Legal equality \u00B7 Secular law \u00B7 Codification",
+        description: "Napoleon personally oversaw the creation of a unified legal code that replaced the tangled mess of feudal, Roman, and regional laws across France. The Code established equality of all citizens before the law, the right to private property, and the separation of church and state. Exported by conquest and admiration, it became the model for legal systems across Europe, Latin America, the Middle East, and East Asia \u2014 today, over 120 countries use law descended from the Napoleonic Code.",
+        quizDescription: "Napoleon unified French law into a secular code that became the model for over 120 countries.",
+        location: { lat: 48.9, lng: 2.3, region: "Europe", place: "Paris, France" },
+        category: "politics",
+        difficulty: 2,
+        controversyNotes: {
+            what: "While the Code advanced legal equality for men, it was deeply regressive for women. Married women lost the right to own property, sign contracts, or work without their husband\u2019s permission \u2014 rights they had possessed under some pre-revolutionary local customs. Napoleon reportedly said, \u2018Women should stick to knitting.\u2019 These provisions influenced women\u2019s legal status across the countries that adopted the Code.",
+        }
+    },
+    {
+        id: "f194",
+        title: "The Nuremberg Trials",
+        date: "1945\u20131946 CE",
+        year: 1945,
+        yearEnd: 1946,
+        keywords: "War crimes \u00B7 Crimes against humanity \u00B7 International law \u00B7 Individual accountability",
+        description: "After World War II, the Allied powers put 24 Nazi leaders on trial for crimes against peace, war crimes, and a new legal concept: crimes against humanity. For the first time, individuals were held personally accountable under international law \u2014 \u2018following orders\u2019 was not a defense. Though critics called it victors\u2019 justice, Nuremberg established the principle that some acts are so heinous they violate universal moral law, regardless of what any nation\u2019s own laws permit.",
+        quizDescription: "Nazi leaders were tried for \u2018crimes against humanity,\u2019 establishing that individuals are accountable under international law.",
+        location: { lat: 49.5, lng: 11.1, region: "Europe", place: "Nuremberg, Germany" },
+        category: "politics",
+        difficulty: 2,
+        controversyNotes: {
+            what: "The charge of \u2018victors\u2019 justice\u2019 has never fully gone away. The Allies committed their own potential war crimes (strategic bombing of civilian cities, Soviet atrocities in Eastern Europe) that were never prosecuted. The legal concepts used at Nuremberg were essentially invented for the occasion, raising questions about retroactive justice. Defenders argue that the Holocaust was so unprecedented it required new legal frameworks.",
+        }
+    },
+    {
+        id: "f195",
+        title: "The Universal Declaration of Human Rights",
+        date: "1948 CE",
+        year: 1948,
+        keywords: "Eleanor Roosevelt \u00B7 United Nations \u00B7 Human dignity \u00B7 Universal rights",
+        description: "A drafting committee including representatives from China, Lebanon, France, Chile, and other nations produced a document declaring that all human beings are born free and equal in dignity and rights. Adopted by the UN General Assembly in Paris, the UDHR was the first international agreement that certain rights \u2014 to life, liberty, education, and freedom from torture \u2014 belong to every person simply because they are human. Though not legally binding, it has inspired over 70 human rights treaties and influenced nearly every national constitution written since.",
+        quizDescription: "The UN adopted the first universal statement that all people have inherent rights to life, liberty, and dignity.",
+        location: { lat: 48.9, lng: 2.3, region: "Europe", place: "Palais de Chaillot, Paris" },
+        category: "politics",
+        difficulty: 1,
+        controversyNotes: {
+            what: "Critics from non-Western traditions have argued the UDHR reflects Western liberal values rather than truly universal principles. The emphasis on individual rights over communal obligations, and the absence of economic justice, remain contested. Eight nations abstained from the vote, including the Soviet Union, Saudi Arabia, and South Africa \u2014 each for different reasons.",
+        }
+    },
+    {
+        id: "f196",
+        title: "The International Criminal Court",
+        date: "2002 CE",
+        year: 2002,
+        keywords: "The Hague \u00B7 Genocide \u00B7 War crimes \u00B7 Global justice",
+        description: "After decades of debate and ad hoc tribunals for Rwanda and Yugoslavia, 120 nations agreed to create a permanent court to prosecute genocide, war crimes, and crimes against humanity. Based in The Hague, the ICC represents the most ambitious attempt in history to create a system of global justice. Its effectiveness remains limited \u2014 the United States, China, Russia, and India have not joined \u2014 but its existence signals that the idea of universal accountability, born at Nuremberg, continues to evolve.",
+        quizDescription: "A permanent international court was created to prosecute genocide, war crimes, and crimes against humanity.",
+        location: { lat: 52.1, lng: 4.3, region: "Europe", place: "The Hague, Netherlands" },
+        category: "politics",
+        difficulty: 2,
+        controversyNotes: {
+            what: "The ICC has been criticized for disproportionately targeting African leaders while ignoring crimes by major powers. All of its first investigations were in Africa, leading the African Union to consider a mass withdrawal in 2017. Supporters argue the court goes where states fail to prosecute; critics see neo-colonial selectivity. The US passed the \u2018Hague Invasion Act\u2019 (2002) authorizing military force to free any American held by the ICC.",
+        }
+    },
+    // ─── Level 2: Great Inventions chapter ────────────────────────────────
+    {
+        id: "f197",
+        title: "The Invention of the Wheel",
+        date: "c. 3500 BCE",
+        year: -3500,
+        keywords: "Pottery wheel \u00B7 Transport \u00B7 Mesopotamia \u00B7 Axle",
+        description: "The wheel was not invented for transport \u2014 it first appeared as a potter\u2019s wheel in Mesopotamia. Only centuries later did someone attach wheels to an axle to create the first carts. Once combined with animal domestication, wheeled transport revolutionized trade, warfare, and agriculture across Eurasia. Remarkably, advanced civilizations in the Americas \u2014 the Maya, Aztec, and Inca \u2014 never developed wheeled transport, despite knowing the wheel concept (children\u2019s toys with wheels have been found).",
+        quizDescription: "The wheel first appeared as a potter\u2019s tool before being adapted for wheeled transport.",
+        location: { lat: 32.5, lng: 44.4, region: "Middle East", place: "Mesopotamia (modern Iraq)" },
+        category: "science",
+        difficulty: 1,
+        controversyNotes: {
+            what: "The wheel\u2019s origin is debated. Some scholars argue it was invented independently in multiple locations (Mesopotamia, the Caucasus, Central Europe) around the same time. Others believe a single invention diffused rapidly. The oldest physical evidence \u2014 a wooden wheel from a marsh near Ljubljana, Slovenia \u2014 dates to c. 3150 BCE, roughly contemporary with Mesopotamian evidence.",
+        }
+    },
+    {
+        id: "f198",
+        title: "Chinese Papermaking",
+        date: "105 CE",
+        year: 105,
+        keywords: "Cai Lun \u00B7 Han Dynasty \u00B7 Writing material \u00B7 Knowledge",
+        description: "Court official Cai Lun perfected a method of making paper from bark, hemp, rags, and fishnets during the Han Dynasty, creating a writing surface far cheaper and lighter than bamboo strips or silk. Paper spread along the Silk Road to the Islamic world (after the Battle of Talas in 751 CE, where Arab forces captured Chinese papermakers), then to Europe. This single invention made the mass recording and transmission of knowledge possible \u2014 without it, neither the Islamic Golden Age\u2019s scholarship nor Gutenberg\u2019s printing press would have had their transformative impact.",
+        quizDescription: "Cai Lun perfected papermaking from bark, hemp, and rags during China\u2019s Han Dynasty.",
+        location: { lat: 34.3, lng: 108.9, region: "East Asia", place: "Luoyang, China" },
+        category: "science",
+        difficulty: 1,
+        controversyNotes: {
+            date: "Archaeological finds in China suggest paper-like materials existed as early as the 2nd century BCE, predating Cai Lun by over 200 years. Cai Lun likely improved and standardized an existing process rather than inventing paper from scratch. The traditional date of 105 CE comes from the official Han Dynasty history.",
+        }
+    },
+    {
+        id: "f199",
+        title: "Gunpowder",
+        date: "c. 850 CE",
+        year: 850,
+        keywords: "Tang Dynasty \u00B7 Alchemy \u00B7 Firearms \u00B7 Warfare",
+        description: "Chinese alchemists searching for an elixir of immortality accidentally discovered gunpowder \u2014 a mixture of saltpeter, sulfur, and charcoal. The Tang Dynasty first used it in fireworks and fire arrows, but by the Song Dynasty it powered bombs, rockets, and early guns. When gunpowder reached Europe via the Mongol conquests and Silk Road trade in the 13th century, it shattered the feudal order: castle walls crumbled, armored knights became obsolete, and centralized states with professional armies rose to dominance.",
+        quizDescription: "Chinese alchemists seeking immortality accidentally created gunpowder, transforming warfare worldwide.",
+        location: { lat: 34.3, lng: 108.9, region: "East Asia", place: "Tang Dynasty China" },
+        category: "science",
+        difficulty: 2,
+        controversyNotes: {
+            date: "The earliest written formula for gunpowder appears in the Wujing Zongyao (1044 CE), but Chinese texts from the 850s describe alchemists mixing the ingredients and producing flames. The exact date of discovery is impossible to pinpoint because alchemy was secretive and records are fragmentary.",
+        }
+    },
+    {
+        id: "f200",
+        title: "The Magnetic Compass",
+        date: "c. 1100 CE",
+        year: 1100,
+        keywords: "Navigation \u00B7 Lodestone \u00B7 Song Dynasty \u00B7 Maritime trade",
+        description: "Chinese navigators during the Song Dynasty first used magnetized needles floating in water to find north at sea, transforming maritime navigation from coastal hugging to open-ocean sailing. The compass spread to the Islamic world and then Europe by the 12th\u201313th centuries. Combined with improved shipbuilding, it made possible the great age of oceanic exploration \u2014 without it, Columbus, Vasco da Gama, and Zheng He could never have crossed open oceans. The compass literally reoriented civilization toward the sea.",
+        quizDescription: "Song Dynasty navigators used magnetized needles to find north, enabling open-ocean sailing.",
+        location: { lat: 30.3, lng: 120.2, region: "East Asia", place: "Song Dynasty China" },
+        category: "science",
+        difficulty: 2,
+        controversyNotes: {
+            what: "Chinese geomancers used lodestones for feng shui divination as early as the 4th century BCE, but navigational use came much later. European compass development may have been partly independent \u2014 Norse sailors may have used lodestones before contact with Chinese technology. The question of independent invention versus diffusion remains debated.",
+        }
+    },
+    {
+        id: "f201",
+        title: "The Telescope",
+        date: "1608 CE",
+        year: 1608,
+        keywords: "Lippershey \u00B7 Galileo \u00B7 Astronomy \u00B7 Lenses",
+        description: "Dutch spectacle-maker Hans Lippershey applied for a patent on a device that made distant objects appear closer. Within a year, Galileo Galilei built his own improved version and pointed it at the sky \u2014 discovering Jupiter\u2019s moons, the phases of Venus, and craters on the Moon. These observations provided direct evidence for the Copernican heliocentric model, shattering centuries of geocentric dogma. The telescope didn\u2019t just magnify objects; it magnified humanity\u2019s understanding of its own place in the universe.",
+        quizDescription: "Lippershey patented the telescope; Galileo turned it skyward and revolutionized astronomy.",
+        location: { lat: 51.5, lng: 3.6, region: "Europe", place: "Middelburg, Netherlands" },
+        category: "science",
+        difficulty: 2,
+        controversyNotes: {
+            what: "At least three Dutch opticians \u2014 Lippershey, Zacharias Janssen, and Jacob Metius \u2014 claimed to have invented the telescope around 1608. Lippershey filed first but was denied a patent because the device was deemed too easy to copy. Some scholars argue that spectacle-makers had noticed the magnifying effect of combined lenses decades earlier but never formalized it.",
+        }
+    },
+    {
+        id: "f202",
+        title: "The Electric Telegraph",
+        date: "1844 CE",
+        year: 1844,
+        keywords: "Morse code \u00B7 Communication \u00B7 Wires \u00B7 Information",
+        description: "Samuel Morse\u2019s famous first message \u2014 \u201CWhat hath God wrought\u201D \u2014 traveled 40 miles from Washington to Baltimore in an instant, inaugurating the age of electronic communication. For the first time in human history, information could travel faster than a person. Within two decades, telegraph cables crisscrossed continents and crossed the Atlantic Ocean floor. The telegraph shrank the world: it enabled real-time news reporting, coordinated railway schedules, transformed financial markets, and gave governments the ability to communicate with distant colonies in minutes rather than months.",
+        quizDescription: "Morse\u2019s telegraph sent the first electronic message, letting information travel faster than any person.",
+        location: { lat: 38.9, lng: -77.0, region: "North America", place: "Washington, D.C., United States" },
+        category: "science",
+        difficulty: 2,
+        controversyNotes: {
+            what: "Multiple inventors contributed to the telegraph\u2019s development. British inventors William Fothergill Cooke and Charles Wheatstone patented a telegraph system in 1837, before Morse\u2019s 1844 demonstration. In Russia, Pavel Schilling demonstrated an electromagnetic telegraph in 1832. Morse\u2019s contribution was the practical system and the brilliant simplicity of Morse code.",
+        }
+    },
+    {
+        id: "f203",
+        title: "The Light Bulb & Electrification",
+        date: "1879 CE",
+        year: 1879,
+        keywords: "Edison \u00B7 Electric light \u00B7 Power grid \u00B7 Modern life",
+        description: "Thomas Edison\u2019s practical incandescent light bulb was less a single invention than the keystone of an entire system: generators, wiring, meters, switches, and the first commercial power stations. Edison\u2019s Pearl Street Station in New York (1882) lit up a square mile of Manhattan, proving that electricity could be sold as a utility. Electrification transformed every aspect of life \u2014 factories ran 24 hours, cities never slept, refrigeration changed food storage, and entertainment moved indoors. The light bulb didn\u2019t just illuminate rooms; it rewired civilization.",
+        quizDescription: "Edison created a practical light bulb and built the first power grid to sell electricity as a utility.",
+        location: { lat: 40.7, lng: -74.2, region: "North America", place: "Menlo Park, New Jersey, United States" },
+        category: "science",
+        difficulty: 2,
+        controversyNotes: {
+            what: "Edison did not invent the light bulb \u2014 over 20 inventors had created incandescent lamps before him, including Humphry Davy (1802) and Joseph Swan in Britain (who demonstrated a working bulb months before Edison). Edison\u2019s real achievement was the practical, long-lasting bulb AND the complete electrical distribution system to power it. He and Swan actually merged their companies in Britain.",
+        }
+    },
+    {
+        id: "f204",
+        title: "The Wright Brothers & Powered Flight",
+        date: "1903 CE",
+        year: 1903,
+        keywords: "Airplane \u00B7 Kitty Hawk \u00B7 Aviation \u00B7 Transport",
+        description: "Two bicycle mechanics from Dayton, Ohio achieved what centuries of dreamers could not: sustained, controlled, powered heavier-than-air flight. Their 12-second first flight at Kitty Hawk, North Carolina covered just 120 feet \u2014 less than the wingspan of a modern 747. What set the Wright Brothers apart was their methodical approach: they built a wind tunnel, tested over 200 wing shapes, and solved the critical problem of three-axis control that others had ignored. Within 66 years of their flight, humans would walk on the Moon.",
+        quizDescription: "Two bicycle mechanics achieved the first sustained, controlled, powered flight at Kitty Hawk.",
+        location: { lat: 36.0, lng: -75.7, region: "North America", place: "Kitty Hawk, North Carolina, United States" },
+        category: "science",
+        difficulty: 2,
+        controversyNotes: {
+            what: "Several aviators contested the Wright Brothers\u2019 claim to first flight. Gustave Whitehead allegedly flew in Connecticut in 1901, and the state of Connecticut officially recognizes him as first. Brazilian Alberto Santos-Dumont made the first public powered flight in Europe in 1906 and is considered the father of aviation in Brazil. Five local lifesaving station crew members witnessed the Wrights\u2019 1903 flights and one took the famous photograph, but the event received almost no press coverage at the time.",
+        }
+    },
+    {
+        id: "f205",
+        title: "Penicillin & the Antibiotic Revolution",
+        date: "1928 CE",
+        year: 1928,
+        keywords: "Fleming \u00B7 Antibiotics \u00B7 Bacteria \u00B7 Medicine",
+        description: "Alexander Fleming noticed that mold growing on a Petri dish had killed surrounding bacteria \u2014 a lucky accident that would save more lives than any other medical discovery. But Fleming couldn\u2019t purify penicillin; it took Howard Florey and Ernst Boris Chain over a decade to develop mass production, just in time for World War II. Antibiotics transformed surgery from a death sentence into routine procedure, doubled life expectancy in developing countries, and made modern medicine possible. Today, antibiotic resistance threatens to undo this revolution.",
+        quizDescription: "Fleming\u2019s accidental discovery of mold killing bacteria led to antibiotics that transformed medicine.",
+        location: { lat: 51.5, lng: -0.17, region: "Europe", place: "London, United Kingdom" },
+        category: "science",
+        difficulty: 2,
+        controversyNotes: {
+            what: "Fleming is often credited as the sole discoverer, but the real heroes of penicillin were Florey and Chain, who solved the far harder problem of purifying and mass-producing it. French medical student Ernest Duchesne had observed penicillin\u2019s antibacterial properties in 1897, three decades before Fleming, but his work was ignored. Ancient Egyptians and medieval healers used moldy bread on wounds, suggesting empirical knowledge of antibiotics predating modern science.",
+        }
+    },
+    {
+        id: "f206",
+        title: "The Transistor",
+        date: "1947 CE",
+        year: 1947,
+        keywords: "Semiconductor \u00B7 Bell Labs \u00B7 Computing \u00B7 Microchip",
+        description: "Three physicists at Bell Labs \u2014 John Bardeen, Walter Brattain, and William Shockley \u2014 invented the transistor, a tiny semiconductor switch that replaced bulky vacuum tubes. The transistor made electronics small, cheap, and reliable enough for the computer age. It led directly to the integrated circuit (1958), the microprocessor (1971), and every digital device that followed. A modern smartphone contains more transistors than all the computers that existed in 1960 combined. No single invention has done more to shape the modern world \u2014 the transistor is the atom of the information age.",
+        quizDescription: "Three Bell Labs physicists invented the transistor, a tiny switch that made the computer age possible.",
+        location: { lat: 40.7, lng: -74.4, region: "North America", place: "Murray Hill, New Jersey, United States" },
+        category: "science",
+        difficulty: 3,
+        controversyNotes: {
+            what: "The transistor\u2019s invention was marred by personal conflict. William Shockley, who led the group, was not present for the initial breakthrough by Bardeen and Brattain, but he quickly developed an improved design and maneuvered to receive primary credit. All three shared the 1956 Nobel Prize, but the bitterness never healed. Shockley later moved to Silicon Valley and founded the company whose employees would go on to create Fairchild Semiconductor and Intel \u2014 seeding the entire tech industry.",
+        }
+    },
 ];
 
 // ─── EVENT CONNECTIONS (cause-and-effect) ────────────────────────────
@@ -3824,6 +4132,154 @@ for (const [eventId, connections] of Object.entries(LEVEL2_FOOD_CONNECTIONS)) {
     }
 }
 
+const LEVEL2_LAW_CONNECTIONS = {
+    f187: [
+        { id: "f10", label: "Built on the tradition of written law pioneered by Hammurabi" },
+        { id: "f188", label: "Around the same time, China developed a very different legal philosophy" },
+        { id: "f193", label: "Roman law was the foundation Napoleon drew upon for his Code" },
+    ],
+    f188: [
+        { id: "f187", label: "China and Rome independently developed written legal systems" },
+        { id: "f90", label: "The Qin\u2019s Legalist state was overthrown by the Han, who softened its harshest features" },
+    ],
+    f189: [
+        { id: "f192", label: "Magna Carta\u2019s principle of legal limits on power led to habeas corpus" },
+        { id: "f42", label: "American revolutionaries cited Magna Carta to justify independence" },
+        { id: "f61", label: "Magna Carta\u2019s limits on royal power foreshadowed the English Civil War" },
+    ],
+    f190: [
+        { id: "f26", label: "Built on the intellectual tradition of the Islamic Golden Age" },
+        { id: "f118", label: "Developed alongside the great literary and artistic achievements of the Abbasid era" },
+    ],
+    f191: [
+        { id: "f42", label: "The Haudenosaunee system influenced American federalism" },
+        { id: "f189", label: "Like Magna Carta, the Great Law limited the power of individual leaders" },
+    ],
+    f192: [
+        { id: "f189", label: "Extended the Magna Carta\u2019s principle that power must be legally limited" },
+        { id: "f40", label: "Habeas corpus became a cornerstone of Enlightenment thinking about rights" },
+        { id: "f61", label: "Passed after decades of struggle between Parliament and the Crown" },
+    ],
+    f193: [
+        { id: "f43", label: "The French Revolution swept away the old laws that Napoleon\u2019s Code replaced" },
+        { id: "f187", label: "Napoleon drew heavily on Roman legal principles" },
+        { id: "f195", label: "The Code\u2019s idea of legal equality helped inspire universal rights declarations" },
+    ],
+    f194: [
+        { id: "f54", label: "The trials prosecuted crimes committed during World War II" },
+        { id: "f55", label: "The crimes prosecuted at Nuremberg included the Holocaust" },
+        { id: "f195", label: "Nuremberg\u2019s moral principles were codified in the Universal Declaration" },
+        { id: "f196", label: "Nuremberg\u2019s precedent led directly to the permanent International Criminal Court" },
+    ],
+    f195: [
+        { id: "f194", label: "The UDHR codified the moral principles established at Nuremberg" },
+        { id: "f82", label: "The Declaration inspired civil rights movements worldwide" },
+        { id: "f56", label: "Colonized peoples used the UDHR to argue for self-determination" },
+    ],
+    f196: [
+        { id: "f194", label: "The ICC fulfilled Nuremberg\u2019s promise of permanent international justice" },
+        { id: "f86", label: "The Rwanda tribunal was a direct predecessor to the ICC" },
+        { id: "f195", label: "The ICC enforces the human rights principles of the UDHR" },
+    ],
+    // Cross-connections: append to existing events
+    f10: [
+        { id: "f187", label: "Hammurabi\u2019s tradition of written law continued in Rome\u2019s Twelve Tables" },
+    ],
+    f42: [
+        { id: "f191", label: "The Haudenosaunee Confederacy influenced American federalism" },
+    ],
+    f43: [
+        { id: "f193", label: "The Revolution cleared the way for Napoleon\u2019s unified legal code" },
+    ],
+    f54: [
+        { id: "f194", label: "World War II\u2019s atrocities led to the unprecedented Nuremberg Trials" },
+    ],
+};
+
+for (const [eventId, connections] of Object.entries(LEVEL2_LAW_CONNECTIONS)) {
+    if (EVENT_CONNECTIONS[eventId]) {
+        EVENT_CONNECTIONS[eventId].push(...connections);
+    } else {
+        EVENT_CONNECTIONS[eventId] = connections;
+    }
+}
+
+// --- Level 2: Great Inventions chapter connections ---
+const LEVEL2_INVENTIONS_CONNECTIONS = {
+    f197: [
+        { id: "f7", label: "The wheel accelerated trade in the first Sumerian cities" },
+        { id: "f198", label: "Two foundational inventions from opposite ends of the ancient world" },
+    ],
+    f198: [
+        { id: "f36", label: "Paper made Gutenberg\u2019s printing revolution possible" },
+        { id: "f197", label: "Paper and the wheel: independent inventions that each transformed civilization" },
+        { id: "f26", label: "Paper spread to the Islamic world and fueled the Golden Age\u2019s scholarship" },
+    ],
+    f199: [
+        { id: "f200", label: "Gunpowder and the compass were both Chinese inventions that reshaped the world" },
+        { id: "f29", label: "Mongol conquests helped spread gunpowder technology westward" },
+        { id: "f64", label: "Gunpowder\u2019s devastating potential was fully realized in World War I" },
+    ],
+    f200: [
+        { id: "f199", label: "The compass and gunpowder: twin Chinese inventions that changed global history" },
+        { id: "f33", label: "The compass made Columbus\u2019s transatlantic voyage possible" },
+        { id: "f35", label: "Magellan\u2019s circumnavigation depended on compass navigation" },
+        { id: "f139", label: "The compass expanded the maritime dimension of Silk Road trade" },
+    ],
+    f201: [
+        { id: "f38", label: "The telescope was a key tool of the Scientific Revolution" },
+        { id: "f128", label: "Galileo\u2019s telescopic observations built on the astronomical tradition" },
+        { id: "f200", label: "Lenses and compasses: optical and magnetic tools that expanded human reach" },
+    ],
+    f202: [
+        { id: "f46", label: "The telegraph was a product of the Industrial Revolution\u2019s electrical discoveries" },
+        { id: "f203", label: "The telegraph proved electricity could be harnessed; the light bulb proved it could transform daily life" },
+        { id: "f58", label: "The telegraph was the ancestor of all electronic communication" },
+    ],
+    f203: [
+        { id: "f202", label: "Electrification built on the telegraph\u2019s proof that electricity could be tamed" },
+        { id: "f46", label: "The light bulb completed the Industrial Revolution\u2019s transformation of daily life" },
+        { id: "f206", label: "Electrification created the infrastructure that made electronics possible" },
+    ],
+    f204: [
+        { id: "f46", label: "Flight was made possible by the Industrial Revolution\u2019s engines and materials" },
+        { id: "f54", label: "Air power was decisive in World War II, just 40 years after the first flight" },
+        { id: "f206", label: "Aviation and electronics converged in the space age" },
+    ],
+    f205: [
+        { id: "f102", label: "Penicillin echoed Jenner\u2019s earlier revolution in disease prevention" },
+        { id: "f104", label: "Antibiotics and the smallpox campaign together transformed global health" },
+        { id: "f54", label: "Mass-produced penicillin saved countless Allied soldiers in World War II" },
+    ],
+    f206: [
+        { id: "f58", label: "The transistor made the Digital Revolution possible" },
+        { id: "f72", label: "Transistors enabled the ENIAC\u2019s successors to shrink from room-sized to pocket-sized" },
+        { id: "f203", label: "Electronics depended on the electrical infrastructure Edison pioneered" },
+        { id: "f77", label: "Transistors are the physical foundation beneath modern AI" },
+    ],
+    // Cross-connections: append to existing events
+    f7: [
+        { id: "f197", label: "The wheel accelerated trade between the first Sumerian cities" },
+    ],
+    f36: [
+        { id: "f198", label: "The printing press depended on the availability of cheap paper" },
+    ],
+    f29: [
+        { id: "f199", label: "Mongol conquests carried gunpowder technology from China to Europe" },
+    ],
+    f38: [
+        { id: "f201", label: "The telescope was a pivotal instrument of the Scientific Revolution" },
+    ],
+};
+
+for (const [eventId, connections] of Object.entries(LEVEL2_INVENTIONS_CONNECTIONS)) {
+    if (EVENT_CONNECTIONS[eventId]) {
+        EVENT_CONNECTIONS[eventId].push(...connections);
+    } else {
+        EVENT_CONNECTIONS[eventId] = connections;
+    }
+}
+
 // Attach connections to each core event
 for (const event of CORE_EVENTS) {
     if (EVENT_CONNECTIONS[event.id]) {
@@ -3863,6 +4319,9 @@ const IMPORTANCE_MAP = {
     f157: 'major', f158: 'major', f161: 'major', f165: 'major',
     f167: 'major', f169: 'major', f171: 'major', f175: 'major',
     f180: 'major', f183: 'major', f185: 'major',
+    f187: 'major', f189: 'major', f193: 'major', f194: 'major', f195: 'major',
+    f197: 'major', f198: 'major', f199: 'major', f200: 'major', f203: 'major',
+    f205: 'major', f206: 'major',
     // ── Notable ── historically significant; everything else defaults here
 };
 
@@ -3875,7 +4334,7 @@ export const ALL_EVENTS = [
     ...DAILY_QUIZ_EVENTS.map(e => ({ ...e, importance: e.importance || 'minor' })),
 ];
 
-export const CORE_EVENT_COUNT = CORE_EVENTS.length; // 186 (60 Level 1 + 126 Level 2)
+export const CORE_EVENT_COUNT = CORE_EVENTS.length; // 206 (60 Level 1 + 146 Level 2)
 
 /** Level 1 events are f1–f60; Level 2 events are f61+. */
 export function isLevel2Event(event) {

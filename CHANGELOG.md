@@ -5,6 +5,27 @@ Format follows [Keep a Changelog](https://keepachangelog.com/) and [Semantic Ver
 
 Use the version entries from the last playstore push to the most recent version for Play Store "What's New" text.
 
+## [1.9.23] - 2026-03-18
+
+### Changed
+- **Card content review (Law & Justice)** — reviewed 10 cards (f187–f196); 0 edits needed. All dates, locations, descriptions, controversy notes, distractors (all 3 tiers), and hardCorrect statements confirmed accurate. Chapter structure has a strong narrative arc (Writing the Rules → God, King & the People → Rights of the Individual → Justice for All). Event connections well-chosen with proper thematic progression from ancient codification to modern international law.
+- Cards f187, f188, f189, f190, f191, f192, f193, f194, f195, f196 reviewed and confirmed accurate — no changes needed.
+- **Card content review (Great Inventions)** — reviewed 10 cards (f197–f206); 1 edit made:
+  - **f204 (Wright Brothers):** Fixed controversy notes — claimed "no independent witnesses beyond their own crew," but five members of the Kill Devil Hills Lifesaving Station (independent government employees) witnessed the flights and John T. Daniels took the famous photograph. Replaced with accurate note about witness presence but lack of press coverage.
+- Cards f197, f198, f199, f200, f201, f202, f203, f205, f206 reviewed and confirmed accurate — no changes needed.
+- **QA check (2026-03-20)**: lint (173 problems, all pre-existing `no-useless-escape` + unused directives), both builds pass (Capacitor + GitHub Pages), no merge artifacts. Data integrity: 273 challengeQuiz refs valid, 206 events, no duplicate IDs, no orphan connections. Pre-existing issue `rev-4` (2 eventIds) unchanged — see ERROR_LOG.md. No new issues since v1.9.23.
+
+## [1.9.22] - 2026-03-18
+
+### Added
+- **Level 2 Chapter: Great Inventions** \u2014 4-lesson chapter with 10 new events (f197\u2013f206) tracing the inventions that rewired civilization. The Wheel, Chinese Papermaking, Gunpowder, the Magnetic Compass, the Telescope, the Electric Telegraph, the Light Bulb & Electrification, the Wright Brothers & Powered Flight, Penicillin & Antibiotics, and the Transistor. Reuses f36 (Gutenberg Printing Press) and f46 (Industrial Revolution). Sky-blue theme (#0369A1), gear icon (index 47). Hand-crafted description distractors, controversy notes, and event connections for all events. Strong non-Western coverage (China: paper, gunpowder, compass).
+
+## [1.9.21] - 2026-03-17
+
+### Added
+- **Level 2 Chapter: Law & Justice** \u2014 4-lesson chapter with 10 new events (f187\u2013f196) tracing how humanity learned to govern itself through written rules and universal rights. Roman Law & the Twelve Tables, Legalism & the Unification of China, Magna Carta, Islamic Jurisprudence & the Four Schools, the Haudenosaunee Great Law of Peace, the Habeas Corpus Act, the Napoleonic Code, the Nuremberg Trials, the Universal Declaration of Human Rights, and the International Criminal Court. Reuses f10 (Code of Hammurabi) and f40 (The Enlightenment). Copper-brown theme (#92400E), new icon (index 46). Hand-crafted description distractors, controversy notes, and event connections for all events. Strong non-Western coverage (China, Islamic world, Haudenosaunee).
+- **QA check (2026-03-17)**: lint (173 problems, all pre-existing `no-useless-escape` + unused directives), both builds pass (Capacitor + GitHub Pages), no merge artifacts. Data integrity: 273 challengeQuiz refs valid, 196 core events + 30 daily quiz events, no duplicate IDs, no missing lesson event refs. Pre-existing issue `rev-4` (2 eventIds) unchanged \u2014 see ERROR_LOG.md. v1.9.21 changes (Law & Justice chapter) verified clean.
+
 ## [1.9.20] - 2026-03-14
 
 ### Added
@@ -15,6 +36,9 @@ Use the version entries from the last playstore push to the most recent version 
 
 ### Changed
 - **Card content review (Daily Quiz events)** \u2014 reviewed all 30 daily quiz events (dih-0\u2013dih-29) and their description distractors; 0 edits needed. All dates, locations, descriptions, wrongTitles, and distractor tiers confirmed accurate. Minor structural note: daily events use broad continent regions ("Africa", "Asia") instead of the 14 sub-regions used by core events \u2014 not a factual error but a consistency gap for future cleanup.
+- **Card content review (Food & Agriculture)** \u2014 reviewed 10 cards (f177\u2013f186); 0 edits needed. All dates, locations, descriptions, controversy notes, distractors (all 3 tiers), and hardCorrect statements confirmed accurate. Lesson structure has a strong narrative arc (Seeds of Civilization \u2192 Spice Trade & Columbian Exchange \u2192 Sugar/Famine/Fertilizer \u2192 Dust Bowl/Green Revolution/GMOs). Event connections well-chosen with proper reciprocals.
+- Cards f177, f178, f179, f180, f181, f182, f183, f184, f185, f186 reviewed and confirmed accurate \u2014 no changes needed.
+- **QA check (2026-03-16)**: lint (173 problems, all pre-existing `no-useless-escape` + unused directives), both builds pass (Capacitor + GitHub Pages), no merge artifacts. Data integrity: 273 challengeQuiz refs valid (up from 253 \u2014 Historian pool expansion), 186 events, no duplicate IDs, no orphan connections. Pre-existing issue `rev-4` (2 eventIds) unchanged \u2014 see ERROR_LOG.md. v1.9.20 changes (Historian pool, ambient music fix, daily quiz review, Food & Agriculture review) verified clean.
 
 ## [1.9.19] - 2026-03-14
 
