@@ -1012,7 +1012,7 @@ export default function ChallengePage({ onSessionChange, registerBackHandler }) 
                     <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.15rem', fontWeight: 700, textAlign: 'center', color: 'white', textShadow: '0 1px 6px rgba(62, 30, 20, 0.45)', marginBottom: 2 }}>
                         Challenger Mode
                     </h2>
-                    <p style={{ textAlign: 'center', fontSize: '0.75rem', color: '#3E2723', marginBottom: 12 }}>
+                    <p style={{ textAlign: 'center', fontSize: '0.75rem', color: 'rgba(250, 246, 240, 0.7)', marginBottom: 12 }}>
                         Climb from Beginner to God {'\u2014'} {TOTAL_CHALLENGE_QUESTIONS} questions, {CHALLENGE_TIERS.length} tiers!
                     </p>
 
@@ -1058,7 +1058,7 @@ export default function ChallengePage({ onSessionChange, registerBackHandler }) 
                                         }} />
                                         <span style={{
                                             fontSize: isBest ? '0.72rem' : '0.65rem',
-                                            color: reached ? 'var(--color-burgundy)' : '#3E2723',
+                                            color: reached ? 'var(--color-burgundy)' : 'rgba(250, 246, 240, 0.55)',
                                             fontWeight: isBest ? 700 : 600,
                                             letterSpacing: '0.02em',
                                         }}>

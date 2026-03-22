@@ -5,6 +5,11 @@ Format follows [Keep a Changelog](https://keepachangelog.com/) and [Semantic Ver
 
 Use the version entries from the last playstore push to the most recent version for Play Store "What's New" text.
 
+## [1.9.26] - 2026-03-22
+
+### Fixed
+- **Challenge Mode header text visibility** — subtitle ("Climb from Beginner to God") and unreached tier labels ("Beg", "Ama", etc.) changed from dark brown (#3E2723) to soft parchment tones, making them readable against the dark burgundy gradient header in both light and dark mode
+
 ## [1.9.25] - 2026-03-20
 
 ### Added
