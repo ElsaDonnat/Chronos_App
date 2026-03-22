@@ -205,11 +205,10 @@ export default function LearnPage({ onSessionChange, registerBackHandler, onTabC
         if (isDailyCompleted) {
             const key = `chronos-daily-snap-${today}`;
             if (!localStorage.getItem(key)) {
-                // eslint-disable-next-line react-hooks/exhaustive-deps
                 localStorage.setItem(key, String((state.studySessions || []).length));
             }
         }
-    }, [isDailyCompleted, today]); // intentionally omits studySessions — we only want the snapshot at completion time
+    }, [isDailyCompleted, today]); // eslint-disable-line react-hooks/exhaustive-deps -- intentionally omits studySessions, we only want the snapshot at completion time
 
     const hasActivitySinceDaily = useMemo(() => {
         if (!isDailyCompleted) return false;
@@ -244,9 +243,11 @@ export default function LearnPage({ onSessionChange, registerBackHandler, onTabC
     }, [state.lastActiveDate, state.studySessions, today]);
 
     // Initialize module-level session count tracker on first render
+    /* eslint-disable react-hooks/globals -- intentional module-level init guard */
     if (_lastTrackedSessionCount === -1) {
         _lastTrackedSessionCount = (state.studySessions || []).length;
     }
+    /* eslint-enable react-hooks/globals */
 
     // Track qualifying activity completions for the 5-activity re-trigger
     const [thisWeekDismissed, setThisWeekDismissed] = useState(_thisWeekDismissed);
@@ -287,7 +288,7 @@ export default function LearnPage({ onSessionChange, registerBackHandler, onTabC
             _incrementWeeklyShownToday();
             setThisWeekShown(true);
         }
-    }, [showWeeklyInsights, thisWeekShown]); // eslint-disable-line react-hooks/exhaustive-deps
+    }, [showWeeklyInsights, thisWeekShown]);
 
 
     useEffect(() => {
@@ -434,7 +435,7 @@ export default function LearnPage({ onSessionChange, registerBackHandler, onTabC
                                             <h3 className="text-sm font-bold" style={{ fontFamily: 'var(--font-serif)' }}>
                                                 This Day in History
                                             </h3>
-                                            <span className="daily-quiz-bonus-pill-sm">{'2\× XP'}</span>
+                                            <span className="daily-quiz-bonus-pill-sm">{'2× XP'}</span>
                                         </div>
                                         <p className="text-xs" style={{ color: 'var(--color-ink-muted)' }}>
                                             {dailyData.dateLabel} {'—'} {dailyData.eventIds.map(id => getEventById(id)?.year).filter(Boolean).join(' · ')}

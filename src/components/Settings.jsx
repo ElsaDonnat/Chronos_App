@@ -271,7 +271,7 @@ export default function Settings() {
                                         { value: 1, label: '1', sub: '1 per card' },
                                         { value: 2, label: '2', sub: '2 per card' },
                                         { value: 3, label: '3', sub: '3 per card' },
-                                    ].map(({ value, label, sub }) => {
+                                    ].map(({ value, label }) => {
                                         const isActive = recap === value;
                                         return (
                                             <button
