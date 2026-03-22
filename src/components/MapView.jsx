@@ -756,7 +756,7 @@ function TimeSlider({ value, onChange, onClose, learnedEventYears }) {
         let raf;
         const startValue = value;
         const remaining = SLIDER_MAX - startValue;
-        if (remaining <= 0) { setIsPlaying(false); return; }
+        if (remaining <= 0) { setIsPlaying(false); return; } // eslint-disable-line react-hooks/set-state-in-effect
         const duration = (remaining / SLIDER_MAX) * PLAYBACK_DURATION_MS;
         const startTime = performance.now();
         playStartRef.current = { time: startTime, startValue };

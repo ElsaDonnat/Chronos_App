@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 const LOGS = (
     <>
         {/* Log 1 - leaning right */}

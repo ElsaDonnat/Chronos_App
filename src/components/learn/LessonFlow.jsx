@@ -1403,7 +1403,7 @@ function QuizQuestion({ question, lessonEventIds, onAnswer, onNext, onBack, onSk
 // ═══════════════════════════════════════════════════════
 // PROGRESS TIMELINE — dots + lines showing session progress
 // ═══════════════════════════════════════════════════════
-function ProgressTimeline({ quizResults, totalQuestions, eventsCount, questionsPerCard = 2, recapPerCard, currentQuestionIndex, variant = 'header' }) {
+function ProgressTimeline({ quizResults, eventsCount, questionsPerCard = 2, recapPerCard, currentQuestionIndex, variant = 'header' }) {
     const isCheckpoint = variant === 'checkpoint';
     const dotSize = isCheckpoint ? 12 : 8;
     const currentDotSize = isCheckpoint ? 14 : 10;

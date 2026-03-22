@@ -61,7 +61,7 @@ export default function App() {
     last.setHours(0, 0, 0, 0);
     const diffDays = Math.floor((today - last) / (1000 * 60 * 60 * 24));
     if (diffDays >= 2) {
-      setDaysAway(diffDays);
+      setDaysAway(diffDays); // eslint-disable-line react-hooks/set-state-in-effect
       setShowWelcomeBack(true);
     }
   }, []); // eslint-disable-line react-hooks/exhaustive-deps

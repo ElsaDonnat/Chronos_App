@@ -652,7 +652,7 @@ export default function PracticePage({ onSessionChange, registerBackHandler }) {
                                                 backgroundColor: isSelected ? 'var(--color-burgundy)' : 'rgba(var(--color-ink-rgb), 0.06)',
                                                 color: isSelected ? 'white' : 'var(--color-ink-muted)',
                                             }}>
-                                            {isSelected ? '\✓' : lesson.number}
+                                            {isSelected ? '✓' : lesson.number}
                                         </div>
                                         <div className="flex-1 min-w-0">
                                             <h4 className="text-sm font-semibold truncate" style={{ fontFamily: 'var(--font-serif)' }}>
@@ -822,7 +822,7 @@ function HubView({ starredEvents, weakEvents, statusTiers, dueCount, state, disp
                 <div className="flex items-start gap-3">
                     <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
                         style={{ backgroundColor: 'rgba(230, 168, 23, 0.1)' }}>
-                        <span className="text-lg">{'\⭐'}</span>
+                        <span className="text-lg">{'⭐'}</span>
                     </div>
                     <div className="flex-1 min-w-0">
                         <h3 className="text-sm font-bold" style={{ fontFamily: 'var(--font-serif)' }}>Favorites</h3>

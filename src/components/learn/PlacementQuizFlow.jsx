@@ -437,7 +437,7 @@ function PlacementQuestion({ question, onAnswer, onNext, reviewMode, reviewResul
                             return (
                                 <button key={i} onClick={() => handleMCQ(opt, event.location.place)} disabled={answered}
                                     className="mcq-option" style={s}>
-                                    {opt}{answered && isCorrect && <span className="ml-2 text-xs" style={{ color: 'var(--color-success)' }}>{'\✓'}</span>}
+                                    {opt}{answered && isCorrect && <span className="ml-2 text-xs" style={{ color: 'var(--color-success)' }}>{'✓'}</span>}
                                 </button>
                             );
                         })}
@@ -473,7 +473,7 @@ function PlacementQuestion({ question, onAnswer, onNext, reviewMode, reviewResul
                             return (
                                 <button key={i} onClick={() => handleDateMCQ(opt)} disabled={answered}
                                     className="mcq-option" style={s}>
-                                    {opt.label}{answered && opt.isCorrect && <span className="ml-2 text-xs" style={{ color: 'var(--color-success)' }}>{'\✓'}</span>}
+                                    {opt.label}{answered && opt.isCorrect && <span className="ml-2 text-xs" style={{ color: 'var(--color-success)' }}>{'✓'}</span>}
                                 </button>
                             );
                         })}
@@ -509,7 +509,7 @@ function PlacementQuestion({ question, onAnswer, onNext, reviewMode, reviewResul
                                 <button key={i} onClick={() => handleMCQ(opt.id, event.id)} disabled={answered}
                                     className="mcq-option" style={s}>
                                     <span className="font-semibold">{opt.title}</span>
-                                    {answered && isCorrect && <span className="ml-2 text-xs" style={{ color: 'var(--color-success)' }}>{'\✓'}</span>}
+                                    {answered && isCorrect && <span className="ml-2 text-xs" style={{ color: 'var(--color-success)' }}>{'✓'}</span>}
                                 </button>
                             );
                         })}
@@ -545,7 +545,7 @@ function PlacementQuestion({ question, onAnswer, onNext, reviewMode, reviewResul
                                 <button key={i} onClick={() => handleMCQ(i, descOpts.findIndex(o => o.isCorrect))} disabled={answered}
                                     className="mcq-option" style={s}>
                                     <span className="leading-relaxed text-sm block" style={{ color: 'var(--color-ink-secondary)' }}>{opt.description}</span>
-                                    {answered && isCorrect && <span className="text-xs font-bold mt-1 block" style={{ color: 'var(--color-success)' }}>{'\✓'} Correct</span>}
+                                    {answered && isCorrect && <span className="text-xs font-bold mt-1 block" style={{ color: 'var(--color-success)' }}>{'✓'} Correct</span>}
                                 </button>
                             );
                         })}
